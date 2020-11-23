@@ -74,30 +74,9 @@ public class UciProcessor {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         engine.clearPosition();
         String[] rows = figures.split("/");
-        for (int i = 0; i < 8; i++) {
-            String expandedRow = expandRow(rows[i]);
-            for (int j =0; j<8; j++) {
-                engine.setPos(8 - i, j, expandedRow.charAt(j));
-            }
-        }
+        engine.setPosition(rows);
         // todo parse and set rest of fen string...
 
-    }
-
-    private String expandRow(String row) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < row.length(); i++) {
-            char ch = row.charAt(i);
-            if (Character.isDigit(ch)) {
-                int empties = Integer.parseInt(String.valueOf(ch));
-                for (int e = 1; e <= empties; e++) {
-                    b.append(" ");
-                }
-            } else {
-                b.append(ch);
-            }
-        }
-        return b.toString();
     }
 
     private void identifyYourself() {
