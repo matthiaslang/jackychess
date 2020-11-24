@@ -7,12 +7,26 @@ package org.mattlang.jc.board;
  */
 public class Move {
 
+    private int fromIndex;
+
+    private int toIndex;
+
     public Move(String moveStr) {
-       int fromXIndex = 'a' - moveStr.charAt(0);
-       int fromYIndex = '0' - moveStr.charAt(1) - 1;
+        int fromXIndex = moveStr.charAt(0) - 'a';
+        int fromYIndex = moveStr.charAt(1) - '0' - 1;
 
-        int toXIndex = 'a' - moveStr.charAt(2);
-        int toYIndex = '0' - moveStr.charAt(3) - 1;
+        int toXIndex = moveStr.charAt(2) - 'a';
+        int toYIndex = moveStr.charAt(3) - '0' - 1;
 
+        fromIndex = fromYIndex * 8 + fromXIndex;
+        toIndex = toYIndex * 8 + toXIndex;
+    }
+
+    public int getFromIndex() {
+        return fromIndex;
+    }
+
+    public int getToIndex() {
+        return toIndex;
     }
 }

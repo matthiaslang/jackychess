@@ -20,15 +20,11 @@ public class Engine {
     }
 
     public void move(Move move) {
-
+        board.move(move);
     }
 
     public void clearPosition() {
         board.clearPosition();
-    }
-
-    public void setPos(int i, int j, char ch) {
-        board.setPos(i, j, ch);
     }
 
     public void setPosition(String[] fenPosition) {

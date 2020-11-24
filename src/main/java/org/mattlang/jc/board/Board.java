@@ -39,13 +39,31 @@ public class Board {
         for (int i = 0; i < 8; i++) {
             String row = expandRow(fenPosition[i]);
             for (int j = 0; j < 8; j++) {
-                setPos(7 - i, j, row.charAt(j));
+                setPos(i, j, row.charAt(j));
             }
         }
     }
 
+    /**
+     * Sets position based on coordinate system (0,0 is the left lower corner, the white left corner)
+     *
+     * @param row
+     * @param col
+     * @param figureChar
+     */
     public void setPos(int row, int col, char figureChar) {
-        board[row * 8 + col] = convertFigureChar(figureChar);
+        board[(7 - row) * 8 + col] = convertFigureChar(figureChar);
+    }
+
+    /**
+     * Gets position based on coordinate system (0,0 is the left lower corner, the white left corner)
+     *
+     * @param row
+     * @param col
+     * @return
+     */
+    public char getPos(int row, int col) {
+        return toFigureChar(board[(7 - row) * 8 + col]);
     }
 
     private byte convertFigureChar(char figureChar) {
@@ -105,12 +123,13 @@ public class Board {
 
     public String toStr() {
         StringBuilder b = new StringBuilder();
-        for (int i = board.length-1; i >=0; i--) {
-            b.append(toFigureChar(board[i]));
-            if (i > 0 && i % 8 == 0) {
-                b.append("\n");
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                b.append(getPos(row, col));
             }
+            b.append("\n");
         }
+
         return b.toString();
     }
 
@@ -149,5 +168,13 @@ public class Board {
             figureChar = Character.toLowerCase(figureChar);
         }
         return figureChar;
+    }
+
+    public void move(Move move) {
+        // todo validations?
+        byte figure = board[move.getFromIndex()];
+        board[move.getFromIndex()] = 0;
+        board[move.getToIndex()] = figure;
+
     }
 }
