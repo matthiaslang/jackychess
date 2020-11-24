@@ -20,11 +20,6 @@ public class Board {
             "RNBQKBNR"
     };
 
-
-    /* PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, or EMPTY */
-
-    public static final byte BLACK = 64;
-
     private byte[] board = new byte[64];
 
     public void setStartPosition() {
@@ -101,8 +96,10 @@ public class Board {
     public void move(Move move) {
         // todo validations?
         byte figure = board[move.getFromIndex()];
-        board[move.getFromIndex()] = 0;
+        board[move.getFromIndex()] = Figure.EMPTY.figureCode;
         board[move.getToIndex()] = figure;
 
     }
+
+
 }
