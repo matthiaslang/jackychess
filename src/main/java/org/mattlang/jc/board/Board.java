@@ -20,12 +20,8 @@ public class Board {
             "RNBQKBNR"
     };
 
-    public static final byte Pawn = 1;
-    public static final byte Rook = 2;
-    public static final byte Knight = 4;
-    public static final byte Bishop = 8;
-    public static final byte Queen = 16;
-    public static final byte King = 32;
+
+    /* PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, or EMPTY */
 
     public static final byte BLACK = 64;
 
@@ -52,7 +48,7 @@ public class Board {
      * @param figureChar
      */
     public void setPos(int row, int col, char figureChar) {
-        board[(7 - row) * 8 + col] = convertFigureChar(figureChar);
+        board[(7 - row) * 8 + col] = Figure.convertFigureChar(figureChar);
     }
 
     /**
@@ -63,45 +59,14 @@ public class Board {
      * @return
      */
     public char getPos(int row, int col) {
-        return toFigureChar(board[(7 - row) * 8 + col]);
+        return Figure.toFigureChar(board[(7 - row) * 8 + col]);
     }
 
-    private byte convertFigureChar(char figureChar) {
-        byte figure = 0;
-        switch (Character.toUpperCase(figureChar)) {
-        case ' ':
-            return 0;
-        case 'P':
-            figure = Pawn;
-            break;
-        case 'R':
-            figure = Rook;
-            break;
-        case 'N':
-            figure = Knight;
-            break;
-        case 'B':
-            figure = Bishop;
-            break;
-        case 'Q':
-            figure = Queen;
-            break;
-        case 'K':
-            figure = King;
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown Figure: " + figureChar);
 
-        }
-        if (Character.isLowerCase(figureChar)) {
-            figure |= BLACK;
-        }
-        return figure;
-    }
 
     public void clearPosition() {
         for (int i = 0; i < board.length; i++) {
-            board[i] = 0;
+            board[i] = Figure.EMPTY.figureCode;
         }
     }
 
@@ -131,43 +96,6 @@ public class Board {
         }
 
         return b.toString();
-    }
-
-    private char toFigureChar(byte figure) {
-        if (figure == 0) {
-            return ' ';
-        }
-        boolean black = figure >= BLACK;
-        char figureChar = ' ';
-        if (black) {
-            figure = (byte) (0b111111 & figure);
-        }
-        switch (figure) {
-        case Pawn:
-            figureChar = 'P';
-            break;
-        case Rook:
-            figureChar = 'R';
-            break;
-        case Knight:
-            figureChar = 'N';
-            break;
-        case Bishop:
-            figureChar = 'B';
-            break;
-        case Queen:
-            figureChar = 'Q';
-            break;
-        case King:
-            figureChar = 'K';
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown Figure: " + figure);
-        }
-        if (black) {
-            figureChar = Character.toLowerCase(figureChar);
-        }
-        return figureChar;
     }
 
     public void move(Move move) {
