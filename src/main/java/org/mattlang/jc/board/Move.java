@@ -22,6 +22,11 @@ public class Move {
         toIndex = toYIndex * 8 + toXIndex;
     }
 
+    public Move(int from, int to) {
+        this.fromIndex = from;
+        this.toIndex = to;
+    }
+
     public int getFromIndex() {
         return fromIndex;
     }

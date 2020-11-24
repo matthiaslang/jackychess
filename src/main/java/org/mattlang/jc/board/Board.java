@@ -101,5 +101,7 @@ public class Board {
 
     }
 
-
+    public Figure getFigure(int i) {
+        return Figure.getFigureByCode(board[i]);
+    }
 }
