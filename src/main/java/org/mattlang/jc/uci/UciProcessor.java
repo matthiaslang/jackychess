@@ -4,10 +4,12 @@ import java.util.Optional;
 
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.search.NegaMax;
+import org.mattlang.jc.engine.search.SimpleNegaMaxEval;
 
 public class UciProcessor {
 
-    private Engine engine = new Engine();
+    private Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
 
     private boolean finished = false;
 
@@ -31,9 +33,11 @@ public class UciProcessor {
         } else if (cmdStr.startsWith("position")) {
             setPosition(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
-            engine.go();
+            Move bestMove = engine.go();
+            sendBestMove(bestMove);
         } else if ("stop".equals(cmdStr)) {
-            engine.stop();
+            Move bestMove = engine.stop();
+            sendBestMove(bestMove);
         }
 
     }
@@ -86,8 +90,7 @@ public class UciProcessor {
         UCI.instance.putCommand("uciok");
     }
 
-    private void sendBestMove() {
-        // todo...
-        // bestmove g1f3 ponder d8f6
+    private void sendBestMove(Move bestMove) {
+        UCI.instance.putCommand("bestmove " + bestMove.toStr());
     }
 }

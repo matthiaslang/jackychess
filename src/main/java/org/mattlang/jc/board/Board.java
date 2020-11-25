@@ -93,12 +93,16 @@ public class Board {
         return b.toString();
     }
 
-    public void move(Move move) {
+    public Move move(Move move) {
         // todo validations?
         byte figure = board[move.getFromIndex()];
         board[move.getFromIndex()] = Figure.EMPTY.figureCode;
         board[move.getToIndex()] = figure;
+        if (move instanceof UndoMove) {
+            board[move.getFromIndex()] = ((UndoMove) move).originField;
+        }
 
+        return new UndoMove(move.getToIndex(), move.getFromIndex(), figure);
     }
 
     public Figure getFigure(int i) {

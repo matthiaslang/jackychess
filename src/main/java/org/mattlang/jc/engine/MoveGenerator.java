@@ -148,4 +148,12 @@ public class MoveGenerator {
     private Move genMove(int from, int to, int capture) {
         return new Move(from, to);
     }
+
+    /**
+
+     *
+     * alle eigenen errechnen. köngis "bedrohung" für jeden zug ermitteln: diese varianten dann streichen
+     * ergibt dann halt x*x züge zu berechnen..
+     *
+     */
 }
