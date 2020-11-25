@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import java.util.List;
 import java.util.function.Function;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.engine.MoveGenerator;
 
@@ -28,6 +29,30 @@ public class BoardTest {
         board.move(new Move("g1f3"));
         System.out.println(board.toStr());
     }
+
+    @Test
+    public void testUndoingMoves() {
+        Board board = new Board();
+        board.setStartPosition();
+
+        System.out.println("doing moves...");
+        UndoMove m1 = board.move(new Move("e2e4"));
+        UndoMove m2 = board.move(new Move("e7e5"));
+        UndoMove m3 = board.move(new Move("g1f3"));
+        System.out.println(board.toStr());
+
+        System.out.println("undoing moves...");
+        board.move(m3);
+        board.move(m2);
+        board.move(m1);
+
+        System.out.println(board.toStr());
+
+        Board cmpboard = new Board();
+        cmpboard.setStartPosition();
+        Assertions.assertThat(board.toStr()).isEqualTo(cmpboard.toStr());
+    }
+
 
     @Test
     public void testMoveGenFromStartWhite() {

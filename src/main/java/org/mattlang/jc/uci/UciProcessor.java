@@ -44,7 +44,7 @@ public class UciProcessor {
 
     private void setPosition(String positionStr) {
         FenParser fenParser = new FenParser();
-        fenParser.setPosition(positionStr, engine);
+        fenParser.setPosition(positionStr, engine.getBoard());
     }
 
     private void identifyYourself() {

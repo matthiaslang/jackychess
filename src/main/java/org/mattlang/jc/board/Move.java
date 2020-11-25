@@ -47,4 +47,9 @@ public class Move {
         b.append((char) ('0' + y + 1));
         return b.toString();
     }
+
+    @Override
+    public String toString() {
+        return toStr();
+    }
 }

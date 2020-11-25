@@ -22,19 +22,11 @@ public class Engine {
         return searchMethod.search(board, 1, Color.BLACK);
     }
 
-    public void setStartPosition() {
-        board.setStartPosition();
-    }
-
     public void move(Move move) {
         board.move(move);
     }
 
-    public void clearPosition() {
-        board.clearPosition();
-    }
-
-    public void setPosition(String[] fenPosition) {
-        board.setPosition(fenPosition);
+    public Board getBoard() {
+        return board;
     }
 }

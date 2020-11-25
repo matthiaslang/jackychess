@@ -1,16 +1,16 @@
 package org.mattlang.jc.uci;
 
+import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.Engine;
 
 public class FenParser {
 
-    public void setPosition(String positionStr, Engine engine) {
+    public void setPosition(String positionStr, Board board) {
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
         int movesSection = 2;
         if ("startpos".equals(fen)) {
-            engine.setStartPosition();
+            board.setStartPosition();
 
         } else if ("fen".equals(fen)) {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -21,7 +21,7 @@ public class FenParser {
             String noHalfMoves = splitted[5];
             String nextMoveNum = splitted[6];
 
-            setPosition(engine, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
+            setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
 
             movesSection = 7;
         }
@@ -30,19 +30,19 @@ public class FenParser {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
                     Move move = new Move(moveStr);
-                    engine.move(move);
+                    board.move(move);
                 }
             }
         }
     }
 
-    private void setPosition(Engine engine, String figures, String zug, String rochade, String enpassant,
+    private void setPosition(Board board, String figures, String zug, String rochade, String enpassant,
             String noHalfMoves,
             String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-        engine.clearPosition();
+        board.clearPosition();
         String[] rows = figures.split("/");
-        engine.setPosition(rows);
+        board.setPosition(rows);
         // todo parse and set rest of fen string...
 
     }

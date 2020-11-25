@@ -5,10 +5,13 @@ package org.mattlang.jc.board;
  */
 public class UndoMove extends Move {
 
-    public final byte originField;
+    /**
+     * the overriden field/figure by the move, which needs to be reset during the undoing.
+     */
+    public final byte overriddenFig;
 
-    public UndoMove(int from, int to, byte originField) {
+    public UndoMove(int from, int to, byte overriddenFig) {
         super(from, to);
-        this.originField = originField;
+        this.overriddenFig = overriddenFig;
     }
 }
