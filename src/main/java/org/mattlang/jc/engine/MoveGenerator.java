@@ -2,6 +2,7 @@ package org.mattlang.jc.engine;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.EMPTY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.mattlang.jc.board.*;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
- * TSCP Implementation of move generator.
+ * TSCP Implementation of move generator with some own modifications.
  */
 public class MoveGenerator {
                 /* Now we have the mailbox array, so called because it looks like a
@@ -58,11 +59,10 @@ public class MoveGenerator {
      */
     public List<Move> generate(Board board, Color side) {
         ArrayList<Move> moves = new ArrayList<>();
-//        int color[64];  /* LIGHT, DARK, or EMPTY */
-//        int piece[64];  /* PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, or EMPTY */
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
 
+        // should the figures silde? (bishop, rook & queen)
         boolean[] slide = {false, false, true, true, true, false};
         int[] offsets = {0, 8, 4, 4, 8, 8}; /* knight or ray directions */
         int[][] offset = {
@@ -76,7 +76,7 @@ public class MoveGenerator {
 
         for (int i = 0; i < 64; ++i) { /* loop over all squares (no piece list) */
             Figure figure = board.getFigure(i);
-            if (figure != Figure.EMPTY && figure.color == side) { /* looking for own pieces and pawns to move */
+            if (figure != EMPTY && figure.color == side) { /* looking for own pieces and pawns to move */
                 FigureType p = figure.figureType;
                 if (p != FigureType.Pawn) { /* piece or pawn */
                     for (int j = 0; j < offsets[p.figureCode]; ++j) { /* for all knight or ray directions */
@@ -84,7 +84,7 @@ public class MoveGenerator {
                             n = mailbox[mailbox64[n] + offset[p.figureCode][j]]; /* next square along the ray j */
                             if (n == -1) break; /* outside board */
                             Figure targetN = board.getFigure(n);
-                            if (targetN != Figure.EMPTY) {
+                            if (targetN != EMPTY) {
                                 if (targetN.color == xside)
                                     moves.add(genMove(i, n, 1)); /* capture from i to n */
                                 break;
@@ -93,10 +93,56 @@ public class MoveGenerator {
                             if (!slide[p.figureCode]) break; /* next direction */
                         }
                     }
-                } else { /* pawn moves */ }
+                } else {
+                    /* pawn moves */
+                    genPawnMoves(board, moves, i, figure);
+
+                }
             }
         }
+        // todo rochade is missing, check test is missing (or move it to eval function..)
+        // todo en passant is missing...
         return moves;
+    }
+
+    int[] pawnCaptureOffset={11, 9};
+
+    private void genPawnMoves(Board board, ArrayList<Move> moves, int i, Figure figure) {
+        boolean isOnBaseLine = false;
+        if (figure.color == WHITE) {
+            isOnBaseLine = i >= 8 && i <= 15;
+        } else {
+            isOnBaseLine = i >= 48 && i <= 55;
+        }
+        int pawnOffset = figure.color == WHITE ? 10 : -10;
+        // check single and double move:
+        // get single move:
+        int n = mailbox[mailbox64[i] + pawnOffset];
+        if (n != -1) {
+            Figure target = board.getFigure(n);
+            if (target == EMPTY) {
+                // get double move from baseline:
+                moves.add(genMove(i, n, 0));
+                if (isOnBaseLine) {
+                    n = mailbox[mailbox64[i] + 2 * pawnOffset];
+                    target = board.getFigure(n);
+                    if (target == EMPTY) {
+                        moves.add(genMove(i, n, 0));
+                    }
+                }
+            }
+        }
+        // check capture:
+        int m = figure.color == WHITE ? 1 : -1;
+        for (int offset : pawnCaptureOffset) {
+            n = mailbox[mailbox64[i] + offset * m];
+            if (n != -1) {
+                Figure target = board.getFigure(n);
+                if (target != EMPTY) {
+                    moves.add(genMove(i, n, 1));
+                }
+            }
+        }
     }
 
     private Move genMove(int from, int to, int capture) {
