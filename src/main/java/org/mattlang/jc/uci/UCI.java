@@ -2,12 +2,12 @@ package org.mattlang.jc.uci;
 
 import java.io.*;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class UCI {
 
-    private ConcurrentLinkedQueue<String> inQueue = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<String> outQueue = new ConcurrentLinkedQueue<>();
+    private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<String> outQueue = new LinkedBlockingQueue<>();
 
     private boolean finished = false;
 
@@ -26,25 +26,19 @@ public class UCI {
 
     public void attachStreams(final InputStream in, final PrintStream out) throws IOException {
         Thread inThread = new Thread(
-                new Runnable() {
-
-                    public void run() {
-                        try {
-                            gobbleIn(in);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                () -> {
+                    try {
+                        gobbleIn(in);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 });
         inThread.start();
-        Thread outThread = new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    gobbleOut(out);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Thread outThread = new Thread(() -> {
+            try {
+                gobbleOut(out);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
 
@@ -53,7 +47,7 @@ public class UCI {
 
     private void gobbleOut(PrintStream out) throws InterruptedException {
         while (!finished) {
-            String line = outQueue.remove();
+            String line = outQueue.take();
             out.println(line);
         }
     }
