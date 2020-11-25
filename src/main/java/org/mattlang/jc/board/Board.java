@@ -57,6 +57,9 @@ public class Board {
         return Figure.toFigureChar(board[(7 - row) * 8 + col]);
     }
 
+    public Figure getFigurePos(int row, int col) {
+        return Figure.getFigureByCode(board[(7 - row) * 8 + col]);
+    }
 
 
     public void clearPosition() {
@@ -86,6 +89,18 @@ public class Board {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 b.append(getPos(row, col));
+            }
+            b.append("\n");
+        }
+
+        return b.toString();
+    }
+
+    public String toUniCodeStr() {
+        StringBuilder b = new StringBuilder();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                b.append(getFigurePos(row, col).figureCharUnicode);
             }
             b.append("\n");
         }

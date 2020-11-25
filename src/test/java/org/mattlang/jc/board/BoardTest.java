@@ -16,7 +16,7 @@ public class BoardTest {
     public void testStartPosition() {
         Board board = new Board();
         board.setStartPosition();
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class BoardTest {
         board.move(new Move("e2e4"));
         board.move(new Move("e7e5"));
         board.move(new Move("g1f3"));
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
     }
 
     @Test
@@ -39,18 +39,18 @@ public class BoardTest {
         UndoMove m1 = board.move(new Move("e2e4"));
         UndoMove m2 = board.move(new Move("e7e5"));
         UndoMove m3 = board.move(new Move("g1f3"));
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
 
         System.out.println("undoing moves...");
         board.move(m3);
         board.move(m2);
         board.move(m1);
 
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
 
         Board cmpboard = new Board();
         cmpboard.setStartPosition();
-        Assertions.assertThat(board.toStr()).isEqualTo(cmpboard.toStr());
+        Assertions.assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }
 
 

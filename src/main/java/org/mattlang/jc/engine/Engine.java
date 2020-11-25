@@ -15,7 +15,7 @@ public class Engine {
     }
 
     public Move go() {
-        return searchMethod.search(board, 20, Color.BLACK);
+        return searchMethod.search(board, 4, Color.BLACK);
     }
 
     public Move stop() {

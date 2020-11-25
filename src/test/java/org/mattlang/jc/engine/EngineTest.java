@@ -18,7 +18,7 @@ public class EngineTest extends TestCase {
         // now starting engine:
         Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
         engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toStr());
+        System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
 
         System.out.println(move.toStr());
@@ -31,6 +31,7 @@ public class EngineTest extends TestCase {
         Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
         FenParser parser = new FenParser();
         parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
+        System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
 
         System.out.println(move.toStr());
@@ -45,14 +46,14 @@ public class EngineTest extends TestCase {
         FenParser parser = new FenParser();
         parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
 
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
 
         NegaMax negaMax = new NegaMax(eval);
         Move move = negaMax.search(board, 2, Color.BLACK);
 
         System.out.println(move);
 
-        System.out.println(board.toStr());
+        System.out.println(board.toUniCodeStr());
 
         move = negaMax.search(board, 2, Color.BLACK);
 

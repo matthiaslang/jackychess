@@ -5,27 +5,29 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 public enum Figure {
 
-    EMPTY(FigureType.EMPTY, WHITE),
-    Pawn(FigureType.Pawn, WHITE),
-    Knight(FigureType.Knight, WHITE),
-    Bishop(FigureType.Bishop, WHITE),
-    Rook(FigureType.Rook, WHITE),
-    Queen(FigureType.Queen, WHITE),
-    King(FigureType.King, WHITE),
+    EMPTY(FigureType.EMPTY, WHITE, '\u2001'),
+    Pawn(FigureType.Pawn, WHITE, '♙'),
+    Knight(FigureType.Knight, WHITE, '♘'),
+    Bishop(FigureType.Bishop, WHITE, '♗'),
+    Rook(FigureType.Rook, WHITE, '♖'),
+    Queen(FigureType.Queen, WHITE, '♕'),
+    King(FigureType.King, WHITE, '♔'),
 
-    B_Pawn(FigureType.Pawn, BLACK),
-    B_Knight(FigureType.Knight, BLACK),
-    B_Bishop(FigureType.Bishop, BLACK),
-    B_Rook(FigureType.Rook, BLACK),
-    B_Queen(FigureType.Queen, BLACK),
-    B_King(FigureType.King, BLACK);
+    B_Pawn(FigureType.Pawn, BLACK, '♟'),
+    B_Knight(FigureType.Knight, BLACK, '♞'),
+    B_Bishop(FigureType.Bishop, BLACK, '♝'),
+    B_Rook(FigureType.Rook, BLACK, '♜'),
+    B_Queen(FigureType.Queen, BLACK, '♛'),
+    B_King(FigureType.King, BLACK, '♚');
 
     public final byte figureCode;
     public final char figureChar;
     public final FigureType figureType;
     public final Color color;
+    public final char figureCharUnicode;
 
-    Figure(FigureType figureType, Color color) {
+    Figure(FigureType figureType, Color color, char figureCharUnicode) {
+        this.figureCharUnicode = figureCharUnicode;
         this.figureCode = (byte) (figureType.figureCode | color.code);
         if (color == WHITE) {
             this.figureChar = figureType.figureChar;
