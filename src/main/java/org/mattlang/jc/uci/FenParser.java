@@ -27,7 +27,7 @@ public class FenParser {
         }
         if (splitted.length > movesSection) {
             if ("moves".equals(splitted[movesSection])) {
-                for (int moveIndex = movesSection + 1; moveIndex < splitted.length - 1; moveIndex++) {
+                for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
                     Move move = new Move(moveStr);
                     engine.move(move);
