@@ -14,14 +14,14 @@ public class Engine {
 
     public void go() {
         MoveGenerator moveGenerator = new MoveGenerator();
-        List<Move> moves = moveGenerator.generate(board, Color.WHITE);
+        List<Move> moves = moveGenerator.generate(board, Color.BLACK);
         Move move = moves.get(new Random().nextInt(moves.size()));
         UCI.instance.putCommand("bestmove " + move.toStr());
     }
 
     public void stop() {
         MoveGenerator moveGenerator = new MoveGenerator();
-        List<Move> moves = moveGenerator.generate(board, Color.WHITE);
+        List<Move> moves = moveGenerator.generate(board, Color.BLACK);
         Move move = moves.get(new Random().nextInt(moves.size()));
         UCI.instance.putCommand("bestmove " + move.toStr());
     }
