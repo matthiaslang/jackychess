@@ -34,4 +34,17 @@ public class Move {
     public int getToIndex() {
         return toIndex;
     }
+
+    public String toStr() {
+        return convert(fromIndex) + convert(toIndex);
+    }
+
+    private String convert(int index) {
+        int x = index % 8;
+        int y = index / 8;
+        StringBuilder b = new StringBuilder();
+        b.append((char) ('a' + x));
+        b.append((char) ('0' + y + 1));
+        return b.toString();
+    }
 }
