@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -37,8 +38,12 @@ public class EngineTest extends TestCase {
         System.out.println(move.toStr());
     }
 
+    /**
+     * "Check" is not defined as "invalid" move position, instead we have a weight function which evals a captured
+     * king as a "very bad" value, therefore minimax should always get us out of of a chess situation.
+     */
     @Test
-    public void testChess() {
+    public void testCheckSituation() {
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
@@ -51,13 +56,11 @@ public class EngineTest extends TestCase {
         NegaMax negaMax = new NegaMax(eval);
         Move move = negaMax.search(board, 2, Color.BLACK);
 
-        System.out.println(move);
-
-        System.out.println(board.toUniCodeStr());
-
-        move = negaMax.search(board, 2, Color.BLACK);
+        // block chess with Rook:
+        Assertions.assertThat(move.toStr()).isEqualTo("a7d7");
 
         System.out.println(move);
+
     }
 
 }
