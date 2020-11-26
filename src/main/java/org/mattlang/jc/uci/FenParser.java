@@ -1,7 +1,9 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.BasicMove;
+import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.MoveGenerator;
 
 public class FenParser {
 
@@ -29,11 +31,25 @@ public class FenParser {
             if ("moves".equals(splitted[movesSection])) {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
-                    BasicMove move = new BasicMove(moveStr);
+                    Move move = parseMove(moveStr);
                     board.move(move);
                 }
             }
         }
+    }
+
+    private BasicMove parseMove(String moveStr) {
+        if ("e1g1".equals(moveStr)) {
+            return MoveGenerator.ROCHADE_MOVE_SW;
+        } else if ("e1c1".equals(moveStr)) {
+            return MoveGenerator.ROCHADE_MOVE_LW;
+        } else if ("e8g8".equals(moveStr)) {
+            return MoveGenerator.ROCHADE_MOVE_SB;
+        } else if ("e8g8".equals(moveStr)) {
+            return MoveGenerator.ROCHADE_MOVE_LB;
+        }
+
+        return new BasicMove(moveStr);
     }
 
     private void setPosition(Board board, String figures, String zug, String rochade, String enpassant,

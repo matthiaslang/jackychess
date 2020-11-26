@@ -20,6 +20,11 @@ public class MoveGenerator {
     public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
     public static final int[] ROCHADE_L_BLACK = { 56, 57, 58, 59, 60 };
 
+    public static final RochadeMove ROCHADE_MOVE_LW = new RochadeMove(0, 3, 4, 2);
+    public static final RochadeMove ROCHADE_MOVE_SW = new RochadeMove(4, 6, 7, 5);
+    public static final RochadeMove ROCHADE_MOVE_SB = new RochadeMove(63, 61, 60, 62);
+    public static final RochadeMove ROCHADE_MOVE_LB = new RochadeMove(56, 59, 60, 58);
+
     /* Now we have the mailbox array, so called because it looks like a
    mailbox, at least according to Bob Hyatt. This is useful when we
    need to figure out what pieces can go where. Let's say we have a
@@ -127,15 +132,15 @@ public class MoveGenerator {
         switch (side) {
         case WHITE:
             if (checkPos(board, ROCHADE_L_WHITE, Rook, EMPTY, EMPTY, EMPTY, King)) {
-                moves.add(new RochadeMove(0, 3, 4, 2));
+                moves.add(ROCHADE_MOVE_LW);
             } else if (checkPos(board, ROCHADE_S_WHITE, King, EMPTY, EMPTY, Rook)) {
-                moves.add(new RochadeMove(4, 6, 7, 5));
+                moves.add(ROCHADE_MOVE_SW);
             }
         case BLACK:
             if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                moves.add(new RochadeMove(63, 61, 60, 62));
+                moves.add(ROCHADE_MOVE_SB);
             } else if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                moves.add(new RochadeMove(56, 59, 60, 58));
+                moves.add(ROCHADE_MOVE_LB);
             }
         }
     }
