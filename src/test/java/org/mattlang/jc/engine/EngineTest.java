@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
@@ -56,11 +58,32 @@ public class EngineTest extends TestCase {
         NegaMax negaMax = new NegaMax(eval);
         Move move = negaMax.search(board, 2, Color.BLACK);
 
-        // block chess with Rook:
-        Assertions.assertThat(move.toStr()).isEqualTo("a7d7");
+        // block with other figure:
+        assertThat(move.toStr()).isEqualTo("d8d7");
 
         System.out.println(move);
 
+    }
+
+    @Test
+    public void testCheckSituation2() {
+
+        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
+
+        Board board = new Board();
+        FenParser parser = new FenParser();
+        parser.setPosition("position fen kp6/1p6/8/5r2/8/Q7/8/4K3 b k - 2 17 ", board);
+
+        System.out.println(board.toUniCodeStr());
+
+        NegaMax negaMax = new NegaMax(eval);
+        Move move = negaMax.search(board, 2, Color.BLACK);
+
+        // block chess with Rook:
+        assertThat(move.toStr()).isEqualTo("f5a5");
+        board.move(move);
+
+        System.out.println(board.toUniCodeStr());
     }
 
 }

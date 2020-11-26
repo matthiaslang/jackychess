@@ -27,52 +27,51 @@ public class MoveGenerator {
    in attack() in board.c. */
 
     int[] mailbox = {
-        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1,  0,  1,  2,  3,  4,  5,  6,  7, -1,
-                -1,  8,  9, 10, 11, 12, 13, 14, 15, -1,
-                -1, 16, 17, 18, 19, 20, 21, 22, 23, -1,
-                -1, 24, 25, 26, 27, 28, 29, 30, 31, -1,
-                -1, 32, 33, 34, 35, 36, 37, 38, 39, -1,
-                -1, 40, 41, 42, 43, 44, 45, 46, 47, -1,
-                -1, 48, 49, 50, 51, 52, 53, 54, 55, -1,
-                -1, 56, 57, 58, 59, 60, 61, 62, 63, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1,  0,  1,  2,  3,  4,  5,  6,  7, -1,
+            -1,  8,  9, 10, 11, 12, 13, 14, 15, -1,
+            -1, 16, 17, 18, 19, 20, 21, 22, 23, -1,
+            -1, 24, 25, 26, 27, 28, 29, 30, 31, -1,
+            -1, 32, 33, 34, 35, 36, 37, 38, 39, -1,
+            -1, 40, 41, 42, 43, 44, 45, 46, 47, -1,
+            -1, 48, 49, 50, 51, 52, 53, 54, 55, -1,
+            -1, 56, 57, 58, 59, 60, 61, 62, 63, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
     };
 
     int[] mailbox64 = {
-        21, 22, 23, 24, 25, 26, 27, 28,
-                31, 32, 33, 34, 35, 36, 37, 38,
-                41, 42, 43, 44, 45, 46, 47, 48,
-                51, 52, 53, 54, 55, 56, 57, 58,
-                61, 62, 63, 64, 65, 66, 67, 68,
-                71, 72, 73, 74, 75, 76, 77, 78,
-                81, 82, 83, 84, 85, 86, 87, 88,
-                91, 92, 93, 94, 95, 96, 97, 98
+            21, 22, 23, 24, 25, 26, 27, 28,
+            31, 32, 33, 34, 35, 36, 37, 38,
+            41, 42, 43, 44, 45, 46, 47, 48,
+            51, 52, 53, 54, 55, 56, 57, 58,
+            61, 62, 63, 64, 65, 66, 67, 68,
+            71, 72, 73, 74, 75, 76, 77, 78,
+            81, 82, 83, 84, 85, 86, 87, 88,
+            91, 92, 93, 94, 95, 96, 97, 98
+    };
+
+    /* should the figures silde? (bishop, rook & queen)  */
+    boolean[] slide = { false, false, true, true, true, false };
+    int[] offsets = { 0, 8, 4, 4, 8, 8 }; /* knight or ray directions */
+    int[][] offset = {
+            { 0, 0, 0, 0, 0, 0, 0, 0 },
+            { -21, -19, -12, -8, 8, 12, 19, 21 }, /* KNIGHT */
+            { -11, -9, 9, 11, 0, 0, 0, 0 }, /* BISHOP */
+            { -10, -1, 1, 10, 0, 0, 0, 0 }, /* ROOK */
+            { -11, -10, -9, -1, 1, 9, 10, 11 }, /* QUEEN */
+            { -11, -10, -9, -1, 1, 9, 10, 11 }  /* KING */
     };
 
     /**
-     *
      * @param board current board
-     * @param side the side to move
+     * @param side  the side to move
      */
     public List<Move> generate(Board board, Color side) {
         ArrayList<Move> moves = new ArrayList<>();
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
-
-        // should the figures silde? (bishop, rook & queen)
-        boolean[] slide = {false, false, true, true, true, false};
-        int[] offsets = {0, 8, 4, 4, 8, 8}; /* knight or ray directions */
-        int[][] offset = {
-            {   0,   0,  0,  0, 0,  0,  0,  0 },
-            { -21, -19,-12, -8, 8, 12, 19, 21 }, /* KNIGHT */
-            { -11,  -9,  9, 11, 0,  0,  0,  0 }, /* BISHOP */
-            { -10,  -1,  1, 10, 0,  0,  0,  0 }, /* ROOK */
-            { -11, -10, -9, -1, 1,  9, 10, 11 }, /* QUEEN */
-            { -11, -10, -9, -1, 1,  9, 10, 11 }  /* KING */
-        };
 
         for (int i = 0; i < 64; ++i) { /* loop over all squares (no piece list) */
             Figure figure = board.getFigure(i);
@@ -122,12 +121,12 @@ public class MoveGenerator {
             Figure target = board.getFigure(n);
             if (target == EMPTY) {
                 // get double move from baseline:
-                moves.add(genMove(i, n, 0));
+                moves.add(genPawnMove(i, n, 0, figure));
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigure(n);
                     if (target == EMPTY) {
-                        moves.add(genMove(i, n, 0));
+                        moves.add(genPawnMove(i, n, 0, figure));
                     }
                 }
             }
@@ -139,7 +138,7 @@ public class MoveGenerator {
             if (n != -1) {
                 Figure target = board.getFigure(n);
                 if (target != EMPTY) {
-                    moves.add(genMove(i, n, 1));
+                    moves.add(genPawnMove(i, n, 1, figure));
                 }
             }
         }
@@ -149,4 +148,14 @@ public class MoveGenerator {
         return new Move(from, to);
     }
 
+    private Move genPawnMove(int from, int to, int capture, Figure pawn) {
+        boolean isOnLastLine = false;
+        if (pawn.color == WHITE) {
+            isOnLastLine = to >= 56 && to <= 63;
+
+        } else {
+            isOnLastLine = to >= 0 && to <= 7;
+        }
+        return new Move(from, to, isOnLastLine);
+    }
 }

@@ -3,6 +3,8 @@ package org.mattlang.jc.board;
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 
+import org.mattlang.jc.uci.FenParser;
+
 /**
  * Represents a board with figures.
  */
@@ -33,6 +35,11 @@ public class Board {
                 setPos(i, j, row.charAt(j));
             }
         }
+    }
+
+    public void setFenPosition(String fen) {
+        FenParser parser = new FenParser();
+        parser.setPosition(fen, this);
     }
 
     /**
@@ -98,13 +105,22 @@ public class Board {
 
     public String toUniCodeStr() {
         StringBuilder b = new StringBuilder();
+        int rowNo = 8;
         for (int row = 0; row < 8; row++) {
+            b.append(rowNo);
+            for (int col = 0; col < 8; col++) {
+                b.append(getPos(row, col));
+            }
+            b.append("         ");
+            b.append(rowNo);
+            rowNo--;
             for (int col = 0; col < 8; col++) {
                 b.append(getFigurePos(row, col).figureCharUnicode);
             }
             b.append("\n");
         }
 
+        b.append(" abcdefgh         abcdefgh\n");
         return b.toString();
     }
 
@@ -115,11 +131,24 @@ public class Board {
         byte figure = board[move.getFromIndex()];
         board[move.getFromIndex()] = Figure.EMPTY.figureCode;
         board[move.getToIndex()] = figure;
-        if (move instanceof UndoMove) {
-            board[move.getFromIndex()] = ((UndoMove) move).overriddenFig;
+        if (move.isPawnPromotion()) {
+            Figure pawn = Figure.getFigureByCode(figure);
+            Figure queen = pawn.color == Color.WHITE ? Figure.Queen : Figure.B_Queen;
+            board[move.getToIndex()] = queen.figureCode;
         }
 
-        return new UndoMove(move.getToIndex(), move.getFromIndex(), override);
+        if (move instanceof UndoMove) {
+            UndoMove undoMove = (UndoMove) move;
+            board[move.getFromIndex()] = undoMove.overriddenFig;
+            if (undoMove.undoPawnPromotion) {
+                Figure queen = Figure.getFigureByCode(board[move.getToIndex()]);
+                Figure pawn = queen.color == Color.WHITE ? Figure.Pawn : Figure.B_Pawn;
+                board[move.getToIndex()] = pawn.figureCode;
+            }
+
+        }
+
+        return new UndoMove(move.getToIndex(), move.getFromIndex(), override, move.isPawnPromotion());
     }
 
     public Figure getFigure(int i) {

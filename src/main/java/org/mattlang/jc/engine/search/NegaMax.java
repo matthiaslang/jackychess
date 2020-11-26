@@ -16,6 +16,11 @@ public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
+    private MoveGenerator generator = new MoveGenerator();
+
+    // statistics
+    private int nodesVisited = 0;
+
     static class ScoreResult {
 
         public final Move bestMove;
@@ -33,13 +38,18 @@ public class NegaMax implements SearchMethod {
 
     public Move search(Board currBoard, int depth, Color color) {
         assert depth > 0;
+        reset();
         ScoreResult scoreResult = negaMaximize(currBoard, depth, color);
         return scoreResult.bestMove;
     }
 
+    private void reset() {
+        nodesVisited = 0;
+    }
+
     private ScoreResult negaMaximize(Board currBoard, int depth, Color color) {
         Move bestmove = null;
-        MoveGenerator generator = new MoveGenerator();
+
         List<Move> moves = generator.generate(currBoard, color);
         int max = Integer.MIN_VALUE;
         for (Move move : moves) {
@@ -55,6 +65,7 @@ public class NegaMax implements SearchMethod {
     }
 
     private int negaMax(Board currBoard, int depth, Color color) {
+        nodesVisited++;
         if (depth == 0)
             return evaluate.eval(currBoard, color);
         ScoreResult scoreResult = negaMaximize(currBoard, depth, color);

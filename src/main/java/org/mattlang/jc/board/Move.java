@@ -11,20 +11,24 @@ public class Move {
 
     private int toIndex;
 
+    /**
+     * is this a promotion move to change a pawn into a queen?
+     */
+    private boolean pawnPromotion;
+
     public Move(String moveStr) {
-        int fromXIndex = moveStr.charAt(0) - 'a';
-        int fromYIndex = moveStr.charAt(1) - '0' - 1;
-
-        int toXIndex = moveStr.charAt(2) - 'a';
-        int toYIndex = moveStr.charAt(3) - '0' - 1;
-
-        fromIndex = fromYIndex * 8 + fromXIndex;
-        toIndex = toYIndex * 8 + toXIndex;
+        fromIndex = parsePos(moveStr.substring(0, 2));
+        toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
     public Move(int from, int to) {
+        this(from, to, false);
+    }
+
+    public Move(int from, int to, boolean pawnPromotion) {
         this.fromIndex = from;
         this.toIndex = to;
+        this.pawnPromotion = pawnPromotion;
     }
 
     public int getFromIndex() {
@@ -51,5 +55,15 @@ public class Move {
     @Override
     public String toString() {
         return toStr();
+    }
+
+    public boolean isPawnPromotion() {
+        return pawnPromotion;
+    }
+
+    public static int parsePos(String pos) {
+        int x = pos.charAt(0) - 'a';
+        int y = pos.charAt(1) - '0' - 1;
+        return y * 8 + x;
     }
 }

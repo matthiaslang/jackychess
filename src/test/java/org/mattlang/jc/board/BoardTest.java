@@ -1,8 +1,11 @@
 package org.mattlang.jc.board;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Move.parsePos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,6 +56,78 @@ public class BoardTest {
         Assertions.assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }
 
+    @Test
+    public void testPawnPromotionAndUndoing1() {
+        Board board = new Board();
+        String fen = "position fen 8/P7/8/8/8/8/p7/8 b k - 2 17 ";
+        board.setFenPosition(fen);
+
+        System.out.println(board.toUniCodeStr());
+
+        MoveGenerator generator = new MoveGenerator();
+        List<Move> whiteMoves = generator.generate(board, WHITE);
+
+        MoveGenerator generator2 = new MoveGenerator();
+        List<Move> blackMoves = generator2.generate(board, BLACK);
+
+        List<UndoMove> undoes = new ArrayList<>();
+        for (Move move : whiteMoves) {
+            undoes.add(board.move(move));
+        }
+        for (Move move : blackMoves) {
+            undoes.add(board.move(move));
+        }
+        System.out.println(board.toUniCodeStr());
+
+        assertThat(board.getFigure(parsePos("a8"))).isEqualTo(Figure.Queen);
+        assertThat(board.getFigure(parsePos("a1"))).isEqualTo(Figure.B_Queen);
+
+        // undoing:
+        for (UndoMove undo : undoes) {
+            board.move(undo);
+        }
+        System.out.println(board.toUniCodeStr());
+        Board cmpboard = new Board();
+        cmpboard.setFenPosition(fen);
+
+        assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
+    }
+
+    @Test
+    public void testPawnPromotionAndUndoing2() {
+        Board board = new Board();
+        String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
+        board.setFenPosition(fen);
+
+        System.out.println(board.toUniCodeStr());
+
+        MoveGenerator generator = new MoveGenerator();
+        List<Move> whiteMoves = generator.generate(board, WHITE);
+        // we are interested in the pawn at a7 which gets promoted to a queen:
+        Move a7PawnMove = whiteMoves.stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
+
+        UndoMove undo = board.move(a7PawnMove);
+
+        assertThat(board.getFigure(parsePos("b8"))).isEqualTo(Figure.Queen);
+        // undoing:
+        board.move(undo);
+
+        Board cmpboard = new Board();
+        cmpboard.setFenPosition(fen);
+        assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
+
+        MoveGenerator generator2 = new MoveGenerator();
+        List<Move> blackMoves = generator2.generate(board, BLACK);
+        Move a2PawnMove = blackMoves.stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
+
+        undo = board.move(a2PawnMove);
+
+        assertThat(board.getFigure(parsePos("b1"))).isEqualTo(Figure.B_Queen);
+
+        // undoing:
+        board.move(undo);
+        assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
+    }
 
     @Test
     public void testMoveGenFromStartWhite() {
