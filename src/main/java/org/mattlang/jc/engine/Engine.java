@@ -2,6 +2,7 @@ package org.mattlang.jc.engine;
 
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.BasicMove;
 import org.mattlang.jc.board.Move;
 
 public class Engine {
@@ -22,7 +23,7 @@ public class Engine {
         return searchMethod.search(board, 1, Color.BLACK);
     }
 
-    public void move(Move move) {
+    public void move(BasicMove move) {
         board.move(move);
     }
 

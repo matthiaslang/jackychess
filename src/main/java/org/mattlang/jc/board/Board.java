@@ -24,8 +24,13 @@ public class Board {
 
     private byte[] board = new byte[64];
 
+    private Rochade whiteRochade = new Rochade();
+    private Rochade blackRochace = new Rochade();
+
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
+        whiteRochade = new Rochade();
+        blackRochace = new Rochade();
     }
 
     public void setPosition(String[] fenPosition) {
@@ -53,6 +58,14 @@ public class Board {
         board[(7 - row) * 8 + col] = Figure.convertFigureChar(figureChar);
     }
 
+    public void setPos(int index, Figure figure) {
+        board[index] = figure.figureCode;
+    }
+
+    public void setPos(int index, byte figure) {
+        board[index] = figure;
+    }
+
     /**
      * Gets position based on coordinate system (0,0 is the left lower corner, the white left corner)
      *
@@ -64,10 +77,13 @@ public class Board {
         return Figure.toFigureChar(board[(7 - row) * 8 + col]);
     }
 
+    public Figure getPos(int i) {
+        return Figure.getFigureByCode(board[i]);
+    }
+
     public Figure getFigurePos(int row, int col) {
         return Figure.getFigureByCode(board[(7 - row) * 8 + col]);
     }
-
 
     public void clearPosition() {
         for (int i = 0; i < board.length; i++) {
@@ -91,46 +107,16 @@ public class Board {
         return b.toString();
     }
 
-    public String toStr() {
-        StringBuilder b = new StringBuilder();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                b.append(getPos(row, col));
-            }
-            b.append("\n");
-        }
-
-        return b.toString();
-    }
-
     public String toUniCodeStr() {
-        StringBuilder b = new StringBuilder();
-        int rowNo = 8;
-        for (int row = 0; row < 8; row++) {
-            b.append(rowNo);
-            for (int col = 0; col < 8; col++) {
-                b.append(getPos(row, col));
-            }
-            b.append("         ");
-            b.append(rowNo);
-            rowNo--;
-            for (int col = 0; col < 8; col++) {
-                b.append(getFigurePos(row, col).figureCharUnicode);
-            }
-            b.append("\n");
-        }
-
-        b.append(" abcdefgh         abcdefgh\n");
-        return b.toString();
+        return BoardPrinter.toUniCodeStr(this);
     }
 
-    public UndoMove move(Move move) {
+    public Move move(Move move) {
         // todo validations?
-        byte override = board[move.getToIndex()];
-
+        return move.move(this);
+        /*
         byte figure = board[move.getFromIndex()];
-        board[move.getFromIndex()] = Figure.EMPTY.figureCode;
-        board[move.getToIndex()] = figure;
+        byte override = move(move.getFromIndex(), move.getToIndex());
         if (move.isPawnPromotion()) {
             Figure pawn = Figure.getFigureByCode(figure);
             Figure queen = pawn.color == Color.WHITE ? Figure.Queen : Figure.B_Queen;
@@ -145,10 +131,33 @@ public class Board {
                 Figure pawn = queen.color == Color.WHITE ? Figure.Pawn : Figure.B_Pawn;
                 board[move.getToIndex()] = pawn.figureCode;
             }
-
         }
 
-        return new UndoMove(move.getToIndex(), move.getFromIndex(), override, move.isPawnPromotion());
+        if (move instanceof RochadeMove) {
+            RochadeMove rochadeMove = (RochadeMove) move;
+            Move second = rochadeMove.getSecond();
+            move(second.getFromIndex(), second.getToIndex());
+
+            return new RochadeUndoMove(move.getToIndex(), move.getFromIndex(), second.getFromIndex(), second
+                    .getToIndex());
+        } else {
+            return new UndoMove(move.getToIndex(), move.getFromIndex(), override, move.isPawnPromotion());
+        } */
+    }
+
+    /**
+     * Simple move of one figure from one field to another.
+     *
+     * @param from
+     * @param to
+     * @return the captured figure or empty
+     */
+    public byte move(int from, int to) {
+        byte figure = board[from];
+        board[from] = Figure.EMPTY.figureCode;
+        byte capturedFigure = board[to];
+        board[to] = figure;
+        return capturedFigure;
     }
 
     public Figure getFigure(int i) {

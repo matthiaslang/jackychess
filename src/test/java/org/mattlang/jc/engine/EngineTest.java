@@ -2,7 +2,6 @@ package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -79,11 +78,13 @@ public class EngineTest extends TestCase {
         NegaMax negaMax = new NegaMax(eval);
         Move move = negaMax.search(board, 2, Color.BLACK);
 
+        System.out.println(board.toUniCodeStr());
+        
         // block chess with Rook:
         assertThat(move.toStr()).isEqualTo("f5a5");
         board.move(move);
 
-        System.out.println(board.toUniCodeStr());
+
     }
 
 }

@@ -9,7 +9,7 @@ public class MoveTest extends TestCase {
 
     @Test
     public void testMove() {
-        Move move = new Move("e2e4");
+        BasicMove move = new BasicMove("e2e4");
         Assert.assertEquals("e2e4", move.toStr());
     }
 }

@@ -2,7 +2,7 @@ package org.mattlang.jc.engine;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.EMPTY;
+import static org.mattlang.jc.board.Figure.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,13 @@ import org.mattlang.jc.board.*;
  * TSCP Implementation of move generator with some own modifications.
  */
 public class MoveGenerator {
-                /* Now we have the mailbox array, so called because it looks like a
+
+    public static final int[] ROCHADE_L_WHITE = { 0, 1, 2, 3, 4 };
+    public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
+    public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
+    public static final int[] ROCHADE_L_BLACK = { 56, 57, 58, 59, 60 };
+
+    /* Now we have the mailbox array, so called because it looks like a
    mailbox, at least according to Bob Hyatt. This is useful when we
    need to figure out what pieces can go where. Let's say we have a
    rook on square a4 (32) and we want to know if it can move one
@@ -64,12 +70,14 @@ public class MoveGenerator {
             { -11, -10, -9, -1, 1, 9, 10, 11 }  /* KING */
     };
 
+    int[] pawnCaptureOffset = { 11, 9 };
+
     /**
      * @param board current board
      * @param side  the side to move
      */
     public List<Move> generate(Board board, Color side) {
-        ArrayList<Move> moves = new ArrayList<>();
+        ArrayList<Move> moves = new ArrayList<>(60);
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
 
@@ -99,12 +107,38 @@ public class MoveGenerator {
                 }
             }
         }
+        generateRochade(board, side, moves);
         // todo rochade is missing, check test is missing (or move it to eval function..)
         // todo en passant is missing...
         return moves;
     }
 
-    int[] pawnCaptureOffset={11, 9};
+    private boolean checkPos(Board board, int[] pos, Figure... figures) {
+        for (int i = 0; i < pos.length; i++) {
+            Figure figure = board.getPos(pos[i]);
+            if (figures[i] != figure) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void generateRochade(Board board, Color side, ArrayList<Move> moves) {
+        switch (side) {
+        case WHITE:
+            if (checkPos(board, ROCHADE_L_WHITE, Rook, EMPTY, EMPTY, EMPTY, King)) {
+                moves.add(new RochadeMove(0, 3, 4, 2));
+            } else if (checkPos(board, ROCHADE_S_WHITE, King, EMPTY, EMPTY, Rook)) {
+                moves.add(new RochadeMove(4, 6, 7, 5));
+            }
+        case BLACK:
+            if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
+                moves.add(new RochadeMove(63, 61, 60, 62));
+            } else if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
+                moves.add(new RochadeMove(56, 59, 60, 58));
+            }
+        }
+    }
 
     private void genPawnMoves(Board board, ArrayList<Move> moves, int i, Figure figure) {
         boolean isOnBaseLine = false;
@@ -144,18 +178,17 @@ public class MoveGenerator {
         }
     }
 
-    private Move genMove(int from, int to, int capture) {
-        return new Move(from, to);
+    private BasicMove genMove(int from, int to, int capture) {
+        return new BasicMove(from, to);
     }
 
-    private Move genPawnMove(int from, int to, int capture, Figure pawn) {
+    private BasicMove genPawnMove(int from, int to, int capture, Figure pawn) {
         boolean isOnLastLine = false;
         if (pawn.color == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
-
         } else {
             isOnLastLine = to >= 0 && to <= 7;
         }
-        return new Move(from, to, isOnLastLine);
+        return isOnLastLine? new PawnPromotionMove(from, to) : new BasicMove(from, to);
     }
 }

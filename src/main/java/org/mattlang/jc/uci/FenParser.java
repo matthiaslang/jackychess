@@ -1,7 +1,7 @@
 package org.mattlang.jc.uci;
 
 import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.BasicMove;
 
 public class FenParser {
 
@@ -29,7 +29,7 @@ public class FenParser {
             if ("moves".equals(splitted[movesSection])) {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
-                    Move move = new Move(moveStr);
+                    BasicMove move = new BasicMove(moveStr);
                     board.move(move);
                 }
             }
