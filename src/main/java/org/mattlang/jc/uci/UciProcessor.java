@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.NegaMax;
-import org.mattlang.jc.engine.search.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 
 public class UciProcessor {
 

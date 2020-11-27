@@ -39,6 +39,8 @@ public class FenParser {
     }
 
     private BasicMove parseMove(String moveStr) {
+     // todo incoming pawn promotions do not work! ex.: a7a8q
+
         if ("e1g1".equals(moveStr)) {
             return MoveGenerator.ROCHADE_MOVE_SW;
         } else if ("e1c1".equals(moveStr)) {

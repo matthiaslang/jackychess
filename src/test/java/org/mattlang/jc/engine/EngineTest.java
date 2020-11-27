@@ -7,7 +7,8 @@ import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.NegaMax;
-import org.mattlang.jc.engine.search.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
+import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.uci.FenParser;
 
 import junit.framework.TestCase;
@@ -18,7 +19,7 @@ public class EngineTest extends TestCase {
     public void testNegMax() {
 
         // now starting engine:
-        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
+        Engine engine = new Engine(new NegaMaxAlphaBeta(new SimpleNegaMaxEval()));
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
@@ -54,7 +55,7 @@ public class EngineTest extends TestCase {
 
         System.out.println(board.toUniCodeStr());
 
-        NegaMax negaMax = new NegaMax(eval);
+        SearchMethod negaMax = new NegaMaxAlphaBeta(eval);
         Move move = negaMax.search(board, 2, Color.BLACK);
 
         // block with other figure:

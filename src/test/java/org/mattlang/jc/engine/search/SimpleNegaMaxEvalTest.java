@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.uci.FenParser;
 
 import junit.framework.TestCase;
