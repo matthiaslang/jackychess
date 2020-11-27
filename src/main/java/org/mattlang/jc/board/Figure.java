@@ -6,12 +6,12 @@ import static org.mattlang.jc.board.Color.WHITE;
 public enum Figure {
 
     EMPTY(FigureType.EMPTY, WHITE, '\u2001'),
-    Pawn(FigureType.Pawn, WHITE, '♙'),
-    Knight(FigureType.Knight, WHITE, '♘'),
-    Bishop(FigureType.Bishop, WHITE, '♗'),
-    Rook(FigureType.Rook, WHITE, '♖'),
-    Queen(FigureType.Queen, WHITE, '♕'),
-    King(FigureType.King, WHITE, '♔'),
+    W_Pawn(FigureType.Pawn, WHITE, '♙'),
+    W_Knight(FigureType.Knight, WHITE, '♘'),
+    W_Bishop(FigureType.Bishop, WHITE, '♗'),
+    W_Rook(FigureType.Rook, WHITE, '♖'),
+    W_Queen(FigureType.Queen, WHITE, '♕'),
+    W_King(FigureType.King, WHITE, '♔'),
 
     B_Pawn(FigureType.Pawn, BLACK, '♟'),
     B_Knight(FigureType.Knight, BLACK, '♞'),

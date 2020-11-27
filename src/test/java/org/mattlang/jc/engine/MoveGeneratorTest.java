@@ -40,7 +40,7 @@ public class MoveGeneratorTest extends TestCase {
         }
         System.out.println(board.toUniCodeStr());
 
-        assertThat(board.getFigure(parsePos("a8"))).isEqualTo(Figure.Queen);
+        assertThat(board.getFigure(parsePos("a8"))).isEqualTo(Figure.W_Queen);
         assertThat(board.getFigure(parsePos("a1"))).isEqualTo(Figure.B_Queen);
 
         // undoing:
@@ -69,7 +69,7 @@ public class MoveGeneratorTest extends TestCase {
 
         Move undo = board.move(a7PawnMove);
 
-        assertThat(board.getFigure(parsePos("b8"))).isEqualTo(Figure.Queen);
+        assertThat(board.getFigure(parsePos("b8"))).isEqualTo(Figure.W_Queen);
         // undoing:
         board.move(undo);
 

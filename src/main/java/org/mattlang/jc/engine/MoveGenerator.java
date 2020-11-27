@@ -131,9 +131,9 @@ public class MoveGenerator {
     private void generateRochade(Board board, Color side, ArrayList<Move> moves) {
         switch (side) {
         case WHITE:
-            if (checkPos(board, ROCHADE_L_WHITE, Rook, EMPTY, EMPTY, EMPTY, King)) {
+            if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
                 moves.add(ROCHADE_MOVE_LW);
-            } else if (checkPos(board, ROCHADE_S_WHITE, King, EMPTY, EMPTY, Rook)) {
+            } else if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
                 moves.add(ROCHADE_MOVE_SW);
             }
         case BLACK:

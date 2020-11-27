@@ -19,7 +19,7 @@ public class UndoPawnPromotionMove extends BasicMove {
         board.setPos(getFromIndex(), overriddenFig);
 
         Figure queen = board.getFigure(getToIndex());
-        Figure pawn = queen.color == Color.WHITE ? Figure.Pawn : Figure.B_Pawn;
+        Figure pawn = queen.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
         board.setPos(getToIndex(), pawn);
 
         return new PawnPromotionMove(getToIndex(), getFromIndex());
