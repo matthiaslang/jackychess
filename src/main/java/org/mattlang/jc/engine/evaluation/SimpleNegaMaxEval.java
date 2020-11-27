@@ -25,7 +25,7 @@ public class SimpleNegaMaxEval implements EvaluateFunction {
             }
         }
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
-        int score = 200000000 * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
+        int score = 2000000000 * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
                 900 * (counts[0][Queen.figureCode] - counts[1][Queen.figureCode]) * who2mov +
                 500 * (counts[0][Rook.figureCode] - counts[1][Rook.figureCode]) * who2mov +
                 300 * (counts[0][Bishop.figureCode] - counts[1][Bishop.figureCode]) * who2mov +

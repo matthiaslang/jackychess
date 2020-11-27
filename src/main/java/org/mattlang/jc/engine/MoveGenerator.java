@@ -98,10 +98,10 @@ public class MoveGenerator {
                             Figure targetN = board.getFigure(n);
                             if (targetN != EMPTY) {
                                 if (targetN.color == xside)
-                                    moves.add(genMove(i, n, 1)); /* capture from i to n */
+                                    moves.add(genMove(i, n, targetN)); /* capture from i to n */
                                 break;
                             }
-                            moves.add(genMove(i, n, 0)); /* quiet move from i to n */
+                            moves.add(genMove(i, n, null)); /* quiet move from i to n */
                             if (!slide[p.figureCode]) break; /* next direction */
                         }
                     }
@@ -160,12 +160,12 @@ public class MoveGenerator {
             Figure target = board.getFigure(n);
             if (target == EMPTY) {
                 // get double move from baseline:
-                moves.add(genPawnMove(i, n, 0, figure));
+                moves.add(genPawnMove(i, n, 0, figure, null));
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigure(n);
                     if (target == EMPTY) {
-                        moves.add(genPawnMove(i, n, 0, figure));
+                        moves.add(genPawnMove(i, n, 0, figure, null));
                     }
                 }
             }
@@ -177,23 +177,23 @@ public class MoveGenerator {
             if (n != -1) {
                 Figure target = board.getFigure(n);
                 if (target != EMPTY) {
-                    moves.add(genPawnMove(i, n, 1, figure));
+                    moves.add(genPawnMove(i, n, 1, figure, target));
                 }
             }
         }
     }
 
-    private BasicMove genMove(int from, int to, int capture) {
-        return new BasicMove(from, to);
+    private BasicMove genMove(int from, int to, Figure capturedFigure) {
+        return new BasicMove(from, to, capturedFigure);
     }
 
-    private BasicMove genPawnMove(int from, int to, int capture, Figure pawn) {
+    private BasicMove genPawnMove(int from, int to, int capture, Figure pawn, Figure capturedFigure) {
         boolean isOnLastLine = false;
         if (pawn.color == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
         } else {
             isOnLastLine = to >= 0 && to <= 7;
         }
-        return isOnLastLine? new PawnPromotionMove(from, to) : new BasicMove(from, to);
+        return isOnLastLine? new PawnPromotionMove(from, to, capturedFigure) : new BasicMove(from, to, capturedFigure);
     }
 }

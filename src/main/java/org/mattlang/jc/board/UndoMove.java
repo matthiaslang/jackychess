@@ -11,14 +11,14 @@ public class UndoMove extends BasicMove {
     public final byte overriddenFig;
 
     public UndoMove(int from, int to, byte overriddenFig) {
-        super(from, to);
+        super(from, to, null);
         this.overriddenFig = overriddenFig;
     }
 
     @Override
     public Move move(Board board) {
-        Move rslt = super.move(board);
+        super.move(board);
         board.setPos(getFromIndex(), overriddenFig);
-        return rslt;
+        return null;
     }
 }

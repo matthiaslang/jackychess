@@ -11,15 +11,19 @@ public class BasicMove implements Move {
 
     private int toIndex;
 
+
+    private Figure capturedFigure;
+
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
 
-    public BasicMove(int from, int to) {
+    public BasicMove(int from, int to, Figure capturedFigure) {
         this.fromIndex = from;
         this.toIndex = to;
+        this.capturedFigure = capturedFigure;
     }
 
     public int getFromIndex() {
@@ -60,4 +64,8 @@ public class BasicMove implements Move {
         return new UndoMove(getToIndex(), getFromIndex(), override);
     }
 
+    @Override
+    public Figure getCapturedFigure() {
+        return capturedFigure;
+    }
 }

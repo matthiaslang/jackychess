@@ -9,6 +9,7 @@ import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.LegalMoveGenerator;
 import org.mattlang.jc.engine.MoveGenerator;
 import org.mattlang.jc.engine.SearchMethod;
 
@@ -16,7 +17,7 @@ public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private MoveGenerator generator = new MoveGenerator();
+    private LegalMoveGenerator generator = new LegalMoveGenerator();
 
     // statistics
     private int nodesVisited = 0;

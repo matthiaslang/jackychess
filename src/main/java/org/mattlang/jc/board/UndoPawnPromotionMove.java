@@ -8,7 +8,7 @@ public class UndoPawnPromotionMove extends BasicMove {
     public final byte overriddenFig;
 
     public UndoPawnPromotionMove(int toIndex, int fromIndex, byte override) {
-        super(toIndex, fromIndex);
+        super(toIndex, fromIndex, null);
         this.overriddenFig = override;
     }
 
@@ -22,7 +22,7 @@ public class UndoPawnPromotionMove extends BasicMove {
         Figure pawn = queen.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
         board.setPos(getToIndex(), pawn);
 
-        return new PawnPromotionMove(getToIndex(), getFromIndex());
+        return null;
 
     }
 }

@@ -4,5 +4,8 @@ public interface Move {
 
     Move move(Board board);
 
+
+    Figure getCapturedFigure();
+
     String toStr();
 }

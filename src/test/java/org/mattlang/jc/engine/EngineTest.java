@@ -72,7 +72,7 @@ public class EngineTest extends TestCase {
 
         Board board = new Board();
         FenParser parser = new FenParser();
-        parser.setPosition("position fen kp6/1p6/8/5r2/8/Q7/8/4K3 b k - 2 17 ", board);
+        parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
 
         System.out.println(board.toUniCodeStr());
 
@@ -82,7 +82,7 @@ public class EngineTest extends TestCase {
         System.out.println(board.toUniCodeStr());
         
         // block chess with Rook:
-        assertThat(move.toStr()).isEqualTo("f5a5");
+        assertThat(move.toStr()).isEqualTo("g5a5");
         board.move(move);
 
 
