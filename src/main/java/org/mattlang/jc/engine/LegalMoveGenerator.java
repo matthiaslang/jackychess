@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.mattlang.jc.board.Board;
@@ -10,10 +12,26 @@ import org.mattlang.jc.board.Move;
 
 public class LegalMoveGenerator {
 
+    /**
+     * First simple try to order moves for alpha beta cut off relevace: "best" guessed moves should be
+     * processed first to early cut off. First try: sort by capture first moves:
+     */
+    private static final Comparator<Move> CMP = new Comparator<Move>() {
+
+        @Override
+        public int compare(Move o1, Move o2) {
+            int c1 = o1.getCapturedFigure() == null ? 0 : -o1.getCapturedFigure().figureCode;
+            int c2 = o2.getCapturedFigure() == null ? 0 : -o2.getCapturedFigure().figureCode;
+            return c1 - c2;
+        }
+    };
+
     public List<Move> generate(Board board, Color side) {
         MoveGenerator generator = new MoveGenerator();
         List<Move> moves = generator.generate(board, side);
-        moves = filterLegalMoves(board, moves, side == Color.WHITE? Color.BLACK: Color.WHITE);
+        moves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
+        // simple ordering by capture first, to be a bit bettr in alpha beta pruning
+        Collections.sort(moves, CMP);
         return moves;
     }
 
