@@ -88,4 +88,28 @@ public class EngineTest extends TestCase {
 
     }
 
+
+    @Test
+    public void testProblemNoBestMoveFound() {
+
+        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
+
+        Board board = new Board();
+        board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
+
+        System.out.println(board.toUniCodeStr());
+
+        NegaMaxAlphaBeta negaMax = new NegaMaxAlphaBeta(eval);
+        Move move = negaMax.search(board, 4, Color.BLACK);
+
+        System.out.println(board.toUniCodeStr());
+
+        // capture knight:
+        assertThat(move.toStr()).isEqualTo("f8d6");
+        board.move(move);
+
+
+
+
+    }
 }
