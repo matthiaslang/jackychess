@@ -11,7 +11,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.LegalMoveGenerator;
-import org.mattlang.jc.engine.MoveGenerator;
 import org.mattlang.jc.engine.SearchMethod;
 
 public class NegaMaxAlphaBeta implements SearchMethod {
@@ -22,6 +21,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     // statistics
     private int nodesVisited = 0;
+    private int nodes;
     private Move savedMove;
 
     private int targetDepth;
@@ -35,14 +35,16 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         assert depth > 0;
         reset();
         targetDepth = depth;
-        int scoreResult = negaMaximize(currBoard, depth, color, -10000000, +10000000);
-        Logger.info(depth, nodesVisited, scoreResult/10000);
-        Logger.log("nodes searched: %d alpha beta cutoff: %d score: %d", nodesVisited, cutOff, scoreResult);
+        int scoreResult = negaMaximize(currBoard, depth, color, -1000000000, +1000000000);
+        Logger.info(depth, nodesVisited, scoreResult / 10000);
+        Logger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
+                scoreResult);
         return savedMove;
     }
 
     private void reset() {
         nodesVisited = 0;
+        nodes = 0;
         cutOff = 0;
         savedMove = null;
     }
@@ -54,6 +56,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             return evaluate.eval(currBoard, color);
 
         List<Move> moves = generator.generate(currBoard, color);
+        nodes += moves.size();
         int max = alpha;
         for (Move move : moves) {
             Move undoingMove = currBoard.move(move);
