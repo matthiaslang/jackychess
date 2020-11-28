@@ -36,7 +36,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         reset();
         targetDepth = depth;
         int scoreResult = negaMaximize(currBoard, depth, color, -1000000000, +1000000000);
-        Logger.info(depth, nodesVisited, scoreResult / 10000);
+        Logger.info(depth, nodesVisited, scoreResult);
         Logger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
                 scoreResult);
         return savedMove;
