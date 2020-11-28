@@ -6,10 +6,11 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 
 public class UciProcessor {
 
-    private Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
+    private Engine engine = new Engine(new NegaMaxAlphaBeta(new SimpleNegaMaxEval()));
 
     private boolean finished = false;
 

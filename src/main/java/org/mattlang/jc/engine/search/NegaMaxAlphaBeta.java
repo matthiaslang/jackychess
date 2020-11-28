@@ -5,6 +5,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.List;
 
+import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -24,6 +25,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     private Move savedMove;
 
     private int targetDepth;
+    private int cutOff;
 
     public NegaMaxAlphaBeta(EvaluateFunction evaluate) {
         this.evaluate = evaluate;
@@ -34,11 +36,14 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         reset();
         targetDepth = depth;
         int scoreResult = negaMaximize(currBoard, depth, color, -10000000, +10000000);
+        Logger.info(depth, nodesVisited, scoreResult/10000);
+        Logger.log("nodes searched: %d alpha beta cutoff: %d score: %d", nodesVisited, cutOff, scoreResult);
         return savedMove;
     }
 
     private void reset() {
         nodesVisited = 0;
+        cutOff = 0;
         savedMove = null;
     }
 
@@ -59,6 +64,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
                 if (depth == targetDepth)
                     savedMove = move;
                 if (max >= beta) {
+                    cutOff++;
                     break;
                 }
             }
