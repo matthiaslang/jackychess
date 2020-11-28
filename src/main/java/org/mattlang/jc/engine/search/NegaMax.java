@@ -8,10 +8,7 @@ import java.util.List;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.LegalMoveGenerator;
-import org.mattlang.jc.engine.MoveGenerator;
-import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.*;
 
 public class NegaMax implements SearchMethod {
 
@@ -51,16 +48,17 @@ public class NegaMax implements SearchMethod {
     private ScoreResult negaMaximize(Board currBoard, int depth, Color color) {
         Move bestmove = null;
 
-        List<Move> moves = generator.generate(currBoard, color);
+        MoveList moves = generator.generate(currBoard, color);
         int max = Integer.MIN_VALUE;
-        for (Move move : moves) {
-            Move undoingMove = currBoard.move(move);
+        for (MoveCursor moveCursor : moves) {
+
+            moveCursor.move(currBoard);
             int score = -negaMax(currBoard, depth - 1, color == WHITE ? BLACK : WHITE);
             if (score > max) {
                 max = score;
-                bestmove = move;
+                bestmove = moveCursor.getMove();
             }
-            currBoard.move(undoingMove);
+            moveCursor.undoMove(currBoard);
         }
         return new ScoreResult(bestmove, max);
     }

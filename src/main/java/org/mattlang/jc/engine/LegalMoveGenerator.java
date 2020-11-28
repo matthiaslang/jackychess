@@ -26,12 +26,12 @@ public class LegalMoveGenerator {
         }
     };
 
-    public List<Move> generate(Board board, Color side) {
+    public MoveList generate(Board board, Color side) {
         MoveGenerator generator = new MoveGenerator();
-        List<Move> moves = generator.generate(board, side);
-        moves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
+        BasicMoveList moves = (BasicMoveList) generator.generate(board, side);
+        moves.setMoves(filterLegalMoves(board, moves.getMoves(), side == Color.WHITE ? Color.BLACK : Color.WHITE));
         // simple ordering by capture first, to be a bit bettr in alpha beta pruning
-        Collections.sort(moves, CMP);
+        Collections.sort(moves.getMoves(), CMP);
         return moves;
     }
 
@@ -43,20 +43,20 @@ public class LegalMoveGenerator {
         for (Move move : moves) {
             Move undo = currBoard.move(move);
             MoveGenerator generator = new MoveGenerator();
-            List<Move> responseMoves = generator.generate(currBoard, color);
+            MoveList responseMoves = generator.generate(currBoard, color);
             currBoard.move(undo);
 
-            if (!containsTarget(responseMoves, king)){
-                 legals.add(move)                           ;
+            if (!containsTarget(responseMoves, king)) {
+                legals.add(move);
             }
 
         }
         return legals;
     }
 
-    private boolean containsTarget(List<Move> moves, Figure figure) {
-        for (Move move : moves) {
-            if (figure == move.getCapturedFigure()){
+    private boolean containsTarget(MoveList moves, Figure figure) {
+        for (Move move : ((BasicMoveList) moves).getMoves()) {
+            if (figure == move.getCapturedFigure()) {
                 return true;
             }
         }

@@ -81,8 +81,8 @@ public class MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    public List<Move> generate(Board board, Color side) {
-        ArrayList<Move> moves = new ArrayList<>(60);
+    public MoveList generate(Board board, Color side) {
+        MoveList moves = new BasicMoveList();
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
 
@@ -98,10 +98,10 @@ public class MoveGenerator {
                             Figure targetN = board.getFigure(n);
                             if (targetN != EMPTY) {
                                 if (targetN.color == xside)
-                                    moves.add(genMove(i, n, targetN)); /* capture from i to n */
+                                    moves.genMove(i, n, targetN); /* capture from i to n */
                                 break;
                             }
-                            moves.add(genMove(i, n, null)); /* quiet move from i to n */
+                            moves.genMove(i, n, null); /* quiet move from i to n */
                             if (!slide[p.figureCode]) break; /* next direction */
                         }
                     }
@@ -128,24 +128,24 @@ public class MoveGenerator {
         return true;
     }
 
-    private void generateRochade(Board board, Color side, ArrayList<Move> moves) {
+    private void generateRochade(Board board, Color side, MoveList moves) {
         switch (side) {
         case WHITE:
             if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
-                moves.add(ROCHADE_MOVE_LW);
+                moves.addRochadeLongWhite();
             } else if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
-                moves.add(ROCHADE_MOVE_SW);
+                moves.addRochadeShortWhite();
             }
         case BLACK:
             if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                moves.add(ROCHADE_MOVE_SB);
+                moves.addRochadeShortBlack();
             } else if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                moves.add(ROCHADE_MOVE_LB);
+                moves.addRochadeLongBlack();
             }
         }
     }
 
-    private void genPawnMoves(Board board, ArrayList<Move> moves, int i, Figure figure) {
+    private void genPawnMoves(Board board, MoveList moves, int i, Figure figure) {
         boolean isOnBaseLine = false;
         if (figure.color == WHITE) {
             isOnBaseLine = i >= 8 && i <= 15;
@@ -160,12 +160,12 @@ public class MoveGenerator {
             Figure target = board.getFigure(n);
             if (target == EMPTY) {
                 // get double move from baseline:
-                moves.add(genPawnMove(i, n, 0, figure, null));
+                moves.genPawnMove(i, n, figure, null);
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigure(n);
                     if (target == EMPTY) {
-                        moves.add(genPawnMove(i, n, 0, figure, null));
+                        moves.genPawnMove(i, n, figure, null);
                     }
                 }
             }
@@ -177,23 +177,11 @@ public class MoveGenerator {
             if (n != -1) {
                 Figure target = board.getFigure(n);
                 if (target != EMPTY) {
-                    moves.add(genPawnMove(i, n, 1, figure, target));
+                    moves.genPawnMove(i, n, figure, target);
                 }
             }
         }
     }
 
-    private BasicMove genMove(int from, int to, Figure capturedFigure) {
-        return new BasicMove(from, to, capturedFigure);
-    }
 
-    private BasicMove genPawnMove(int from, int to, int capture, Figure pawn, Figure capturedFigure) {
-        boolean isOnLastLine = false;
-        if (pawn.color == WHITE) {
-            isOnLastLine = to >= 56 && to <= 63;
-        } else {
-            isOnLastLine = to >= 0 && to <= 7;
-        }
-        return isOnLastLine? new PawnPromotionMove(from, to, capturedFigure) : new BasicMove(from, to, capturedFigure);
-    }
 }

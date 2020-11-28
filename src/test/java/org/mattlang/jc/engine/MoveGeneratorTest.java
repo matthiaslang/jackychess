@@ -26,16 +26,16 @@ public class MoveGeneratorTest extends TestCase {
         System.out.println(board.toUniCodeStr());
 
         MoveGenerator generator = new MoveGenerator();
-        List<Move> whiteMoves = generator.generate(board, WHITE);
+        MoveList whiteMoves = generator.generate(board, WHITE);
 
         MoveGenerator generator2 = new MoveGenerator();
-        List<Move> blackMoves = generator2.generate(board, BLACK);
+        MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<Move> undoes = new ArrayList<>();
-        for (Move move : whiteMoves) {
+        for (Move move : ((BasicMoveList)whiteMoves).getMoves()) {
             undoes.add(board.move(move));
         }
-        for (Move move : blackMoves) {
+        for (Move move : ((BasicMoveList)blackMoves).getMoves()) {
             undoes.add(board.move(move));
         }
         System.out.println(board.toUniCodeStr());
@@ -63,9 +63,9 @@ public class MoveGeneratorTest extends TestCase {
         System.out.println(board.toUniCodeStr());
 
         MoveGenerator generator = new MoveGenerator();
-        List<Move> whiteMoves = generator.generate(board, WHITE);
+        MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
-        Move a7PawnMove = whiteMoves.stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
+        Move a7PawnMove = ((BasicMoveList)whiteMoves).getMoves().stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
 
         Move undo = board.move(a7PawnMove);
 
@@ -78,8 +78,8 @@ public class MoveGeneratorTest extends TestCase {
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
         MoveGenerator generator2 = new MoveGenerator();
-        List<Move> blackMoves = generator2.generate(board, BLACK);
-        Move a2PawnMove = blackMoves.stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
+        MoveList blackMoves = generator2.generate(board, BLACK);
+        Move a2PawnMove = ((BasicMoveList)blackMoves).getMoves().stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
         undo = board.move(a2PawnMove);
 
@@ -96,9 +96,9 @@ public class MoveGeneratorTest extends TestCase {
         board.setStartPosition();
 
         MoveGenerator moveGenerator = new MoveGenerator();
-        List<Move> moves = moveGenerator.generate(board, WHITE);
+        BasicMoveList moves = (BasicMoveList)moveGenerator.generate(board, WHITE);
 
-        assertThat(moves)
+        assertThat(moves.getMoves())
                 .flatExtracting((Function<? super Move, ?>) m -> m.toStr())
                 .containsExactlyInAnyOrder(
                         "b1a3",
@@ -132,9 +132,9 @@ public class MoveGeneratorTest extends TestCase {
         board.setFenPosition(fen);
 
         MoveGenerator moveGenerator = new MoveGenerator();
-        List<Move> moves = moveGenerator.generate(board, WHITE);
+        BasicMoveList moves = (BasicMoveList) moveGenerator.generate(board, WHITE);
         // find white rochade moves:
-        List<Move> rochMoves = moves.stream().filter(m -> m instanceof RochadeMove).collect(toList());
+        List<Move> rochMoves = moves.getMoves().stream().filter(m -> m instanceof RochadeMove).collect(toList());
         assertThat(rochMoves.size()).isEqualTo(2);
 
         board.move(rochMoves.get(0));

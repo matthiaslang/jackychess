@@ -2,6 +2,8 @@ package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -10,6 +12,7 @@ import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.uci.FenParser;
+import org.mattlang.jc.uci.UCI;
 
 import junit.framework.TestCase;
 
@@ -45,8 +48,8 @@ public class EngineTest extends TestCase {
      * king as a "very bad" value, therefore minimax should always get us out of of a chess situation.
      */
     @Test
-    public void testCheckSituation() {
-
+    public void testCheckSituation() throws IOException {
+        UCI.instance.attachStreams(System.in, System.out);
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
         Board board = new Board();

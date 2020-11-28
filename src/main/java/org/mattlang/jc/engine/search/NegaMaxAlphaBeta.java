@@ -3,15 +3,11 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
-import java.util.List;
-
 import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.LegalMoveGenerator;
-import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.*;
 
 public class NegaMaxAlphaBeta implements SearchMethod {
 
@@ -55,17 +51,17 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         if (depth == 0)
             return evaluate.eval(currBoard, color);
 
-        List<Move> moves = generator.generate(currBoard, color);
+        MoveList moves = generator.generate(currBoard, color);
         nodes += moves.size();
         int max = alpha;
-        for (Move move : moves) {
-            Move undoingMove = currBoard.move(move);
+        for (MoveCursor moveCursor : moves) {
+            moveCursor.move(currBoard);
             int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
-            currBoard.move(undoingMove);
+            moveCursor.undoMove(currBoard);
             if (score > max) {
                 max = score;
                 if (depth == targetDepth)
-                    savedMove = move;
+                    savedMove = moveCursor.getMove();
                 if (max >= beta) {
                     cutOff++;
                     break;
