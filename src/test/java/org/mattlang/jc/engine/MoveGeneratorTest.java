@@ -4,7 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.BasicMove.parsePos;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.util.ArrayList;
 import java.util.List;

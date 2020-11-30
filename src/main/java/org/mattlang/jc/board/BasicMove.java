@@ -1,5 +1,8 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.IndexConversion.convert;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
+
 /**
  * Represents a move on the board.
  *
@@ -38,24 +41,9 @@ public class BasicMove implements Move {
         return convert(fromIndex) + convert(toIndex);
     }
 
-    private String convert(int index) {
-        int x = index % 8;
-        int y = index / 8;
-        StringBuilder b = new StringBuilder();
-        b.append((char) ('a' + x));
-        b.append((char) ('0' + y + 1));
-        return b.toString();
-    }
-
     @Override
     public String toString() {
         return toStr();
-    }
-
-    public static int parsePos(String pos) {
-        int x = pos.charAt(0) - 'a';
-        int y = pos.charAt(1) - '0' - 1;
-        return y * 8 + x;
     }
 
     @Override

@@ -73,13 +73,4 @@ public class BasicMoveList implements MoveList {
         return new BasicMoveListIterator(this);
     }
 
-    @Override
-    public void forEach(Consumer<? super MoveCursor> action) {
-
-    }
-
-    @Override
-    public Spliterator<MoveCursor> spliterator() {
-        return null;
-    }
 }
