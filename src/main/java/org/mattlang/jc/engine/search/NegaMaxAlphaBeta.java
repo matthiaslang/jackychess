@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -22,6 +23,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     private int targetDepth;
     private int cutOff;
+
+    public NegaMaxAlphaBeta() {
+        this.evaluate = Factory.createEvaluateFunction();
+    }
 
     public NegaMaxAlphaBeta(EvaluateFunction evaluate) {
         this.evaluate = evaluate;

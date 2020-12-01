@@ -1,8 +1,9 @@
 package org.mattlang.jc.engine;
 
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.BasicMove;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.BasicMove;
 import org.mattlang.jc.board.Move;
 
 public class Engine {
@@ -10,6 +11,10 @@ public class Engine {
     private Board board = new Board();
 
     private SearchMethod searchMethod;
+
+    public Engine() {
+        this.searchMethod = Factory.createSearchMethod();
+    }
 
     public Engine(SearchMethod searchMethod) {
         this.searchMethod = searchMethod;
