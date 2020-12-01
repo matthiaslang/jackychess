@@ -5,17 +5,15 @@ import static org.mattlang.jc.board.Color.WHITE;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 import org.mattlang.jc.board.*;
 
 public class BasicMoveList implements MoveList {
 
-    public static final RochadeMove ROCHADE_MOVE_LW = new RochadeMove(0, 3, 4, 2);
+    public static final RochadeMove ROCHADE_MOVE_LW = new RochadeMove(4, 2, 0, 3);
     public static final RochadeMove ROCHADE_MOVE_SW = new RochadeMove(4, 6, 7, 5);
-    public static final RochadeMove ROCHADE_MOVE_SB = new RochadeMove(63, 61, 60, 62);
-    public static final RochadeMove ROCHADE_MOVE_LB = new RochadeMove(56, 59, 60, 58);
+    public static final RochadeMove ROCHADE_MOVE_SB = new RochadeMove(60, 62, 63, 61);
+    public static final RochadeMove ROCHADE_MOVE_LB = new RochadeMove(60, 58, 56, 59);
 
     private List<Move> moves = new ArrayList<>(60);
 

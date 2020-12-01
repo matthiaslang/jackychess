@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.compactmovelist;
 
+import static org.mattlang.jc.board.IndexConversion.convert;
+
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
@@ -8,6 +10,7 @@ public class CompactMove implements Move {
 
     private byte[] move;
     private Figure capturedFigure = null;
+    private boolean undoing;
 
     public CompactMove(byte[] move) {
         this.move = move;
@@ -16,11 +19,21 @@ public class CompactMove implements Move {
         }
     }
 
+    public CompactMove(byte[] move, boolean undoing) {
+        this.move = move;
+        this.undoing = undoing;
+    }
+
     @Override
     public Move move(Board board) {
-        CompactMoveList.move(board, move);
-        // undoes not support and not necessary at that level...
-        return null;
+        if (undoing) {
+            CompactMoveList.undoMove(board, move);
+            return new CompactMove(move);
+        } else {
+            CompactMoveList.move(board, move);
+            // create also an undo move to fullfill interface:
+            return new CompactMove(move, true);
+        }
     }
 
     @Override
@@ -30,6 +43,6 @@ public class CompactMove implements Move {
 
     @Override
     public String toStr() {
-        return null;
+        return convert(move[CompactMoveList.IDX_FROM]) + convert(move[CompactMoveList.IDX_TO]);
     }
 }

@@ -25,7 +25,7 @@ public class CompactMoveList implements MoveList {
     private static final byte PAWN_MOVE = 32;
     private static final byte PAWN_PROMOTION = 64;
 
-    protected byte[][] movelist = new byte[4][60];
+    protected byte[][] movelist = new byte[60][4];
 
     public static final int IDX_FROM = 0;
     public static final int IDX_TO = 1;
@@ -36,22 +36,22 @@ public class CompactMoveList implements MoveList {
 
     @Override
     public void genMove(int from, int to, Figure capturedFigure) {
-        movelist[IDX_FROM][size] = (byte) from;
-        movelist[IDX_TO][size] = (byte) to;
+        movelist[size][IDX_FROM] = (byte) from;
+        movelist[size][IDX_TO] = (byte) to;
         if (capturedFigure != null) {
-            movelist[IDX_CAPTURE][size] = capturedFigure.figureCode;
+            movelist[size][IDX_CAPTURE] = capturedFigure.figureCode;
         }
         size++;
     }
 
     @Override
     public void genPawnMove(int from, int to, Figure pawn, Figure capturedFigure) {
-        movelist[IDX_FROM][size] = (byte) from;
-        movelist[IDX_TO][size] = (byte) to;
+        movelist[size][IDX_FROM] = (byte) from;
+        movelist[size][IDX_TO] = (byte) to;
         if (capturedFigure != null) {
-            movelist[IDX_CAPTURE][size] = capturedFigure.figureCode;
+            movelist[size][IDX_CAPTURE] = capturedFigure.figureCode;
         }
-        movelist[IDX_SPECIAL][size] = PAWN_MOVE;
+        movelist[size][IDX_SPECIAL] = PAWN_MOVE;
         boolean isOnLastLine = false;
         if (pawn.color == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
@@ -59,7 +59,7 @@ public class CompactMoveList implements MoveList {
             isOnLastLine = to >= 0 && to <= 7;
         }
         if (isOnLastLine) {
-            movelist[IDX_SPECIAL][size] |= PAWN_PROMOTION;
+            movelist[size][IDX_SPECIAL] |= PAWN_PROMOTION;
         }
 
         size++;
@@ -83,36 +83,36 @@ public class CompactMoveList implements MoveList {
 
     @Override
     public void addRochadeLongWhite() {
-        movelist[IDX_FROM][size] = ROCHADE_LONG_WHITE[IDX_FROM];
-        movelist[IDX_TO][size] = ROCHADE_LONG_WHITE[IDX_TO];
-        movelist[IDX_SPECIAL][size] = ROCHADE_MOVE;
+        movelist[size][IDX_FROM] = ROCHADE_LONG_WHITE[IDX_FROM];
+        movelist[size][IDX_TO] = ROCHADE_LONG_WHITE[IDX_TO];
+        movelist[size][IDX_SPECIAL] = ROCHADE_MOVE;
 
         size++;
     }
 
     @Override
     public void addRochadeShortWhite() {
-        movelist[IDX_FROM][size] = ROCHADE_SHORT_WHITE[IDX_FROM];
-        movelist[IDX_TO][size] = ROCHADE_SHORT_WHITE[IDX_TO];
-        movelist[IDX_SPECIAL][size] = ROCHADE_MOVE;
+        movelist[size][IDX_FROM] = ROCHADE_SHORT_WHITE[IDX_FROM];
+        movelist[size][IDX_TO] = ROCHADE_SHORT_WHITE[IDX_TO];
+        movelist[size][IDX_SPECIAL] = ROCHADE_MOVE;
         size++;
 
     }
 
     @Override
     public void addRochadeShortBlack() {
-        movelist[IDX_FROM][size] = ROCHADE_SHORT_BLACK[IDX_FROM];
-        movelist[IDX_TO][size] = ROCHADE_SHORT_BLACK[IDX_TO];
-        movelist[IDX_SPECIAL][size] = ROCHADE_MOVE;
+        movelist[size][IDX_FROM] = ROCHADE_SHORT_BLACK[IDX_FROM];
+        movelist[size][IDX_TO] = ROCHADE_SHORT_BLACK[IDX_TO];
+        movelist[size][IDX_SPECIAL] = ROCHADE_MOVE;
         size++;
 
     }
 
     @Override
     public void addRochadeLongBlack() {
-        movelist[IDX_FROM][size] = ROCHADE_LONG_BLACK[IDX_FROM];
-        movelist[IDX_TO][size] = ROCHADE_LONG_BLACK[IDX_TO];
-        movelist[IDX_SPECIAL][size] = ROCHADE_MOVE;
+        movelist[size][IDX_FROM] = ROCHADE_LONG_BLACK[IDX_FROM];
+        movelist[size][IDX_TO] = ROCHADE_LONG_BLACK[IDX_TO];
+        movelist[size][IDX_SPECIAL] = ROCHADE_MOVE;
         size++;
     }
 
@@ -140,25 +140,31 @@ public class CompactMoveList implements MoveList {
         } else if ((moveEntry[IDX_SPECIAL] & PAWN_PROMOTION) != 0) {
             Figure pawn = board.getPos(to);
             Figure queen = pawn.color == Color.WHITE ? Figure.W_Queen : Figure.B_Queen;
-
             board.setPos(to, queen);
         }
     }
 
     public void undoMove(Board board, int index) {
-        byte from = movelist[IDX_FROM][index];
-        byte to = movelist[IDX_TO][index];
+        undoMove(board, movelist[index]);
+    }
+
+    public static void undoMove(Board board, byte[] moveEntry) {
+        byte from = moveEntry[IDX_FROM];
+        byte to = moveEntry[IDX_TO];
         board.move(to, from);
-        if ((movelist[IDX_SPECIAL][index] & ROCHADE_MOVE) != 0) {
+        if (moveEntry[IDX_CAPTURE] != 0) {
+            board.setPos(to, moveEntry[IDX_CAPTURE]);
+        }
+
+        if ((moveEntry[IDX_SPECIAL] & ROCHADE_MOVE) != 0) {
             byte[] rochade = findRochade(from, to);
             board.move(rochade[3], rochade[2]);
-        } else if ((movelist[IDX_SPECIAL][index] & PAWN_PROMOTION) != 0) {
+        } else if ((moveEntry[IDX_SPECIAL] & PAWN_PROMOTION) != 0) {
 
             Figure queen = board.getFigure(from);
             Figure pawn = queen.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
             board.setPos(from, pawn);
 
-            board.setPos(to, queen);
         }
     }
 }

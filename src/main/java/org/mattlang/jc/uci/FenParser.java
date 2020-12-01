@@ -1,9 +1,10 @@
 package org.mattlang.jc.uci;
 
+import static org.mattlang.jc.engine.BasicMoveList.*;
+
 import org.mattlang.jc.board.BasicMove;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.MoveGenerator;
 
 public class FenParser {
 
@@ -40,15 +41,15 @@ public class FenParser {
 
     private BasicMove parseMove(String moveStr) {
      // todo incoming pawn promotions do not work! ex.: a7a8q
-
+        // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr)) {
-            return MoveGenerator.ROCHADE_MOVE_SW;
+            return ROCHADE_MOVE_SW;
         } else if ("e1c1".equals(moveStr)) {
-            return MoveGenerator.ROCHADE_MOVE_LW;
+            return ROCHADE_MOVE_LW;
         } else if ("e8g8".equals(moveStr)) {
-            return MoveGenerator.ROCHADE_MOVE_SB;
-        } else if ("e8g8".equals(moveStr)) {
-            return MoveGenerator.ROCHADE_MOVE_LB;
+            return ROCHADE_MOVE_SB;
+        } else if ("e8c8".equals(moveStr)) {
+            return ROCHADE_MOVE_LB;
         }
 
         return new BasicMove(moveStr);

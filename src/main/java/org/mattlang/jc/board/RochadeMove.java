@@ -14,7 +14,7 @@ public class RochadeMove extends BasicMove {
         super.move(board);
 
         board.move(second.getFromIndex(), second.getToIndex());
-        return new RochadeUndoMove(getToIndex(), getFromIndex(), second.getFromIndex(), second
-                .getToIndex());
+        return new RochadeUndoMove(getToIndex(), getFromIndex(),
+                second.getToIndex(), second.getFromIndex());
     }
 }

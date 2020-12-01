@@ -4,10 +4,11 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureType;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -19,11 +20,6 @@ public class MoveGenerator {
     public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
     public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
     public static final int[] ROCHADE_L_BLACK = { 56, 57, 58, 59, 60 };
-
-    public static final RochadeMove ROCHADE_MOVE_LW = new RochadeMove(0, 3, 4, 2);
-    public static final RochadeMove ROCHADE_MOVE_SW = new RochadeMove(4, 6, 7, 5);
-    public static final RochadeMove ROCHADE_MOVE_SB = new RochadeMove(63, 61, 60, 62);
-    public static final RochadeMove ROCHADE_MOVE_LB = new RochadeMove(56, 59, 60, 58);
 
     /* Now we have the mailbox array, so called because it looks like a
    mailbox, at least according to Bob Hyatt. This is useful when we
@@ -82,7 +78,7 @@ public class MoveGenerator {
      * @param side  the side to move
      */
     public MoveList generate(Board board, Color side) {
-        MoveList moves = new BasicMoveList();
+        MoveList moves = Factory.createMoveList();
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
 
@@ -113,7 +109,6 @@ public class MoveGenerator {
             }
         }
         generateRochade(board, side, moves);
-        // todo rochade is missing, check test is missing (or move it to eval function..)
         // todo en passant is missing...
         return moves;
     }
@@ -133,15 +128,19 @@ public class MoveGenerator {
         case WHITE:
             if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
                 moves.addRochadeLongWhite();
-            } else if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
+            }
+            if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
                 moves.addRochadeShortWhite();
             }
+            break;
         case BLACK:
             if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
                 moves.addRochadeShortBlack();
-            } else if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
+            }
+            if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
                 moves.addRochadeLongBlack();
             }
+            break;
         }
     }
 
