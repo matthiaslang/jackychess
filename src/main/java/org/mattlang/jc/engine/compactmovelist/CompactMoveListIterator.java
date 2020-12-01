@@ -2,33 +2,20 @@ package org.mattlang.jc.engine.compactmovelist;
 
 import java.util.Iterator;
 
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 
+/**
+ * Lightweight Iterator which does not create Objects for each iterated move by using a
+ * "cursor" Object for all iterated moves.
+ * Therefore it needs some special care in usage not to save/reuse in loops the cursor object.
+ */
 public class CompactMoveListIterator implements Iterator<MoveCursor> {
 
-    private final CompactMoveList moveList;
+    final CompactMoveList moveList;
 
-    private int index = -1;
+    int index = -1;
 
-    private MoveCursor curr = new MoveCursor() {
-
-        @Override
-        public void move(Board board) {
-            moveList.move(board, index);
-        }
-
-        @Override
-        public Move getMove() {
-            return new CompactMove(moveList.movelist[index]);
-        }
-
-        @Override
-        public void undoMove(Board board) {
-            moveList.undoMove(board, index);
-        }
-    };
+    private MoveCursor curr = new CompactMoveCursor(this);
 
     public CompactMoveListIterator(CompactMoveList moveList) {
         this.moveList = moveList;

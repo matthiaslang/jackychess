@@ -3,6 +3,7 @@ package org.mattlang.jc.engine;
 import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +53,36 @@ public class BasicMoveList implements MoveList {
     public void addRochadeLongBlack() {
         moves.add(ROCHADE_MOVE_LB);
     }
+
+    @Override
+    public void addMove(MoveCursor moveCursor) {
+        moves.add(moveCursor.getMove());
+    }
+
+    @Override
+    public boolean capturesFigure(Figure figure) {
+        for (Move move : moves) {
+            if (figure == move.getCapturedFigure()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void sortByCapture() {
+        moves.sort(CMP);
+    }
+
+    private static final Comparator<Move> CMP = new Comparator<Move>() {
+
+        @Override
+        public int compare(Move o1, Move o2) {
+            int c1 = o1.getCapturedFigure() == null ? 0 : -o1.getCapturedFigure().figureCode;
+            int c2 = o2.getCapturedFigure() == null ? 0 : -o2.getCapturedFigure().figureCode;
+            return c1 - c2;
+        }
+    };
 
     @Override
     public int size() {

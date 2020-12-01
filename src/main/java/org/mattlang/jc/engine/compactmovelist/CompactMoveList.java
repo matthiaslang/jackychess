@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.compactmovelist;
 
 import static org.mattlang.jc.board.Color.WHITE;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.mattlang.jc.board.Board;
@@ -18,6 +20,9 @@ import org.mattlang.jc.engine.MoveList;
  * 1 byte: to
  * 3 byte: capturedFigure
  * 4 byte: special markers e.g. rochade
+ *
+ * Surprisingly it seems not so performant as the BasicMovelist due to the fact,
+ * that it needs much time to initialize the movelist bytearray... (see LegalMoveCacheTest)
  */
 public class CompactMoveList implements MoveList {
 
@@ -117,6 +122,28 @@ public class CompactMoveList implements MoveList {
     }
 
     @Override
+    public void addMove(MoveCursor moveCursor) {
+        CompactMoveCursor compactMoveCursor = (CompactMoveCursor) moveCursor;
+        byte[] src = compactMoveCursor.iterator.moveList.movelist[compactMoveCursor.iterator.index];
+        movelist[size][IDX_FROM] = src[IDX_FROM];
+        movelist[size][IDX_TO] = src[IDX_TO];
+        movelist[size][IDX_CAPTURE] = src[IDX_CAPTURE];
+        movelist[size][IDX_SPECIAL] = src[IDX_SPECIAL];
+        size++;
+    }
+
+    @Override
+    public boolean capturesFigure(Figure figure) {
+        byte figureCode = figure.figureCode;
+        for (int i = 0; i < size; i++) {
+            if (movelist[i][IDX_CAPTURE] == figureCode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public int size() {
         return size;
     }
@@ -166,5 +193,15 @@ public class CompactMoveList implements MoveList {
             board.setPos(from, pawn);
 
         }
+    }
+
+    public void sortByCapture() {
+        Arrays.sort(movelist, new Comparator<byte[]>() {
+
+            @Override
+            public int compare(byte[] m1, byte[] m2) {
+                return m2[IDX_CAPTURE] - m1[IDX_CAPTURE];
+            }
+        });
     }
 }
