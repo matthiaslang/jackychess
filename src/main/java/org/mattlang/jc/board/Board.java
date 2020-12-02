@@ -3,6 +3,9 @@ package org.mattlang.jc.board;
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.mattlang.jc.uci.FenParser;
 
 /**
@@ -114,35 +117,6 @@ public class Board {
     public Move move(Move move) {
         // todo validations?
         return move.move(this);
-        /*
-        byte figure = board[move.getFromIndex()];
-        byte override = move(move.getFromIndex(), move.getToIndex());
-        if (move.isPawnPromotion()) {
-            Figure pawn = Figure.getFigureByCode(figure);
-            Figure queen = pawn.color == Color.WHITE ? Figure.Queen : Figure.B_Queen;
-            board[move.getToIndex()] = queen.figureCode;
-        }
-
-        if (move instanceof UndoMove) {
-            UndoMove undoMove = (UndoMove) move;
-            board[move.getFromIndex()] = undoMove.overriddenFig;
-            if (undoMove.undoPawnPromotion) {
-                Figure queen = Figure.getFigureByCode(board[move.getToIndex()]);
-                Figure pawn = queen.color == Color.WHITE ? Figure.Pawn : Figure.B_Pawn;
-                board[move.getToIndex()] = pawn.figureCode;
-            }
-        }
-
-        if (move instanceof RochadeMove) {
-            RochadeMove rochadeMove = (RochadeMove) move;
-            Move second = rochadeMove.getSecond();
-            move(second.getFromIndex(), second.getToIndex());
-
-            return new RochadeUndoMove(move.getToIndex(), move.getFromIndex(), second.getFromIndex(), second
-                    .getToIndex());
-        } else {
-            return new UndoMove(move.getToIndex(), move.getFromIndex(), override, move.isPawnPromotion());
-        } */
     }
 
     /**
@@ -162,5 +136,24 @@ public class Board {
 
     public Figure getFigure(int i) {
         return Figure.getFigureByCode(board[i]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Board board1 = (Board) o;
+        return Arrays.equals(board, board1.board) &&
+                whiteRochade.equals(board1.whiteRochade) &&
+                blackRochace.equals(board1.blackRochace);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(whiteRochade, blackRochace);
+        result = 31 * result + Arrays.hashCode(board);
+        return result;
     }
 }
