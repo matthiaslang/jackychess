@@ -12,7 +12,7 @@ public class LegalMoveCache {
     public static final int CAPACITY = 50_000_000;
 
     private HashMap<Board, MoveList> whitemap = new HashMap<>(CAPACITY);
-    private HashMap<Board, MoveList> blackmap = new HashMap<>(10000000);
+    private HashMap<Board, MoveList> blackmap = new HashMap<>(CAPACITY);
 
     private LegalMoveCache() {
     }
