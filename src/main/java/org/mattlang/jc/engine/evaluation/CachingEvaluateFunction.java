@@ -30,7 +30,7 @@ public class CachingEvaluateFunction implements EvaluateFunction {
         }
 
         int score = delegate.eval(currBoard, who2Move);
-        map.put(currBoard, score);
+        map.put(currBoard.copy(), score);
         return score;
 
     }
