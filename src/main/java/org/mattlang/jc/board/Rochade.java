@@ -8,6 +8,14 @@ public class Rochade {
 
     private boolean aAllowed = true;
 
+    public Rochade(boolean hAllowed, boolean aAllowed) {
+        this.hAllowed = hAllowed;
+        this.aAllowed = aAllowed;
+    }
+
+    public Rochade() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -22,5 +30,9 @@ public class Rochade {
     @Override
     public int hashCode() {
         return Objects.hash(hAllowed, aAllowed);
+    }
+
+    public Rochade copy() {
+        return new Rochade(hAllowed, aAllowed);
     }
 }

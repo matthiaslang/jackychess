@@ -30,6 +30,15 @@ public class Board {
     private Rochade whiteRochade = new Rochade();
     private Rochade blackRochace = new Rochade();
 
+    public Board() {
+    }
+
+    public Board(byte[] board, Rochade whiteRochade, Rochade blackRochace) {
+        this.board = board;
+        this.whiteRochade = whiteRochade;
+        this.blackRochace = blackRochace;
+    }
+
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
         whiteRochade = new Rochade();
@@ -155,5 +164,9 @@ public class Board {
         int result = Objects.hash(whiteRochade, blackRochace);
         result = 31 * result + Arrays.hashCode(board);
         return result;
+    }
+
+    public Board copy() {
+        return new Board(board.clone(), whiteRochade.copy(), blackRochace.copy());
     }
 }
