@@ -16,18 +16,28 @@ import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl;
  */
 public class Factory {
 
-    private static Supplier<MoveList> moveListSupplier = () -> new BasicMoveList();
+    private final static Supplier<MoveList> DEFAULT_MOVELISTSUPPLIER = () -> new BasicMoveList();
 
-    private static Supplier<EvaluateFunction> evaluateFunctionSupplier = () -> new SimpleNegaMaxEval();
+    private static final Supplier<EvaluateFunction> DEFAULT_EVALUATEFUNCTIONSUPPLIER = () -> new SimpleNegaMaxEval();
 
-    private static Supplier<SearchMethod> searchMethodSupplier = () -> new NegaMaxAlphaBeta();
+    private static final Supplier<SearchMethod> DEFAULT_SEARCHMETHODSUPPLIER = () -> new NegaMaxAlphaBeta();
 
-    private static Supplier<LegalMoveGenerator> legalMoveGeneratorSupplier = () -> new LegalMoveGeneratorImpl();
+    private static final Supplier<LegalMoveGenerator> DEFAULT_LEGALMOVEGENERATORSUPPLIER =
+            () -> new LegalMoveGeneratorImpl();
+
+    private static Supplier<MoveList> moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
+
+    private static Supplier<EvaluateFunction> evaluateFunctionSupplier = DEFAULT_EVALUATEFUNCTIONSUPPLIER;
+
+    private static Supplier<SearchMethod> searchMethodSupplier = DEFAULT_SEARCHMETHODSUPPLIER;
+
+    private static Supplier<LegalMoveGenerator> legalMoveGeneratorSupplier = DEFAULT_LEGALMOVEGENERATORSUPPLIER;
 
     public static void reset() {
-        moveListSupplier = () -> new BasicMoveList();
-        evaluateFunctionSupplier = () -> new SimpleNegaMaxEval();
-        searchMethodSupplier = () -> new NegaMaxAlphaBeta();
+        moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
+        evaluateFunctionSupplier = DEFAULT_EVALUATEFUNCTIONSUPPLIER;
+        searchMethodSupplier = DEFAULT_SEARCHMETHODSUPPLIER;
+        legalMoveGeneratorSupplier = DEFAULT_LEGALMOVEGENERATORSUPPLIER;
     }
 
     public static MoveList createMoveList() {
