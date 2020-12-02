@@ -43,6 +43,7 @@ public class NegaMax implements SearchMethod {
 
     private void reset() {
         nodesVisited = 0;
+        generator = Factory.createLegalMoveGenerator();
     }
 
     private ScoreResult negaMaximize(Board currBoard, int depth, Color color) {

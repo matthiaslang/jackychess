@@ -52,6 +52,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         nodes = 0;
         cutOff = 0;
         savedMove = null;
+        generator = Factory.createLegalMoveGenerator();
     }
 
     private int negaMaximize(Board currBoard, int depth, Color color,
