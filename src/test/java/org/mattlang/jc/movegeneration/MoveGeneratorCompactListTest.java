@@ -18,7 +18,7 @@ import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
 

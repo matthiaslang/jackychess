@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 import junit.framework.TestCase;
 

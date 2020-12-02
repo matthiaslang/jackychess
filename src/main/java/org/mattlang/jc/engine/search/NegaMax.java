@@ -3,12 +3,11 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
-import java.util.List;
-
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.*;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMax implements SearchMethod {
 

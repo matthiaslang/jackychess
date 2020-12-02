@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine;
+package org.mattlang.jc.movegenerator;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
@@ -9,6 +9,7 @@ import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.engine.MoveList;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board

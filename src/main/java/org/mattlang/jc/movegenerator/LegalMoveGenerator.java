@@ -1,9 +1,12 @@
-package org.mattlang.jc.engine;
+package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
+
 
 public class LegalMoveGenerator {
 
