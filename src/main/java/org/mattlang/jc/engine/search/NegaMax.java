@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -13,7 +14,7 @@ public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private LegalMoveGenerator generator = new LegalMoveGenerator();
+    private LegalMoveGenerator generator = Factory.createLegalMoveGenerator();
 
     // statistics
     private int nodesVisited = 0;

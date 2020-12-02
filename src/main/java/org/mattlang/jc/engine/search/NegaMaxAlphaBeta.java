@@ -8,14 +8,17 @@ import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBeta implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private LegalMoveGenerator generator = new LegalMoveGenerator();
+    private LegalMoveGenerator generator = Factory.createLegalMoveGenerator();
 
     // statistics
     private int nodesVisited = 0;
