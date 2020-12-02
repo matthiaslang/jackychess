@@ -8,6 +8,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
+import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl;
 
@@ -23,7 +24,7 @@ public class Factory {
     private static final Supplier<SearchMethod> DEFAULT_SEARCHMETHODSUPPLIER = () -> new NegaMaxAlphaBeta();
 
     private static final Supplier<LegalMoveGenerator> DEFAULT_LEGALMOVEGENERATORSUPPLIER =
-            () -> new LegalMoveGeneratorImpl();
+            () -> new CachingLegalMoveGenerator();
 
     private static Supplier<MoveList> moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
 
