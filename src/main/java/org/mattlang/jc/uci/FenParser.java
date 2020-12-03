@@ -17,16 +17,17 @@ public class FenParser {
 
         } else if ("fen".equals(fen)) {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+            // position fen rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 moves f1d3 a7a6 g1f3
             String figures = splitted[2];
             String zug = splitted[3];
-            String rochade = splitted[3];
-            String enpassant = splitted[4];
-            String noHalfMoves = splitted[5];
-            String nextMoveNum = splitted[6];
+            String rochade = splitted[4];
+            String enpassant = splitted[5];
+            String noHalfMoves = splitted[6];
+            String nextMoveNum = splitted[7];
 
             setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
 
-            movesSection = 7;
+            movesSection = 8;
         }
         if (splitted.length > movesSection) {
             if ("moves".equals(splitted[movesSection])) {
