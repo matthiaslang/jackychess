@@ -3,8 +3,11 @@ package org.mattlang.jc.uci;
 import java.io.*;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 public class UCI {
+
+    Logger logger = Logger.getLogger("UCILOG");
 
     private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
     private LinkedBlockingQueue<String> outQueue = new LinkedBlockingQueue<>();
@@ -48,6 +51,7 @@ public class UCI {
     private void gobbleOut(PrintStream out) throws InterruptedException {
         while (!finished) {
             String line = outQueue.take();
+            logger.info("OUT: " + line);
             out.println(line);
         }
     }
@@ -56,6 +60,7 @@ public class UCI {
         LineNumberReader r = new LineNumberReader(new InputStreamReader(in));
         while (!finished) {
             String line = r.readLine();
+            logger.info("IN: " + line);
             inQueue.add(line);
         }
     }
