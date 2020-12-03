@@ -10,18 +10,24 @@ public class Engine {
 
     private Board board = new Board();
 
-    private SearchMethod searchMethod;
+    private SearchMethod searchMethod = Factory.createSearchMethod();
 
-    public Engine() {
-        this.searchMethod = Factory.createSearchMethod();
+    private int depth = 6;
+
+    public Engine(Board board) {
+        this.board = board;
     }
 
-    public Engine(SearchMethod searchMethod) {
+    public Engine() {
+    }
+
+    public Engine(SearchMethod searchMethod, int depth) {
         this.searchMethod = searchMethod;
+        this.depth = depth;
     }
 
     public Move go() {
-        return searchMethod.search(board, 4, Color.BLACK);
+        return searchMethod.search(board, depth, Color.BLACK);
     }
 
     public Move stop() {

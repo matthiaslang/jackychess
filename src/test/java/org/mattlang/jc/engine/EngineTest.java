@@ -22,7 +22,7 @@ public class EngineTest extends TestCase {
     public void testNegMax() {
 
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBeta(new SimpleNegaMaxEval()));
+        Engine engine = new Engine(new NegaMaxAlphaBeta(new SimpleNegaMaxEval()), 4);
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
@@ -34,7 +34,7 @@ public class EngineTest extends TestCase {
     public void testNegMax2() {
 
         // now starting engine:
-        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()));
+        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 2);
         FenParser parser = new FenParser();
         parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
         System.out.println(engine.getBoard().toUniCodeStr());

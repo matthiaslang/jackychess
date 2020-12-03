@@ -1,15 +1,19 @@
 package org.mattlang.jc.uci;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
+import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 
 public class UciProcessor {
 
-    private Engine engine = new Engine();
+    private Board board = new Board();
 
     private boolean finished = false;
+
+    private AsyncEngine asyncEngine = new AsyncEngine();
 
     public void start() {
         while (!finished) {
@@ -31,18 +35,20 @@ public class UciProcessor {
         } else if (cmdStr.startsWith("position")) {
             setPosition(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
-            Move bestMove = engine.go();
-            sendBestMove(bestMove);
+            CompletableFuture<Move> result = asyncEngine.start(board);
+            result.thenAccept(move ->sendBestMove(move));
+
         } else if ("stop".equals(cmdStr)) {
-            Move bestMove = engine.stop();
-            sendBestMove(bestMove);
+            asyncEngine.stop();
+            sendBestMove(asyncEngine.getBestMoveSoFar());
         }
 
     }
 
+
     private void setPosition(String positionStr) {
         FenParser fenParser = new FenParser();
-        fenParser.setPosition(positionStr, engine.getBoard());
+        fenParser.setPosition(positionStr, board);
     }
 
     private void identifyYourself() {
