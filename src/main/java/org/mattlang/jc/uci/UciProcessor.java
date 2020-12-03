@@ -46,7 +46,7 @@ public class UciProcessor {
     }
 
     private void identifyYourself() {
-        UCI.instance.putCommand("id name JackChess 1.0");
+        UCI.instance.putCommand("id name JackyChess 1.0");
         UCI.instance.putCommand("id author Matthias Lang");
         //        UCI.instance.putCommand("option ");
         UCI.instance.putCommand("uciok");
