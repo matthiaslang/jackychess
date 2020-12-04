@@ -17,6 +17,10 @@ public class Engine {
     public Engine(Board board) {
         this.board = board;
     }
+    public Engine(Board board, int depth) {
+        this.board = board;
+        this.depth = depth;
+    }
 
     public Engine() {
     }

@@ -8,11 +8,11 @@ import org.mattlang.jc.engine.Engine;
 
 public class AsyncEngine {
 
-    private Engine engine = new Engine();
-
     private CompletableFuture<Move> result;
+    private Board board;
 
     public CompletableFuture<Move> start(final Board board) {
+        this.board = board.copy();
         CompletableFuture<Move> future
                 = CompletableFuture.supplyAsync(() -> new Engine(board.copy()).go());
 
@@ -20,7 +20,7 @@ public class AsyncEngine {
         return future;
     }
 
-    public void stop() {
+    public Move stop() {
         if (result != null) {
             result.cancel(true);
             try {
@@ -30,10 +30,8 @@ public class AsyncEngine {
             }
             result = null;
         }
+        // as long as we have no iterative deepening, just retun a small search result:
+        return new Engine(board,2).go();
     }
 
-    public Move getBestMoveSoFar() {
-        // for now simply return a small depth search instead
-        return engine.stop();
-    }
 }
