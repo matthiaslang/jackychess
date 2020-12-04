@@ -11,9 +11,10 @@ import org.mattlang.jc.engine.EvaluateFunction;
  * Experimental Material Evaluation.
  *
  * https://www.chessprogramming.org/Simplified_Evaluation_Function
- *
  */
 public class MaterialNegaMaxEval implements EvaluateFunction {
+
+    SimpleBoardStatsGenerator statsgenerator = new SimpleBoardStatsGenerator();
 
     @Override
     public int eval(Board currBoard, Color who2Move) {
@@ -40,6 +41,13 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
                 +
                 // penalty for having no pawns (especially in endgame)
                 -500 * (counts[0][Pawn.figureCode] == 0 ? 1 : 0 - counts[1][Pawn.figureCode] == 0 ? 1 : 0) * who2mov;
+
+
+        BoardStats wstats = statsgenerator.gen(currBoard, Color.WHITE);
+        BoardStats bstats = statsgenerator.gen(currBoard, Color.BLACK);
+        score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
+                20 * (wstats.mobility - bstats.mobility) * who2mov;
+
 
         return score;
 

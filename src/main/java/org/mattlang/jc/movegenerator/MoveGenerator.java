@@ -80,6 +80,15 @@ public class MoveGenerator {
      */
     public MoveList generate(Board board, Color side) {
         MoveList moves = Factory.createMoveList();
+        return generate(board, side, moves);
+    }
+
+    /**
+     * @param board current board
+     * @param side  the side to move
+     */
+    public MoveList generate(Board board, Color side, MoveList moves) {
+
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
 
