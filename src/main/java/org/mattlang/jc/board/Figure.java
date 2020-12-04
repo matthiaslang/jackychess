@@ -36,6 +36,8 @@ public enum Figure {
         }
         this.figureType = figureType;
         this.color = color;
+
+        Index.figureCodeIndex[this.figureCode] = this;
     }
 
     public static char toFigureChar(byte figure) {
@@ -52,14 +54,16 @@ public enum Figure {
         throw new IllegalStateException("unknown figure char " + figureChar);
     }
 
+    static class Index {
+        public final static Figure[] figureCodeIndex = new Figure[128];
+    }
+
     public static Figure getFigureByCode(byte figure) {
-        // todo use map...
-        for (Figure fig : Figure.values()) {
-            if (fig.figureCode == figure) {
-                return fig;
-            }
+        Figure fig= Index.figureCodeIndex[figure];
+        if (fig==null){
+            throw new IllegalStateException("unknown figure code.. " + figure);
         }
-        throw new IllegalStateException("unknown figure code.. " + figure);
+        return fig;
     }
 
 }
