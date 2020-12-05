@@ -7,16 +7,18 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 
-public class CachingLegalMoveGenerator implements LegalMoveGenerator{
+public class CachingLegalMoveGenerator implements LegalMoveGenerator {
+
+    private LegalMoveCache cache = new LegalMoveCache();
 
     @Override
     public MoveList generate(Board board, Color side) {
-        MoveList result = LegalMoveCache.instance.get(board, side);
+        MoveList result = cache.get(board, side);
         if (result != null) {
             return result;
         }
         MoveList legalMoves = generateMoves(board, side);
-        LegalMoveCache.instance.put(board, side, legalMoves);
+        cache.put(board, side, legalMoves);
         return legalMoves;
     }
 

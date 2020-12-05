@@ -8,13 +8,13 @@ import org.mattlang.jc.engine.MoveList;
 
 public class LegalMoveCache {
 
-    public static final LegalMoveCache instance = new LegalMoveCache();
+
     public static final int CAPACITY = 50_000_000;
 
     private HashMap<Board, MoveList> whitemap = new HashMap<>(CAPACITY);
     private HashMap<Board, MoveList> blackmap = new HashMap<>(CAPACITY);
 
-    private LegalMoveCache() {
+    public LegalMoveCache() {
     }
 
     public MoveList get(Board board, Color side) {
