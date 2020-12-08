@@ -174,14 +174,14 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         // get single move:
         int n = mailbox[mailbox64[i] + pawnOffset];
         if (n != -1) {
-            Figure target = board.getFigure(n);
-            if (target == EMPTY) {
+            byte target = board.getFigureCode(n);
+            if (target ==  FigureConstants.FT_EMPTY) {
                 // get double move from baseline:
                 moves.genPawnMove(i, n, side, null);
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
-                    target = board.getFigure(n);
-                    if (target == EMPTY) {
+                    target = board.getFigureCode(n);
+                    if (target ==  FigureConstants.FT_EMPTY) {
                         moves.genPawnMove(i, n, side, null);
                     }
                 }
@@ -192,9 +192,9 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         for (int offset : pawnCaptureOffset) {
             n = mailbox[mailbox64[i] + offset * m];
             if (n != -1) {
-                Figure target = board.getFigure(n);
-                if (target != EMPTY) {
-                    moves.genPawnMove(i, n, side, target);
+                byte target = board.getFigureCode(n);
+                if (target != FigureConstants.FT_EMPTY) {
+                    moves.genPawnMove(i, n, side, board.getFigure(n));
                 }
             }
         }
