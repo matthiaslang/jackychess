@@ -13,6 +13,10 @@ public class StopWatch {
         stop = System.currentTimeMillis();
     }
 
+    public long getDuration(){
+        return stop - start;
+    }
+
     @Override
     public String toString() {
         long diff = stop - start;

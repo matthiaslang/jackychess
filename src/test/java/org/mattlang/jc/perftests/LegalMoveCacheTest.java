@@ -5,6 +5,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.HashMap;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
@@ -176,6 +177,7 @@ public class LegalMoveCacheTest  {
         stopWatch.start();
         Move move = engine.go();
         stopWatch.stop();
+        long durationWithoutCaching = stopWatch.getDuration();
 
         System.out.println("time without caching: " + stopWatch.toString() + " found move " + move.toStr());
 
@@ -187,6 +189,10 @@ public class LegalMoveCacheTest  {
         stopWatch.start();
         move = engine.go();
         stopWatch.stop();
+        long durationWithCaching = stopWatch.getDuration();
         System.out.println("time with caching: " + stopWatch.toString() + " found move " + move.toStr());
+
+        // should be around %30 faster
+        Assert.assertTrue(durationWithCaching < durationWithoutCaching);
     }
 }
