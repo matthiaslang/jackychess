@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;

@@ -1,4 +1,4 @@
-package org.mattlang.jc.perftests;
+package org.mattlang.jc;
 
 public class StopWatch {
 
