@@ -5,7 +5,7 @@ public interface Move {
     Move move(Board board);
 
 
-    Figure getCapturedFigure();
+    byte getCapturedFigure();
 
     String toStr();
 }

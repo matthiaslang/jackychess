@@ -109,13 +109,13 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                         for (int n = i;;) { /* starting with from square */
                             n = mailbox[mailbox64[n] + offset[figureCode][j]]; /* next square along the ray j */
                             if (n == -1) break; /* outside board */
-                            Figure targetN = board.getFigure(n);
-                            if (targetN != EMPTY) {
-                                if (targetN.color == xside)
+                            byte targetN = board.getFigureCode(n);
+                            if (targetN != FigureConstants.FT_EMPTY) {
+                                if (Figure.getColor(targetN) == xside)
                                     moves.genMove(i, n, targetN); /* capture from i to n */
                                 break;
                             }
-                            moves.genMove(i, n, null); /* quiet move from i to n */
+                            moves.genMove(i, n, (byte)0); /* quiet move from i to n */
                             if (!slide[figureCode]) break; /* next direction */
                         }
                     }
@@ -177,12 +177,12 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             byte target = board.getFigureCode(n);
             if (target ==  FigureConstants.FT_EMPTY) {
                 // get double move from baseline:
-                moves.genPawnMove(i, n, side, null);
+                moves.genPawnMove(i, n, side, (byte)0);
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigureCode(n);
                     if (target ==  FigureConstants.FT_EMPTY) {
-                        moves.genPawnMove(i, n, side, null);
+                        moves.genPawnMove(i, n, side, (byte)0);
                     }
                 }
             }
@@ -194,7 +194,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             if (n != -1) {
                 byte target = board.getFigureCode(n);
                 if (target != FigureConstants.FT_EMPTY) {
-                    moves.genPawnMove(i, n, side, board.getFigure(n));
+                    moves.genPawnMove(i, n, side, target);
                 }
             }
         }

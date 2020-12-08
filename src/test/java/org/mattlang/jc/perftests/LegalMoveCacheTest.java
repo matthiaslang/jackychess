@@ -16,11 +16,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMax;
-import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
-import org.mattlang.jc.uci.FenParser;
+import org.mattlang.jc.movegenerator.*;
 
 //@Ignore
 public class LegalMoveCacheTest  {
@@ -166,13 +162,16 @@ public class LegalMoveCacheTest  {
 
     @Test
     public void compareMoveListCaching() {
+
+        int depth = 4;
         StopWatch stopWatch = new StopWatch();
+
+        Factory.setMoveGeneratorSupplier(() -> new MoveGeneratorImpl2());
 
         Factory.setLegalMoveGeneratorSupplier(() -> new LegalMoveGeneratorImpl());
         // now starting engine:
-        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 5);
-        FenParser parser = new FenParser();
-        parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
+        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
+        engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
         System.out.println(engine.getBoard().toUniCodeStr());
         stopWatch.start();
         Move move = engine.go();
@@ -181,10 +180,10 @@ public class LegalMoveCacheTest  {
 
         System.out.println("time without caching: " + stopWatch.toString() + " found move " + move.toStr());
 
+        
         Factory.setLegalMoveGeneratorSupplier(() -> new CachingLegalMoveGenerator());
-        engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 5);
-        parser = new FenParser();
-        parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
+        engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
+        engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
         stopWatch.start();
         move = engine.go();

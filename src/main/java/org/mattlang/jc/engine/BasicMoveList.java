@@ -18,11 +18,11 @@ public class BasicMoveList implements MoveList {
 
     private List<Move> moves = new ArrayList<>(60);
 
-    public void genMove(int from, int to, Figure capturedFigure) {
+    public void genMove(int from, int to, byte capturedFigure) {
         moves.add(new BasicMove(from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Color side, Figure capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
         boolean isOnLastLine = false;
         if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
@@ -61,8 +61,9 @@ public class BasicMoveList implements MoveList {
 
     @Override
     public boolean capturesFigure(Figure figure) {
+        byte searchedFigCode = figure.figureCode;
         for (Move move : moves) {
-            if (figure == move.getCapturedFigure()) {
+            if (searchedFigCode == move.getCapturedFigure()) {
                 return true;
             }
         }
@@ -78,8 +79,8 @@ public class BasicMoveList implements MoveList {
 
         @Override
         public int compare(Move o1, Move o2) {
-            int c1 = o1.getCapturedFigure() == null ? 0 : -o1.getCapturedFigure().figureCode;
-            int c2 = o2.getCapturedFigure() == null ? 0 : -o2.getCapturedFigure().figureCode;
+            int c1 = o1.getCapturedFigure() == FigureConstants.FT_EMPTY ? 0 : -o1.getCapturedFigure();
+            int c2 = o2.getCapturedFigure() == FigureConstants.FT_EMPTY ? 0 : -o2.getCapturedFigure();
             return c1 - c2;
         }
     };

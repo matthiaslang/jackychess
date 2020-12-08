@@ -2,7 +2,7 @@ package org.mattlang.jc.board;
 
 public class PawnPromotionMove extends BasicMove {
 
-    public PawnPromotionMove(int from, int to, Figure capturedFigure) {
+    public PawnPromotionMove(int from, int to, byte capturedFigure) {
         super(from, to, capturedFigure);
     }
 

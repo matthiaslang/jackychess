@@ -3,19 +3,18 @@ package org.mattlang.jc.engine.compactmovelist;
 import static org.mattlang.jc.board.IndexConversion.convert;
 
 import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 
 public class CompactMove implements Move {
 
     private byte[] move;
-    private Figure capturedFigure = null;
+    private byte capturedFigure = (byte)0;
     private boolean undoing;
 
     public CompactMove(byte[] move) {
         this.move = move;
         if (move[CompactMoveList.IDX_CAPTURE] != 0) {
-            capturedFigure = Figure.getFigureByCode(move[CompactMoveList.IDX_CAPTURE]);
+            capturedFigure = move[CompactMoveList.IDX_CAPTURE];
         }
     }
 
@@ -37,7 +36,7 @@ public class CompactMove implements Move {
     }
 
     @Override
-    public Figure getCapturedFigure() {
+    public byte getCapturedFigure() {
         return capturedFigure;
     }
 

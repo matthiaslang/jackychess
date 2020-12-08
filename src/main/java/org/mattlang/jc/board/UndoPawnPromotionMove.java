@@ -8,7 +8,7 @@ public class UndoPawnPromotionMove extends BasicMove {
     public final byte overriddenFig;
 
     public UndoPawnPromotionMove(int toIndex, int fromIndex, byte override) {
-        super(toIndex, fromIndex, null);
+        super(toIndex, fromIndex, (byte)0);
         this.overriddenFig = override;
     }
 

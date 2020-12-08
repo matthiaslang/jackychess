@@ -11,7 +11,7 @@ public class UndoMove extends BasicMove {
     public final byte overriddenFig;
 
     public UndoMove(int from, int to, byte overriddenFig) {
-        super(from, to, null);
+        super(from, to, (byte)0);
         this.overriddenFig = overriddenFig;
     }
 

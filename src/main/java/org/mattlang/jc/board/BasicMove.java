@@ -15,7 +15,7 @@ public class BasicMove implements Move {
     private int toIndex;
 
 
-    private Figure capturedFigure;
+    private byte capturedFigure;
 
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
@@ -23,7 +23,7 @@ public class BasicMove implements Move {
     }
 
 
-    public BasicMove(int from, int to, Figure capturedFigure) {
+    public BasicMove(int from, int to, byte capturedFigure) {
         this.fromIndex = from;
         this.toIndex = to;
         this.capturedFigure = capturedFigure;
@@ -53,7 +53,7 @@ public class BasicMove implements Move {
     }
 
     @Override
-    public Figure getCapturedFigure() {
+    public byte getCapturedFigure() {
         return capturedFigure;
     }
 }

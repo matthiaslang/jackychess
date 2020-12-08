@@ -104,10 +104,10 @@ public class MoveGeneratorImpl implements MoveGenerator {
                             Figure targetN = board.getFigure(n);
                             if (targetN != EMPTY) {
                                 if (targetN.color == xside)
-                                    moves.genMove(i, n, targetN); /* capture from i to n */
+                                    moves.genMove(i, n, targetN.figureCode); /* capture from i to n */
                                 break;
                             }
-                            moves.genMove(i, n, null); /* quiet move from i to n */
+                            moves.genMove(i, n, (byte)0); /* quiet move from i to n */
                             if (!slide[p.figureCode]) break; /* next direction */
                         }
                     }
@@ -169,12 +169,12 @@ public class MoveGeneratorImpl implements MoveGenerator {
             Figure target = board.getFigure(n);
             if (target == EMPTY) {
                 // get double move from baseline:
-                moves.genPawnMove(i, n, side, null);
+                moves.genPawnMove(i, n, side, (byte)0);
                 if (isOnBaseLine) {
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigure(n);
                     if (target == EMPTY) {
-                        moves.genPawnMove(i, n, side, null);
+                        moves.genPawnMove(i, n, side, (byte)0);
                     }
                 }
             }
@@ -186,7 +186,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
             if (n != -1) {
                 Figure target = board.getFigure(n);
                 if (target != EMPTY) {
-                    moves.genPawnMove(i, n, side, target);
+                    moves.genPawnMove(i, n, side, target.figureCode);
                 }
             }
         }

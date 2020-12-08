@@ -40,21 +40,21 @@ public class CompactMoveList implements MoveList {
     private int size = 0;
 
     @Override
-    public void genMove(int from, int to, Figure capturedFigure) {
+    public void genMove(int from, int to, byte capturedFigure) {
         movelist[size][IDX_FROM] = (byte) from;
         movelist[size][IDX_TO] = (byte) to;
-        if (capturedFigure != null) {
-            movelist[size][IDX_CAPTURE] = capturedFigure.figureCode;
+        if (capturedFigure != 0) {
+            movelist[size][IDX_CAPTURE] = capturedFigure;
         }
         size++;
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color side, Figure capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
         movelist[size][IDX_FROM] = (byte) from;
         movelist[size][IDX_TO] = (byte) to;
-        if (capturedFigure != null) {
-            movelist[size][IDX_CAPTURE] = capturedFigure.figureCode;
+        if (capturedFigure != 0) {
+            movelist[size][IDX_CAPTURE] = capturedFigure;
         }
         movelist[size][IDX_SPECIAL] = PAWN_MOVE;
         boolean isOnLastLine = false;
