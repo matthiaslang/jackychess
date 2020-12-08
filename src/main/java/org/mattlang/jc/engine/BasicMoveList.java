@@ -18,6 +18,13 @@ public class BasicMoveList implements MoveList {
 
     private List<Move> moves = new ArrayList<>(60);
 
+    public BasicMoveList() {
+    }
+
+    public BasicMoveList(List<Move> moves) {
+        this.moves = moves;
+    }
+
     public void genMove(int from, int to, byte capturedFigure) {
         moves.add(new BasicMove(from, to, capturedFigure));
     }

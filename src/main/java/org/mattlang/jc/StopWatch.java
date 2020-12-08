@@ -14,7 +14,7 @@ public class StopWatch {
     }
 
     public long getDuration(){
-        return stop - start;
+        return System.currentTimeMillis() - start;
     }
 
     @Override

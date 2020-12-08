@@ -3,6 +3,9 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
@@ -15,6 +18,9 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBeta implements SearchMethod {
+
+    public static final int ALPHA_START = -1000000000;
+    public static final int BETA_START = +1000000000;
 
     private EvaluateFunction evaluate;
 
@@ -40,7 +46,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         assert depth > 0;
         reset();
         targetDepth = depth;
-        int scoreResult = negaMaximize(currBoard, depth, color, -1000000000, +1000000000);
+        int scoreResult = negaMaximize(currBoard, depth, color, ALPHA_START, BETA_START);
         Logger.info(depth, nodesVisited, scoreResult);
         Logger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
                 scoreResult);
@@ -82,4 +88,56 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return max;
     }
 
+    public static class MoveScore{
+
+        public final Move move;
+        public final int score;
+
+        public MoveScore(Move move, int score) {
+            this.move = move;
+            this.score = score;
+        }
+    }
+
+    private List<MoveScore> negaMaximizeWithScore(Board currBoard, int depth, Color color,
+            int alpha, int beta, MoveList moves) {
+        nodesVisited++;
+        ArrayList<MoveScore> result = new ArrayList<>();
+
+
+        nodes += moves.size();
+        int max = alpha;
+        for (MoveCursor moveCursor : moves) {
+            moveCursor.move(currBoard);
+            int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
+            result.add(new MoveScore(moveCursor.getMove(), score));
+            moveCursor.undoMove(currBoard);
+            if (score > max) {
+                max = score;
+                if (depth == targetDepth)
+                    savedMove = moveCursor.getMove();
+                if (max >= beta) {
+                    cutOff++;
+                    break;
+                }
+            }
+
+        }
+        return result;
+    }
+
+    public List<MoveScore> searchWithScore(Board currBoard, int depth, Color color, int alpha, int beta,
+            MoveList moves) {
+        targetDepth = depth;
+        List<MoveScore> scoreResult = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);
+        return scoreResult;
+    }
+
+    public Move getSavedMove() {
+        return savedMove;
+    }
+
+    public MoveList generateMoves(Board currBoard, Color color) {
+        return generator.generate(currBoard, color);
+    }
 }
