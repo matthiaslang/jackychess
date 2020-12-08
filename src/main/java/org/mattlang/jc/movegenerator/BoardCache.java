@@ -10,6 +10,9 @@ public class BoardCache<T> {
 
     public static final int CAPACITY = 50_000_000;
 
+    private int cacheHit;
+    private int cacheFail;
+
     private HashMap<Board, T> whitemap = new HashMap<>(CAPACITY);
     private HashMap<Board, T> blackmap = new HashMap<>(CAPACITY);
 
@@ -22,8 +25,10 @@ public class BoardCache<T> {
     public T getCache(Board board, Color side) {
         T result = get(board, side);
         if (result != null) {
+            cacheHit++;
             return result;
         }
+        cacheFail++;
         T value = creator.createEntry(board, side);
         put(board, side, value);
         return value;
