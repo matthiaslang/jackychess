@@ -28,7 +28,11 @@ public enum Figure {
 
     Figure(FigureType figureType, Color color, char figureCharUnicode) {
         this.figureCharUnicode = figureCharUnicode;
-        this.figureCode = (byte) (figureType.figureCode | color.code);
+        if (figureType == FigureType.EMPTY) {
+            this.figureCode =  figureType.figureCode;
+        } else {
+            this.figureCode = (byte) (figureType.figureCode | color.code);
+        }
         if (color == WHITE) {
             this.figureChar = figureType.figureChar;
         } else {
@@ -52,6 +56,10 @@ public enum Figure {
             }
         }
         throw new IllegalStateException("unknown figure char " + figureChar);
+    }
+
+    public static Color getColor(byte figure) {
+        return (figure & WHITE.code) != 0? WHITE: BLACK;
     }
 
     static class Index {

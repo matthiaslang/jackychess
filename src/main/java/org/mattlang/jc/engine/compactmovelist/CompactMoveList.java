@@ -50,7 +50,7 @@ public class CompactMoveList implements MoveList {
     }
 
     @Override
-    public void genPawnMove(int from, int to, Figure pawn, Figure capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, Figure capturedFigure) {
         movelist[size][IDX_FROM] = (byte) from;
         movelist[size][IDX_TO] = (byte) to;
         if (capturedFigure != null) {
@@ -58,7 +58,7 @@ public class CompactMoveList implements MoveList {
         }
         movelist[size][IDX_SPECIAL] = PAWN_MOVE;
         boolean isOnLastLine = false;
-        if (pawn.color == WHITE) {
+        if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
         } else {
             isOnLastLine = to >= 0 && to <= 7;

@@ -86,4 +86,9 @@ public class Factory {
             Supplier<LegalMoveGenerator> legalMoveGeneratorSupplier) {
         Factory.legalMoveGeneratorSupplier = legalMoveGeneratorSupplier;
     }
+
+    public static void setMoveGeneratorSupplier(
+            Supplier<MoveGenerator> moveGeneratorSupplier) {
+        Factory.moveGeneratorSupplier = moveGeneratorSupplier;
+    }
 }

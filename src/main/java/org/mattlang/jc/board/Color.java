@@ -9,4 +9,8 @@ public enum Color {
     Color(byte code) {
         this.code = code;
     }
+
+    public Color invert() {
+        return this == WHITE ? BLACK : WHITE;
+    }
 }

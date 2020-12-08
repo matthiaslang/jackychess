@@ -8,14 +8,17 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.MoveList;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
  * TSCP Implementation of move generator with some own modifications.
+ *
+ * trys to opt the normal move generator using byte codes direct, not via enums, but that does not
+ * seem to bring much...
  */
-public class MoveGeneratorImpl implements MoveGenerator {
+public class MoveGeneratorImpl2 implements MoveGenerator {
 
     public static final int[] ROCHADE_L_WHITE = { 0, 1, 2, 3, 4 };
     public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
@@ -74,6 +77,8 @@ public class MoveGeneratorImpl implements MoveGenerator {
 
     private static final int[] pawnCaptureOffset = { 11, 9 };
 
+    private static final byte MASK_OUT_COLOR=(byte)(0xFF- WHITE.code - BLACK.code);
+
     /**
      * @param board current board
      * @param side  the side to move
@@ -90,16 +95,19 @@ public class MoveGeneratorImpl implements MoveGenerator {
     public MoveList generate(Board board, Color side, MoveList moves) {
 
 
-        Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
+        Color xside = side.invert();  /* the side not to move */
 
         for (int i = 0; i < 64; ++i) { /* loop over all squares (no piece list) */
-            Figure figure = board.getFigure(i);
-            if (figure != EMPTY && figure.color == side) { /* looking for own pieces and pawns to move */
-                FigureType p = figure.figureType;
-                if (p != FigureType.Pawn) { /* piece or pawn */
-                    for (int j = 0; j < offsets[p.figureCode]; ++j) { /* for all knight or ray directions */
+            byte figure = board.getFigureCode(i);
+            if (figure != FigureConstants.FT_EMPTY && Figure.getColor(figure) == side) { /* looking for own pieces and pawns to move */
+                boolean isPawn = figure == FigureConstants.W_PAWN || figure == FigureConstants.B_PAWN;
+
+
+                if (!isPawn) { /* piece or pawn */
+                    byte figureCode = (byte) (figure & MASK_OUT_COLOR);
+                    for (int j = 0; j < offsets[figureCode]; ++j) { /* for all knight or ray directions */
                         for (int n = i;;) { /* starting with from square */
-                            n = mailbox[mailbox64[n] + offset[p.figureCode][j]]; /* next square along the ray j */
+                            n = mailbox[mailbox64[n] + offset[figureCode][j]]; /* next square along the ray j */
                             if (n == -1) break; /* outside board */
                             Figure targetN = board.getFigure(n);
                             if (targetN != EMPTY) {
@@ -108,7 +116,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
                                 break;
                             }
                             moves.genMove(i, n, null); /* quiet move from i to n */
-                            if (!slide[p.figureCode]) break; /* next direction */
+                            if (!slide[figureCode]) break; /* next direction */
                         }
                     }
                 } else {

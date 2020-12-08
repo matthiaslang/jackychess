@@ -22,9 +22,9 @@ public class BasicMoveList implements MoveList {
         moves.add(new BasicMove(from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Figure pawn, Figure capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, Figure capturedFigure) {
         boolean isOnLastLine = false;
-        if (pawn.color == WHITE) {
+        if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
         } else {
             isOnLastLine = to >= 0 && to <= 7;

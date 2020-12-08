@@ -33,7 +33,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
     }
 
     @Override
-    public void genPawnMove(int from, int to, Figure pawn, Figure capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, Figure capturedFigure) {
         mobility2 |= (1L << to);
         if (capturedFigure != null) {
             captures2 |= (1L << to);

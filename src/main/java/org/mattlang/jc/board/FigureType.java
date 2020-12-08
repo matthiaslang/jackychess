@@ -1,14 +1,16 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.FigureConstants.*;
+
 public enum FigureType {
 
-    EMPTY((byte) 16, ' '),
-    Pawn((byte) 0, 'P'),
-    Knight((byte) 1, 'N'),
-    Bishop((byte) 2, 'B'),
-    Rook((byte) 3, 'R'),
-    Queen((byte) 4, 'Q'),
-    King((byte) 5, 'K');
+    EMPTY(FT_EMPTY, ' '),
+    Pawn(FT_PAWN, 'P'),
+    Knight(FT_KNIGHT, 'N'),
+    Bishop(FT_BISHOP, 'B'),
+    Rook(FT_ROOK, 'R'),
+    Queen(FT_QUEEN, 'Q'),
+    King(FT_KING, 'K');
 
     public final byte figureCode;
     public final char figureChar;

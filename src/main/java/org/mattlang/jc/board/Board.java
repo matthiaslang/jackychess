@@ -147,6 +147,10 @@ public class Board {
         return Figure.getFigureByCode(board[i]);
     }
 
+    public byte getFigureCode(int i) {
+        return board[i];
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
