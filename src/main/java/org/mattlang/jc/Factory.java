@@ -11,7 +11,7 @@ import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -28,7 +28,7 @@ public class Factory {
             () -> new CachingLegalMoveGenerator();
 
     private static final Supplier<MoveGenerator> DEFAULT_MOVEGENERATORSUPPLIER =
-            () -> new MoveGeneratorImpl();
+            () -> new MoveGeneratorImpl2();
 
     private static Supplier<MoveList> moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
 
