@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.evaluation;
 
 import java.util.Iterator;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
@@ -14,7 +15,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
     public long mobility2 = 0L;
     private long captures2 = 0L;
 
-    private MoveGenerator moveGenerator = new MoveGenerator();
+    private MoveGenerator moveGenerator = Factory.createMoveGenerator();
 
     public BoardStats gen(Board board, Color color) {
         mobility2 = 0L;

@@ -18,9 +18,10 @@ import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
 import junit.framework.TestCase;
 
@@ -45,10 +46,10 @@ public class MoveGeneratorCompactListTest extends TestCase {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGenerator();
+        MoveGenerator generator = new MoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        MoveGenerator generator2 = new MoveGenerator();
+        MoveGenerator generator2 = new MoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<Move> undoes = new ArrayList<>();
@@ -85,7 +86,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGenerator();
+        MoveGenerator generator = new MoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = createMoveList(whiteMoves).stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
@@ -100,7 +101,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new MoveGenerator();
+        MoveGenerator generator2 = new MoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
         Move a2PawnMove = createMoveList(blackMoves).stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
@@ -120,7 +121,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
         Board board = new Board();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new MoveGenerator();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
         List<Move> mmoves = createMoveList(moves);
@@ -178,7 +179,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
         Board cmpboard = new Board();
         cmpboard.setFenPosition(fen);
 
-        MoveGenerator moveGenerator = new MoveGenerator();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl();
         MoveList moves = moveGenerator.generate(board, WHITE);
         // find white rochade moves:
         List<Move> rochMoves = createMoveList(moves).stream()

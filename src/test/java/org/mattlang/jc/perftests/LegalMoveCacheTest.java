@@ -5,17 +5,23 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.HashMap;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
-import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
-import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
+import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.search.NegaMax;
+import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.uci.FenParser;
 
-@Ignore
+//@Ignore
 public class LegalMoveCacheTest  {
 
     /**
@@ -36,10 +42,10 @@ public class LegalMoveCacheTest  {
         stopwatch.start();
         int num = 10000000;
         for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGenerator();
+            MoveGenerator generator = new MoveGeneratorImpl();
             MoveList whiteMoves = generator.generate(board, WHITE);
 
-            MoveGenerator generator2 = new MoveGenerator();
+            MoveGenerator generator2 = new MoveGeneratorImpl();
             MoveList blackMoves = generator2.generate(board, BLACK);
         }
         stopwatch.stop();
@@ -49,10 +55,10 @@ public class LegalMoveCacheTest  {
 
         stopwatch.start();
         for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGenerator();
+            MoveGenerator generator = new MoveGeneratorImpl();
             MoveList whiteMoves = generator.generate(board, WHITE);
 
-            MoveGenerator generator2 = new MoveGenerator();
+            MoveGenerator generator2 = new MoveGeneratorImpl();
             MoveList blackMoves = generator2.generate(board, BLACK);
         }
         stopwatch.stop();
@@ -79,10 +85,10 @@ public class LegalMoveCacheTest  {
         stopwatch.start();
         int num = 10000000;
         for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGenerator();
+            MoveGenerator generator = new MoveGeneratorImpl();
             MoveList whiteMoves = generator.generate(board, WHITE);
 
-            MoveGenerator generator2 = new MoveGenerator();
+            MoveGenerator generator2 = new MoveGeneratorImpl();
             MoveList blackMoves = generator2.generate(board, BLACK);
         }
         stopwatch.stop();
@@ -92,10 +98,10 @@ public class LegalMoveCacheTest  {
 
         HashMap<Board, MoveList> whitemap = new HashMap<>();
         HashMap<Board, MoveList> blackmap = new HashMap<>();
-        MoveGenerator generator = new MoveGenerator();
+        MoveGenerator generator = new MoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
         whitemap.put(board, whiteMoves);
-        MoveGenerator generator2 = new MoveGenerator();
+        MoveGenerator generator2 = new MoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
         blackmap.put(board, blackMoves);
 
@@ -147,7 +153,6 @@ public class LegalMoveCacheTest  {
         whitemap.put(board,  eval.eval(board, WHITE));
         blackmap.put(board, eval.eval(board, BLACK));
 
-
         for (int i = 0; i < num; i++) {
             whitemap.get(board);
             blackmap.get(board);
@@ -158,5 +163,30 @@ public class LegalMoveCacheTest  {
 
     }
 
+    @Test
+    public void compareMoveListCaching() {
+        StopWatch stopWatch = new StopWatch();
 
+        Factory.setLegalMoveGeneratorSupplier(() -> new LegalMoveGeneratorImpl());
+        // now starting engine:
+        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 5);
+        FenParser parser = new FenParser();
+        parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
+        System.out.println(engine.getBoard().toUniCodeStr());
+        stopWatch.start();
+        Move move = engine.go();
+        stopWatch.stop();
+
+        System.out.println("time without caching: " + stopWatch.toString() + " found move " + move.toStr());
+
+        Factory.setLegalMoveGeneratorSupplier(() -> new CachingLegalMoveGenerator());
+        engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 5);
+        parser = new FenParser();
+        parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
+
+        stopWatch.start();
+        move = engine.go();
+        stopWatch.stop();
+        System.out.println("time with caching: " + stopWatch.toString() + " found move " + move.toStr());
+    }
 }

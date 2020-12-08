@@ -9,9 +9,10 @@ import org.mattlang.jc.engine.MoveList;
 
 public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
 
+    MoveGenerator generator = Factory.createMoveGenerator();
+
     @Override
     public MoveList generate(Board board, Color side) {
-        MoveGenerator generator = new MoveGenerator();
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
         // simple ordering by capture first, to be a bit bettr in alpha beta pruning
@@ -25,7 +26,6 @@ public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
         MoveList legals = Factory.createMoveList();
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
-            MoveGenerator generator = new MoveGenerator();
             MoveList responseMoves = generator.generate(currBoard, color);
             moveCursor.undoMove(currBoard);
 

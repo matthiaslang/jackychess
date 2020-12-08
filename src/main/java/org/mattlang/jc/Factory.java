@@ -10,6 +10,8 @@ import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -25,6 +27,9 @@ public class Factory {
     private static final Supplier<LegalMoveGenerator> DEFAULT_LEGALMOVEGENERATORSUPPLIER =
             () -> new CachingLegalMoveGenerator();
 
+    private static final Supplier<MoveGenerator> DEFAULT_MOVEGENERATORSUPPLIER =
+            () -> new MoveGeneratorImpl();
+
     private static Supplier<MoveList> moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
 
     private static Supplier<EvaluateFunction> evaluateFunctionSupplier = DEFAULT_EVALUATEFUNCTIONSUPPLIER;
@@ -33,11 +38,14 @@ public class Factory {
 
     private static Supplier<LegalMoveGenerator> legalMoveGeneratorSupplier = DEFAULT_LEGALMOVEGENERATORSUPPLIER;
 
+    private static Supplier<MoveGenerator> moveGeneratorSupplier = DEFAULT_MOVEGENERATORSUPPLIER;
+
     public static void reset() {
         moveListSupplier = DEFAULT_MOVELISTSUPPLIER;
         evaluateFunctionSupplier = DEFAULT_EVALUATEFUNCTIONSUPPLIER;
         searchMethodSupplier = DEFAULT_SEARCHMETHODSUPPLIER;
         legalMoveGeneratorSupplier = DEFAULT_LEGALMOVEGENERATORSUPPLIER;
+        moveGeneratorSupplier = DEFAULT_MOVEGENERATORSUPPLIER;
     }
 
     public static MoveList createMoveList() {
@@ -54,6 +62,10 @@ public class Factory {
 
     public static LegalMoveGenerator createLegalMoveGenerator() {
         return legalMoveGeneratorSupplier.get();
+    }
+
+    public static MoveGenerator createMoveGenerator() {
+        return moveGeneratorSupplier.get();
     }
 
     public static void setMoveListSupplier(Supplier<MoveList> moveListSupplier) {

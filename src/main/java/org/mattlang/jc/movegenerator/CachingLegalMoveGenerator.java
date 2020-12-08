@@ -17,7 +17,7 @@ public class CachingLegalMoveGenerator implements LegalMoveGenerator {
     }
 
     private MoveList generateLegalMoves(Board board, Color side) {
-        MoveGenerator generator = new MoveGenerator();
+        MoveGenerator generator = Factory.createMoveGenerator();
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
         // simple ordering by capture first, to be a bit bettr in alpha beta pruning
@@ -31,7 +31,7 @@ public class CachingLegalMoveGenerator implements LegalMoveGenerator {
         MoveList legals = Factory.createMoveList();
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
-            MoveGenerator generator = new MoveGenerator();
+            MoveGenerator generator = Factory.createMoveGenerator();
             MoveList responseMoves = generator.generate(currBoard, color);
             moveCursor.undoMove(currBoard);
 

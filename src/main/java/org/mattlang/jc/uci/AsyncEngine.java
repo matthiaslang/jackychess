@@ -25,8 +25,8 @@ public class AsyncEngine {
             result.cancel(true);
             try {
                 result.wait(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException | IllegalMonitorStateException e) {
+                //e.printStackTrace();
             }
             result = null;
         }
