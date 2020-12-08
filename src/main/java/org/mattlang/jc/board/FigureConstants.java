@@ -1,5 +1,8 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+
 public class FigureConstants {
 
     public static final byte FT_EMPTY = 16;
@@ -23,4 +26,6 @@ public class FigureConstants {
     public static final byte B_ROOK = (byte) (FT_ROOK | Color.BLACK.code);
     public static final byte B_QUEEN = (byte) (FT_QUEEN | Color.BLACK.code);
     public static final byte B_KING = (byte) (FT_KING | Color.BLACK.code);
+
+    public static final byte MASK_OUT_COLOR=(byte)(0xFF- WHITE.code - BLACK.code);
 }

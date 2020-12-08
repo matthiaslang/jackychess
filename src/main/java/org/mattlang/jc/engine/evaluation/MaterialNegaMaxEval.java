@@ -1,10 +1,11 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 import static org.mattlang.jc.board.FigureType.*;
 
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.EvaluateFunction;
 
 /**
@@ -21,10 +22,11 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
         int counts[][] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 
         for (int i = 0; i < 64; i++) {
-            Figure figure = currBoard.getFigure(i);
-            if (figure != Figure.EMPTY) {
-                int clr = figure.color == Color.WHITE ? 0 : 1;
-                counts[clr][figure.figureType.figureCode] += 1;
+            byte figure = currBoard.getFigureCode(i);
+            if (figure != FigureConstants.FT_EMPTY) {
+                int clr = (figure & Color.WHITE.code) != 0 ? 0 : 1;
+                byte figureCode = (byte) (figure & MASK_OUT_COLOR);
+                counts[clr][figureCode] += 1;
             }
         }
         int who2mov = who2Move == Color.WHITE ? 1 : -1;

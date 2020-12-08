@@ -1,8 +1,8 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
@@ -76,8 +76,6 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     };
 
     private static final int[] pawnCaptureOffset = { 11, 9 };
-
-    private static final byte MASK_OUT_COLOR=(byte)(0xFF- WHITE.code - BLACK.code);
 
     /**
      * @param board current board
