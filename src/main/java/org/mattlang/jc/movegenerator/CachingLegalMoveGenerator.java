@@ -9,22 +9,14 @@ import org.mattlang.jc.engine.MoveList;
 
 public class CachingLegalMoveGenerator implements LegalMoveGenerator {
 
-    private LegalMoveCache cache = new LegalMoveCache();
+    private BoardCache<MoveList> legalMoveCache = new BoardCache<>(this::generateLegalMoves);
 
     @Override
     public MoveList generate(Board board, Color side) {
-        MoveList result = cache.get(board, side);
-        if (result != null) {
-            return result;
-        }
-        MoveList legalMoves = generateMoves(board, side);
-        cache.put(board, side, legalMoves);
-        return legalMoves;
+        return legalMoveCache.getCache(board, side);
     }
 
-
-
-    private MoveList generateMoves(Board board, Color side) {
+    private MoveList generateLegalMoves(Board board, Color side) {
         MoveGenerator generator = new MoveGenerator();
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
