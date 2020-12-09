@@ -5,6 +5,7 @@ import static org.mattlang.jc.engine.BasicMoveList.*;
 import org.mattlang.jc.board.BasicMove;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.PawnPromotionMove;
 
 public class FenParser {
 
@@ -41,7 +42,6 @@ public class FenParser {
     }
 
     private BasicMove parseMove(String moveStr) {
-     // todo incoming pawn promotions do not work! ex.: a7a8q
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr)) {
             return ROCHADE_MOVE_SW;
@@ -51,6 +51,13 @@ public class FenParser {
             return ROCHADE_MOVE_SB;
         } else if ("e8c8".equals(moveStr)) {
             return ROCHADE_MOVE_LB;
+        }
+
+        // simple pawn queen promotion
+        // todo support other promotions, too
+        if (moveStr.endsWith("q")) {
+            BasicMove parsed = new BasicMove(moveStr);
+           return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte)0);
         }
 
         return new BasicMove(moveStr);
