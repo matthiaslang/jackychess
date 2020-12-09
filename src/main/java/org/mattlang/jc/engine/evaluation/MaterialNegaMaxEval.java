@@ -48,7 +48,7 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
         BoardStats wstats = statsgenerator.gen(currBoard, Color.WHITE);
         BoardStats bstats = statsgenerator.gen(currBoard, Color.BLACK);
         score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
-                20 * (wstats.mobility - bstats.mobility) * who2mov;
+                20 * (wstats.captures - bstats.captures) * who2mov;
 
 
         return score;
