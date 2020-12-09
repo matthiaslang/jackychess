@@ -8,9 +8,11 @@ import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
+import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
-import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
 
@@ -22,7 +24,19 @@ public class EngineTest extends TestCase {
     public void testNegMax() {
 
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBeta(new SimpleNegaMaxEval()), 4);
+        Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEval()), 6);
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+    }
+
+    @Test
+    public void testIterativeDeepening() {
+
+        // now starting engine:
+        Engine engine = new Engine(new IterativeDeepeningNegaMaxAlphaBeta(), 6);
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();

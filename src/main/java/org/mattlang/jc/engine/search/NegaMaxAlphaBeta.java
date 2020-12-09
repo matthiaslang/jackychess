@@ -26,13 +26,17 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     private LegalMoveGenerator generator = Factory.createLegalMoveGenerator();
 
+    private long stopTime = 0;
+
     // statistics
     private int nodesVisited = 0;
     private int nodes;
     private Move savedMove;
+    private int savedMoveScore;
 
     private int targetDepth;
     private int cutOff;
+
 
     public NegaMaxAlphaBeta() {
         this.evaluate = Factory.createEvaluateFunction();
@@ -53,7 +57,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return savedMove;
     }
 
-    private void reset() {
+    public void reset() {
         nodesVisited = 0;
         nodes = 0;
         cutOff = 0;
@@ -67,6 +71,12 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         if (depth == 0)
             return evaluate.eval(currBoard, color);
 
+        if (stopTime != 0 && nodesVisited % 100000 == 0) {
+            if (System.currentTimeMillis() > stopTime) {
+                throw new TimeoutException();
+            }
+        }
+
         MoveList moves = generator.generate(currBoard, color);
         nodes += moves.size();
         int max = alpha;
@@ -78,6 +88,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
                 max = score;
                 if (depth == targetDepth)
                     savedMove = moveCursor.getMove();
+                    savedMoveScore = score;
                 if (max >= beta) {
                     cutOff++;
                     break;
@@ -126,9 +137,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return result;
     }
 
-    public List<MoveScore> searchWithScore(Board currBoard, int depth, Color color, int alpha, int beta,
-            MoveList moves) {
+    public List<MoveScore> searchWithScore(Board currBoard, int depth, Color color,
+            int alpha, int beta, MoveList moves, long stopTime) {
         targetDepth = depth;
+        this.stopTime = stopTime;
         List<MoveScore> scoreResult = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);
         return scoreResult;
     }
@@ -139,5 +151,21 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     public MoveList generateMoves(Board currBoard, Color color) {
         return generator.generate(currBoard, color);
+    }
+
+    public int getNodesVisited() {
+        return nodesVisited;
+    }
+
+    public int getNodes() {
+        return nodes;
+    }
+
+    public int getCutOff() {
+        return cutOff;
+    }
+
+    public int getSavedMoveScore() {
+        return savedMoveScore;
     }
 }
