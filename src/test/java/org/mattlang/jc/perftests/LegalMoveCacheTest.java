@@ -164,7 +164,7 @@ public class LegalMoveCacheTest  {
     @Test
     public void compareMoveListCaching() {
 
-        int depth = 4;
+        int depth = 5;
         StopWatch stopWatch = new StopWatch();
 
         Factory.setMoveGeneratorSupplier(() -> new MoveGeneratorImpl2());

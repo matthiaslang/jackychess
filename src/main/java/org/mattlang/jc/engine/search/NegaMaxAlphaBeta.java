@@ -78,6 +78,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         }
 
         MoveList moves = generator.generate(currBoard, color);
+        if (moves.size() == 0) {
+            // no more legal moves, we are at a end position:
+            return evaluate.eval(currBoard, color);
+        }
         nodes += moves.size();
         int max = alpha;
         for (MoveCursor moveCursor : moves) {
