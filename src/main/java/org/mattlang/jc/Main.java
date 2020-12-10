@@ -16,7 +16,7 @@ public class Main {
         processor.start();
     }
 
-    private static void initLogging() {
+    public static void initLogging() {
         java.util.logging.Logger logger = Logger.getAnonymousLogger();
         LogManager manager = LogManager.getLogManager();
         try {

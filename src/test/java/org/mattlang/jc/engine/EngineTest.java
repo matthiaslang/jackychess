@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 
@@ -33,8 +34,11 @@ public class EngineTest extends TestCase {
     }
 
     @Test
-    public void testIterativeDeepening() {
+    public void testIterativeDeepening() throws IOException {
 
+        initLogging();
+        UCI.instance.attachStreams();
+        
         // now starting engine:
         Engine engine = new Engine(new IterativeDeepeningNegaMaxAlphaBeta(), 6);
         engine.getBoard().setStartPosition();

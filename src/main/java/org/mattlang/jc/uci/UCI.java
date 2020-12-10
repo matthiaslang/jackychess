@@ -27,6 +27,10 @@ public class UCI {
         return Optional.ofNullable(inQueue.poll());
     }
 
+    public void attachStreams() throws IOException {
+        attachStreams(System.in, System.out);
+    }
+
     public void attachStreams(final InputStream in, final PrintStream out) throws IOException {
         Thread inThread = new Thread(
                 () -> {
