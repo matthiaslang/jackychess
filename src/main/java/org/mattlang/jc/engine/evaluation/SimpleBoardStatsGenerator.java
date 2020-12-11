@@ -25,12 +25,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
     public BoardStats gen(Board board, Color color) {
         // find king on board:
         byte kingFigureCode = (byte) (FigureType.King.figureCode | color.code);
-        for (int i = 0; i < 64; i++) {
-            if (board.getFigureCode(i) == kingFigureCode) {
-                kingPos = i;
-                break;
-            }
-        }
+        kingPos = board.findPosOfFigure(kingFigureCode);
 
         mobility = 0L;
         captures = 0L;
