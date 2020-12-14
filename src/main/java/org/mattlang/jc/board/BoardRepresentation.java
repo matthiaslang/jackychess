@@ -32,4 +32,6 @@ public interface BoardRepresentation {
     byte getFigureCode(int i);
 
     Board copy();
+
+    int findPosOfFigure(byte figureCode);
 }

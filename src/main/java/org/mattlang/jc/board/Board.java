@@ -189,4 +189,14 @@ public class Board implements BoardRepresentation {
     public Board copy() {
         return new Board(board.clone(), whiteRochade.copy(), blackRochace.copy());
     }
+
+    @Override
+    public int findPosOfFigure(byte figureCode) {
+        for (int i = 0; i < 64; i++) {
+            if (board[i] == figureCode) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
