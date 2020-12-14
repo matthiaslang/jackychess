@@ -8,7 +8,7 @@ public class CachingLegalMoveGenerator implements LegalMoveGenerator {
 
     private BoardCache<MoveList> legalMoveCache = new BoardCache<>(this::generateLegalMoves);
 
-    private LegalMoveGenerator delegate = new LegalMoveGeneratorImpl();
+    private LegalMoveGenerator delegate = new LegalMoveGeneratorImpl2();
 
     @Override
     public MoveList generate(Board board, Color side) {
