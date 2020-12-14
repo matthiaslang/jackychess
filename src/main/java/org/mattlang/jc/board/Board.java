@@ -11,7 +11,7 @@ import org.mattlang.jc.uci.FenParser;
 /**
  * Represents a board with figures.
  */
-public class Board {
+public class Board implements BoardRepresentation {
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
     public static final String[] FEN_START_POSITION = {
@@ -39,12 +39,14 @@ public class Board {
         this.blackRochace = blackRochace;
     }
 
+    @Override
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
         whiteRochade = new Rochade();
         blackRochace = new Rochade();
     }
 
+    @Override
     public void setPosition(String[] fenPosition) {
         for (int i = 0; i < 8; i++) {
             String row = expandRow(fenPosition[i]);
@@ -54,6 +56,7 @@ public class Board {
         }
     }
 
+    @Override
     public void setFenPosition(String fen) {
         FenParser parser = new FenParser();
         parser.setPosition(fen, this);
@@ -66,14 +69,17 @@ public class Board {
      * @param col
      * @param figureChar
      */
+    @Override
     public void setPos(int row, int col, char figureChar) {
         board[(7 - row) * 8 + col] = Figure.convertFigureChar(figureChar);
     }
 
+    @Override
     public void setPos(int index, Figure figure) {
         board[index] = figure.figureCode;
     }
 
+    @Override
     public void setPos(int index, byte figure) {
         board[index] = figure;
     }
@@ -85,18 +91,22 @@ public class Board {
      * @param col
      * @return
      */
+    @Override
     public char getPos(int row, int col) {
         return Figure.toFigureChar(board[(7 - row) * 8 + col]);
     }
 
+    @Override
     public Figure getPos(int i) {
         return Figure.getFigureByCode(board[i]);
     }
 
+    @Override
     public Figure getFigurePos(int row, int col) {
         return Figure.getFigureByCode(board[(7 - row) * 8 + col]);
     }
 
+    @Override
     public void clearPosition() {
         for (int i = 0; i < board.length; i++) {
             board[i] = Figure.EMPTY.figureCode;
@@ -119,10 +129,12 @@ public class Board {
         return b.toString();
     }
 
+    @Override
     public String toUniCodeStr() {
         return BoardPrinter.toUniCodeStr(this);
     }
 
+    @Override
     public Move move(Move move) {
         // todo validations?
         return move.move(this);
@@ -135,6 +147,7 @@ public class Board {
      * @param to
      * @return the captured figure or empty
      */
+    @Override
     public byte move(int from, int to) {
         byte figure = board[from];
         board[from] = Figure.EMPTY.figureCode;
@@ -143,10 +156,12 @@ public class Board {
         return capturedFigure;
     }
 
+    @Override
     public Figure getFigure(int i) {
         return Figure.getFigureByCode(board[i]);
     }
 
+    @Override
     public byte getFigureCode(int i) {
         return board[i];
     }
@@ -170,6 +185,7 @@ public class Board {
         return result;
     }
 
+    @Override
     public Board copy() {
         return new Board(board.clone(), whiteRochade.copy(), blackRochace.copy());
     }
