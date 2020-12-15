@@ -1,17 +1,17 @@
 package org.mattlang.jc;
 
-import java.util.function.Supplier;
-
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+
+import java.util.function.Supplier;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -22,7 +22,7 @@ public class Factory {
 
     private static final Supplier<EvaluateFunction> DEFAULT_EVALUATEFUNCTIONSUPPLIER = () -> new MaterialNegaMaxEval();
 
-    private static final Supplier<SearchMethod> DEFAULT_SEARCHMETHODSUPPLIER = () -> new IterativeDeepeningNegaMaxAlphaBeta();
+    private static final Supplier<SearchMethod> DEFAULT_SEARCHMETHODSUPPLIER = () -> new IterativeDeepeningMtdf();
 
     private static final Supplier<LegalMoveGenerator> DEFAULT_LEGALMOVEGENERATORSUPPLIER =
             () -> new CachingLegalMoveGenerator();

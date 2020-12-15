@@ -19,7 +19,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
     private int maxDepth = 12;
 
-    private long timeout = 15 * 1000;
+    private long timeout = 20 * 1000;
 
 
     public Move search(Board currBoard, int depth, Color color) {
