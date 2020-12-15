@@ -34,7 +34,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
 
         MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {
-            while (currdepth <= maxDepth) {
+            for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
                 List<NegaMaxAlphaBeta.MoveScore> rslt =
                         negaMaxAlphaBeta.searchWithScore(currBoard, currdepth, color,
@@ -42,7 +42,6 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
                                 stopTime);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
-                currdepth++;
 
                 if (savedMove != null) {
                     UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + negaMaxAlphaBeta.getNodes() );

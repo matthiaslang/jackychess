@@ -11,6 +11,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
@@ -22,7 +23,7 @@ import junit.framework.TestCase;
 public class EngineTest extends TestCase {
 
     @Test
-    public void testNegMax() {
+    public void testNegMaxAlpaBeta() {
 
         // now starting engine:
         Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEval()), 6);
@@ -31,6 +32,8 @@ public class EngineTest extends TestCase {
         Move move = engine.go();
 
         System.out.println(move.toStr());
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
     @Test
@@ -46,6 +49,26 @@ public class EngineTest extends TestCase {
         Move move = engine.go();
 
         System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+    @Test
+    public void testIterativeDeepeningMtdf() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+
+        // now starting engine:
+        Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
     @Test

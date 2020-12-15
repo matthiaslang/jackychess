@@ -90,9 +90,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             moveCursor.undoMove(currBoard);
             if (score > max) {
                 max = score;
-                if (depth == targetDepth)
+                if (depth == targetDepth) {
                     savedMove = moveCursor.getMove();
                     savedMoveScore = score;
+                }
                 if (max >= beta) {
                     cutOff++;
                     break;
@@ -129,8 +130,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             moveCursor.undoMove(currBoard);
             if (score > max) {
                 max = score;
-                if (depth == targetDepth)
+                if (depth == targetDepth) {
                     savedMove = moveCursor.getMove();
+                    savedMoveScore = score;
+                }
                 if (max >= beta) {
                     cutOff++;
                     break;
