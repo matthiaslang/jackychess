@@ -1,11 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.Logger;
 import org.mattlang.jc.board.Board;
@@ -16,6 +10,12 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 
 public class NegaMaxAlphaBeta implements SearchMethod {
 
@@ -115,10 +115,20 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         }
     }
 
-    private List<MoveScore> negaMaximizeWithScore(Board currBoard, int depth, Color color,
+    public static class NegaMaxResult{
+        public final int max;
+        public final List<MoveScore> moveScores;
+
+        public NegaMaxResult(int max, List<MoveScore> moveScores) {
+            this.max = max;
+            this.moveScores = moveScores;
+        }
+    }
+
+    private NegaMaxResult negaMaximizeWithScore(Board currBoard, int depth, Color color,
             int alpha, int beta, MoveList moves) {
         nodesVisited++;
-        ArrayList<MoveScore> result = new ArrayList<>();
+        ArrayList<MoveScore> moveScores = new ArrayList<>();
 
 
         nodes += moves.size();
@@ -126,7 +136,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
-            result.add(new MoveScore(moveCursor.getMove(), score));
+            moveScores.add(new MoveScore(moveCursor.getMove(), score));
             moveCursor.undoMove(currBoard);
             if (score > max) {
                 max = score;
@@ -141,15 +151,15 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             }
 
         }
-        return result;
+        return new NegaMaxResult(max, moveScores);
     }
 
-    public List<MoveScore> searchWithScore(Board currBoard, int depth, Color color,
+    public NegaMaxResult searchWithScore(Board currBoard, int depth, Color color,
             int alpha, int beta, MoveList moves, long stopTime) {
         targetDepth = depth;
         this.stopTime = stopTime;
-        List<MoveScore> scoreResult = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);
-        return scoreResult;
+        NegaMaxResult result = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);
+        return result;
     }
 
     public Move getSavedMove() {

@@ -3,15 +3,12 @@ package org.mattlang.jc.engine.search;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBeta.MoveScore;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBeta.NegaMaxResult;
 import org.mattlang.jc.uci.UCI;
 
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import static org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta.reOrderMoves;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 
@@ -38,7 +35,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
             int firstguess = 0;
             for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
-                List<MoveScore> rslt =
+                NegaMaxResult rslt =
                         mtdf(currBoard, currdepth, color, moves, stopTime, firstguess);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
@@ -48,7 +45,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                     UCI.instance.putCommand("info depth " + currdepth + " score cp " + firstguess + " nodes " + negaMaxAlphaBeta.getNodes());
                     UCI.instance.putCommand("info currmove " + savedMove.toStr());
                 }
-                moves = reOrderMoves(rslt);
+                moves = reOrderMoves(rslt.moveScores);
 
             }
         } catch (TimeoutException te) {
@@ -60,24 +57,17 @@ public class IterativeDeepeningMtdf implements SearchMethod {
         return savedMove;
     }
 
-    private MoveList reOrderMoves(List<MoveScore> rslt) {
-        // order highest scores for us first:
-        rslt.sort((o1, o2) -> o2.score - o1.score);
-        List<Move> list = rslt.stream().map(s -> s.move).collect(toList());
-        return new BasicMoveList(list);
-    }
-
-    List<MoveScore> mtdf(Board board, int depth, Color color,  MoveList moves,long stopTime,int f) {
+    NegaMaxResult mtdf(Board board, int depth, Color color,  MoveList moves,long stopTime,int f) {
         int lower = ALPHA_START;
         int upper = BETA_START;
-        List<MoveScore> result = null;
+        NegaMaxResult result = null;
         do {
             int beta = f;
             if (f == lower) {
                 beta += 1;
             }
             result = negaMaxAlphaBeta.searchWithScore(board, depth, color, beta - 1, beta, moves, stopTime);
-            f = negaMaxAlphaBeta.getSavedMoveScore();
+            f = result.max;
             if (f < beta) {
                 upper = f;
             }else {
