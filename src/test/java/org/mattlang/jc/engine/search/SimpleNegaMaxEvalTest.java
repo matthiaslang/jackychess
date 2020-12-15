@@ -7,10 +7,12 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BoardStats;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
 import org.mattlang.jc.uci.FenParser;
 
 public class SimpleNegaMaxEvalTest {
@@ -53,6 +55,11 @@ public class SimpleNegaMaxEvalTest {
 
         Move move =Factory.createSearchMethod().search(board, 6, Color.BLACK);
         // since we recognize patts, we avoid moves which make patt:
-        assertThat(move.toStr()).isEqualTo("f2g2");
+        board.move(move);
+        // means we should have no patt situation:
+        LegalMoveGeneratorImpl2 moveGenerator = new LegalMoveGeneratorImpl2();
+        MoveList whiteMoves = moveGenerator.generate(board, Color.WHITE);
+        // so white should have possibilities to move:
+        assertThat(whiteMoves.size()).isGreaterThan(0);
     }
 }
