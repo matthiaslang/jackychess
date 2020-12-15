@@ -1,10 +1,6 @@
 package org.mattlang.jc.engine;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
-
-import java.io.IOException;
-
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -18,7 +14,10 @@ import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
 
-import junit.framework.TestCase;
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Main.initLogging;
 
 public class EngineTest extends TestCase {
 
@@ -70,6 +69,24 @@ public class EngineTest extends TestCase {
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
+
+    @Test
+    public void testMtdfProblem() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+
+        // now starting engine:
+        Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
+        engine.getBoard().setFenPosition("position startpos moves e2e4 e7e6 g1f3 d8f6 f1c4 f6f3 g2f3");
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+
+        assertThat(move.toStr()).isEqualTo("d7d5");
+    }
+
 
     @Test
     public void testNegMax2() {
