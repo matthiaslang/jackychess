@@ -34,6 +34,10 @@ public class Engine {
         return searchMethod.search(board, depth, Color.BLACK);
     }
 
+    public Move go(Color color) {
+        return searchMethod.search(board, depth, color);
+    }
+
     public Move stop() {
         return searchMethod.search(board, 1, Color.BLACK);
     }

@@ -1,11 +1,11 @@
 package org.mattlang.jc.uci;
 
+import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Move;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.Engine;
 
 public class UciProcessor {
 
@@ -33,7 +33,8 @@ public class UciProcessor {
         } else if ("ucinewgame".equals(cmdStr)) {
             // dont need to response anything
         } else if (cmdStr.startsWith("position")) {
-            setPosition(cmdStr);
+           Color who2Move= setPosition(cmdStr);
+           asyncEngine.setWho2Move(who2Move);
         } else if (cmdStr.startsWith("go ")) {
             CompletableFuture<Move> result = asyncEngine.start(board);
             result.thenAccept(move ->sendBestMove(move));
@@ -45,9 +46,9 @@ public class UciProcessor {
     }
 
 
-    private void setPosition(String positionStr) {
+    private Color setPosition(String positionStr) {
         FenParser fenParser = new FenParser();
-        fenParser.setPosition(positionStr, board);
+        return fenParser.setPosition(positionStr, board);
     }
 
     private void identifyYourself() {

@@ -1,15 +1,13 @@
 package org.mattlang.jc.uci;
 
-import static org.mattlang.jc.engine.BasicMoveList.*;
+import org.mattlang.jc.board.*;
 
-import org.mattlang.jc.board.BasicMove;
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.PawnPromotionMove;
+import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
 
-    public void setPosition(String positionStr, Board board) {
+    public Color setPosition(String positionStr, Board board) {
+        Color who2Move = Color.WHITE;
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
         int movesSection = 2;
@@ -26,7 +24,7 @@ public class FenParser {
             String noHalfMoves = splitted[6];
             String nextMoveNum = splitted[7];
 
-            setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
+            who2Move = setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
 
             movesSection = 8;
         }
@@ -36,9 +34,11 @@ public class FenParser {
                     String moveStr = splitted[moveIndex];
                     Move move = parseMove(moveStr);
                     board.move(move);
+                    who2Move = who2Move.invert();
                 }
             }
         }
+        return who2Move;
     }
 
     private BasicMove parseMove(String moveStr) {
@@ -63,7 +63,7 @@ public class FenParser {
         return new BasicMove(moveStr);
     }
 
-    private void setPosition(Board board, String figures, String zug, String rochade, String enpassant,
+    private Color setPosition(Board board, String figures, String zug, String rochade, String enpassant,
             String noHalfMoves,
             String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -72,5 +72,9 @@ public class FenParser {
         board.setPosition(rows);
         // todo parse and set rest of fen string...
 
+        if (zug == null || zug.trim().length() == 0) {
+            return Color.WHITE;
+        }
+        return "w".equals(zug) ? Color.WHITE : Color.BLACK;
     }
 }
