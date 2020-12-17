@@ -18,7 +18,7 @@ public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private LegalMoveGenerator generator = Factory.createLegalMoveGenerator();
+    private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     // statistics
     private int nodesVisited = 0;
@@ -36,7 +36,7 @@ public class NegaMax implements SearchMethod {
 
     private void reset() {
         nodesVisited = 0;
-        generator = Factory.createLegalMoveGenerator();
+        generator = Factory.getDefaults().legalMoveGenerator.create();
     }
 
     private MoveScore negaMaximize(Board currBoard, int depth, Color color) {

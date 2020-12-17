@@ -5,11 +5,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.uci.UCI;
 
 import java.io.IOException;
@@ -84,14 +83,16 @@ public class BratKoKopecTest {
     @Test
     public void testIterativeDeepeningNegaMaxAlphaBeta() {
         // create engine
-        Engine engine = new Engine(new IterativeDeepeningNegaMaxAlphaBeta(), 6);
+        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
+        Engine engine = new Engine();
         testPosition(engine);
     }
 
     @Test
     public void testIterativeDeepeningMtdf() {
         // create engine
-        Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
+        Factory.setDefaults(Factory.createIterativeDeepeningMtdf());
+        Engine engine = new Engine();
         testPosition(engine);
     }
 

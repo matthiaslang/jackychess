@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.search;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -17,9 +18,9 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
     private NegaMaxAlphaBeta negaMaxAlphaBeta = new NegaMaxAlphaBeta();
 
-    private int maxDepth = 12;
+    private int maxDepth ;
 
-    private long timeout = 20 * 1000;
+    private long timeout = Factory.getDefaults().getTimeout();
 
 
     public Move search(Board currBoard, int depth, Color color) {

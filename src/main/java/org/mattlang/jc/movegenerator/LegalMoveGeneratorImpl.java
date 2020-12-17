@@ -9,7 +9,7 @@ import org.mattlang.jc.engine.MoveList;
 
 public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
 
-    MoveGenerator generator = Factory.createMoveGenerator();
+    MoveGenerator generator = Factory.getDefaults().moveGenerator.create();
 
     @Override
     public MoveList generate(Board board, Color side) {
@@ -23,7 +23,7 @@ public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
     private MoveList filterLegalMoves(Board currBoard, MoveList moves, Color color) {
         Figure king = color == Color.WHITE ? Figure.B_King : Figure.W_King;
 
-        MoveList legals = Factory.createMoveList();
+        MoveList legals = Factory.getDefaults().moveList.create();
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             MoveList responseMoves = generator.generate(currBoard, color);

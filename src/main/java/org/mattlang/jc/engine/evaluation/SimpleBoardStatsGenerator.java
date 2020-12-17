@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.evaluation;
 
-import java.util.Iterator;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
@@ -10,6 +8,8 @@ import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.MoveGenerator;
+
+import java.util.Iterator;
 
 public class SimpleBoardStatsGenerator implements MoveList {
 
@@ -20,7 +20,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
 
     private int kingPos = 0;
 
-    private MoveGenerator moveGenerator = Factory.createMoveGenerator();
+    private MoveGenerator moveGenerator = Factory.getDefaults().moveGenerator.create();
 
     public BoardStats gen(Board board, Color color) {
         // find king on board:

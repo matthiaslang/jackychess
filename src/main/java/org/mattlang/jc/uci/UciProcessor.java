@@ -40,7 +40,10 @@ public class UciProcessor {
             result.thenAccept(move ->sendBestMove(move));
 
         } else if ("stop".equals(cmdStr)) {
-            sendBestMove(asyncEngine.stop());
+            Optional<Move> bm = asyncEngine.stop();
+            if (bm.isPresent()) {
+                sendBestMove(bm.get());
+            }
         }
 
     }

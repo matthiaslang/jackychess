@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
@@ -14,6 +12,8 @@ import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
 import org.mattlang.jc.uci.FenParser;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleNegaMaxEvalTest {
 
@@ -53,7 +53,7 @@ public class SimpleNegaMaxEvalTest {
 
         System.out.println(board.toUniCodeStr());
 
-        Move move =Factory.createSearchMethod().search(board, 6, Color.BLACK);
+        Move move =Factory.getDefaults().searchMethod.create().search(board, 6, Color.BLACK);
         // since we recognize patts, we avoid moves which make patt:
         board.move(move);
         // means we should have no patt situation:

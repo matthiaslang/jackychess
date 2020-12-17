@@ -1,11 +1,16 @@
 package org.mattlang.jc.uci;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class AsyncEngine {
 
@@ -14,6 +19,9 @@ public class AsyncEngine {
     private Color who2Move;
 
     public CompletableFuture<Move> start(final Board board) {
+        // reset Factories + Caches:
+        Factory.setDefaults(Factory.createDefaultParameter());
+
         this.board = board.copy();
         CompletableFuture<Move> future
                 = CompletableFuture.supplyAsync(() -> new Engine(board.copy()).go(who2Move));
@@ -22,18 +30,20 @@ public class AsyncEngine {
         return future;
     }
 
-    public Move stop() {
+    public Optional<Move> stop() {
         if (result != null) {
             result.cancel(true);
             try {
-                result.wait(2000);
-            } catch (InterruptedException | IllegalMonitorStateException e) {
+                return Optional.of(result.get(2000, TimeUnit.MILLISECONDS));
+            } catch (InterruptedException | IllegalMonitorStateException | ExecutionException | TimeoutException e) {
                 //e.printStackTrace();
             }
             result = null;
+        } else {
+            // stop without go...?
+
         }
-        // as long as we have no iterative deepening, just retun a small search result:
-        return new Engine(board,2).go(who2Move);
+        return Optional.empty();
     }
 
     public void setWho2Move(Color who2Move) {

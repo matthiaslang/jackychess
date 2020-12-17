@@ -25,7 +25,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private LegalMoveGenerator generator = Factory.createLegalMoveGenerator();
+    private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private long stopTime = 0;
 
@@ -40,10 +40,11 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
 
     public NegaMaxAlphaBeta() {
-        this.evaluate = Factory.createEvaluateFunction();
+        reset();
     }
 
     public NegaMaxAlphaBeta(EvaluateFunction evaluate) {
+        reset();
         this.evaluate = evaluate;
     }
 
@@ -63,12 +64,12 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         nodes = 0;
         cutOff = 0;
         savedMove = null;
-        generator = Factory.createLegalMoveGenerator();
-        evaluate = Factory.createEvaluateFunction();
+        generator = Factory.getDefaults().legalMoveGenerator.create();
+        evaluate = Factory.getDefaults().evaluateFunction.create();
     }
 
     private int negaMaximize(Board currBoard, int depth, Color color,
-            int alpha, int beta) {
+                             int alpha, int beta) {
         nodesVisited++;
         if (depth == 0)
             return evaluate.eval(currBoard, color);
@@ -77,12 +78,15 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             if (System.currentTimeMillis() > stopTime) {
                 throw new TimeoutException();
             }
+            if (Thread.interrupted()) {
+                throw new TimeoutException();
+            }
         }
 
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
             // no more legal moves, that means we have checkmate:
-            return - MaterialNegaMaxEval.KING_WHEIGHT;
+            return -MaterialNegaMaxEval.KING_WHEIGHT;
         }
         nodes += moves.size();
         int max = alpha;
@@ -106,7 +110,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return max;
     }
 
-    public static class NegaMaxResult{
+    public static class NegaMaxResult {
         public final int max;
         public final List<MoveScore> moveScores;
 
@@ -117,7 +121,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     }
 
     private NegaMaxResult negaMaximizeWithScore(Board currBoard, int depth, Color color,
-            int alpha, int beta, MoveList moves) {
+                                                int alpha, int beta, MoveList moves) {
         nodesVisited++;
         ArrayList<MoveScore> moveScores = new ArrayList<>();
 
@@ -146,7 +150,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     }
 
     public NegaMaxResult searchWithScore(Board currBoard, int depth, Color color,
-            int alpha, int beta, MoveList moves, long stopTime) {
+                                         int alpha, int beta, MoveList moves, long stopTime) {
         targetDepth = depth;
         this.stopTime = stopTime;
         NegaMaxResult result = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);

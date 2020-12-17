@@ -1,15 +1,15 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.MoveList;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -79,7 +79,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
      * @param side  the side to move
      */
     public MoveList generate(Board board, Color side) {
-        MoveList moves = Factory.createMoveList();
+        MoveList moves = Factory.getDefaults().moveList.create();
         return generate(board, side, moves);
     }
 

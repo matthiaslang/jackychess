@@ -1,15 +1,6 @@
 package org.mattlang.jc.movegeneration;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.IndexConversion.parsePos;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
+import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,19 +14,27 @@ import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
-import junit.framework.TestCase;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 public class MoveGeneratorCompactListTest extends TestCase {
 
     @Before
     public void init() {
-        Factory.setMoveListSupplier(() -> new CompactMoveList());
+        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
 
     }
 
     @After
     public void cleanup() {
-        Factory.reset();
+        Factory.setDefaults(Factory.createDefaultParameter());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
 
     @Test
     public void testPawnPromotionAndUndoing2() {
-        Factory.setMoveListSupplier(() -> new CompactMoveList());
+        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
 
         Board board = new Board();
         String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
@@ -116,7 +115,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
 
     @Test
     public void testMoveGenFromStartWhite() {
-        Factory.setMoveListSupplier(() -> new CompactMoveList());
+        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
 
         Board board = new Board();
         board.setStartPosition();
@@ -169,7 +168,7 @@ public class MoveGeneratorCompactListTest extends TestCase {
 
     @Test
     public void testRochade() {
-        Factory.setMoveListSupplier(() -> new CompactMoveList());
+        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
 
         Board board = new Board();
         String fen = "position fen r3k2r/8/8/8/8/8/8/R3K2R b k - 2 17 ";

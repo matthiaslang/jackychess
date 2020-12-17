@@ -11,7 +11,8 @@ import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 
 public class LegalMoveGeneratorImpl2 implements LegalMoveGenerator {
 
-    MoveGenerator generator = Factory.createMoveGenerator();
+    MoveGenerator generator = Factory.getDefaults().moveGenerator.create();
+
     SimpleBoardStatsGenerator statsGenerator = new SimpleBoardStatsGenerator();
     @Override
     public MoveList generate(Board board, Color side) {
@@ -27,7 +28,7 @@ public class LegalMoveGeneratorImpl2 implements LegalMoveGenerator {
 
         byte kingFigureCode = (byte) (FigureType.King.figureCode | otherColor.code);
 
-        MoveList legals = Factory.createMoveList();
+        MoveList legals = Factory.getDefaults().moveList.create();
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 

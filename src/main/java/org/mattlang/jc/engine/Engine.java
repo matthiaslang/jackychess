@@ -10,9 +10,9 @@ public class Engine {
 
     private Board board = new Board();
 
-    private SearchMethod searchMethod = Factory.createSearchMethod();
+    private SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
 
-    private int depth = 6;
+    private int depth = Factory.getDefaults().getMaxDepth();
 
     public Engine(Board board) {
         this.board = board;
@@ -36,10 +36,6 @@ public class Engine {
 
     public Move go(Color color) {
         return searchMethod.search(board, depth, color);
-    }
-
-    public Move stop() {
-        return searchMethod.search(board, 1, Color.BLACK);
     }
 
     public void move(BasicMove move) {

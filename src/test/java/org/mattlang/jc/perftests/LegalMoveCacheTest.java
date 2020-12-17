@@ -1,10 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
-import java.util.HashMap;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
@@ -18,6 +13,11 @@ import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.movegenerator.*;
+
+import java.util.HashMap;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 
 //@Ignore
 public class LegalMoveCacheTest  {
@@ -35,7 +35,7 @@ public class LegalMoveCacheTest  {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.setMoveListSupplier(() -> new BasicMoveList());
+        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
 
         stopwatch.start();
         int num = 10000000;
@@ -49,7 +49,7 @@ public class LegalMoveCacheTest  {
         stopwatch.stop();
         System.out.println("basic list: " + stopwatch.toString());
 
-        Factory.setMoveListSupplier(() -> new CompactMoveList());
+        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
 
         stopwatch.start();
         for (int i = 0; i < num; i++) {
@@ -78,7 +78,7 @@ public class LegalMoveCacheTest  {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.setMoveListSupplier(() -> new BasicMoveList());
+        Factory.getDefaults().moveList.set(() ->  new BasicMoveList());
 
         stopwatch.start();
         int num = 10000000;
@@ -130,7 +130,7 @@ public class LegalMoveCacheTest  {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.setMoveListSupplier(() -> new BasicMoveList());
+        Factory.getDefaults().moveList.set(() ->  new BasicMoveList());
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
@@ -167,9 +167,9 @@ public class LegalMoveCacheTest  {
         int depth = 5;
         StopWatch stopWatch = new StopWatch();
 
-        Factory.setMoveGeneratorSupplier(() -> new MoveGeneratorImpl2());
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
 
-        Factory.setLegalMoveGeneratorSupplier(() -> new LegalMoveGeneratorImpl());
+        Factory.getDefaults().legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl());
         // now starting engine:
         Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
@@ -181,7 +181,7 @@ public class LegalMoveCacheTest  {
 
         System.out.println("time without caching: " + stopWatch.toString() + " found move " + move.toStr());
 
-        Factory.setLegalMoveGeneratorSupplier(() -> new LegalMoveGeneratorImpl2());
+        Factory.getDefaults().legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2());
         engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
@@ -191,8 +191,8 @@ public class LegalMoveCacheTest  {
         long durationImpl2 = stopWatch.getDuration();
         System.out.println("time with impl2: " + stopWatch.toString() + " found move " + move.toStr());
 
-        
-        Factory.setLegalMoveGeneratorSupplier(() -> new CachingLegalMoveGenerator());
+
+        Factory.getDefaults().legalMoveGenerator.set(() -> new CachingLegalMoveGenerator());
         engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
