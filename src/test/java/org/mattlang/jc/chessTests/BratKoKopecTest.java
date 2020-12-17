@@ -9,6 +9,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
+import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.uci.UCI;
 
 import java.io.IOException;
@@ -16,6 +17,13 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Main.initLogging;
+
+/**
+ * Bratko Kopec Test Suite.
+ * Most Tests fail..
+ * With iterative deepening alpha beta some work fine.
+ * With mtd(f) all faill currently, means there is something bad going on here, probably.
+ */
 
 @Category(ChessTests.class)
 @RunWith(Parameterized.class)
@@ -74,11 +82,22 @@ public class BratKoKopecTest {
     }
 
     @Test
-    public void testChessPosition() {
-        System.out.println(position + " " + expectedBestMove);
+    public void testIterativeDeepeningNegaMaxAlphaBeta() {
+        // create engine
+        Engine engine = new Engine(new IterativeDeepeningNegaMaxAlphaBeta(), 6);
+        testPosition(engine);
+    }
 
+    @Test
+    public void testIterativeDeepeningMtdf() {
         // create engine
         Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
+        testPosition(engine);
+    }
+
+    private void testPosition(Engine engine) {
+        System.out.println(position + " " + expectedBestMove);
+
         // set fen position out of the epd description:
         // todo we are not able to parse epd correctly right now, but with that workaround we get it to work
         // as FEN:
@@ -93,5 +112,4 @@ public class BratKoKopecTest {
         assertThat(expectedBestMove).contains(targetSquare);
 
     }
-
 }
