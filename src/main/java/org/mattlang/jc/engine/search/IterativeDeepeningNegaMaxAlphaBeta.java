@@ -60,7 +60,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
         return savedMove;
     }
 
-    public static MoveList reOrderMoves(List<NegaMaxAlphaBeta.MoveScore> rslt) {
+    public static MoveList reOrderMoves(List<MoveScore> rslt) {
         // order highest scores for us first:
         rslt.sort((o1, o2) -> o2.score - o1.score);
         List<Move> list = rslt.stream().map(s -> s.move).collect(toList());

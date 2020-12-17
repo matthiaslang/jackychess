@@ -1,14 +1,17 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 
 public class NegaMax implements SearchMethod {
 
@@ -19,17 +22,6 @@ public class NegaMax implements SearchMethod {
     // statistics
     private int nodesVisited = 0;
 
-    static class ScoreResult {
-
-        public final Move bestMove;
-        public final int score;
-
-        public ScoreResult(Move bestMove, int score) {
-            this.bestMove = bestMove;
-            this.score = score;
-        }
-    }
-
     public NegaMax(EvaluateFunction evaluate) {
         this.evaluate = evaluate;
     }
@@ -37,8 +29,8 @@ public class NegaMax implements SearchMethod {
     public Move search(Board currBoard, int depth, Color color) {
         assert depth > 0;
         reset();
-        ScoreResult scoreResult = negaMaximize(currBoard, depth, color);
-        return scoreResult.bestMove;
+        MoveScore scoreResult = negaMaximize(currBoard, depth, color);
+        return scoreResult.move;
     }
 
     private void reset() {
@@ -46,7 +38,7 @@ public class NegaMax implements SearchMethod {
         generator = Factory.createLegalMoveGenerator();
     }
 
-    private ScoreResult negaMaximize(Board currBoard, int depth, Color color) {
+    private MoveScore negaMaximize(Board currBoard, int depth, Color color) {
         Move bestmove = null;
 
         MoveList moves = generator.generate(currBoard, color);
@@ -61,14 +53,14 @@ public class NegaMax implements SearchMethod {
             }
             moveCursor.undoMove(currBoard);
         }
-        return new ScoreResult(bestmove, max);
+        return new MoveScore(bestmove, max);
     }
 
     private int negaMax(Board currBoard, int depth, Color color) {
         nodesVisited++;
         if (depth == 0)
             return evaluate.eval(currBoard, color);
-        ScoreResult scoreResult = negaMaximize(currBoard, depth, color);
+        MoveScore scoreResult = negaMaximize(currBoard, depth, color);
         return scoreResult.score;
     }
 }

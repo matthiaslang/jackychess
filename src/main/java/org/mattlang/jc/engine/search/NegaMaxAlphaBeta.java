@@ -105,17 +105,6 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return max;
     }
 
-    public static class MoveScore{
-
-        public final Move move;
-        public final int score;
-
-        public MoveScore(Move move, int score) {
-            this.move = move;
-            this.score = score;
-        }
-    }
-
     public static class NegaMaxResult{
         public final int max;
         public final List<MoveScore> moveScores;
