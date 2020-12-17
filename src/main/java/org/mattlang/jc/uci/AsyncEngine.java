@@ -21,6 +21,7 @@ public class AsyncEngine {
     public CompletableFuture<Move> start(final Board board) {
         // reset Factories + Caches:
         Factory.setDefaults(Factory.createDefaultParameter());
+        Factory.getDefaults().log();
 
         this.board = board.copy();
         CompletableFuture<Move> future

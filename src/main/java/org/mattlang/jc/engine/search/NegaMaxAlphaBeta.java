@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.Logger;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -53,8 +53,8 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         reset();
         targetDepth = depth;
         int scoreResult = negaMaximize(currBoard, depth, color, ALPHA_START, BETA_START);
-        Logger.info(depth, nodesVisited, scoreResult);
-        Logger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
+        UCILogger.info(depth, nodesVisited, scoreResult);
+        UCILogger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
                 scoreResult);
         return savedMove;
     }

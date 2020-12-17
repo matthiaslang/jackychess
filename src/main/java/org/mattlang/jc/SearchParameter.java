@@ -12,7 +12,11 @@ import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
+import java.util.logging.Logger;
+
 public class SearchParameter {
+
+    private static final Logger LOGGER = Logger.getLogger(SearchParameter.class.getSimpleName());
 
     private int maxDepth;
 
@@ -46,6 +50,16 @@ public class SearchParameter {
         return timeout;
     }
 
+    public void log() {
+        UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+        UCILogger.log("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        UCILogger.log("Max Depth: " + getMaxDepth());
+        UCILogger.log("Timeout ms: " + getTimeout());
 
+        LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+        LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        LOGGER.info("Max Depth: " + getMaxDepth());
+        LOGGER.info("Timeout ms: " + getTimeout());
+    }
 
 }
