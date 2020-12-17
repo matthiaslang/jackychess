@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.evaluation;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-import static org.mattlang.jc.board.FigureType.*;
-
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.EvaluateFunction;
+
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureType.*;
 
 /**
  * Experimental Material Evaluation.
@@ -14,6 +14,9 @@ import org.mattlang.jc.engine.EvaluateFunction;
  * https://www.chessprogramming.org/Simplified_Evaluation_Function
  */
 public class MaterialNegaMaxEval implements EvaluateFunction {
+
+    /* King wheight, aka Matt Wheight. */
+    public static final int KING_WHEIGHT = 200000000;
 
     SimpleBoardStatsGenerator statsgenerator = new SimpleBoardStatsGenerator();
 
@@ -30,7 +33,7 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
             }
         }
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
-        int score = 200000000 * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
+        int score = KING_WHEIGHT * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
                 900 * (counts[0][Queen.figureCode] - counts[1][Queen.figureCode]) * who2mov +
                 500 * (counts[0][Rook.figureCode] - counts[1][Rook.figureCode]) * who2mov +
                 330 * (counts[0][Bishop.figureCode] - counts[1][Bishop.figureCode]) * who2mov +

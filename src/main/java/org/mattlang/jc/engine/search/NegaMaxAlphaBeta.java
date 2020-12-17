@@ -9,6 +9,7 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 import java.util.ArrayList;
@@ -80,8 +81,8 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
-            // no more legal moves, we are at a end position:
-            return evaluate.eval(currBoard, color);
+            // no more legal moves, that means we have checkmate:
+            return - MaterialNegaMaxEval.KING_WHEIGHT;
         }
         nodes += moves.size();
         int max = alpha;
