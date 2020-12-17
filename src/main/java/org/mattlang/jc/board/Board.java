@@ -1,12 +1,12 @@
 package org.mattlang.jc.board;
 
-import static java.lang.Character.isDigit;
-import static java.lang.Integer.parseInt;
+import org.mattlang.jc.uci.FenParser;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.mattlang.jc.uci.FenParser;
+import static java.lang.Character.isDigit;
+import static java.lang.Integer.parseInt;
 
 /**
  * Represents a board with figures.
@@ -57,9 +57,9 @@ public class Board implements BoardRepresentation {
     }
 
     @Override
-    public void setFenPosition(String fen) {
+    public Color setFenPosition(String fen) {
         FenParser parser = new FenParser();
-        parser.setPosition(fen, this);
+        return parser.setPosition(fen, this);
     }
 
     /**
