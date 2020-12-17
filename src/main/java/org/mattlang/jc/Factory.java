@@ -4,6 +4,7 @@ import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
@@ -20,7 +21,7 @@ public class Factory {
 
     private final static Supplier<MoveList> DEFAULT_MOVELISTSUPPLIER = () -> new BasicMoveList();
 
-    private static final Supplier<EvaluateFunction> DEFAULT_EVALUATEFUNCTIONSUPPLIER = () -> new MaterialNegaMaxEval();
+    private static final Supplier<EvaluateFunction> DEFAULT_EVALUATEFUNCTIONSUPPLIER = () -> new CachingEvaluateFunction(new MaterialNegaMaxEval());
 
     private static final Supplier<SearchMethod> DEFAULT_SEARCHMETHODSUPPLIER = () -> new IterativeDeepeningMtdf();
 
