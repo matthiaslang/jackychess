@@ -6,7 +6,7 @@ package org.mattlang.jc.board;
 public interface RepetitionChecker {
 
 
-    void push(Board board);
+    void push(BoardRepresentation board);
 
     void pop();
 

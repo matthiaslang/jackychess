@@ -2,10 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.UCILogger;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
@@ -39,6 +36,8 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     private int targetDepth;
     private int cutOff;
 
+    private RepetitionChecker repetitionChecker;
+
 
     public NegaMaxAlphaBeta() {
         reset();
@@ -53,6 +52,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     public Move search(GameState gameState, int depth) {
         assert depth > 0;
         reset();
+        repetitionChecker= gameState.getRepetitionChecker();
         targetDepth = depth;
         int scoreResult = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), ALPHA_START, BETA_START);
         UCILogger.info(depth, nodesVisited, scoreResult);
@@ -80,6 +80,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
             return eval;
         }
+        if (repetitionChecker.isRepetition()) {
+            // remis due to 3 times same position.
+            return 0;
+        }
 
         if (stopTime != 0 && nodesVisited % 100000 == 0) {
             if (System.currentTimeMillis() > stopTime) {
@@ -99,8 +103,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         int max = alpha;
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
+            repetitionChecker.push(currBoard);
             int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
             moveCursor.undoMove(currBoard);
+            repetitionChecker.pop();
             if (score > max) {
                 max = score;
                 if (depth == targetDepth) {
@@ -137,9 +143,11 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         int max = alpha;
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
+            repetitionChecker.push(currBoard);
             int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
             moveScores.add(new MoveScore(moveCursor.getMove(), score));
             moveCursor.undoMove(currBoard);
+            repetitionChecker.pop();
             if (score > max) {
                 max = score;
                 if (depth == targetDepth) {
@@ -156,11 +164,12 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         return new NegaMaxResult(max, moveScores);
     }
 
-    public NegaMaxResult searchWithScore(BoardRepresentation currBoard, int depth, Color color,
+    public NegaMaxResult searchWithScore(GameState gameState, int depth,
                                          int alpha, int beta, MoveList moves, long stopTime) {
         targetDepth = depth;
         this.stopTime = stopTime;
-        NegaMaxResult result = negaMaximizeWithScore(currBoard, depth, color, alpha, beta, moves);
+        repetitionChecker= gameState.getRepetitionChecker();
+        NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
         return result;
     }
 

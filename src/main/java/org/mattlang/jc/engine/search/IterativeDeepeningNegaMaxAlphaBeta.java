@@ -44,7 +44,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
             for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
                 NegaMaxResult rslt =
-                        negaMaxAlphaBeta.searchWithScore(currBoard, currdepth, color,
+                        negaMaxAlphaBeta.searchWithScore(gameState, currdepth,
                                 ALPHA_START, BETA_START, moves,
                                 stopTime);
 
