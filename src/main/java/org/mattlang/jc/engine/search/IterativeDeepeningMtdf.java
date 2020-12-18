@@ -9,12 +9,15 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta.NegaMaxResult;
 import org.mattlang.jc.uci.UCI;
 
+import java.util.logging.Logger;
+
 import static org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta.reOrderMoves;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 
 public class IterativeDeepeningMtdf implements SearchMethod {
 
+    Logger logger = Logger.getLogger("MTDF");
 
     private NegaMaxAlphaBeta negaMaxAlphaBeta = new NegaMaxAlphaBeta();
 
@@ -40,7 +43,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                         mtdf(currBoard, currdepth, color, moves, stopTime, firstguess);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
-                firstguess = negaMaxAlphaBeta.getSavedMoveScore();
+                firstguess = rslt.max;
 
                 if (savedMove != null) {
                     UCI.instance.putCommand("info depth " + currdepth + " score cp " + firstguess + " nodes " + negaMaxAlphaBeta.getNodes());
@@ -62,11 +65,14 @@ public class IterativeDeepeningMtdf implements SearchMethod {
         int lower = ALPHA_START;
         int upper = BETA_START;
         NegaMaxResult result = null;
+        int rounds = 0;
         do {
+            rounds++;
             int beta = f;
             if (f == lower) {
                 beta += 1;
             }
+            //logger.info("alpha: " + (beta -1) + " beta: " + beta);
             result = negaMaxAlphaBeta.searchWithScore(board, depth, color, beta - 1, beta, moves, stopTime);
             f = result.max;
             if (f < beta) {
@@ -76,7 +82,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
             }
         } while (lower < upper);
 
-        UCI.instance.putCommand("info depth " + depth + " mtdf: score cp " + f + " mtdf: lower : " + lower + " upper: " + upper );
+        UCI.instance.putCommand("info depth " + depth + " mtdf: rounds: " + rounds + " score cp:" + f + " lower: " + lower + " upper: " + upper );
 
         return result;
     }
