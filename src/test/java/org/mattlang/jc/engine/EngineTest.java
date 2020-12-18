@@ -2,13 +2,13 @@ package org.mattlang.jc.engine;
 
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
 import org.mattlang.jc.uci.FenParser;
@@ -40,9 +40,9 @@ public class EngineTest extends TestCase {
 
         initLogging();
         UCI.instance.attachStreams();
-        
+        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
         // now starting engine:
-        Engine engine = new Engine(new IterativeDeepeningNegaMaxAlphaBeta(), 6);
+        Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
@@ -58,9 +58,9 @@ public class EngineTest extends TestCase {
 
         initLogging();
         UCI.instance.attachStreams();
-
+        Factory.setDefaults(Factory.createIterativeDeepeningMtdf());
         // now starting engine:
-        Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
+        Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
