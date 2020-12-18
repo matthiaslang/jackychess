@@ -11,10 +11,14 @@ import org.mattlang.jc.uci.UCI;
 
 import java.util.logging.Logger;
 
-import static org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta.reOrderMoves;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 
+/**
+ * mtf implementation.
+ * currently very, very slow, because alpha beta results are not save in transpostion table...
+ * works also not well when sorting moves (why??)
+ */
 public class IterativeDeepeningMtdf implements SearchMethod {
 
     Logger logger = Logger.getLogger("MTDF");
@@ -49,7 +53,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                     UCI.instance.putCommand("info depth " + currdepth + " score cp " + firstguess + " nodes " + negaMaxAlphaBeta.getNodes());
                     UCI.instance.putCommand("info currmove " + savedMove.toStr());
                 }
-                moves = reOrderMoves(rslt.moveScores);
+                //moves = reOrderMoves(rslt.moveScores);
 
             }
         } catch (TimeoutException te) {
