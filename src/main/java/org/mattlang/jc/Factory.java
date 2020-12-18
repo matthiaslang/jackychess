@@ -15,7 +15,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
-                .evaluateFunction.set(() -> new MaterialNegaMaxEval())
+                .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEval()))
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2())
                 .setMaxDepth(6)

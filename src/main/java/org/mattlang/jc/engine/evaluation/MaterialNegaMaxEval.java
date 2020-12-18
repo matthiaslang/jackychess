@@ -54,7 +54,13 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
         score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
                 20 * (wstats.captures - bstats.captures) * who2mov;
 
-        score += -PATT_WEIGHT * (isPatt(wstats, bstats) - isPatt(bstats, wstats)) * who2mov;
+        int whiteMakesPatt = isPatt(wstats, bstats);
+        int blackMakesPatt = isPatt(bstats, wstats);
+
+        if (whiteMakesPatt == 1 || blackMakesPatt == 1) {
+         // patt dominates the score and resets all previous score calculation:
+            score = -PATT_WEIGHT * (whiteMakesPatt - blackMakesPatt) * who2mov;
+        }
 
         return score;
 

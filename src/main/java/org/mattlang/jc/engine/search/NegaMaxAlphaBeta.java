@@ -73,8 +73,13 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
                              int alpha, int beta) {
         nodesVisited++;
+        int eval = evaluate.eval(currBoard, color);
         if (depth == 0)
-            return evaluate.eval(currBoard, color);
+            return eval;
+        // patt node:
+        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+            return eval;
+        }
 
         if (stopTime != 0 && nodesVisited % 100000 == 0) {
             if (System.currentTimeMillis() > stopTime) {

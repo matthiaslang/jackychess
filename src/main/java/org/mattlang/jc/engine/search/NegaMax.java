@@ -64,8 +64,15 @@ public class NegaMax implements SearchMethod {
 
     private int negaMax(BoardRepresentation currBoard, int depth, Color color) {
         nodesVisited++;
+
+        int eval = evaluate.eval(currBoard, color);
         if (depth == 0)
-            return evaluate.eval(currBoard, color);
+            return eval;
+        // patt node:
+        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+            return eval;
+        }
+
         MoveScore scoreResult = negaMaximize(currBoard, depth, color);
         return scoreResult.score;
     }
