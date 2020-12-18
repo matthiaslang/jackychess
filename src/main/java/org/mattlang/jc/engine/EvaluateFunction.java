@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
 public interface EvaluateFunction {
 
-    int eval(Board currBoard, Color who2Move);
+    int eval(BoardRepresentation currBoard, Color who2Move);
 }

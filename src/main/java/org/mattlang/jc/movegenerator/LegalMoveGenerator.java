@@ -1,6 +1,6 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
@@ -9,6 +9,6 @@ import org.mattlang.jc.engine.MoveList;
  */
 public interface LegalMoveGenerator {
 
-    MoveList generate(Board board, Color side);
+    MoveList generate(BoardRepresentation board, Color side);
 
 }

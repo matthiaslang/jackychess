@@ -1,6 +1,6 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
@@ -14,12 +14,12 @@ public interface MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    MoveList generate(Board board, Color side);
+    MoveList generate(BoardRepresentation board, Color side);
 
     /**
      * @param board current board
      * @param side  the side to move
      */
-    MoveList generate(Board board, Color side, MoveList moves);
+    MoveList generate(BoardRepresentation board, Color side, MoveList moves);
 
 }

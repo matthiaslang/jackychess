@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.EvaluateFunction;
@@ -16,12 +16,13 @@ import static org.mattlang.jc.board.FigureType.*;
 public class MaterialNegaMaxEval implements EvaluateFunction {
 
     /* King wheight, aka Matt Wheight. */
-    public static final int KING_WHEIGHT = 200000000;
+    public static final int KING_WHEIGHT = 32000;
+    public static final int PATT_WEIGHT = 10000;
 
     SimpleBoardStatsGenerator statsgenerator = new SimpleBoardStatsGenerator();
 
     @Override
-    public int eval(Board currBoard, Color who2Move) {
+    public int eval(BoardRepresentation currBoard, Color who2Move) {
         int counts[][] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 
         for (int i = 0; i < 64; i++) {
@@ -53,7 +54,7 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
         score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
                 20 * (wstats.captures - bstats.captures) * who2mov;
 
-        score += -100000 * (isPatt(wstats, bstats) - isPatt(bstats, wstats)) * who2mov;
+        score += -PATT_WEIGHT * (isPatt(wstats, bstats) - isPatt(bstats, wstats)) * who2mov;
 
         return score;
 

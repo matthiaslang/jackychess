@@ -10,7 +10,7 @@ public class RochadeMove extends BasicMove {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardRepresentation board) {
         super.move(board);
 
         board.move(second.getFromIndex(), second.getToIndex());

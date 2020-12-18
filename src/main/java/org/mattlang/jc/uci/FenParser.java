@@ -6,7 +6,8 @@ import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
 
-    public Color setPosition(String positionStr, Board board) {
+    public GameState setPosition(String positionStr, Board board) {
+        RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
         Color who2Move = Color.WHITE;
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
@@ -28,17 +29,19 @@ public class FenParser {
 
             movesSection = 8;
         }
+        repetitionChecker.push(board);
         if (splitted.length > movesSection) {
             if ("moves".equals(splitted[movesSection])) {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
                     Move move = parseMove(moveStr);
                     board.move(move);
+                    repetitionChecker.push(board);
                     who2Move = who2Move.invert();
                 }
             }
         }
-        return who2Move;
+        return new GameState(board, who2Move, repetitionChecker);
     }
 
     private BasicMove parseMove(String moveStr) {

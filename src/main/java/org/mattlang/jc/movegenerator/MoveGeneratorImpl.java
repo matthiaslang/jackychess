@@ -1,7 +1,7 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
@@ -78,7 +78,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    public MoveList generate(Board board, Color side) {
+    public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = Factory.getDefaults().moveList.create();
         return generate(board, side, moves);
     }
@@ -87,7 +87,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    public MoveList generate(Board board, Color side, MoveList moves) {
+    public MoveList generate(BoardRepresentation board, Color side, MoveList moves) {
 
 
         Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
@@ -123,7 +123,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
         return moves;
     }
 
-    private boolean checkPos(Board board, int[] pos, Figure... figures) {
+    private boolean checkPos(BoardRepresentation board, int[] pos, Figure... figures) {
         for (int i = 0; i < pos.length; i++) {
             Figure figure = board.getPos(pos[i]);
             if (figures[i] != figure) {
@@ -133,7 +133,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
         return true;
     }
 
-    private void generateRochade(Board board, Color side, MoveList moves) {
+    private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
         switch (side) {
         case WHITE:
             if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
@@ -154,7 +154,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
         }
     }
 
-    private void genPawnMoves(Board board, MoveList moves, int i, Color side) {
+    private void genPawnMoves(BoardRepresentation board, MoveList moves, int i, Color side) {
         boolean isOnBaseLine = false;
         if (side == WHITE) {
             isOnBaseLine = i >= 8 && i <= 15;

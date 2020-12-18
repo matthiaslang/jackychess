@@ -6,7 +6,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.UCI;
@@ -104,10 +104,9 @@ public class BratKoKopecTest {
         // set fen position out of the epd description:
         // todo we are not able to parse epd correctly right now, but with that workaround we get it to work
         // as FEN:
-        Color who2Move = engine.getBoard().setFenPosition("position fen " + position + " 0 0");
+        GameState gameState = engine.getBoard().setFenPosition("position fen " + position + " 0 0");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(who2Move);
-
+        Move move = engine.go(gameState);
 
         System.out.println(move.toStr());
         // we have no short algebraic notation, therefore do some weak comparison...

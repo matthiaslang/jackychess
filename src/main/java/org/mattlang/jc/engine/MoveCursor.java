@@ -1,13 +1,13 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 
 public interface MoveCursor {
 
-    void move(Board board);
+    void move(BoardRepresentation board);
 
     Move getMove();
 
-    void undoMove(Board board);
+    void undoMove(BoardRepresentation board);
 }

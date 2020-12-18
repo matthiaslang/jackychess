@@ -1,8 +1,9 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -27,10 +28,10 @@ public class NegaMax implements SearchMethod {
         this.evaluate = evaluate;
     }
 
-    public Move search(Board currBoard, int depth, Color color) {
+    public Move search(GameState gameState, int depth) {
         assert depth > 0;
         reset();
-        MoveScore scoreResult = negaMaximize(currBoard, depth, color);
+        MoveScore scoreResult = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move());
         return scoreResult.move;
     }
 
@@ -39,7 +40,7 @@ public class NegaMax implements SearchMethod {
         generator = Factory.getDefaults().legalMoveGenerator.create();
     }
 
-    private MoveScore negaMaximize(Board currBoard, int depth, Color color) {
+    private MoveScore negaMaximize(BoardRepresentation currBoard, int depth, Color color) {
         Move bestmove = null;
 
         MoveList moves = generator.generate(currBoard, color);
@@ -61,7 +62,7 @@ public class NegaMax implements SearchMethod {
         return new MoveScore(bestmove, max);
     }
 
-    private int negaMax(Board currBoard, int depth, Color color) {
+    private int negaMax(BoardRepresentation currBoard, int depth, Color color) {
         nodesVisited++;
         if (depth == 0)
             return evaluate.eval(currBoard, color);

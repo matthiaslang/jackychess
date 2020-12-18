@@ -1,10 +1,11 @@
 package org.mattlang.jc.movegenerator;
 
+import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+
 import java.util.HashMap;
 import java.util.Objects;
-
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Color;
 
 public class BoardCache<T> {
 
@@ -13,8 +14,8 @@ public class BoardCache<T> {
     private int cacheHit;
     private int cacheFail;
 
-    private HashMap<Board, T> whitemap = new HashMap<>(CAPACITY);
-    private HashMap<Board, T> blackmap = new HashMap<>(CAPACITY);
+    private HashMap<BoardRepresentation, T> whitemap = new HashMap<>(CAPACITY);
+    private HashMap<BoardRepresentation, T> blackmap = new HashMap<>(CAPACITY);
 
     private BoardCacheEntryCreator<T> creator;
 
@@ -22,7 +23,7 @@ public class BoardCache<T> {
         this.creator = Objects.requireNonNull(creator);
     }
 
-    public T getCache(Board board, Color side) {
+    public T getCache(BoardRepresentation board, Color side) {
         T result = get(board, side);
         if (result != null) {
             cacheHit++;
@@ -34,7 +35,7 @@ public class BoardCache<T> {
         return value;
     }
 
-    private T get(Board board, Color side) {
+    private T get(BoardRepresentation board, Color side) {
         switch (side) {
         case WHITE:
             return whitemap.get(board);
@@ -44,7 +45,7 @@ public class BoardCache<T> {
         throw new IllegalStateException("something is completely wrong here?!");
     }
 
-    private void put(Board board, Color side, T value) {
+    private void put(BoardRepresentation board, Color side, T value) {
         Board key = board.copy();
         switch (side) {
         case WHITE:

@@ -47,7 +47,7 @@ public class BasicMove implements Move {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardRepresentation board) {
         byte override = board.move(getFromIndex(), getToIndex());
         return new UndoMove(getToIndex(), getFromIndex(), override);
     }

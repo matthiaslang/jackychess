@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.evaluation;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
@@ -22,7 +22,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
 
     private MoveGenerator moveGenerator = Factory.getDefaults().moveGenerator.create();
 
-    public BoardStats gen(Board board, Color color) {
+    public BoardStats gen(BoardRepresentation board, Color color) {
         // find king on board:
         byte kingFigureCode = (byte) (FigureType.King.figureCode | color.code);
         kingPos = board.findPosOfFigure(kingFigureCode);

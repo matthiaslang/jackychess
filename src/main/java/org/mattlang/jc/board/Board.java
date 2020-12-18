@@ -12,7 +12,6 @@ import static java.lang.Integer.parseInt;
  * Represents a board with figures.
  */
 public class Board implements BoardRepresentation {
-    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
     public static final String[] FEN_START_POSITION = {
             "rnbqkbnr",
@@ -57,7 +56,7 @@ public class Board implements BoardRepresentation {
     }
 
     @Override
-    public Color setFenPosition(String fen) {
+    public GameState setFenPosition(String fen) {
         FenParser parser = new FenParser();
         return parser.setPosition(fen, this);
     }

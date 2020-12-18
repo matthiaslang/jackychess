@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
@@ -112,12 +112,12 @@ public class EngineTest extends TestCase {
 
         Board board = new Board();
         FenParser parser = new FenParser();
-        parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
+        GameState gameState =parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
 
         System.out.println(board.toUniCodeStr());
 
         SearchMethod negaMax = new NegaMaxAlphaBeta(eval);
-        Move move = negaMax.search(board, 2, Color.BLACK);
+        Move move = negaMax.search(gameState, 2);
 
         // block with other figure:
         assertThat(move.toStr()).isEqualTo("d8d7");
@@ -133,12 +133,12 @@ public class EngineTest extends TestCase {
 
         Board board = new Board();
         FenParser parser = new FenParser();
-        parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
+        GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
 
         System.out.println(board.toUniCodeStr());
 
         NegaMax negaMax = new NegaMax(eval);
-        Move move = negaMax.search(board, 2, Color.BLACK);
+        Move move = negaMax.search(gameState, 2);
 
         System.out.println(board.toUniCodeStr());
         
@@ -156,12 +156,12 @@ public class EngineTest extends TestCase {
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
         Board board = new Board();
-        board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
+        GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
 
         System.out.println(board.toUniCodeStr());
 
         NegaMaxAlphaBeta negaMax = new NegaMaxAlphaBeta(eval);
-        Move move = negaMax.search(board, 4, Color.BLACK);
+        Move move = negaMax.search(gameState, 4);
 
         System.out.println(board.toUniCodeStr());
 

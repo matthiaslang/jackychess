@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine;
 
-import java.util.Iterator;
-
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
+
+import java.util.Iterator;
 
 public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
@@ -16,7 +16,7 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
     private MoveCursor curr = new MoveCursor() {
 
         @Override
-        public void move(Board board) {
+        public void move(BoardRepresentation board) {
             undoMove = currMove.move(board);
         }
 
@@ -26,7 +26,7 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
         }
 
         @Override
-        public void undoMove(Board board) {
+        public void undoMove(BoardRepresentation board) {
             undoMove.move(board);
         }
     };

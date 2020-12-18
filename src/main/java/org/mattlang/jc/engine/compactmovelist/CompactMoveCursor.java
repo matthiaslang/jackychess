@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.compactmovelist;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 
@@ -13,7 +13,7 @@ public class CompactMoveCursor implements MoveCursor {
     }
 
     @Override
-    public void move(Board board) {
+    public void move(BoardRepresentation board) {
         iterator.moveList.move(board, iterator.index);
     }
 
@@ -23,7 +23,7 @@ public class CompactMoveCursor implements MoveCursor {
     }
 
     @Override
-    public void undoMove(Board board) {
+    public void undoMove(BoardRepresentation board) {
         iterator.moveList.undoMove(board, iterator.index);
     }
 }

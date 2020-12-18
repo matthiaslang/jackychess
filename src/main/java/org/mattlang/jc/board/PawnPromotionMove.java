@@ -7,7 +7,7 @@ public class PawnPromotionMove extends BasicMove {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardRepresentation board) {
         Figure pawn = board.getPos(getFromIndex());
         byte override = board.move(getFromIndex(), getToIndex());
 

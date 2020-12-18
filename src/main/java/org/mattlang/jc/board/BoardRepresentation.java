@@ -5,7 +5,7 @@ public interface BoardRepresentation {
 
     void setPosition(String[] fenPosition);
 
-    Color setFenPosition(String fen);
+    GameState setFenPosition(String fen);
 
     void setPos(int row, int col, char figureChar);
 

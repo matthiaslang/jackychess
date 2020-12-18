@@ -1,8 +1,9 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
@@ -26,13 +27,17 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
     private long timeout = Factory.getDefaults().getTimeout();
 
 
-    public Move search(Board currBoard, int depth, Color color) {
+    @Override
+    public Move search(GameState gameState, int depth) {
         negaMaxAlphaBeta.reset();
         this.maxDepth = depth;
         int currdepth = 1;
         Move savedMove = null;
 
         long stopTime = System.currentTimeMillis() + timeout;
+
+        BoardRepresentation currBoard = gameState.getBoard();
+        Color color = gameState.getWho2Move();
 
         MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {

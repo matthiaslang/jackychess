@@ -1,10 +1,11 @@
 package org.mattlang.jc.engine.evaluation;
 
-import java.util.HashMap;
-
 import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
+
+import java.util.HashMap;
 
 /**
  * Caching Evaluation Function.
@@ -22,7 +23,7 @@ public class CachingEvaluateFunction implements EvaluateFunction {
     }
 
     @Override
-    public int eval(Board currBoard, Color who2Move) {
+    public int eval(BoardRepresentation currBoard, Color who2Move) {
         HashMap<Board, Integer> map = who2Move == Color.WHITE ? whitemap : blackmap;
         Integer cachedScore = map.get(currBoard);
         if (cachedScore != null) {

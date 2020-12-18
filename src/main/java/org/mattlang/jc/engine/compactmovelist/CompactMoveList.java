@@ -1,16 +1,16 @@
 package org.mattlang.jc.engine.compactmovelist;
 
-import static org.mattlang.jc.board.Color.WHITE;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import static org.mattlang.jc.board.Color.WHITE;
 
 /**
  * Movelist saved in a byte array. 4 bytes per move.
@@ -153,11 +153,11 @@ public class CompactMoveList implements MoveList {
         return new CompactMoveListIterator(this);
     }
 
-    public void move(Board board, int index) {
+    public void move(BoardRepresentation board, int index) {
         move(board, movelist[index]);
     }
 
-    public static void move(Board board, byte[] moveEntry) {
+    public static void move(BoardRepresentation board, byte[] moveEntry) {
         byte from = moveEntry[IDX_FROM];
         byte to = moveEntry[IDX_TO];
         board.move(from, to);
@@ -171,11 +171,11 @@ public class CompactMoveList implements MoveList {
         }
     }
 
-    public void undoMove(Board board, int index) {
+    public void undoMove(BoardRepresentation board, int index) {
         undoMove(board, movelist[index]);
     }
 
-    public static void undoMove(Board board, byte[] moveEntry) {
+    public static void undoMove(BoardRepresentation board, byte[] moveEntry) {
         byte from = moveEntry[IDX_FROM];
         byte to = moveEntry[IDX_TO];
         board.move(to, from);

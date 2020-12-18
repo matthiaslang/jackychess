@@ -1,10 +1,7 @@
 package org.mattlang.jc.engine;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.BasicMove;
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 
 public class Engine {
 
@@ -30,12 +27,18 @@ public class Engine {
         this.depth = depth;
     }
 
+    @Deprecated
     public Move go() {
-        return searchMethod.search(board, depth, Color.BLACK);
+        return searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), depth);
     }
 
+    @Deprecated
     public Move go(Color color) {
-        return searchMethod.search(board, depth, color);
+        return searchMethod.search(new GameState(board, color, new SimpleRepetitionChecker()), depth);
+    }
+
+    public Move go(GameState gameState) {
+        return searchMethod.search(gameState, depth);
     }
 
     public void move(BasicMove move) {

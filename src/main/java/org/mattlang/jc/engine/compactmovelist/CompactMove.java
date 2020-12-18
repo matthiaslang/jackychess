@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine.compactmovelist;
 
-import static org.mattlang.jc.board.IndexConversion.convert;
-
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
+
+import static org.mattlang.jc.board.IndexConversion.convert;
 
 public class CompactMove implements Move {
 
@@ -24,7 +24,7 @@ public class CompactMove implements Move {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardRepresentation board) {
         if (undoing) {
             CompactMoveList.undoMove(board, move);
             return new CompactMove(move);

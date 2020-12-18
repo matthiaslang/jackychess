@@ -13,7 +13,7 @@ public class UndoPawnPromotionMove extends BasicMove {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardRepresentation board) {
         super.move(board);
 
         board.setPos(getFromIndex(), overriddenFig);

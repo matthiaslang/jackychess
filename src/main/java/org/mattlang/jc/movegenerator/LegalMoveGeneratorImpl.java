@@ -1,7 +1,7 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
@@ -12,7 +12,7 @@ public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
     MoveGenerator generator = Factory.getDefaults().moveGenerator.create();
 
     @Override
-    public MoveList generate(Board board, Color side) {
+    public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side == Color.WHITE ? Color.BLACK : Color.WHITE);
         // simple ordering by capture first, to be a bit bettr in alpha beta pruning
@@ -20,7 +20,7 @@ public class LegalMoveGeneratorImpl implements LegalMoveGenerator{
         return legalMoves;
     }
 
-    private MoveList filterLegalMoves(Board currBoard, MoveList moves, Color color) {
+    private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color color) {
         Figure king = color == Color.WHITE ? Figure.B_King : Figure.W_King;
 
         MoveList legals = Factory.getDefaults().moveList.create();

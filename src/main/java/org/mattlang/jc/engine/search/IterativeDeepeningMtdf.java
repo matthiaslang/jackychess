@@ -1,8 +1,9 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
@@ -29,8 +30,8 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
     private long timeout = Factory.getDefaults().getTimeout();
 
-
-    public Move search(Board currBoard, int depth, Color color) {
+    @Override
+    public Move search(GameState gameState, int depth) {
         negaMaxAlphaBeta.reset();
         this.maxDepth = depth;
         int currdepth = 1;
@@ -38,6 +39,8 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
         long stopTime = System.currentTimeMillis() + timeout;
 
+        BoardRepresentation currBoard = gameState.getBoard();
+        Color color = gameState.getWho2Move();
         MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {
             int firstguess = 0;
@@ -65,7 +68,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
         return savedMove;
     }
 
-    NegaMaxResult mtdf(Board board, int depth, Color color,  MoveList moves,long stopTime,int f) {
+    NegaMaxResult mtdf(BoardRepresentation board, int depth, Color color,  MoveList moves,long stopTime,int f) {
         int lower = ALPHA_START;
         int upper = BETA_START;
         NegaMaxResult result = null;
