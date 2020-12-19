@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
@@ -19,7 +20,8 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
     public static final int KING_WHEIGHT = 32000;
     public static final int PATT_WEIGHT = 10000;
 
-    SimpleBoardStatsGenerator statsgenerator = new SimpleBoardStatsGenerator();
+
+    BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {

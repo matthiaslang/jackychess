@@ -11,7 +11,7 @@ import org.mattlang.jc.movegenerator.MoveGenerator;
 
 import java.util.Iterator;
 
-public class SimpleBoardStatsGenerator implements MoveList {
+public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator {
 
     public long mobility = 0L;
     private long captures = 0L;
@@ -22,6 +22,7 @@ public class SimpleBoardStatsGenerator implements MoveList {
 
     private MoveGenerator moveGenerator = Factory.getDefaults().moveGenerator.create();
 
+    @Override
     public BoardStats gen(BoardRepresentation board, Color color) {
         // find king on board:
         byte kingFigureCode = (byte) (FigureType.King.figureCode | color.code);
