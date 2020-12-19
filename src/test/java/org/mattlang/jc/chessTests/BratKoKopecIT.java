@@ -26,7 +26,7 @@ import static org.mattlang.jc.Main.initLogging;
 
 @Category(ChessTests.class)
 @RunWith(Parameterized.class)
-public class BratKoKopecTest {
+public class BratKoKopecIT {
 
 
     public static final String bratkoKopec =
@@ -65,7 +65,7 @@ public class BratKoKopecTest {
     private String expectedBestMove;
     private String testName;
 
-    public BratKoKopecTest(String epd) {
+    public BratKoKopecIT(String epd) {
         String[] split = epd.split("bm ");
         position = split[0];
         String cmdPart = split[1];
