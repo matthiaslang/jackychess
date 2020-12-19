@@ -29,6 +29,11 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
         public void undoMove(BoardRepresentation board) {
             undoMove.move(board);
         }
+
+        @Override
+        public boolean isCapture() {
+            return currMove.getCapturedFigure() != 0;
+        }
     };
 
     public BasicMoveListIterator(BasicMoveList movelist) {

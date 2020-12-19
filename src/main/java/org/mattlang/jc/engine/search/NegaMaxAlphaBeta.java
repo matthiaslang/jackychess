@@ -25,10 +25,14 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
+    private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
+
     private long stopTime = 0;
 
     // statistics
     private int nodesVisited = 0;
+    private int quiescenceNodesVisited = 0;
+
     private int nodes;
     private Move savedMove;
     private int savedMoveScore;
@@ -63,6 +67,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     public void reset() {
         nodesVisited = 0;
+        quiescenceNodesVisited = 0;
         nodes = 0;
         cutOff = 0;
         savedMove = null;
@@ -73,9 +78,15 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
                              int alpha, int beta) {
         nodesVisited++;
-        int eval = evaluate.eval(currBoard, color);
+
+        //int eval = evaluate.eval(currBoard, color);
+        //if (depth == 0)
+        //    return eval;
+
         if (depth == 0)
-            return eval;
+            return quiesce(currBoard, depth-1, color, alpha, beta);
+
+        int eval = evaluate.eval(currBoard, color);
         // patt node:
         if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
             return eval;
@@ -104,7 +115,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             repetitionChecker.push(currBoard);
-            int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
+            int score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max);
             moveCursor.undoMove(currBoard);
             repetitionChecker.pop();
             if (score > max) {
@@ -121,6 +132,67 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
         }
         return max;
+    }
+
+    private int quiesce(BoardRepresentation currBoard, int depth, Color color, int alpha, int beta) {
+        nodesVisited++;
+        quiescenceNodesVisited++;
+
+        int eval = evaluate.eval(currBoard, color);
+        // patt node:
+        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+            return eval;
+        }
+        if (repetitionChecker.isRepetition()) {
+            // remis due to 3 times same position.
+            return 0;
+        }
+
+        if (stopTime != 0 && nodesVisited % 100000 == 0) {
+            if (System.currentTimeMillis() > stopTime) {
+                throw new TimeoutException();
+            }
+            if (Thread.interrupted()) {
+                throw new TimeoutException();
+            }
+        }
+
+        /* are we too deep? */
+        if (depth< -maxQuiescenceDepth)
+            return  eval;
+
+
+        /* check with the evaluation function */
+        int x = eval;
+        if (x >= beta)
+            return beta;
+        if (x > alpha)
+            alpha = x;
+
+        MoveList moves = generator.generate(currBoard, color);
+        if (moves.size() == 0) {
+            // no more legal moves, that means we have checkmate:
+            return -MaterialNegaMaxEval.KING_WHEIGHT;
+        }
+        nodes += moves.size();
+
+        /* loop through the capture moves */
+        for (MoveCursor moveCursor : moves) {
+            if (moveCursor.isCapture()) {
+                moveCursor.move(currBoard);
+                repetitionChecker.push(currBoard);
+                x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
+                moveCursor.undoMove(currBoard);
+                repetitionChecker.pop();
+                if (x > alpha) {
+                    if (x >= beta)
+                        return beta;
+                    alpha = x;
+
+                }
+            }
+        }
+        return alpha;
     }
 
     public static class NegaMaxResult {

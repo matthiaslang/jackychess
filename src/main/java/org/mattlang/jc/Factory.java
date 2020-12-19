@@ -19,6 +19,7 @@ public class Factory {
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2())
                 .setMaxDepth(15)
+                .setMaxQuiescenceDepth(0)
                 .setTimeout(15000)
                 .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta());
     }
@@ -29,6 +30,7 @@ public class Factory {
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2())
                 .setMaxDepth(6)
+                .setMaxQuiescenceDepth(0)
                 .setTimeout(15000)
                 .searchMethod.set(() -> new IterativeDeepeningMtdf());
     }

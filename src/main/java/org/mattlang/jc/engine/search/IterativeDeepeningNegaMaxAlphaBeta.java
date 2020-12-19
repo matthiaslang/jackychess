@@ -43,6 +43,8 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
         try {
             for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
+                UCI.instance.putCommand("info depth " + currdepth);
+
                 NegaMaxResult rslt =
                         negaMaxAlphaBeta.searchWithScore(gameState, currdepth,
                                 ALPHA_START, BETA_START, moves,

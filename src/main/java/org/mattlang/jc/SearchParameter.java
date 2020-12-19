@@ -24,6 +24,8 @@ public class SearchParameter {
 
     private long timeout;
 
+    private int maxQuiescenceDepth=5;
+
     public final Impl<MoveList> moveList = new Impl<>(this, () -> new BasicMoveList());
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new MaterialNegaMaxEval()));
@@ -47,6 +49,11 @@ public class SearchParameter {
         return this;
     }
 
+    public SearchParameter setMaxQuiescenceDepth(int maxQuiescenceDepth) {
+        this.maxQuiescenceDepth = maxQuiescenceDepth;
+        return this;
+    }
+
     public int getMaxDepth() {
         return maxDepth;
     }
@@ -55,16 +62,23 @@ public class SearchParameter {
         return timeout;
     }
 
+    public int getMaxQuiescenceDepth() {
+        return maxQuiescenceDepth;
+    }
+
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         UCILogger.log("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
         UCILogger.log("Max Depth: " + getMaxDepth());
+        UCILogger.log("Max Quiescence Depth: " + getMaxQuiescenceDepth());
         UCILogger.log("Timeout ms: " + getTimeout());
 
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
         LOGGER.info("Max Depth: " + getMaxDepth());
         LOGGER.info("Timeout ms: " + getTimeout());
+        LOGGER.info("Max Quiescence Depth: " + getMaxQuiescenceDepth());
+
     }
 
 }
