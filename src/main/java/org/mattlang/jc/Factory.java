@@ -18,7 +18,7 @@ public class Factory {
                 .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEval()))
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2())
-                .setMaxDepth(6)
+                .setMaxDepth(15)
                 .setTimeout(15000)
                 .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta());
     }
