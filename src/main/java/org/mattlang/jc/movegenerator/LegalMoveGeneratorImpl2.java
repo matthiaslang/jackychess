@@ -30,12 +30,18 @@ public class LegalMoveGeneratorImpl2 implements LegalMoveGenerator {
         byte kingFigureCode = (byte) (FigureType.King.figureCode | otherColor.code);
 
         MoveList legals = Factory.getDefaults().moveList.create();
+        
+        int kingPos = currBoard.findPosOfFigure(kingFigureCode);
+        long kingBitBoardPos = (1L << kingPos);
+
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            int kingPos = currBoard.findPosOfFigure(kingFigureCode);
-            long kingBitBoardPos = (1L << kingPos);
-
+            if (currBoard.getFigureCode(kingPos) != kingFigureCode) {
+                // king has moved by this move, so update king pos:
+                kingPos = currBoard.findPosOfFigure(kingFigureCode);
+                kingBitBoardPos = (1L << kingPos);
+            }
             BoardStats responseStats = statsGenerator.gen(currBoard, color);
             moveCursor.undoMove(currBoard);
 
