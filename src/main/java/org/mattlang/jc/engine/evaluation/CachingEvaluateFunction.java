@@ -1,11 +1,9 @@
 package org.mattlang.jc.engine.evaluation;
 
-import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
-
-import java.util.HashMap;
+import org.mattlang.jc.movegenerator.BoardCache;
 
 /**
  * Caching Evaluation Function.
@@ -13,10 +11,12 @@ import java.util.HashMap;
 public class CachingEvaluateFunction implements EvaluateFunction {
 
     private EvaluateFunction delegate;
-    public static final int CAPACITY = 50_000_000;
 
-    private HashMap<Board, Integer> whitemap = new HashMap<>(CAPACITY);
-    private HashMap<Board, Integer> blackmap = new HashMap<>(CAPACITY);
+    private BoardCache<Integer> cache = new BoardCache<>(this::evaluate);
+
+    private Integer evaluate(BoardRepresentation board, Color color) {
+        return delegate.eval(board, color);
+    }
 
     public CachingEvaluateFunction(EvaluateFunction delegate) {
         this.delegate = delegate;
@@ -24,15 +24,6 @@ public class CachingEvaluateFunction implements EvaluateFunction {
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
-        HashMap<Board, Integer> map = who2Move == Color.WHITE ? whitemap : blackmap;
-        Integer cachedScore = map.get(currBoard);
-        if (cachedScore != null) {
-            return cachedScore;
-        }
-
-        int score = delegate.eval(currBoard, who2Move);
-        map.put(currBoard.copy(), score);
-        return score;
-
+        return cache.getCache(currBoard, who2Move);
     }
 }
