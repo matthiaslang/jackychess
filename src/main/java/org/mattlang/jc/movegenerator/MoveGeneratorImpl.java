@@ -181,11 +181,12 @@ public class MoveGeneratorImpl implements MoveGenerator {
         }
         // check capture:
         int m = side == WHITE ? 1 : -1;
+        Color xside = side.invert();
         for (int offset : pawnCaptureOffset) {
             n = mailbox[mailbox64[i] + offset * m];
             if (n != -1) {
                 Figure target = board.getFigure(n);
-                if (target != EMPTY) {
+                if (target != EMPTY && target.color == xside) {
                     moves.genPawnMove(i, n, side, target.figureCode);
                 }
             }
