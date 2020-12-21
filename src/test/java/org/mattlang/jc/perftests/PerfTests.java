@@ -7,8 +7,9 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.PositionBasedGenerator;
 
 /**
  * PerfTests
@@ -16,7 +17,28 @@ import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
  */
 public class PerfTests {
 
+
     @Test
+    public void initialPositionPerformanceMoveGenerator() {
+        Board board = new Board();
+        board.setStartPosition();
+
+        perftReset();
+        perft(new MoveGeneratorImpl2(), board, Color.WHITE, 6);
+
+    }
+
+    @Test
+    public void initialPositionPerformanceLegalMoves() {
+        Board board = new Board();
+        board.setStartPosition();
+
+        perftReset();
+        perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 5);
+
+    }
+
+        @Test
     public void initialPosition() {
         Board board = new Board();
         board.setStartPosition();
@@ -35,6 +57,12 @@ public class PerfTests {
         perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 3);
         Assertions.assertThat(nodes).isEqualTo(8902);
         Assertions.assertThat(captures).isEqualTo(34);
+
+        perftReset();
+        perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 4);
+        Assertions.assertThat(nodes).isEqualTo(197281);
+        // captures wrong... why?
+//        Assertions.assertThat(captures).isEqualTo(1576);
 
     }
 
@@ -64,7 +92,7 @@ public class PerfTests {
         captures = 0;
     }
 
-    void perft(LegalMoveGenerator generator, BoardRepresentation board, Color color, int depth) {
+    void perft(PositionBasedGenerator<MoveList> generator, BoardRepresentation board, Color color, int depth) {
 
         if (depth == 0) {
             nodes++;
