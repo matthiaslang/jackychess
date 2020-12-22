@@ -239,4 +239,12 @@ public class Board implements BoardRepresentation {
         enPassantMoveTargetPos = -1;
         enPassantCapturePos = -1;
     }
+
+    public Rochade getWhiteRochade() {
+        return whiteRochade;
+    }
+
+    public Rochade getBlackRochace() {
+        return blackRochace;
+    }
 }

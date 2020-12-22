@@ -49,4 +49,8 @@ public interface BoardRepresentation {
     int getEnPassantCapturePos();
 
     void setEnPassantOption(int enPassantOption);
+
+    Rochade getWhiteRochade();
+
+    Rochade getBlackRochace() ;
 }

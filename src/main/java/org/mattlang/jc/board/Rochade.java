@@ -35,4 +35,22 @@ public class Rochade {
     public Rochade copy() {
         return new Rochade(hAllowed, aAllowed);
     }
+
+    public boolean ishAllowed() {
+        return hAllowed;
+    }
+
+    public Rochade sethAllowed(boolean hAllowed) {
+        this.hAllowed = hAllowed;
+        return this;
+    }
+
+    public boolean isaAllowed() {
+        return aAllowed;
+    }
+
+    public Rochade setaAllowed(boolean aAllowed) {
+        this.aAllowed = aAllowed;
+        return this;
+    }
 }

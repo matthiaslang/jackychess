@@ -140,18 +140,26 @@ public class MoveGeneratorImpl implements MoveGenerator {
         switch (side) {
         case WHITE:
             if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
-                moves.addRochadeLongWhite();
+                if (board.getWhiteRochade().isaAllowed()) {
+                    moves.addRochadeLongWhite();
+                }
             }
             if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
-                moves.addRochadeShortWhite();
+                if (board.getWhiteRochade().ishAllowed()) {
+                    moves.addRochadeShortWhite();
+                }
             }
             break;
         case BLACK:
             if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                moves.addRochadeShortBlack();
+                if (board.getBlackRochace().ishAllowed()) {
+                    moves.addRochadeShortBlack();
+                }
             }
             if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                moves.addRochadeLongBlack();
+                if (board.getBlackRochace().isaAllowed()) {
+                    moves.addRochadeLongBlack();
+                }
             }
             break;
         }

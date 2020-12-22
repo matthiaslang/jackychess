@@ -83,6 +83,21 @@ public class FenParser {
             int enpassantOpt = IndexConversion.parsePos(enpassant);
             board.setEnPassantOption(enpassantOpt);
         }
+        if (!"-".equals(rochade)) {
+            if (rochade.contains("K")) {
+                board.getWhiteRochade().sethAllowed(true);
+            }
+            if (rochade.contains("Q")) {
+                board.getWhiteRochade().setaAllowed(true);
+            }
+            if (rochade.contains("k")) {
+                board.getBlackRochace().sethAllowed(true);
+            }
+            if (rochade.contains("q")) {
+                board.getBlackRochace().setaAllowed(true);
+            }
+        }
+
         return "w".equals(zug) ? Color.WHITE : Color.BLACK;
     }
 }
