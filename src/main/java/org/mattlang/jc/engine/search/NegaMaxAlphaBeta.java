@@ -56,12 +56,16 @@ public class NegaMaxAlphaBeta implements SearchMethod {
     public Move search(GameState gameState, int depth) {
         assert depth > 0;
         reset();
-        repetitionChecker= gameState.getRepetitionChecker();
-        targetDepth = depth;
-        int scoreResult = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), ALPHA_START, BETA_START);
-        UCILogger.info(depth, nodesVisited, scoreResult);
+
+        MoveList moves = generateMoves(gameState.getBoard(), gameState.getWho2Move());
+        NegaMaxResult rslt =
+                searchWithScore(gameState, depth,
+                        ALPHA_START, BETA_START, moves,
+                        stopTime);
+
+        UCILogger.info(depth, nodesVisited, rslt.max);
         UCILogger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
-                scoreResult);
+                rslt.max);
         return savedMove;
     }
 
