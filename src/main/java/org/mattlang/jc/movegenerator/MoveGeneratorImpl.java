@@ -16,6 +16,7 @@ import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
  * TSCP Implementation of move generator with some own modifications.
  */
 public class MoveGeneratorImpl implements MoveGenerator {
+
     public static final int[] ROCHADE_L_WHITE = { 0, 1, 2, 3, 4 };
     public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
     public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
@@ -137,22 +138,22 @@ public class MoveGeneratorImpl implements MoveGenerator {
 
     private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
         switch (side) {
-            case WHITE:
-                if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
-                    moves.addRochadeLongWhite();
-                }
-                if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
-                    moves.addRochadeShortWhite();
-                }
-                break;
-            case BLACK:
-                if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                    moves.addRochadeShortBlack();
-                }
-                if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                    moves.addRochadeLongBlack();
-                }
-                break;
+        case WHITE:
+            if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
+                moves.addRochadeLongWhite();
+            }
+            if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
+                moves.addRochadeShortWhite();
+            }
+            break;
+        case BLACK:
+            if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
+                moves.addRochadeShortBlack();
+            }
+            if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
+                moves.addRochadeLongBlack();
+            }
+            break;
         }
     }
 
@@ -198,7 +199,6 @@ public class MoveGeneratorImpl implements MoveGenerator {
             }
         }
     }
-
 
 
 }

@@ -8,7 +8,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.PositionBasedGenerator;
 
 /**
@@ -24,7 +24,7 @@ public class PerfTests {
         board.setStartPosition();
 
         perftReset();
-        perft(new MoveGeneratorImpl2(), board, Color.WHITE, 6);
+        perft(new MoveGeneratorImpl(), board, Color.WHITE, 6);
 
     }
 

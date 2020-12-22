@@ -167,7 +167,7 @@ public class LegalMoveCacheTest  {
         int depth = 5;
         StopWatch stopWatch = new StopWatch();
 
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl());
 
         Factory.getDefaults().legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl());
         // now starting engine:

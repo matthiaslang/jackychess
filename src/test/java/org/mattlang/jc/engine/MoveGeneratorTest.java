@@ -6,7 +6,6 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,7 +189,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
         List<Move> wMoves = createMoveList(whiteMoves);
@@ -228,7 +227,7 @@ public class MoveGeneratorTest {
         Board copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl();
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);
