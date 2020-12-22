@@ -6,7 +6,7 @@ import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
 
-    public GameState setPosition(String positionStr, Board board) {
+    public GameState setPosition(String positionStr, BoardRepresentation board) {
         RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
         Color who2Move = Color.WHITE;
         String[] splitted = positionStr.split(" ");
@@ -66,7 +66,7 @@ public class FenParser {
         return new BasicMove(moveStr);
     }
 
-    private Color setPosition(Board board, String figures, String zug, String rochade, String enpassant,
+    private Color setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
             String noHalfMoves,
             String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
