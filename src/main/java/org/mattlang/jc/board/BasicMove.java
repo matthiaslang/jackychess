@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 /**
  * Represents a move on the board.
- *
+ * <p>
  * Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
  */
 public class BasicMove implements Move {
@@ -14,6 +14,7 @@ public class BasicMove implements Move {
 
     private int toIndex;
 
+    private int enPassantOption = -1;
 
     private byte capturedFigure;
 
@@ -27,6 +28,11 @@ public class BasicMove implements Move {
         this.fromIndex = from;
         this.toIndex = to;
         this.capturedFigure = capturedFigure;
+    }
+
+    public BasicMove(int from, int to, byte capturedFigure, int enPassantOption) {
+        this(from, to, capturedFigure);
+        this.enPassantOption = enPassantOption;
     }
 
     public int getFromIndex() {
@@ -49,6 +55,9 @@ public class BasicMove implements Move {
     @Override
     public Move move(BoardRepresentation board) {
         byte override = board.move(getFromIndex(), getToIndex());
+        if (enPassantOption>=0) {
+           board.setEnPassantOption(enPassantOption);
+        }
         return new UndoMove(getToIndex(), getFromIndex(), override);
     }
 

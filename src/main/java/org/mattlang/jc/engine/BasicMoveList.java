@@ -1,13 +1,15 @@
 package org.mattlang.jc.engine;
 
-import static org.mattlang.jc.board.Color.WHITE;
+import org.mattlang.jc.board.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mattlang.jc.board.*;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
 public class BasicMoveList implements MoveList {
 
@@ -29,7 +31,7 @@ public class BasicMoveList implements MoveList {
         moves.add(new BasicMove(from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
         boolean isOnLastLine = false;
         if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
@@ -38,7 +40,13 @@ public class BasicMoveList implements MoveList {
         }
         moves.add(isOnLastLine ?
                 new PawnPromotionMove(from, to, capturedFigure) :
-                new BasicMove(from, to, capturedFigure));
+                new BasicMove(from, to, capturedFigure, enPassantOption));
+    }
+
+
+    @Override
+    public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
+        moves.add(new EnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
     }
 
     @Override

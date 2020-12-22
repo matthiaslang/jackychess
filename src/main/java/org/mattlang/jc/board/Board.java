@@ -136,7 +136,8 @@ public class Board implements BoardRepresentation {
     @Override
     public Move move(Move move) {
         // todo validations?
-        return move.move(this);
+        Move moveRslt= move.move(this);
+        return moveRslt;
     }
 
     /**
@@ -152,6 +153,9 @@ public class Board implements BoardRepresentation {
         board[from] = Figure.EMPTY.figureCode;
         byte capturedFigure = board[to];
         board[to] = figure;
+
+        resetEnPassant();
+
         return capturedFigure;
     }
 
@@ -167,19 +171,19 @@ public class Board implements BoardRepresentation {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Board board1 = (Board) o;
-        return Arrays.equals(board, board1.board) &&
+        return enPassantMoveTargetPos == board1.enPassantMoveTargetPos &&
+                enPassantCapturePos == board1.enPassantCapturePos &&
+                Arrays.equals(board, board1.board) &&
                 whiteRochade.equals(board1.whiteRochade) &&
                 blackRochace.equals(board1.blackRochace);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(whiteRochade, blackRochace);
+        int result = Objects.hash(whiteRochade, blackRochace, enPassantMoveTargetPos, enPassantCapturePos);
         result = 31 * result + Arrays.hashCode(board);
         return result;
     }
@@ -197,5 +201,42 @@ public class Board implements BoardRepresentation {
             }
         }
         return -1;
+    }
+
+    /**
+     * the target pos of the en passant move that could be taken as next move on the board.
+     * -1 if no en passant is possible.
+     */
+    private int enPassantMoveTargetPos = -1;
+    /**
+     * the capture pos of an en passant move (if an en passant move would be possible as next move on the board).
+     * -1 if no en passant is possible.
+     */
+    private int enPassantCapturePos = -1;
+
+    @Override
+    public boolean isEnPassantCapturePossible(int n) {
+        return enPassantMoveTargetPos == n;
+    }
+
+    @Override
+    public int getEnPassantCapturePos() {
+        return enPassantCapturePos;
+    }
+
+    @Override
+    public void setEnPassantOption(int enPassantOption) {
+        this.enPassantMoveTargetPos = enPassantOption;
+        if (enPassantMoveTargetPos >=16 && enPassantCapturePos<=23) {
+            enPassantCapturePos = enPassantMoveTargetPos + 8;
+        } else {
+            enPassantCapturePos = enPassantMoveTargetPos - 8;
+        }
+    }
+
+
+    private void resetEnPassant() {
+        enPassantMoveTargetPos = -1;
+        enPassantCapturePos = -1;
     }
 }

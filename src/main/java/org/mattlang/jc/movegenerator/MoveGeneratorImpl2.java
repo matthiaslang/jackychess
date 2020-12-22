@@ -67,7 +67,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     private static final boolean[] slide = { false, false, true, true, true, false };
     private static final int[] offsets = { 0, 8, 4, 4, 8, 8 }; /* knight or ray directions */
     private static final int[][] offset = {
-            { 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0 }, /* Pawn, not used */
             { -21, -19, -12, -8, 8, 12, 19, 21 }, /* KNIGHT */
             { -11, -9, 9, 11, 0, 0, 0, 0 }, /* BISHOP */
             { -10, -1, 1, 10, 0, 0, 0, 0 }, /* ROOK */
@@ -174,13 +174,15 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         if (n != -1) {
             byte target = board.getFigureCode(n);
             if (target ==  FigureConstants.FT_EMPTY) {
-                // get double move from baseline:
-                moves.genPawnMove(i, n, side, (byte)0);
+
+                moves.genPawnMove(i, n, side, (byte)0, -1);
+                int singlemove=n;
                 if (isOnBaseLine) {
+                    // get double move from baseline:
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigureCode(n);
                     if (target ==  FigureConstants.FT_EMPTY) {
-                        moves.genPawnMove(i, n, side, (byte)0);
+                        moves.genPawnMove(i, n, side, (byte)0, singlemove);
                     }
                 }
             }
@@ -193,7 +195,9 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             if (n != -1) {
                 byte target = board.getFigureCode(n);
                 if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
-                    moves.genPawnMove(i, n, side, target);
+                    moves.genPawnMove(i, n, side, target, -1);
+                } else if (board.isEnPassantCapturePossible(n)) {
+                    moves.genEnPassant(i, n, side, board.getEnPassantCapturePos());
                 }
             }
         }

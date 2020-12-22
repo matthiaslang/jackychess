@@ -1,10 +1,7 @@
 package org.mattlang.jc.engine.evaluation;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.MoveGenerator;
@@ -52,7 +49,7 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
         countMove(from, to, capturedFigure);
     }
 
@@ -95,6 +92,11 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     public int size() {
         // nothing to do
         return 0;
+    }
+
+    @Override
+    public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
+        countMove(from, to, side == Color.WHITE ? FigureConstants.B_PAWN : FigureConstants.W_PAWN);
     }
 
     @Override

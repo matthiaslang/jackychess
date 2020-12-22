@@ -34,4 +34,19 @@ public interface BoardRepresentation {
     Board copy();
 
     int findPosOfFigure(byte figureCode);
+
+    /**
+     * Returns true, if n is an en passant target move field.
+     * @param n
+     * @return
+     */
+    boolean isEnPassantCapturePossible(int n);
+
+    /**
+     * Returns the en passant capture position, if any...
+     * @return
+     */
+    int getEnPassantCapturePos();
+
+    void setEnPassantOption(int enPassantOption);
 }

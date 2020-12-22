@@ -50,7 +50,7 @@ public class CompactMoveList implements MoveList {
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
         movelist[size][IDX_FROM] = (byte) from;
         movelist[size][IDX_TO] = (byte) to;
         if (capturedFigure != 0) {
@@ -146,6 +146,11 @@ public class CompactMoveList implements MoveList {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public void genEnPassant(int i, int n, Color side, int enPassantCapturePos) {
+
     }
 
     @Override

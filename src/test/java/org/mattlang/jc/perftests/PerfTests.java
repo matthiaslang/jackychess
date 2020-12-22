@@ -78,7 +78,7 @@ public class PerfTests {
 
         // not working, maybe because of castle rights checking missing
 //        perftReset();
-//        Perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 2);
+//        perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 2);
 //        Assertions.assertThat(nodes).isEqualTo(2039);
 //        Assertions.assertThat(captures).isEqualTo(351);
     }

@@ -78,6 +78,11 @@ public class FenParser {
         if (zug == null || zug.trim().length() == 0) {
             return Color.WHITE;
         }
+
+        if (!"-".equals(enpassant)) {
+            int enpassantOpt = IndexConversion.parsePos(enpassant);
+            board.setEnPassantOption(enpassantOpt);
+        }
         return "w".equals(zug) ? Color.WHITE : Color.BLACK;
     }
 }

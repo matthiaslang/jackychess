@@ -4,19 +4,18 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.MoveList;
 
-import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
  * TSCP Implementation of move generator with some own modifications.
  */
 public class MoveGeneratorImpl implements MoveGenerator {
-
     public static final int[] ROCHADE_L_WHITE = { 0, 1, 2, 3, 4 };
     public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
     public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
@@ -64,7 +63,7 @@ public class MoveGeneratorImpl implements MoveGenerator {
     private static final boolean[] slide = { false, false, true, true, true, false };
     private static final int[] offsets = { 0, 8, 4, 4, 8, 8 }; /* knight or ray directions */
     private static final int[][] offset = {
-            { 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0 }, /* Pawn, not used */
             { -21, -19, -12, -8, 8, 12, 19, 21 }, /* KNIGHT */
             { -11, -9, 9, 11, 0, 0, 0, 0 }, /* BISHOP */
             { -10, -1, 1, 10, 0, 0, 0, 0 }, /* ROOK */
@@ -90,25 +89,28 @@ public class MoveGeneratorImpl implements MoveGenerator {
     public MoveList generate(BoardRepresentation board, Color side, MoveList moves) {
 
 
-        Color xside = side == WHITE ? BLACK : WHITE;  /* the side not to move */
+        Color xside = side.invert();  /* the side not to move */
 
         for (int i = 0; i < 64; ++i) { /* loop over all squares (no piece list) */
-            Figure figure = board.getFigure(i);
-            if (figure != EMPTY && figure.color == side) { /* looking for own pieces and pawns to move */
-                FigureType p = figure.figureType;
-                if (p != FigureType.Pawn) { /* piece or pawn */
-                    for (int j = 0; j < offsets[p.figureCode]; ++j) { /* for all knight or ray directions */
+            byte figure = board.getFigureCode(i);
+            if (figure != FigureConstants.FT_EMPTY && Figure.getColor(figure) == side) { /* looking for own pieces and pawns to move */
+                boolean isPawn = figure == FigureConstants.W_PAWN || figure == FigureConstants.B_PAWN;
+
+
+                if (!isPawn) { /* piece or pawn */
+                    byte figureCode = (byte) (figure & MASK_OUT_COLOR);
+                    for (int j = 0; j < offsets[figureCode]; ++j) { /* for all knight or ray directions */
                         for (int n = i;;) { /* starting with from square */
-                            n = mailbox[mailbox64[n] + offset[p.figureCode][j]]; /* next square along the ray j */
+                            n = mailbox[mailbox64[n] + offset[figureCode][j]]; /* next square along the ray j */
                             if (n == -1) break; /* outside board */
-                            Figure targetN = board.getFigure(n);
-                            if (targetN != EMPTY) {
-                                if (targetN.color == xside)
-                                    moves.genMove(i, n, targetN.figureCode); /* capture from i to n */
+                            byte targetN = board.getFigureCode(n);
+                            if (targetN != FigureConstants.FT_EMPTY) {
+                                if (Figure.getColor(targetN) == xside)
+                                    moves.genMove(i, n, targetN); /* capture from i to n */
                                 break;
                             }
                             moves.genMove(i, n, (byte)0); /* quiet move from i to n */
-                            if (!slide[p.figureCode]) break; /* next direction */
+                            if (!slide[figureCode]) break; /* next direction */
                         }
                     }
                 } else {
@@ -135,22 +137,22 @@ public class MoveGeneratorImpl implements MoveGenerator {
 
     private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
         switch (side) {
-        case WHITE:
-            if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
-                moves.addRochadeLongWhite();
-            }
-            if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
-                moves.addRochadeShortWhite();
-            }
-            break;
-        case BLACK:
-            if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                moves.addRochadeShortBlack();
-            }
-            if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                moves.addRochadeLongBlack();
-            }
-            break;
+            case WHITE:
+                if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
+                    moves.addRochadeLongWhite();
+                }
+                if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
+                    moves.addRochadeShortWhite();
+                }
+                break;
+            case BLACK:
+                if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
+                    moves.addRochadeShortBlack();
+                }
+                if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
+                    moves.addRochadeLongBlack();
+                }
+                break;
         }
     }
 
@@ -166,15 +168,17 @@ public class MoveGeneratorImpl implements MoveGenerator {
         // get single move:
         int n = mailbox[mailbox64[i] + pawnOffset];
         if (n != -1) {
-            Figure target = board.getFigure(n);
-            if (target == EMPTY) {
-                // get double move from baseline:
-                moves.genPawnMove(i, n, side, (byte)0);
+            byte target = board.getFigureCode(n);
+            if (target ==  FigureConstants.FT_EMPTY) {
+
+                moves.genPawnMove(i, n, side, (byte)0, -1);
+                int singlemove=n;
                 if (isOnBaseLine) {
+                    // get double move from baseline:
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
-                    target = board.getFigure(n);
-                    if (target == EMPTY) {
-                        moves.genPawnMove(i, n, side, (byte)0);
+                    target = board.getFigureCode(n);
+                    if (target ==  FigureConstants.FT_EMPTY) {
+                        moves.genPawnMove(i, n, side, (byte)0, singlemove);
                     }
                 }
             }
@@ -185,13 +189,16 @@ public class MoveGeneratorImpl implements MoveGenerator {
         for (int offset : pawnCaptureOffset) {
             n = mailbox[mailbox64[i] + offset * m];
             if (n != -1) {
-                Figure target = board.getFigure(n);
-                if (target != EMPTY && target.color == xside) {
-                    moves.genPawnMove(i, n, side, target.figureCode);
+                byte target = board.getFigureCode(n);
+                if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
+                    moves.genPawnMove(i, n, side, target, -1);
+                } else if (board.isEnPassantCapturePossible(n)) {
+                    moves.genEnPassant(i, n, side, board.getEnPassantCapturePos());
                 }
             }
         }
     }
+
 
 
 }

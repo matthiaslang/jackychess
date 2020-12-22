@@ -1,26 +1,26 @@
 package org.mattlang.jc.engine;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.IndexConversion.parsePos;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
-import junit.framework.TestCase;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 // todo refactor wiht both MoveGeneratorCompactListTest...
-public class MoveGeneratorTest extends TestCase {
+public class MoveGeneratorTest {
 
     @Test
     public void testPawnPromotionAndUndoing1() {
@@ -178,5 +178,72 @@ public class MoveGeneratorTest extends TestCase {
                     .isEqualTo(cmpboard.toUniCodeStr());
         }
 
+    }
+
+    @Test
+    public void enPassant() {
+        Board board = new Board();
+        String fen = "position fen 8/3p4/8/2P1P3/2p1p3/8/3P4/8 b k - 2 17 ";
+        board.setFenPosition(fen);
+
+        Board copy = board.copy();
+
+        System.out.println(board.toUniCodeStr());
+
+        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveList whiteMoves = generator.generate(board, WHITE);
+
+        List<Move> wMoves = createMoveList(whiteMoves);
+        assertThat(wMoves.size()).isEqualTo(4);
+        Optional<Move> wPawnDoubleMove = wMoves.stream().filter(m -> m.toStr().equals("d2d4")).findFirst();
+        assertThat(wPawnDoubleMove).isNotEmpty();
+
+        // execute the double move:
+        Move undoer = board.move(wPawnDoubleMove.get());
+
+        // now black moves should have two en passant moves:
+        MoveList blackMoves = generator.generate(board, BLACK);
+
+        assertThat(blackMoves.size()).isEqualTo(6);
+
+        Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
+
+        Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
+
+        Move undoEP = board.move(epMove1.get());
+
+        // try undoing the moves:
+        board.move(undoEP);
+        board.move(undoer);
+
+        assertThat(board.toUniCodeStr()).isEqualTo(copy.toUniCodeStr());
+    }
+
+    @Test
+    public void enPassantFromFEN() {
+        Board board = new Board();
+        String fen = "position fen 8/3p4/8/2P1P3/2pPp3/8/8/8 b k d3 2 17 ";
+        board.setFenPosition(fen);
+
+        Board copy = board.copy();
+
+        System.out.println(board.toUniCodeStr());
+        MoveGenerator generator = new MoveGeneratorImpl2();
+
+        // now black moves should have two en passant moves:
+        MoveList blackMoves = generator.generate(board, BLACK);
+
+        assertThat(blackMoves.size()).isEqualTo(6);
+
+        Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
+
+        Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
+
+        Move undoEP = board.move(epMove1.get());
+
+        // try undoing the moves:
+        board.move(undoEP);
+
+        assertThat(board.toUniCodeStr()).isEqualTo(copy.toUniCodeStr());
     }
 }

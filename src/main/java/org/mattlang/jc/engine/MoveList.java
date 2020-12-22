@@ -7,7 +7,7 @@ public interface MoveList extends Iterable<MoveCursor> {
 
     void genMove(int from, int to, byte capturedFigureCode);
 
-    void genPawnMove(int from, int to, Color color, byte capturedFigureCode);
+    void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption);
 
     void addRochadeLongWhite();
 
@@ -35,7 +35,9 @@ public interface MoveList extends Iterable<MoveCursor> {
      * First simple try to order moves for alpha beta cut off relevace: "best" guessed moves should be
      *      * processed first to early cut off. First try: sort by capture first moves:
      */
-    public void sortByCapture();
+    void sortByCapture();
 
     int size();
+
+    void genEnPassant(int i, int n, Color side, int enPassantCapturePos);
 }
