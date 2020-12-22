@@ -3,6 +3,7 @@ package org.mattlang.jc.perftests;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
@@ -31,6 +32,17 @@ public class PerfTests {
     @Test
     public void initialPositionPerformanceLegalMoves() {
         Board board = new Board();
+        board.setStartPosition();
+
+        perftReset();
+        perft(new LegalMoveGeneratorImpl2(), board, Color.WHITE, 5);
+
+    }
+
+
+    @Test
+    public void initialPositionPerformanceOptBoardAndLegalMoves() {
+        Board2 board = new Board2();
         board.setStartPosition();
 
         perftReset();
