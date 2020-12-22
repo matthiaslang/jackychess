@@ -4,11 +4,11 @@ import java.util.function.BiFunction;
 
 public class BoardPrinter {
 
-    public static void printBoard(Board board) {
+    public static void printBoard(BoardRepresentation board) {
        System.out.println(toUniCodeStr(board));
     }
 
-    public static String toUniCodeStr(Board board) {
+    public static String toUniCodeStr(BoardRepresentation board) {
         // two variants, since the unicode characters are weird on some consoles...
         String s1 = toStr((row,col) -> board.getPos(row,col));
         String s2 =  toStr((row,col) -> board.getFigurePos(row,col).figureCharUnicode);

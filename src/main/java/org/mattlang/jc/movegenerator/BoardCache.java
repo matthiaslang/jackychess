@@ -1,6 +1,5 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
@@ -46,7 +45,7 @@ public class BoardCache<T> {
     }
 
     private void put(BoardRepresentation board, Color side, T value) {
-        Board key = board.copy();
+        BoardRepresentation key = board.copy();
         switch (side) {
         case WHITE:
             whitemap.put(key, value);
