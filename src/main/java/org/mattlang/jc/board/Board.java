@@ -227,7 +227,7 @@ public class Board implements BoardRepresentation {
     @Override
     public void setEnPassantOption(int enPassantOption) {
         this.enPassantMoveTargetPos = enPassantOption;
-        if (enPassantMoveTargetPos >=16 && enPassantCapturePos<=23) {
+        if (enPassantMoveTargetPos >=16 && enPassantMoveTargetPos<=23) {
             enPassantCapturePos = enPassantMoveTargetPos + 8;
         } else {
             enPassantCapturePos = enPassantMoveTargetPos - 8;
