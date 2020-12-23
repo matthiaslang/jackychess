@@ -292,4 +292,12 @@ public class Board2 implements BoardRepresentation {
     public Rochade getBlackRochace() {
         return blackRochace;
     }
+
+    public PieceList getBlackPieces() {
+        return blackPieces;
+    }
+
+    public PieceList getWhitePieces() {
+        return whitePieces;
+    }
 }
