@@ -36,18 +36,18 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
 
-        assertPerft(generator, board, WHITE, 1, 20, 0, 0);
+        assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0);
 
-        assertPerft(generator, board, WHITE, 2, 400, 0, 0);
+        assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0);
 
-        assertPerft(generator, board, WHITE, 3, 8902, 34, 0);
+        assertPerft(generator, board, WHITE, 3, 8902, 34, 0, 0);
 
-        assertPerft(generator, board, WHITE, 4, 197281, 1576, 0);
+        assertPerft(generator, board, WHITE, 4, 197281, 1576, 0, 0);
 
-        assertPerft(generator, board, WHITE, 5, 4865609, 82719, 258);
+        assertPerft(generator, board, WHITE, 5, 4865609, 82719, 258, 0);
 
         // takes too long for unit test
-//      assertPerft(generator, board, WHITE, 6, 119060324, 2812008);
+//      assertPerft(generator, board, WHITE, 6, 119060324, 2812008, 0);
 
     }
 
@@ -61,16 +61,16 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
 
-        assertPerft(legalMoveGen, board, WHITE, 1, 20, 0, 0);
+        assertPerft(legalMoveGen, board, WHITE, 1, 20, 0, 0, 0);
 
-        assertPerft(legalMoveGen, board, WHITE, 2, 400, 0, 0);
+        assertPerft(legalMoveGen, board, WHITE, 2, 400, 0, 0, 0);
 
-        assertPerft(legalMoveGen, board, WHITE, 3, 8902, 34, 0);
+        assertPerft(legalMoveGen, board, WHITE, 3, 8902, 34, 0, 0);
 
-        assertPerft(legalMoveGen, board, WHITE, 4, 197281, 1576, 0);
+        assertPerft(legalMoveGen, board, WHITE, 4, 197281, 1576, 0, 0);
 
         // todo does not match... why?
-//        assertPerft(legalMoveGen, board, Color.WHITE, 5, 4865609, 82719, 258);
+//        assertPerft(legalMoveGen, board, Color.WHITE, 5, 4865609, 82719, 258, 0);
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
@@ -81,10 +81,10 @@ public class PerfTests {
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 1, 48, 8, 0);
+        assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 1, 48, 8, 0, 2);
 
         // todo not working, maybe because of castle rights checking missing
-        //assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 2, 2039, 351, 1);
+        //assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 2, 2039, 351, 1, 91);
     }
 
 
@@ -96,11 +96,11 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
 
-        assertPerft(generator, board, WHITE, 1, 14, 1, 0);
+        assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0);
 
-        assertPerft(generator, board, WHITE, 2, 191, 14, 0);
+        assertPerft(generator, board, WHITE, 2, 191, 14, 0, 0);
 
-        assertPerft(generator, board, WHITE, 3, 2812, 209, 2);
+        assertPerft(generator, board, WHITE, 3, 2812, 209, 2, 0);
     }
 
 
@@ -112,26 +112,28 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
 
-        assertPerft(generator, board, WHITE, 1, 6, 0, 0);
+        assertPerft(generator, board, WHITE, 1, 6, 0, 0, 0);
 
         // todo does not match...
-        //assertPerft(generator, board, WHITE, 2, 264, 87, 0);
+        //assertPerft(generator, board, WHITE, 2, 264, 87, 0, 6);
 
     }
 
     int nodes = 0;
     int captures = 0;
     int ep = 0;
+    int castles = 0;
 
     void perftReset() {
         nodes = 0;
         captures = 0;
         ep = 0;
+        castles = 0;
     }
 
 
     private void assertPerft(PositionBasedGenerator<MoveList> generator, BoardRepresentation board, Color color, int depth,
-                             int expectedNodes, int expectedCaptures, int expectedEP) {
+                             int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles) {
         perftReset();
         perft(generator, board, color, depth);
 
@@ -139,6 +141,7 @@ public class PerfTests {
         softly.assertThat(nodes).as("Leave Nodes").isEqualTo(expectedNodes);
         softly.assertThat(captures).as("Captures").isEqualTo(expectedCaptures);
         softly.assertThat(ep).as("En Passant").isEqualTo(expectedEP);
+        softly.assertThat(castles).as("Castles (Rochade)").isEqualTo(expectedCastles);
         softly.assertAll();
     }
 
@@ -163,6 +166,9 @@ public class PerfTests {
                 }
                 if (moveCursor.getMove() instanceof EnPassantMove) {
                     ep++;
+                }
+                if (moveCursor.getMove() instanceof RochadeMove) {
+                    castles++;
                 }
             }
             moveCursor.move(board);
