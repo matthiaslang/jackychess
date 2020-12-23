@@ -2,6 +2,8 @@ package org.mattlang.jc.uci;
 
 import org.mattlang.jc.board.*;
 
+import static org.mattlang.jc.board.Figure.B_Queen;
+import static org.mattlang.jc.board.Figure.W_Queen;
 import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
@@ -60,15 +62,16 @@ public class FenParser {
         // todo support other promotions, too
         if (moveStr.endsWith("q")) {
             BasicMove parsed = new BasicMove(moveStr);
-           return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte)0);
+            Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? W_Queen : B_Queen;
+            return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
         }
 
         return new BasicMove(moveStr);
     }
 
     private Color setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
-            String noHalfMoves,
-            String nextMoveNum) {
+                              String noHalfMoves,
+                              String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         board.clearPosition();
         String[] rows = figures.split("/");

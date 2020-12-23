@@ -2,8 +2,13 @@ package org.mattlang.jc.board;
 
 public class PawnPromotionMove extends BasicMove {
 
-    public PawnPromotionMove(int from, int to, byte capturedFigure) {
+    private final Figure promotedFigure;
+
+    // todo save promotion figure..
+
+    public PawnPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
         super(from, to, capturedFigure);
+        this.promotedFigure = promotedFigure;
     }
 
     @Override
@@ -11,9 +16,9 @@ public class PawnPromotionMove extends BasicMove {
         Figure pawn = board.getPos(getFromIndex());
         byte override = board.move(getFromIndex(), getToIndex());
 
-        Figure queen = pawn.color == Color.WHITE ? Figure.W_Queen : Figure.B_Queen;
-        board.setPos(getToIndex(), queen);
+        board.setPos(getToIndex(), promotedFigure);
         return new UndoPawnPromotionMove(getToIndex(), getFromIndex(), override);
+
 
     }
 }

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
@@ -38,9 +39,15 @@ public class BasicMoveList implements MoveList {
         } else {
             isOnLastLine = to >= 0 && to <= 7;
         }
-        moves.add(isOnLastLine ?
-                new PawnPromotionMove(from, to, capturedFigure) :
-                new BasicMove(from, to, capturedFigure, enPassantOption));
+        if (isOnLastLine) {
+            moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
+            moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
+            moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
+            moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
+        } else {
+            moves.add(new BasicMove(from, to, capturedFigure, enPassantOption));
+
+        }
     }
 
 
