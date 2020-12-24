@@ -36,6 +36,11 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
 
+        perftInitialPosition(board, generator);
+
+    }
+
+    private void perftInitialPosition(BoardRepresentation board, LegalMoveGenerator generator) {
         assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0, 0);
 
         assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0, 0);
@@ -48,7 +53,6 @@ public class PerfTests {
 
         // takes too long for unit test
 //      assertPerft(generator, board, WHITE, 6, 119060324, 2812008, 0, 0);
-
     }
 
 
@@ -61,15 +65,7 @@ public class PerfTests {
 
         LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
 
-        assertPerft(legalMoveGen, board, WHITE, 1, 20, 0, 0, 0, 0);
-
-        assertPerft(legalMoveGen, board, WHITE, 2, 400, 0, 0, 0, 0);
-
-        assertPerft(legalMoveGen, board, WHITE, 3, 8902, 34, 0, 0, 0);
-
-        assertPerft(legalMoveGen, board, WHITE, 4, 197281, 1576, 0, 0, 0);
-
-        assertPerft(legalMoveGen, board, Color.WHITE, 5, 4865609, 82719, 258, 0, 0);
+        perftInitialPosition(board, legalMoveGen);
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
@@ -111,11 +107,13 @@ public class PerfTests {
 
     @Test
     public void position4() {
-        Board board = new Board();
+        Board2 board = new Board2();
         board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
         System.out.println(board.toUniCodeStr());
 
-        LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
+
+        LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
 
         assertPerft(generator, board, WHITE, 1, 6, 0, 0, 0, 0);
 
@@ -124,7 +122,7 @@ public class PerfTests {
         assertPerft(generator, board, WHITE, 3, 9467, 1021, 4, 0, 120);
 
         // todo here we differ caused by castles...?
-        //assertPerft(generator, board, WHITE, 4, 422333, 131393, 0, 7795, 60032);
+        assertPerft(generator, board, WHITE, 4, 422333, 131393, 0, 7795, 60032);
 
     }
 

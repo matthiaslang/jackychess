@@ -7,13 +7,10 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.PieceList;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
 
 public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
     MoveGenerator generator = Factory.getDefaults().moveGenerator.create();
-
-    BoardStatsGenerator statsGenerator = Factory.getDefaults().boardStatsGenerator.instance();
 
     MoveGeneratorImpl2 moveGeneratorImpl2 = new MoveGeneratorImpl2();
 

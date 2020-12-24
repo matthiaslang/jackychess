@@ -4,6 +4,10 @@ import java.util.Objects;
 
 public class Rochade {
 
+    public static enum RochadeType{
+        LONG, SHORT
+    }
+
     private boolean hAllowed = true;
 
     private boolean aAllowed = true;
@@ -34,6 +38,10 @@ public class Rochade {
 
     public Rochade copy() {
         return new Rochade(hAllowed, aAllowed);
+    }
+
+    public boolean isAllowed(RochadeType type) {
+        return type == RochadeType.LONG ? aAllowed : hAllowed;
     }
 
     public boolean ishAllowed() {

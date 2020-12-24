@@ -1,15 +1,14 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
 
+import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.Rochade.RochadeType;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -18,11 +17,6 @@ import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
  * Optimization, working only with Board2.
  */
 public class MoveGeneratorImpl2 implements MoveGenerator {
-
-    public static final int[] ROCHADE_L_WHITE = { 0, 1, 2, 3, 4 };
-    public static final int[] ROCHADE_S_WHITE = { 4, 5, 6, 7 };
-    public static final int[] ROCHADE_S_BLACK = { 60, 61, 62, 63 };
-    public static final int[] ROCHADE_L_BLACK = { 56, 57, 58, 59, 60 };
 
     /* Now we have the mailbox array, so called because it looks like a
    mailbox, at least according to Bob Hyatt. This is useful when we
@@ -115,7 +109,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         return moves;
     }
 
-    private void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
+    private static void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
                                int[] figOffsets, boolean slide) {
 
         for (int j = 0; j < figOffsets.length; ++j) { /* for all knight or ray directions */
@@ -144,9 +138,23 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
      * @param i
      * @return
      */
-    public boolean canFigureCaptured(BoardRepresentation board, int i) {
+    public static boolean canFigureCaptured(BoardRepresentation board, int i) {
         byte figure = board.getFigureCode(i);
         Color side = Figure.getColor(figure);
+        return canFigureCaptured(board, i, side);
+    }
+
+    /**
+     * Returns true, if the fiel on position i can be captured/controlled by the other side.
+     * This could be used to test check situations during legal move generation, etc.
+     *
+     * It tests captures by using "inverse" logic, going from the position in question to the opponents positions.
+     *
+     * @param board
+     * @param i
+     * @return
+     */
+    public static boolean canFigureCaptured(BoardRepresentation board, int i, Color side) {
         Color xside = side.invert();
 
         CaptureChecker captureChecker = new CaptureChecker();
@@ -192,43 +200,97 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         return false;
     }
 
+    static class CastlingDef{
+        Color side;
+        RochadeType rochadeType;
 
-    private boolean checkPos(BoardRepresentation board, int[] pos, Figure... figures) {
-        for (int i = 0; i < pos.length; i++) {
-            Figure figure = board.getPos(pos[i]);
-            if (figures[i] != figure) {
-                return false;
-            }
+        int[] fieldPos;
+        Figure[] fieldPosFigures;
+        int[] fieldCheckTst;
+
+        public CastlingDef(Color side, RochadeType rochadeType, int[] fieldPos, Figure[] fieldPosFigures, int[] fieldCheckTst) {
+            this.side = side;
+            this.rochadeType = rochadeType;
+            this.fieldPos = fieldPos;
+            this.fieldPosFigures = fieldPosFigures;
+            this.fieldCheckTst = fieldCheckTst;
         }
-        return true;
+
+        public boolean check(BoardRepresentation board, Rochade rochade) {
+            // check if rochade is still allowed:
+            if (rochade.isAllowed(rochadeType)){
+                // check that the relevant figures and empty fields are as needs to be for castling:
+                if (checkPos(board)) {
+                    // check that king pos and moves are not in check:
+                    for (int pos : fieldCheckTst) {
+                        if (MoveGeneratorImpl2.canFigureCaptured(board, pos, side)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean checkPos(BoardRepresentation board) {
+            for (int i = 0; i < fieldPos.length; i++) {
+                Figure figure = board.getPos(fieldPos[i]);
+                if (fieldPosFigures[i] != figure) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
+
+    public static final CastlingDef ROCHADE_L_WHITE = new CastlingDef(
+            WHITE,
+            RochadeType.LONG,
+            new int[]{0, 1, 2, 3, 4},
+            new Figure[]{W_Rook, EMPTY, EMPTY, EMPTY, W_King},
+            new int[]{2, 3, 4});
+
+    public static final CastlingDef ROCHADE_S_WHITE = new CastlingDef(
+            WHITE,
+            RochadeType.SHORT,
+            new int[]{4, 5, 6, 7},
+            new Figure[]{W_King, EMPTY, EMPTY, W_Rook},
+            new int[]{4, 5, 6});
+
+    public static final CastlingDef ROCHADE_S_BLACK = new CastlingDef(
+            BLACK,
+            RochadeType.SHORT,
+            new int[]{60, 61, 62, 63},
+            new Figure[]{B_King, EMPTY, EMPTY, B_Rook},
+            new int[]{60, 61, 62});
+
+    public static final CastlingDef ROCHADE_L_BLACK = new CastlingDef(
+            BLACK,
+            RochadeType.LONG,
+            new int[]{56, 57, 58, 59, 60},
+            new Figure[]{B_Rook, EMPTY, EMPTY, EMPTY, B_King},
+            new int[]{58, 59, 60});
+
 
     private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
         switch (side) {
-        case WHITE:
-            if (checkPos(board, ROCHADE_L_WHITE, W_Rook, EMPTY, EMPTY, EMPTY, W_King)) {
-                if (board.getWhiteRochade().isaAllowed()) {
+            case WHITE:
+                if (ROCHADE_L_WHITE.check(board, board.getWhiteRochade())) {
                     moves.addRochadeLongWhite();
                 }
-            }
-            if (checkPos(board, ROCHADE_S_WHITE, W_King, EMPTY, EMPTY, W_Rook)) {
-                if (board.getWhiteRochade().ishAllowed()) {
+                if (ROCHADE_S_WHITE.check(board, board.getWhiteRochade())) {
                     moves.addRochadeShortWhite();
                 }
-            }
-            break;
-        case BLACK:
-            if (checkPos(board, ROCHADE_S_BLACK, B_King, EMPTY, EMPTY, B_Rook)) {
-                if (board.getBlackRochace().ishAllowed()) {
+                break;
+            case BLACK:
+                if (ROCHADE_S_BLACK.check(board, board.getBlackRochace())) {
                     moves.addRochadeShortBlack();
                 }
-            }
-            if (checkPos(board, ROCHADE_L_BLACK, B_Rook, EMPTY, EMPTY, EMPTY, B_King)) {
-                if (board.getBlackRochace().isaAllowed()) {
+                if (ROCHADE_L_BLACK.check(board, board.getBlackRochace())) {
                     moves.addRochadeLongBlack();
                 }
-            }
-            break;
+                break;
         }
     }
 
@@ -263,7 +325,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         genPawnCaptureMoves(board, moves, i, side);
     }
 
-    private void genPawnCaptureMoves(BoardRepresentation board, MoveList moves, int i, Color side) {
+    private static void genPawnCaptureMoves(BoardRepresentation board, MoveList moves, int i, Color side) {
         int n;
         int m = side == WHITE ? 1 : -1;
         Color xside = side.invert();
