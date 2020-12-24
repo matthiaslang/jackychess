@@ -9,7 +9,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.compactmovelist.CompactMoveList;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.movegenerator.*;
@@ -22,47 +21,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 //@Ignore
 public class LegalMoveCacheTest  {
 
-    /**
-     * REsult: currently the compactmovelist ist slower than the basicmovelist (thats really surprising...)
-     */
-    @Test
-    public void compareit() {
-        Board board = new Board();
-
-        board.setStartPosition();
-
-        System.out.println(board.toUniCodeStr());
-
-        StopWatch stopwatch = new StopWatch();
-
-        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
-
-        stopwatch.start();
-        int num = 10000000;
-        for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGeneratorImpl();
-            MoveList whiteMoves = generator.generate(board, WHITE);
-
-            MoveGenerator generator2 = new MoveGeneratorImpl();
-            MoveList blackMoves = generator2.generate(board, BLACK);
-        }
-        stopwatch.stop();
-        System.out.println("basic list: " + stopwatch.toString());
-
-        Factory.getDefaults().moveList.set(() -> new CompactMoveList());
-
-        stopwatch.start();
-        for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGeneratorImpl();
-            MoveList whiteMoves = generator.generate(board, WHITE);
-
-            MoveGenerator generator2 = new MoveGeneratorImpl();
-            MoveList blackMoves = generator2.generate(board, BLACK);
-        }
-        stopwatch.stop();
-        System.out.println("compact list: " + stopwatch.toString());
-
-    }
 
     /**
      * Caching movelists with board as key: this is much faster than recreating, therefore very beneficial
