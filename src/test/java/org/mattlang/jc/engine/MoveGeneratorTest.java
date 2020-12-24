@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.PawnPromotionMove;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
@@ -35,13 +36,18 @@ public class MoveGeneratorTest {
         MoveGenerator generator2 = new MoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
+        List<Move> wMoves = createMoveList(whiteMoves);
+        assertThat(wMoves.size()).isEqualTo(4);
+        List<Move> bMoves = createMoveList(blackMoves);
+        assertThat(bMoves.size()).isEqualTo(4);
+
+        Move wQPromotion = wMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.W_Queen).findFirst().get();
+        Move bQPromotion = bMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.B_Queen).findFirst().get();
         List<Move> undoes = new ArrayList<>();
-        for (Move move : createMoveList(whiteMoves)) {
-            undoes.add(board.move(move));
-        }
-        for (Move move : createMoveList(blackMoves)) {
-            undoes.add(board.move(move));
-        }
+
+        undoes.add(board.move(wQPromotion));
+        undoes.add(board.move(bQPromotion));
+
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigure(parsePos("a8"))).isEqualTo(Figure.W_Queen);

@@ -4,8 +4,6 @@ public class PawnPromotionMove extends BasicMove {
 
     private final Figure promotedFigure;
 
-    // todo save promotion figure..
-
     public PawnPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
         super(from, to, capturedFigure);
         this.promotedFigure = promotedFigure;
@@ -18,7 +16,9 @@ public class PawnPromotionMove extends BasicMove {
 
         board.setPos(getToIndex(), promotedFigure);
         return new UndoPawnPromotionMove(getToIndex(), getFromIndex(), override);
+    }
 
-
+    public Figure getPromotedFigure() {
+        return promotedFigure;
     }
 }
