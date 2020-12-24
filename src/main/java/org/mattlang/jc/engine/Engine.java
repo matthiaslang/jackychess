@@ -5,16 +5,16 @@ import org.mattlang.jc.board.*;
 
 public class Engine {
 
-    private Board board = new Board();
+    private BoardRepresentation board = new Board();
 
     private SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
 
     private int depth = Factory.getDefaults().getMaxDepth();
 
-    public Engine(Board board) {
+    public Engine(BoardRepresentation board) {
         this.board = board;
     }
-    public Engine(Board board, int depth) {
+    public Engine(BoardRepresentation board, int depth) {
         this.board = board;
         this.depth = depth;
     }
@@ -45,7 +45,7 @@ public class Engine {
         board.move(move);
     }
 
-    public Board getBoard() {
+    public BoardRepresentation getBoard() {
         return board;
     }
 }
