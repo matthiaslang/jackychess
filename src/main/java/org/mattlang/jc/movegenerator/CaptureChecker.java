@@ -18,15 +18,20 @@ public class CaptureChecker implements MoveList {
 
     @Override
     public void genMove(int from, int to, byte capturedFigureCode) {
-        if (capturedFigureCode != 0) {
-            byte capturedFigure = (byte) (capturedFigureCode & MASK_OUT_COLOR);
-            capturedFigures.add(capturedFigure);
-        }
+        addCapture(capturedFigureCode);
     }
 
     @Override
     public void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption) {
+        addCapture(capturedFigureCode);
+    }
 
+
+    private void addCapture(byte capturedFigureCode) {
+        if (capturedFigureCode != 0) {
+            byte capturedFigure = (byte) (capturedFigureCode & MASK_OUT_COLOR);
+            capturedFigures.add(capturedFigure);
+        }
     }
 
     @Override

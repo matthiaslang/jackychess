@@ -69,8 +69,7 @@ public class PerfTests {
 
         assertPerft(legalMoveGen, board, WHITE, 4, 197281, 1576, 0, 0, 0);
 
-        // todo does not match... why?
-        //assertPerft(legalMoveGen, board, Color.WHITE, 5, 4865609, 82719, 258, 0, 0);
+        assertPerft(legalMoveGen, board, Color.WHITE, 5, 4865609, 82719, 258, 0, 0);
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }

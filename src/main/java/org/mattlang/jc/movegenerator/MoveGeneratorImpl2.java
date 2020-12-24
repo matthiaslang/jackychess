@@ -1,7 +1,10 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.MoveList;
 
 import static org.mattlang.jc.board.Color.WHITE;
@@ -88,8 +91,6 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
      */
     public MoveList generate(BoardRepresentation board, Color side, MoveList moves) {
 
-        Board2 board2 = (Board2) board;
-
         Color xside = side.invert();  /* the side not to move */
 
         for (int i = 0; i < 64; ++i) { /* loop over all squares (no piece list) */
@@ -149,7 +150,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         Color xside = side.invert();
 
         CaptureChecker captureChecker = new CaptureChecker();
-        // 1. test rook && queen vertical horizontal captures:
+        // 1. test rook && queen vertical & horizontal captures:
         genPieceMoves(board, i, captureChecker, xside, offset[FigureConstants.FT_ROOK], slide[FigureConstants.FT_ROOK]);
         if (captureChecker.hasCapturesBy(FigureConstants.FT_ROOK)) {
             return true;
@@ -176,7 +177,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
 
         // 4. pawns:
         captureChecker.reset();
-        genPawnMoves(board, captureChecker, i, side);
+        genPawnCaptureMoves(board, captureChecker, i, side);
         if (captureChecker.hasCapturesBy(FigureConstants.FT_PAWN)) {
             return true;
         }
