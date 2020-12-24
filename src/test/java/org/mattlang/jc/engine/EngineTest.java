@@ -76,6 +76,8 @@ public class EngineTest extends TestCase {
 
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
+
+        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
     }
 
     @Test
