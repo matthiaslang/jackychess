@@ -57,7 +57,7 @@ public class UciProcessor {
     }
 
     private void identifyYourself() {
-        UCI.instance.putCommand("id name JackyChess 0.3.0");
+        UCI.instance.putCommand("id name JackyChess " + Factory.getAppProps().getProperty("version"));
         UCI.instance.putCommand("id author Matthias Lang");
         //        UCI.instance.putCommand("option ");
         UCI.instance.putCommand("uciok");

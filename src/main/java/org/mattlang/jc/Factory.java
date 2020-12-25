@@ -10,11 +10,31 @@ import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Factory to switch between different implementations (mainly for tests).
  */
 public class Factory {
 
+    private static  Properties appProps = loadAppProps();
+
+    private static Properties loadAppProps() {
+        InputStream in = Factory.class.getResourceAsStream("/app.properties");
+        appProps = new Properties();
+        try {
+            appProps.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return appProps;
+    }
+
+    public static Properties getAppProps() {
+        return appProps;
+    }
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
