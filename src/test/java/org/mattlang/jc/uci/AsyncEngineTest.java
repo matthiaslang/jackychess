@@ -1,7 +1,8 @@
 package org.mattlang.jc.uci;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -13,7 +14,7 @@ public class AsyncEngineTest  {
 
     @Test
     public void start() throws ExecutionException, InterruptedException {
-        Board board = new Board();
+        BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();;
 
         AsyncEngine asyncEngine = new AsyncEngine();
