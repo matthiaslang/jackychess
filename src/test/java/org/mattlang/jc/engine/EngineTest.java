@@ -99,6 +99,7 @@ public class EngineTest extends TestCase {
     }
 
     @Test
+    @Ignore
     public void testMtdfProblem() throws IOException {
 
         initLogging();
