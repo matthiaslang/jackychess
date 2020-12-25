@@ -1,11 +1,14 @@
 package org.mattlang.jc;
 
+import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -16,8 +19,9 @@ public class Factory {
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
                 .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEval()))
-                .moveGenerator.set(() -> new MoveGeneratorImpl())
-                .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl2())
+                .moveGenerator.set(() -> new MoveGeneratorImpl2())
+                .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
+                .boards.set(() -> new Board2())
                 .setMaxDepth(15)
                 .setMaxQuiescenceDepth(0)
                 .setTimeout(15000)

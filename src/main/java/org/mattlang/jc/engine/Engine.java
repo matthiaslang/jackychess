@@ -5,7 +5,7 @@ import org.mattlang.jc.board.*;
 
 public class Engine {
 
-    private BoardRepresentation board = new Board();
+    private BoardRepresentation board = Factory.getDefaults().boards.create();
 
     private SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
 

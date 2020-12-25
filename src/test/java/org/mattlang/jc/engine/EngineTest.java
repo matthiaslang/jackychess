@@ -4,10 +4,7 @@ import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board;
-import org.mattlang.jc.board.Board2;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
@@ -139,7 +136,7 @@ public class EngineTest extends TestCase {
         UCI.instance.attachStreams(System.in, System.out);
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
-        Board board = new Board();
+        BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
         GameState gameState =parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
 
@@ -160,7 +157,7 @@ public class EngineTest extends TestCase {
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
-        Board board = new Board();
+        BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
         GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
 

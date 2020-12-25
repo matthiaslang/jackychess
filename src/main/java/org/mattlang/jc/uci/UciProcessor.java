@@ -1,6 +1,7 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 
@@ -9,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class UciProcessor {
 
-    private Board board = new Board();
+    private BoardRepresentation board = Factory.getDefaults().boards.create();
 
     private GameState gameState;
 
