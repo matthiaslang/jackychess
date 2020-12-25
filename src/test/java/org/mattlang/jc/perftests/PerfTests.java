@@ -72,14 +72,26 @@ public class PerfTests {
 
     @Test
     public void position2() {
-        Board board = new Board();
+        Board2 board = new Board2();
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 1, 48, 8, 0, 2, 0);
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
 
-        // todo not working, maybe because of castle rights checking missing
-        //assertPerft(new LegalMoveGeneratorImpl2(), board, WHITE, 2, 2039, 351, 1, 91, 0);
+        LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
+
+        assertPerft(generator, board, WHITE, 1, 48, 8, 0, 2, 0);
+
+        assertPerft(generator, board, WHITE, 2, 2039, 351, 1, 91, 0);
+
+        assertPerft(generator, board, WHITE, 3, 97862, 17102, 45, 3162, 0);
+
+        assertPerft(generator, board, WHITE, 4, 4085603, 757163, 1929, 128013, 15172);
+
+        // todo takes rel long: diffs in castle rights; need to track moved rooks, kings...
+        //assertPerft(generator, board, WHITE, 5, 193690690, 35043416, 73365, 4993637, 8392);
+
+
     }
 
 
@@ -121,7 +133,6 @@ public class PerfTests {
 
         assertPerft(generator, board, WHITE, 3, 9467, 1021, 4, 0, 120);
 
-        // todo here we differ caused by castles...?
         assertPerft(generator, board, WHITE, 4, 422333, 131393, 0, 7795, 60032);
 
     }
