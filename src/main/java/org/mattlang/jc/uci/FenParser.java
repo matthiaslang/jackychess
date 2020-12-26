@@ -2,8 +2,9 @@ package org.mattlang.jc.uci;
 
 import org.mattlang.jc.board.*;
 
-import static org.mattlang.jc.board.Figure.B_Queen;
-import static org.mattlang.jc.board.Figure.W_Queen;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
@@ -36,7 +37,7 @@ public class FenParser {
             if ("moves".equals(splitted[movesSection])) {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
-                    Move move = parseMove(moveStr);
+                    Move move = parseMove(board, moveStr);
                     board.move(move);
                     repetitionChecker.push(board);
                     who2Move = who2Move.invert();
@@ -46,7 +47,7 @@ public class FenParser {
         return new GameState(board, who2Move, repetitionChecker);
     }
 
-    private BasicMove parseMove(String moveStr) {
+    private BasicMove parseMove(BoardRepresentation board, String moveStr) {
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr)) {
             return ROCHADE_MOVE_SW;
@@ -58,15 +59,32 @@ public class FenParser {
             return ROCHADE_MOVE_LB;
         }
 
-        // simple pawn queen promotion
-        // todo support other promotions, too
         if (moveStr.endsWith("q")) {
-            BasicMove parsed = new BasicMove(moveStr);
-            Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? W_Queen : B_Queen;
-            return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
+            return createPawnPromotion(moveStr, W_Queen, B_Queen);
+        } else if (moveStr.endsWith("r")) {
+            return createPawnPromotion(moveStr, W_Rook, B_Rook);
+        } else if (moveStr.endsWith("k")) {
+            return createPawnPromotion(moveStr, W_Knight, B_Knight);
+        } else if (moveStr.endsWith("b")) {
+            return createPawnPromotion(moveStr, W_Bishop, B_Bishop);
         }
 
+        // en passant:
+        BasicMove tmp = new BasicMove(moveStr);
+        if (board.isEnPassantCapturePossible(tmp.getToIndex())) {
+            Color side = board.getFigure(tmp.getFromIndex()).color;
+            byte otherSidePawn = side == Color.WHITE ? B_PAWN : W_PAWN;
+            return new EnPassantMove(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn, board.getEnPassantCapturePos());
+        }
+
+        // normal move:
         return new BasicMove(moveStr);
+    }
+
+    private BasicMove createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
+        BasicMove parsed = new BasicMove(moveStr);
+        Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? wProm : bProm;
+        return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
     }
 
     private Color setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
