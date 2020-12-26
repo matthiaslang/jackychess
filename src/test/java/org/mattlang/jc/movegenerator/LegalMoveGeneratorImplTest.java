@@ -1,12 +1,12 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.mattlang.jc.board.Board;
 import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LegalMoveGeneratorImplTest {
 
@@ -18,7 +18,7 @@ public class LegalMoveGeneratorImplTest {
 
         System.out.println(BoardPrinter.toUniCodeStr(board));
 
-        LegalMoveGenerator legalMoveGenerator = new LegalMoveGeneratorImpl();
+        LegalMoveGenerator legalMoveGenerator = new LegalMoveGeneratorImpl3();
         MoveList rslt = legalMoveGenerator.generate(board, Color.WHITE);
         /**
          * White king can only move down, because other moves would go into chess
