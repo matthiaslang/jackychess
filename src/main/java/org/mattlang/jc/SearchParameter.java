@@ -14,7 +14,7 @@ import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 import java.util.logging.Logger;
 
@@ -38,7 +38,7 @@ public class SearchParameter {
 
     public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, () -> new LegalMoveGeneratorImpl3());
 
-    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, () -> new MoveGeneratorImpl());
+    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, () -> new MoveGeneratorImpl2());
 
     public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, () -> new SimpleBoardStatsGenerator());
 

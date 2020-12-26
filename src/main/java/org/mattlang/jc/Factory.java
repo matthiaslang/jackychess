@@ -6,7 +6,6 @@ import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class Factory {
     public static SearchParameter createIterativeDeepeningMtdf() {
         return new SearchParameter()
                 .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEval()))
-                .moveGenerator.set(() -> new MoveGeneratorImpl())
+                .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
                 .setMaxDepth(6)
                 .setMaxQuiescenceDepth(0)

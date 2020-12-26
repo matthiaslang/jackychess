@@ -6,7 +6,7 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.PawnPromotionMove;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,10 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl();
+        MoveGenerator generator = new MoveGeneratorImpl2();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        MoveGenerator generator2 = new MoveGeneratorImpl();
+        MoveGenerator generator2 = new MoveGeneratorImpl2();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<Move> wMoves = createMoveList(whiteMoves);
@@ -74,7 +74,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl();
+        MoveGenerator generator = new MoveGeneratorImpl2();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = createMoveList(whiteMoves).stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
@@ -89,7 +89,7 @@ public class MoveGeneratorTest {
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new MoveGeneratorImpl();
+        MoveGenerator generator2 = new MoveGeneratorImpl2();
         MoveList blackMoves = generator2.generate(board, BLACK);
         Move a2PawnMove = createMoveList(blackMoves).stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
@@ -108,7 +108,7 @@ public class MoveGeneratorTest {
         Board board = new Board();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl2();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
         List<Move> mmoves = createMoveList(moves);
@@ -165,7 +165,7 @@ public class MoveGeneratorTest {
         Board cmpboard = new Board();
         cmpboard.setFenPosition(fen);
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl2();
         MoveList moves = moveGenerator.generate(board, WHITE);
         // find white rochade moves:
         List<Move> rochMoves = createMoveList(moves).stream()
@@ -195,7 +195,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl();
+        MoveGenerator generator = new MoveGeneratorImpl2();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
         List<Move> wMoves = createMoveList(whiteMoves);
@@ -233,7 +233,7 @@ public class MoveGeneratorTest {
         Board copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new MoveGeneratorImpl();
+        MoveGenerator generator = new MoveGeneratorImpl2();
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);

@@ -15,7 +15,7 @@ import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
 import java.util.HashMap;
 
@@ -45,10 +45,10 @@ public class LegalMoveCacheTest  {
         stopwatch.start();
         int num = 10000000;
         for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGeneratorImpl();
+            MoveGenerator generator = new MoveGeneratorImpl2();
             MoveList whiteMoves = generator.generate(board, WHITE);
 
-            MoveGenerator generator2 = new MoveGeneratorImpl();
+            MoveGenerator generator2 = new MoveGeneratorImpl2();
             MoveList blackMoves = generator2.generate(board, BLACK);
         }
         stopwatch.stop();
@@ -58,10 +58,10 @@ public class LegalMoveCacheTest  {
 
         HashMap<Board, MoveList> whitemap = new HashMap<>();
         HashMap<Board, MoveList> blackmap = new HashMap<>();
-        MoveGenerator generator = new MoveGeneratorImpl();
+        MoveGenerator generator = new MoveGeneratorImpl2();
         MoveList whiteMoves = generator.generate(board, WHITE);
         whitemap.put(board, whiteMoves);
-        MoveGenerator generator2 = new MoveGeneratorImpl();
+        MoveGenerator generator2 = new MoveGeneratorImpl2();
         MoveList blackMoves = generator2.generate(board, BLACK);
         blackmap.put(board, blackMoves);
 
@@ -130,7 +130,7 @@ public class LegalMoveCacheTest  {
         int depth = 5;
         StopWatch stopWatch = new StopWatch();
 
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl());
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
 
         Factory.getDefaults().legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3());
         // now starting engine:
