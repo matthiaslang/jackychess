@@ -150,7 +150,7 @@ public class LegalMoveCacheTest  {
         System.out.println("time with impl2: " + stopWatch.toString() + " found move " + move.toStr());
 
 
-        Factory.getDefaults().legalMoveGenerator.set(() -> new CachingLegalMoveGenerator());
+        Factory.getDefaults().legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl2()));
         engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
