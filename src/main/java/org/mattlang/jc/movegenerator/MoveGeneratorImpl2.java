@@ -335,10 +335,10 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 byte target = board.getFigureCode(n);
                 if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
                     moves.genPawnMove(i, n, side, target, -1);
-                } else if (target == FigureConstants.FT_EMPTY) {
-                    moves.hypotheticalPawnCapture(i,n);
                 } else if (board.isEnPassantCapturePossible(n)) {
                     moves.genEnPassant(i, n, side, board.getEnPassantCapturePos());
+                } else if (target == FigureConstants.FT_EMPTY) {
+                    moves.hypotheticalPawnCapture(i, n);
                 }
             }
         }
