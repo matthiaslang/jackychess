@@ -8,7 +8,8 @@ import org.mattlang.jc.engine.evaluation.BoardStats;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.uci.FenParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +56,7 @@ public class SimpleNegaMaxEvalTest {
         // since we recognize patts, we avoid moves which make patt:
         board.move(move);
         // means we should have no patt situation:
-        LegalMoveGeneratorImpl2 moveGenerator = new LegalMoveGeneratorImpl2();
+        LegalMoveGenerator moveGenerator = new LegalMoveGeneratorImpl3();
         MoveList whiteMoves = moveGenerator.generate(board, Color.WHITE);
         // so white should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);

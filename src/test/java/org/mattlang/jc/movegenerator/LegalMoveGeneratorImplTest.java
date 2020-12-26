@@ -28,7 +28,7 @@ public class LegalMoveGeneratorImplTest {
         assertThat(rslt.iterator().next().getMove().toStr()).isEqualTo("e5e4");
 
         // try the same with scnd impl:
-        legalMoveGenerator = new LegalMoveGeneratorImpl2();
+        legalMoveGenerator = new LegalMoveGeneratorImpl3();
         rslt = legalMoveGenerator.generate(board, Color.WHITE);
 
         assertThat(rslt.size()).isEqualTo(1);

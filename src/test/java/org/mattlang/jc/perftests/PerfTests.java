@@ -31,10 +31,10 @@ public class PerfTests {
 
     @Test
     public void initialPositionPerformanceLegalMoves() {
-        Board board = new Board();
+        Board2 board = new Board2();
         board.setStartPosition();
 
-        LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
+        LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
 
         perftInitialPosition(board, generator);
 
@@ -97,11 +97,11 @@ public class PerfTests {
 
     @Test
     public void position3() {
-        Board board = new Board();
+        Board2 board = new Board2();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        LegalMoveGeneratorImpl2 generator = new LegalMoveGeneratorImpl2();
+        LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
 
         assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0, 0);
 

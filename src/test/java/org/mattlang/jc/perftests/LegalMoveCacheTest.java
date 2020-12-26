@@ -12,7 +12,10 @@ import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.NegaMax;
-import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
 import java.util.HashMap;
 
@@ -141,7 +144,7 @@ public class LegalMoveCacheTest  {
 
         System.out.println("time without caching: " + stopWatch.toString() + " found move " + move.toStr());
 
-        Factory.getDefaults().legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl2()));
+        Factory.getDefaults().legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()));
         engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
