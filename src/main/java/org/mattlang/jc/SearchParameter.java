@@ -11,8 +11,8 @@ import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl;
 
@@ -36,7 +36,7 @@ public class SearchParameter {
 
     public final Impl<SearchMethod> searchMethod = new Impl<>(this, () -> new IterativeDeepeningMtdf());
 
-    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, () -> new CachingLegalMoveGenerator());
+    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, () -> new LegalMoveGeneratorImpl3());
 
     public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, () -> new MoveGeneratorImpl());
 
