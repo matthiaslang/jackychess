@@ -23,6 +23,18 @@ pipeline {
 
         stage('Test') {
             steps {
+                sh 'mvn test '
+            }
+
+            post {
+                always {
+                    junit testResults: 'target/surefire-reports/**/*.xml, target/failsafe-reports/**/*.xml'
+                }
+            }
+        }
+
+        stage('IT Test') {
+            steps {
                 sh 'mvn verify '
             }
 
