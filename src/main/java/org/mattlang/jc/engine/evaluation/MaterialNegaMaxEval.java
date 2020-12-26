@@ -71,8 +71,9 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
     private int isPatt(BoardStats me, BoardStats other) {
         // if only king of other side can move, we need to take care and further analyse:
         if (Long.bitCount(other.kingMobilityBitBoard) == other.mobility) {
-            // diff our mobility with the enemies king mobility:
-            if ((me.mobilityBitBoard & other.kingMobilityBitBoard) == other.kingMobilityBitBoard) {
+            // diff our mobility/captures possibility with the enemies king mobility:
+            long possibleCaptures = me.mobilityBitBoard | me.hypotheticalPawnCaptures;
+            if ((possibleCaptures & other.kingMobilityBitBoard) == other.kingMobilityBitBoard) {
                 // big penalty for patt!
                 // todo or make additional evaluations based on material if we should do accept the patt?
                 return 1;

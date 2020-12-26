@@ -15,6 +15,8 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
 
     private long kingMobility = 0L;
 
+    private long hypotheticalPawnCaptures = 0L;
+
     private int kingPos = 0;
 
     private MoveGenerator moveGenerator = Factory.getDefaults().moveGenerator.create();
@@ -29,7 +31,7 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
         captures = 0L;
         kingMobility = 0L;
         moveGenerator.generate(board, color, this);
-        return new BoardStats(mobility, captures, kingMobility);
+        return new BoardStats(mobility, captures, kingMobility, hypotheticalPawnCaptures);
     }
 
     @Override
@@ -97,6 +99,16 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     @Override
     public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
         countMove(from, to, side == Color.WHITE ? FigureConstants.B_PAWN : FigureConstants.W_PAWN);
+    }
+
+    @Override
+    public void hypotheticalPawnCapture(int from, int to) {
+        /**
+         * we count hypothetical pawn captures.
+         * This is to 1. may let this influence to the eval function
+         * 2. to properly recognize patt situations.
+         */
+        hypotheticalPawnCaptures |= (1L << to);
     }
 
     @Override

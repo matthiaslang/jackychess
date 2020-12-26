@@ -57,6 +57,11 @@ public class BasicMoveList implements MoveList {
     }
 
     @Override
+    public void hypotheticalPawnCapture(int from, int to) {
+        // not needed here, since this is only a hypothetical theoretical capture.
+    }
+
+    @Override
     public void addRochadeLongWhite() {
         moves.add(ROCHADE_MOVE_LW);
     }

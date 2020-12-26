@@ -80,6 +80,11 @@ public class CaptureChecker implements MoveList {
     }
 
     @Override
+    public void hypotheticalPawnCapture(int from, int to) {
+        // hypothetical pawn captures are no real captures, therefore we do not count this.
+    }
+
+    @Override
     public Iterator<MoveCursor> iterator() {
         return null;
     }
