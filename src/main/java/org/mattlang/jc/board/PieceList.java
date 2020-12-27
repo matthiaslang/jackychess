@@ -38,9 +38,9 @@ public class PieceList {
         }
     }
 
-    static class Array {
+    public static class Array {
         int[] arr;
-        int size = 0;
+        private int size = 0;
 
         public Array(int maxSize) {
             arr = new int[maxSize];
@@ -73,6 +73,10 @@ public class PieceList {
         public void clean() {
             Arrays.fill(arr, -1);
             size = 0;
+        }
+
+        public int size() {
+            return size;
         }
     }
 
