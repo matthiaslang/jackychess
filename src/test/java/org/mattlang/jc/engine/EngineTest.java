@@ -1,6 +1,5 @@
 package org.mattlang.jc.engine;
 
-import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
@@ -13,8 +12,6 @@ import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
 
@@ -23,7 +20,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Main.initLogging;
 
-public class EngineTest extends TestCase {
+public class EngineTest {
 
     @Test
     public void testNegMaxAlpaBeta() {
@@ -58,27 +55,6 @@ public class EngineTest extends TestCase {
     }
 
 
-    @Test
-    public void testIterativeDeepeningOpt() throws IOException {
-
-        initLogging();
-        UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                .moveGenerator.set(() -> new MoveGeneratorImpl2())
-                .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3()));
-        // now starting engine:
-        Engine engine = new Engine(new Board2());
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
-
-        System.out.println(move.toStr());
-
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e6");
-
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
-    }
 
     @Test
     @Ignore
