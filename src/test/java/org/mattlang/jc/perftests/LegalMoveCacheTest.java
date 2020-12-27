@@ -5,7 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.Engine;
@@ -23,7 +24,7 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
 //@Ignore
-public class LegalMoveCacheTest  {
+public class LegalMoveCacheTest {
 
 
     /**
@@ -32,7 +33,7 @@ public class LegalMoveCacheTest  {
      */
     @Test
     public void compareMoveListHashCache() {
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
 
         board.setStartPosition();
 
@@ -40,7 +41,7 @@ public class LegalMoveCacheTest  {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.getDefaults().moveList.set(() ->  new BasicMoveList());
+        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
 
         stopwatch.start();
         int num = 10000000;
@@ -56,8 +57,8 @@ public class LegalMoveCacheTest  {
 
         stopwatch.start();
 
-        HashMap<Board, MoveList> whitemap = new HashMap<>();
-        HashMap<Board, MoveList> blackmap = new HashMap<>();
+        HashMap<BoardRepresentation, MoveList> whitemap = new HashMap<>();
+        HashMap<BoardRepresentation, MoveList> blackmap = new HashMap<>();
         MoveGenerator generator = new MoveGeneratorImpl2();
         MoveList whiteMoves = generator.generate(board, WHITE);
         whitemap.put(board, whiteMoves);
@@ -67,10 +68,10 @@ public class LegalMoveCacheTest  {
 
 
         for (int i = 0; i < num; i++) {
-             whiteMoves = whitemap.get(board);
-             whiteMoves.size();
-             blackMoves = blackmap.get(board);
-             blackMoves.size();
+            whiteMoves = whitemap.get(board);
+            whiteMoves.size();
+            blackMoves = blackmap.get(board);
+            blackMoves.size();
         }
         stopwatch.stop();
         System.out.println("use hashmap: " + stopwatch.toString());
@@ -84,7 +85,7 @@ public class LegalMoveCacheTest  {
      */
     @Test
     public void compareEvalFunctionHashCache() {
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
 
         board.setStartPosition();
 
@@ -92,7 +93,7 @@ public class LegalMoveCacheTest  {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.getDefaults().moveList.set(() ->  new BasicMoveList());
+        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
@@ -107,10 +108,10 @@ public class LegalMoveCacheTest  {
 
         stopwatch.start();
 
-        HashMap<Board, Integer> whitemap = new HashMap<>();
-        HashMap<Board, Integer> blackmap = new HashMap<>();
+        HashMap<BoardRepresentation, Integer> whitemap = new HashMap<>();
+        HashMap<BoardRepresentation, Integer> blackmap = new HashMap<>();
 
-        whitemap.put(board,  eval.eval(board, WHITE));
+        whitemap.put(board, eval.eval(board, WHITE));
         blackmap.put(board, eval.eval(board, BLACK));
 
         for (int i = 0; i < num; i++) {

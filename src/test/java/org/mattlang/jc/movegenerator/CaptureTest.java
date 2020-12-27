@@ -1,7 +1,8 @@
 package org.mattlang.jc.movegenerator;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,7 +13,7 @@ public class CaptureTest {
     @Test
     public void captureQeenV() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/4q3/8/8/4K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
@@ -27,7 +28,7 @@ public class CaptureTest {
     @Test
     public void captureRookV() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/4r3/8/8/4K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
@@ -42,7 +43,7 @@ public class CaptureTest {
     @Test
     public void captureQeenH() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/8/8/8/q3K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
@@ -57,7 +58,7 @@ public class CaptureTest {
     @Test
     public void captureRookH() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/8/8/8/r3K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
@@ -71,7 +72,7 @@ public class CaptureTest {
     @Test
     public void noCaptureRookQueen() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/8/8/2q2r2/4K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
@@ -85,7 +86,7 @@ public class CaptureTest {
     @Test
     public void capturePawn() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 8/8/8/3p1p3/4K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());

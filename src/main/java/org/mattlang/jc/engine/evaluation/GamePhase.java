@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureType;
 
@@ -16,7 +16,7 @@ public enum GamePhase {
 
     public static GamePhase determineGamePhase(BoardRepresentation board) {
 
-        Board startBoard = new Board();
+        BoardRepresentation startBoard = Factory.getDefaults().boards.create();
         startBoard.setStartPosition();
         int diffs = 0;
         int figuresOnBoard = 0;

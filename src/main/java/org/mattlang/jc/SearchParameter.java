@@ -1,6 +1,6 @@
 package org.mattlang.jc;
 
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.EvaluateFunction;
@@ -26,11 +26,11 @@ public class SearchParameter {
 
     private long timeout;
 
-    private int maxQuiescenceDepth=5;
+    private int maxQuiescenceDepth = 5;
 
     public final Impl<MoveList> moveList = new Impl<>(this, () -> new BasicMoveList());
 
-    public final Impl<BoardRepresentation> boards = new Impl<>(this, () -> new Board());
+    public final Impl<BoardRepresentation> boards = new Impl<>(this, () -> new Board2());
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new MaterialNegaMaxEval()));
 

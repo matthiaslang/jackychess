@@ -24,7 +24,7 @@ public class PerfTests {
 
     @Test
     public void initialPositionPerformanceMoveGenerator() {
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setStartPosition();
 
         perftReset();

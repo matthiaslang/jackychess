@@ -20,7 +20,7 @@ public class SimpleNegaMaxEvalTest {
     public void testChess() {
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
 
         FenParser parser = new FenParser();
         parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
@@ -31,7 +31,7 @@ public class SimpleNegaMaxEvalTest {
 
     @Test
     public void testPatt() {
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 7k/8/6Q1/8/3K4/8/8/8 b k - 2 17 ");
 
         System.out.println(board.toUniCodeStr());

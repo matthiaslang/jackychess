@@ -4,7 +4,10 @@ import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
@@ -181,7 +184,7 @@ public class EngineTest extends TestCase {
 
         SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
 
         System.out.println(board.toUniCodeStr());

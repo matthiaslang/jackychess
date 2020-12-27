@@ -1,8 +1,9 @@
 package org.mattlang.jc.movegenerator;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board;
+import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardPrinter;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
@@ -13,7 +14,7 @@ public class LegalMoveGeneratorImplTest {
     @Test
     public void testSituation1() {
 
-        Board board = new Board();
+        BoardRepresentation board = new Board2();
         board.setFenPosition("position fen 3r4/6n1/8/4K3/8/8/5q2/4k3 b k - 2 17 ");
 
         System.out.println(BoardPrinter.toUniCodeStr(board));

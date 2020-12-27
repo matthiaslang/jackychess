@@ -46,7 +46,7 @@ always the same moves for a given board. I am not planning to add opening books 
 - special end game handling: the engine currently does not play well in endgame situations. This
 is something I will try to investigate and to tackle with special evaluation functions...
 
-- not all chess rules are implemented: en passant is missing, certain patt rules like 50 move rules; Rochade via UCI is not fully implemented. This should get fixed during time together with other upcoming bugs.
+- not all chess rules are implemented: patt rules like 50 move rules; Rochade is not fully implemented. This should get fixed during time together with other upcoming bugs.
 
 - no quescence handling: so the engine can choose "bad moves" due to horizon effects. This is something I will try to implement but I think this will take care and time. Maybe I start with a first simple approach.
 
