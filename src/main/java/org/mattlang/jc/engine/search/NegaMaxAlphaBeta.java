@@ -136,7 +136,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
 
     private int quiesce(BoardRepresentation currBoard, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
-        quiescenceNodesVisited++;
+
 
         int eval = evaluate.eval(currBoard, color);
         // patt node:
@@ -175,6 +175,7 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             return -MaterialNegaMaxEval.KING_WHEIGHT;
         }
         nodes += moves.size();
+        quiescenceNodesVisited++;
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {
