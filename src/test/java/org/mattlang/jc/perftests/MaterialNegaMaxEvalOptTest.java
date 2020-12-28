@@ -64,7 +64,7 @@ public class MaterialNegaMaxEvalOptTest {
         StopWatch watch = new StopWatch();
         watch.start();
         perftReset();
-        perft(new MoveGeneratorImpl2(), board, WHITE, 3, b -> {
+        perft(new MoveGeneratorImpl2(), board, WHITE, 4, b -> {
             int e = eval.eval(b, WHITE);
         });
         watch.stop();
@@ -74,7 +74,7 @@ public class MaterialNegaMaxEvalOptTest {
         watch = new StopWatch();
         watch.start();
         perftReset();
-        perft(new MoveGeneratorImpl2(), board, WHITE, 3, b -> {
+        perft(new MoveGeneratorImpl2(), board, WHITE, 4, b -> {
             int e = evalOpt.eval(b, WHITE);
         });
         watch.stop();

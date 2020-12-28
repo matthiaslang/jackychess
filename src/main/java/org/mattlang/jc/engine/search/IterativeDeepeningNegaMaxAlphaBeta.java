@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -34,6 +35,9 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
         int currdepth = 1;
         Move savedMove = null;
 
+        StopWatch watch = new StopWatch();
+        watch.start();
+
         long stopTime = System.currentTimeMillis() + timeout;
 
         BoardRepresentation currBoard = gameState.getBoard();
@@ -53,7 +57,10 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
                 savedMove = negaMaxAlphaBeta.getSavedMove();
 
                 if (savedMove != null) {
-                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + negaMaxAlphaBeta.getNodes() );
+                    int nodes = negaMaxAlphaBeta.getNodesVisited();
+                    long duration = watch.getCurrDuration();
+                    long nps = duration == 0? nodes : nodes  * 1000 / duration;
+                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes + " nps " + nps);
                     UCI.instance.putCommand("info currmove " + savedMove.toStr());
                 }
                 moves = reOrderMoves(rslt.moveScores);

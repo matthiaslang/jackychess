@@ -62,10 +62,6 @@ public class NegaMaxAlphaBeta implements SearchMethod {
                 searchWithScore(gameState, depth,
                         ALPHA_START, BETA_START, moves,
                         stopTime);
-
-        UCILogger.info(depth, nodesVisited, rslt.max);
-        UCILogger.log("nodes: %d, nodes searched: %d, alpha beta cutoff: %d, score: %d", nodes, nodesVisited, cutOff,
-                rslt.max);
         return savedMove;
     }
 
@@ -246,6 +242,10 @@ public class NegaMaxAlphaBeta implements SearchMethod {
         this.stopTime = stopTime;
         repetitionChecker= gameState.getRepetitionChecker();
         NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
+
+        UCILogger.info(depth, nodesVisited, result.max);
+        UCILogger.log("depth:\t %d\t nodes:\t %d\t searched:\t %d\t quiescence:\t %d\t alpha beta cutoff:\t %d\t score:\t %d",
+                depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }
 

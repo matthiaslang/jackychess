@@ -24,4 +24,8 @@ public class StopWatch {
         long minutes = seconds / 60;
         return String.format("m: %d s: %d", minutes, seconds);
     }
+
+    public long getCurrDuration() {
+        return System.currentTimeMillis() - start;
+    }
 }
