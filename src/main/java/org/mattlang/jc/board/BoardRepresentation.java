@@ -23,7 +23,7 @@ public interface BoardRepresentation {
 
     String toUniCodeStr();
 
-    Move move(Move move);
+    void move(Move move);
 
     byte move(int from, int to);
 
@@ -55,4 +55,8 @@ public interface BoardRepresentation {
     boolean isCastlingAllowed(Color color, RochadeType type);
 
     void setCastlingAllowed(Color color, RochadeType type);
+
+    byte getCastlingRights();
+
+    void setCastlingRights(byte castlingRights);
 }

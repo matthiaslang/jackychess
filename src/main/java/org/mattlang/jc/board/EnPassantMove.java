@@ -10,10 +10,19 @@ public class EnPassantMove extends BasicMove {
     }
 
     @Override
-    public Move move(BoardRepresentation board) {
+    public void move(BoardRepresentation board) {
         super.move(board);
         board.setPos(enPassantCapturePos, FigureConstants.FT_EMPTY);
 
-        return new EnPassantUndoMove(getToIndex(), getFromIndex(), getCapturedFigure(), enPassantCapturePos);
+    }
+
+    @Override
+    public void undo(BoardRepresentation board) {
+        super.undo(board);
+
+        // override the "default" overrider field with empty..
+        board.setPos(getToIndex(), FigureConstants.FT_EMPTY);
+        // because we have the special en passant capture pos which we need to reset with the captured figure
+        board.setPos(enPassantCapturePos, getCapturedFigure());
     }
 }

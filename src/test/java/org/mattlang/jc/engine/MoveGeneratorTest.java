@@ -40,10 +40,9 @@ public class MoveGeneratorTest {
 
         Move wQPromotion = wMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.W_Queen).findFirst().get();
         Move bQPromotion = bMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.B_Queen).findFirst().get();
-        List<Move> undoes = new ArrayList<>();
 
-        undoes.add(board.move(wQPromotion));
-        undoes.add(board.move(bQPromotion));
+        board.move(wQPromotion);
+        board.move(bQPromotion);
 
         System.out.println(board.toUniCodeStr());
 
@@ -51,9 +50,9 @@ public class MoveGeneratorTest {
         assertThat(board.getFigure(parsePos("a1"))).isEqualTo(Figure.B_Queen);
 
         // undoing:
-        for (Move undo : undoes) {
-            board.move(undo);
-        }
+        bQPromotion.undo(board);
+        wQPromotion.undo(board);
+
         System.out.println(board.toUniCodeStr());
         BoardRepresentation cmpboard = new Board2();
         cmpboard.setFenPosition(fen);
@@ -76,11 +75,11 @@ public class MoveGeneratorTest {
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = createMoveList(whiteMoves).stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
 
-        Move undo = board.move(a7PawnMove);
+        board.move(a7PawnMove);
 
         assertThat(board.getFigure(parsePos("b8"))).isEqualTo(Figure.W_Queen);
         // undoing:
-        board.move(undo);
+        a7PawnMove.undo(board);
 
         BoardRepresentation cmpboard = new Board2();
         cmpboard.setFenPosition(fen);
@@ -90,12 +89,12 @@ public class MoveGeneratorTest {
         MoveList blackMoves = generator2.generate(board, BLACK);
         Move a2PawnMove = createMoveList(blackMoves).stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
-        undo = board.move(a2PawnMove);
+        board.move(a2PawnMove);
 
         assertThat(board.getFigure(parsePos("b1"))).isEqualTo(Figure.B_Queen);
 
         // undoing:
-        board.move(undo);
+        a2PawnMove.undo(board);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }
 
@@ -171,8 +170,8 @@ public class MoveGeneratorTest {
         assertThat(rochMoves.size()).isEqualTo(2);
 
         for (Move rochMove : rochMoves) {
-            Move undoer = board.move(rochMove);
-            board.move(undoer);
+            board.move(rochMove);
+            rochMove.undo(board);
             assertThat(board.toUniCodeStr())
 
                     .withFailMessage(
@@ -201,7 +200,7 @@ public class MoveGeneratorTest {
         assertThat(wPawnDoubleMove).isNotEmpty();
 
         // execute the double move:
-        Move undoer = board.move(wPawnDoubleMove.get());
+        board.move(wPawnDoubleMove.get());
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);
@@ -212,11 +211,11 @@ public class MoveGeneratorTest {
 
         Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
 
-        Move undoEP = board.move(epMove1.get());
+        board.move(epMove1.get());
 
         // try undoing the moves:
-        board.move(undoEP);
-        board.move(undoer);
+        epMove1.get().undo(board);
+        wPawnDoubleMove.get().undo(board);
 
         assertThat(board.toUniCodeStr()).isEqualTo(copy.toUniCodeStr());
     }
@@ -241,10 +240,10 @@ public class MoveGeneratorTest {
 
         Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
 
-        Move undoEP = board.move(epMove1.get());
+        board.move(epMove1.get());
 
         // try undoing the moves:
-        board.move(undoEP);
+        epMove1.get().undo(board);
 
         assertThat(board.toUniCodeStr()).isEqualTo(copy.toUniCodeStr());
     }

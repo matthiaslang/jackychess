@@ -10,14 +10,13 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
     private BasicMoveList movelist;
 
     private Move currMove;
-    private Move undoMove;
     private Iterator<Move> iterator;
 
     private MoveCursor curr = new MoveCursor() {
 
         @Override
         public void move(BoardRepresentation board) {
-            undoMove = currMove.move(board);
+            currMove.move(board);
         }
 
         @Override
@@ -27,7 +26,7 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
         @Override
         public void undoMove(BoardRepresentation board) {
-            undoMove.move(board);
+            currMove.undo(board);
         }
 
         @Override

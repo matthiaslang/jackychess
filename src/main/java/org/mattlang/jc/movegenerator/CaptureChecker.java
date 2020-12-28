@@ -17,7 +17,7 @@ public class CaptureChecker implements MoveList {
 
 
     @Override
-    public void genMove(int from, int to, byte capturedFigureCode) {
+    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigureCode) {
         addCapture(capturedFigureCode);
     }
 

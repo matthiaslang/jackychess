@@ -32,6 +32,13 @@ public class BasicMove implements Move {
         this.capturedFigure = capturedFigure;
     }
 
+    public BasicMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
+        this.castlingRightsBefore = castlingRightsBefore;
+        this.fromIndex = from;
+        this.toIndex = to;
+        this.capturedFigure = capturedFigure;
+    }
+
     public BasicMove(int from, int to, byte capturedFigure, int enPassantOption) {
         this(from, to, capturedFigure);
         this.enPassantOption = enPassantOption;
@@ -55,12 +62,22 @@ public class BasicMove implements Move {
     }
 
     @Override
-    public Move move(BoardRepresentation board) {
+    public void move(BoardRepresentation board) {
         byte override = board.move(getFromIndex(), getToIndex());
         if (enPassantOption>=0) {
            board.setEnPassantOption(enPassantOption);
         }
-        return new UndoMove(getToIndex(), getFromIndex(), override);
+    }
+
+    @Override
+    public void undo(BoardRepresentation board) {
+        board.move(getToIndex(), getFromIndex());
+        if (capturedFigure != 0) {
+            board.setPos(getToIndex(), capturedFigure);
+        }
+        if (castlingRightsBefore != -1) {
+            board.setCastlingRights(castlingRightsBefore);
+        }
     }
 
     @Override

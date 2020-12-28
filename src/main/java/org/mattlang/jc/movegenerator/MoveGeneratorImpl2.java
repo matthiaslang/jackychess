@@ -110,6 +110,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     private static void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
                                int[] figOffsets, boolean slide) {
 
+        byte castlingRightsBefore = board.getCastlingRights();
         for (int j = 0; j < figOffsets.length; ++j) { /* for all knight or ray directions */
             for (int n = i;;) { /* starting with from square */
                 n = mailbox[mailbox64[n] + figOffsets[j]]; /* next square along the ray j */
@@ -117,10 +118,10 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 byte targetN = board.getFigureCode(n);
                 if (targetN != FigureConstants.FT_EMPTY) {
                     if (Figure.getColor(targetN) == xside)
-                        moves.genMove(i, n, targetN); /* capture from i to n */
+                        moves.genMove(castlingRightsBefore, i, n, targetN); /* capture from i to n */
                     break;
                 }
-                moves.genMove(i, n, (byte)0); /* quiet move from i to n */
+                moves.genMove(castlingRightsBefore, i, n, (byte)0); /* quiet move from i to n */
                 if (!slide) break; /* next direction */
             }
         }

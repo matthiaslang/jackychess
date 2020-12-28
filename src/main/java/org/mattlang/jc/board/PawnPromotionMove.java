@@ -10,15 +10,23 @@ public class PawnPromotionMove extends BasicMove {
     }
 
     @Override
-    public Move move(BoardRepresentation board) {
+    public void move(BoardRepresentation board) {
         Figure pawn = board.getPos(getFromIndex());
         byte override = board.move(getFromIndex(), getToIndex());
 
         board.setPos(getToIndex(), promotedFigure);
-        return new UndoPawnPromotionMove(getToIndex(), getFromIndex(), override);
     }
 
     public Figure getPromotedFigure() {
         return promotedFigure;
+    }
+
+    @Override
+    public void undo(BoardRepresentation board) {
+        super.undo(board);
+
+        Figure promotedFigure = board.getFigure(getFromIndex());
+        Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
+        board.setPos(getFromIndex(), pawn);
     }
 }

@@ -28,8 +28,8 @@ public class BasicMoveList implements MoveList {
         this.moves = moves;
     }
 
-    public void genMove(int from, int to, byte capturedFigure) {
-        moves.add(new BasicMove(from, to, capturedFigure));
+    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
+        moves.add(new BasicMove(castlingRightsBefore, from, to, capturedFigure));
     }
 
     public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {

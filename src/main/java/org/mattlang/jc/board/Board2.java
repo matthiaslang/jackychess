@@ -177,10 +177,9 @@ public class Board2 implements BoardRepresentation {
     }
 
     @Override
-    public Move move(Move move) {
+    public void move(Move move) {
         // todo validations?
-        Move moveRslt= move.move(this);
-        return moveRslt;
+        move.move(this);
     }
 
     /**
@@ -193,6 +192,21 @@ public class Board2 implements BoardRepresentation {
     @Override
     public byte move(int from, int to) {
         byte figure = board[from];
+//        if (figure == W_KING) {
+//            castlingRights.retain(WHITE, SHORT);
+//            castlingRights.retain(WHITE, LONG);
+//        } else if (figure == B_KING) {
+//            castlingRights.retain(BLACK, SHORT);
+//            castlingRights.retain(BLACK, LONG);
+//        } else if (figure == W_ROOK && from == 0) {
+//            castlingRights.retain(WHITE, LONG);
+//        } else if (figure == W_ROOK && from == 7) {
+//            castlingRights.retain(WHITE, SHORT);
+//        } else if (figure == B_ROOK && from == 56) {
+//            castlingRights.retain(BLACK, LONG);
+//        } else if (figure == B_ROOK && from == 63) {
+//            castlingRights.retain(BLACK, SHORT);
+//        }
 
         set(from, Figure.EMPTY.figureCode);
         byte capturedFigure = board[to];
@@ -296,5 +310,15 @@ public class Board2 implements BoardRepresentation {
     @Override
     public void setCastlingAllowed(Color color, RochadeType type) {
        castlingRights.setAllowed(color, type);
+    }
+
+    @Override
+    public byte getCastlingRights() {
+        return castlingRights.getRights();
+    }
+
+    @Override
+    public void setCastlingRights(byte newCastlingRights) {
+        castlingRights.setRights(newCastlingRights);
     }
 }

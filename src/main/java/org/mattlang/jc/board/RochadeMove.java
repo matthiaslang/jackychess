@@ -10,11 +10,15 @@ public class RochadeMove extends BasicMove {
     }
 
     @Override
-    public Move move(BoardRepresentation board) {
+    public void move(BoardRepresentation board) {
         super.move(board);
 
         board.move(second.getFromIndex(), second.getToIndex());
-        return new RochadeUndoMove(getToIndex(), getFromIndex(),
-                second.getToIndex(), second.getFromIndex());
+    }
+
+    @Override
+    public void undo(BoardRepresentation board) {
+        board.move(second.getToIndex(), second.getFromIndex());
+        super.undo(board);
     }
 }

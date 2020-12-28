@@ -35,7 +35,7 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void genMove(int from, int to, byte capturedFigure) {
+    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
         countMove(from, to, capturedFigure);
     }
 

@@ -2,7 +2,9 @@ package org.mattlang.jc.board;
 
 public interface Move {
 
-    Move move(BoardRepresentation board);
+    void move(BoardRepresentation board);
+
+    void undo(BoardRepresentation board);
 
     byte getCapturedFigure();
 

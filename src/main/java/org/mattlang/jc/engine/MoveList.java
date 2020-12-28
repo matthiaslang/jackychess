@@ -5,7 +5,7 @@ import org.mattlang.jc.board.Figure;
 
 public interface MoveList extends Iterable<MoveCursor> {
 
-    void genMove(int from, int to, byte capturedFigureCode);
+    void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigureCode);
 
     void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption);
 
