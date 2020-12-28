@@ -17,7 +17,15 @@ import static org.mattlang.jc.uci.UciProcessor.OP_THINKTIME;
 
 public class AsyncEngine {
 
+    /**
+     * "outer" completable future. CompletableFutures unfortunately dont support cancel of asynchronous
+     * attached work. therefore we need to work with two futures.
+     */
     private CompletableFuture<Move> result;
+    /**
+     * "inner" future which is asynchronously executed. This future can be cancelled.
+     */
+    private Future<Move> future;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
@@ -46,29 +54,35 @@ public class AsyncEngine {
                 restTime = goParams.btime;
             }
             restMoves = goParams.movestogo;
-            long averageTimeForThisMove = restTime/restMoves;
+            long averageTimeForThisMove = restTime / restMoves;
             searchParams.setTimeout(averageTimeForThisMove);
 
         }
         Factory.setDefaults(searchParams);
         Factory.getDefaults().log();
 
-        CompletableFuture<Move> future
-                = CompletableFuture.supplyAsync(() -> new Engine().go(gameState));
+        CompletableFuture<Move> completableFuture = new CompletableFuture<>();
+        Future<Move> future = executorService.submit(() -> {
+            Move move = new Engine().go(gameState);
+            completableFuture.complete(move);
+            return move;
+        });
 
-        result = future;
-        return future;
+        this.future = future;
+        result = completableFuture;
+        return result;
     }
 
     public Optional<Move> stop() {
-        if (result != null) {
-            result.cancel(true);
+        if (future != null) {
+            future.cancel(true);
             try {
                 return Optional.of(result.get(2000, TimeUnit.MILLISECONDS));
             } catch (InterruptedException | IllegalMonitorStateException | ExecutionException | TimeoutException e) {
                 //e.printStackTrace();
             }
             result = null;
+            future = null;
         } else {
             // stop without go...?
 
