@@ -31,8 +31,7 @@ public class Board2 implements BoardRepresentation {
 
     private byte[] board = new byte[64];
 
-    private Rochade whiteRochade = new Rochade();
-    private Rochade blackRochace = new Rochade();
+    private CastlingRights castlingRights= new CastlingRights();
 
     private PieceList blackPieces = new PieceList();
     private PieceList whitePieces = new PieceList();
@@ -41,10 +40,9 @@ public class Board2 implements BoardRepresentation {
     public Board2() {
     }
 
-    public Board2(byte[] board, Rochade whiteRochade, Rochade blackRochace) {
+    public Board2(byte[] board, CastlingRights castlingRights) {
         this.board = board;
-        this.whiteRochade = whiteRochade;
-        this.blackRochace = blackRochace;
+        this.castlingRights = castlingRights;
 
         initPeaceList();
     }
@@ -63,9 +61,7 @@ public class Board2 implements BoardRepresentation {
     @Override
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
-        whiteRochade = new Rochade();
-        blackRochace = new Rochade();
-
+        castlingRights = new CastlingRights();
     }
 
     @Override
@@ -225,20 +221,19 @@ public class Board2 implements BoardRepresentation {
         return enPassantMoveTargetPos == board1.enPassantMoveTargetPos &&
                 enPassantCapturePos == board1.enPassantCapturePos &&
                 Arrays.equals(board, board1.board) &&
-                whiteRochade.equals(board1.whiteRochade) &&
-                blackRochace.equals(board1.blackRochace);
+                castlingRights.equals(board1.castlingRights);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(whiteRochade, blackRochace, enPassantMoveTargetPos, enPassantCapturePos);
+        int result = Objects.hash(castlingRights, enPassantMoveTargetPos, enPassantCapturePos);
         result = 31 * result + Arrays.hashCode(board);
         return result;
     }
 
     @Override
     public Board2 copy() {
-        return new Board2(board.clone(), whiteRochade.copy(), blackRochace.copy());
+        return new Board2(board.clone(), castlingRights.copy());
     }
 
     @Override
@@ -285,19 +280,21 @@ public class Board2 implements BoardRepresentation {
         enPassantCapturePos = -1;
     }
 
-    public Rochade getWhiteRochade() {
-        return whiteRochade;
-    }
-
-    public Rochade getBlackRochace() {
-        return blackRochace;
-    }
-
     public PieceList getBlackPieces() {
         return blackPieces;
     }
 
     public PieceList getWhitePieces() {
         return whitePieces;
+    }
+
+    @Override
+    public boolean isCastlingAllowed(Color color, RochadeType type) {
+        return castlingRights.isAllowed(color, type);
+    }
+
+    @Override
+    public void setCastlingAllowed(Color color, RochadeType type) {
+       castlingRights.setAllowed(color, type);
     }
 }

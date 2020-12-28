@@ -8,7 +8,6 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-import static org.mattlang.jc.board.Rochade.RochadeType;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -105,7 +104,6 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             }
         }
         generateRochade(board, side, moves);
-        // todo en passant is missing...
         return moves;
     }
 
@@ -216,9 +214,9 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             this.fieldCheckTst = fieldCheckTst;
         }
 
-        public boolean check(BoardRepresentation board, Rochade rochade) {
+        public boolean check(BoardRepresentation board) {
             // check if rochade is still allowed:
-            if (rochade.isAllowed(rochadeType)){
+            if (board.isCastlingAllowed(side, rochadeType)){
                 // check that the relevant figures and empty fields are as needs to be for castling:
                 if (checkPos(board)) {
                     // check that king pos and moves are not in check:
@@ -276,18 +274,18 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
         switch (side) {
             case WHITE:
-                if (ROCHADE_L_WHITE.check(board, board.getWhiteRochade())) {
+                if (ROCHADE_L_WHITE.check(board)) {
                     moves.addRochadeLongWhite();
                 }
-                if (ROCHADE_S_WHITE.check(board, board.getWhiteRochade())) {
+                if (ROCHADE_S_WHITE.check(board)) {
                     moves.addRochadeShortWhite();
                 }
                 break;
             case BLACK:
-                if (ROCHADE_S_BLACK.check(board, board.getBlackRochace())) {
+                if (ROCHADE_S_BLACK.check(board)) {
                     moves.addRochadeShortBlack();
                 }
-                if (ROCHADE_L_BLACK.check(board, board.getBlackRochace())) {
+                if (ROCHADE_L_BLACK.check(board)) {
                     moves.addRochadeLongBlack();
                 }
                 break;

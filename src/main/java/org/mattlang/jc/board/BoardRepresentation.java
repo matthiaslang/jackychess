@@ -37,6 +37,7 @@ public interface BoardRepresentation {
 
     /**
      * Returns true, if n is an en passant target move field.
+     *
      * @param n
      * @return
      */
@@ -44,13 +45,14 @@ public interface BoardRepresentation {
 
     /**
      * Returns the en passant capture position, if any...
+     *
      * @return
      */
     int getEnPassantCapturePos();
 
     void setEnPassantOption(int enPassantOption);
 
-    Rochade getWhiteRochade();
+    boolean isCastlingAllowed(Color color, RochadeType type);
 
-    Rochade getBlackRochace() ;
+    void setCastlingAllowed(Color color, RochadeType type);
 }

@@ -18,6 +18,8 @@ public class BasicMove implements Move {
 
     private byte capturedFigure;
 
+    private byte castlingRightsBefore = -1;
+
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));

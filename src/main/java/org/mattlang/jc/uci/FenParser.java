@@ -2,16 +2,20 @@ package org.mattlang.jc.uci;
 
 import org.mattlang.jc.board.*;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.board.RochadeType.LONG;
+import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
 
     public GameState setPosition(String positionStr, BoardRepresentation board) {
         RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
-        Color who2Move = Color.WHITE;
+        Color who2Move = WHITE;
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
         int movesSection = 2;
@@ -73,7 +77,7 @@ public class FenParser {
         BasicMove tmp = new BasicMove(moveStr);
         if (board.isEnPassantCapturePossible(tmp.getToIndex())) {
             Color side = board.getFigure(tmp.getFromIndex()).color;
-            byte otherSidePawn = side == Color.WHITE ? B_PAWN : W_PAWN;
+            byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
             return new EnPassantMove(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn, board.getEnPassantCapturePos());
         }
 
@@ -97,7 +101,7 @@ public class FenParser {
         // todo parse and set rest of fen string...
 
         if (zug == null || zug.trim().length() == 0) {
-            return Color.WHITE;
+            return WHITE;
         }
 
         if (!"-".equals(enpassant)) {
@@ -106,19 +110,19 @@ public class FenParser {
         }
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {
-                board.getWhiteRochade().sethAllowed(true);
+                board.setCastlingAllowed(WHITE, SHORT);
             }
             if (rochade.contains("Q")) {
-                board.getWhiteRochade().setaAllowed(true);
+                board.setCastlingAllowed(WHITE, LONG);
             }
             if (rochade.contains("k")) {
-                board.getBlackRochace().sethAllowed(true);
+                board.setCastlingAllowed(BLACK, SHORT);
             }
             if (rochade.contains("q")) {
-                board.getBlackRochace().setaAllowed(true);
+                board.setCastlingAllowed(BLACK, LONG);
             }
         }
 
-        return "w".equals(zug) ? Color.WHITE : Color.BLACK;
+        return "w".equals(zug) ? WHITE : BLACK;
     }
 }
