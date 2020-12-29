@@ -8,7 +8,10 @@ import java.util.Objects;
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.RochadeType.LONG;
+import static org.mattlang.jc.board.RochadeType.SHORT;
 
 /**
  * Represents a board with figures.
@@ -192,21 +195,22 @@ public class Board2 implements BoardRepresentation {
     @Override
     public byte move(int from, int to) {
         byte figure = board[from];
-//        if (figure == W_KING) {
-//            castlingRights.retain(WHITE, SHORT);
-//            castlingRights.retain(WHITE, LONG);
-//        } else if (figure == B_KING) {
-//            castlingRights.retain(BLACK, SHORT);
-//            castlingRights.retain(BLACK, LONG);
-//        } else if (figure == W_ROOK && from == 0) {
-//            castlingRights.retain(WHITE, LONG);
-//        } else if (figure == W_ROOK && from == 7) {
-//            castlingRights.retain(WHITE, SHORT);
-//        } else if (figure == B_ROOK && from == 56) {
-//            castlingRights.retain(BLACK, LONG);
-//        } else if (figure == B_ROOK && from == 63) {
-//            castlingRights.retain(BLACK, SHORT);
-//        }
+        // remove castling rights when rooks or kings are moved:
+        if (figure == W_KING) {
+            castlingRights.retain(WHITE, SHORT);
+            castlingRights.retain(WHITE, LONG);
+        } else if (figure == B_KING) {
+            castlingRights.retain(BLACK, SHORT);
+            castlingRights.retain(BLACK, LONG);
+        } else if (figure == W_ROOK && from == 0) {
+            castlingRights.retain(WHITE, LONG);
+        } else if (figure == W_ROOK && from == 7) {
+            castlingRights.retain(WHITE, SHORT);
+        } else if (figure == B_ROOK && from == 56) {
+            castlingRights.retain(BLACK, LONG);
+        } else if (figure == B_ROOK && from == 63) {
+            castlingRights.retain(BLACK, SHORT);
+        }
 
         set(from, Figure.EMPTY.figureCode);
         byte capturedFigure = board[to];

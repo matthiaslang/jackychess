@@ -35,22 +35,22 @@ public class CaptureChecker implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite() {
+    public void addRochadeLongWhite(byte castlingRightsBefore) {
 
     }
 
     @Override
-    public void addRochadeShortWhite() {
+    public void addRochadeShortWhite(byte castlingRightsBefore) {
 
     }
 
     @Override
-    public void addRochadeShortBlack() {
+    public void addRochadeShortBlack(byte castlingRightsBefore) {
 
     }
 
     @Override
-    public void addRochadeLongBlack() {
+    public void addRochadeLongBlack(byte castlingRightsBefore) {
 
     }
 

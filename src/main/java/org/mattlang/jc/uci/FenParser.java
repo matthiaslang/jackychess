@@ -9,7 +9,6 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
-import static org.mattlang.jc.engine.BasicMoveList.*;
 
 public class FenParser {
 
@@ -54,13 +53,13 @@ public class FenParser {
     private BasicMove parseMove(BoardRepresentation board, String moveStr) {
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr)) {
-            return ROCHADE_MOVE_SW;
+            return RochadeMove.createCastlingWhiteShort(board.getCastlingRights());
         } else if ("e1c1".equals(moveStr)) {
-            return ROCHADE_MOVE_LW;
+            return RochadeMove.createCastlingWhiteLong(board.getCastlingRights());
         } else if ("e8g8".equals(moveStr)) {
-            return ROCHADE_MOVE_SB;
+            return RochadeMove.createCastlingBlackShort(board.getCastlingRights());
         } else if ("e8c8".equals(moveStr)) {
-            return ROCHADE_MOVE_LB;
+            return RochadeMove.createCastlingBlackLong(board.getCastlingRights());
         }
 
         if (moveStr.endsWith("q")) {

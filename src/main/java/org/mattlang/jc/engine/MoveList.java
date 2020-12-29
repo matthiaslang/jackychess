@@ -9,13 +9,13 @@ public interface MoveList extends Iterable<MoveCursor> {
 
     void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption);
 
-    void addRochadeLongWhite();
+    void addRochadeLongWhite(byte castlingRightsBefore);
 
-    void addRochadeShortWhite();
+    void addRochadeShortWhite(byte castlingRightsBefore);
 
-    void addRochadeShortBlack();
+    void addRochadeShortBlack(byte castlingRightsBefore);
 
-    void addRochadeLongBlack();
+    void addRochadeLongBlack(byte castlingRightsBefore);
 
     /**
      * Add move from another move cursor. This is used for filtering move lists.

@@ -56,22 +56,22 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void addRochadeLongWhite() {
+    public void addRochadeLongWhite(byte castlingRightsBefore) {
         // nothing to do
     }
 
     @Override
-    public void addRochadeShortWhite() {
+    public void addRochadeShortWhite(byte castlingRightsBefore) {
         // nothing to do
     }
 
     @Override
-    public void addRochadeShortBlack() {
+    public void addRochadeShortBlack(byte castlingRightsBefore) {
         // nothing to do
     }
 
     @Override
-    public void addRochadeLongBlack() {
+    public void addRochadeLongBlack(byte castlingRightsBefore) {
         // nothing to do
     }
 

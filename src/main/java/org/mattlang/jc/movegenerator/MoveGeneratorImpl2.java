@@ -276,18 +276,18 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         switch (side) {
             case WHITE:
                 if (ROCHADE_L_WHITE.check(board)) {
-                    moves.addRochadeLongWhite();
+                    moves.addRochadeLongWhite(board.getCastlingRights());
                 }
                 if (ROCHADE_S_WHITE.check(board)) {
-                    moves.addRochadeShortWhite();
+                    moves.addRochadeShortWhite(board.getCastlingRights());
                 }
                 break;
             case BLACK:
                 if (ROCHADE_S_BLACK.check(board)) {
-                    moves.addRochadeShortBlack();
+                    moves.addRochadeShortBlack(board.getCastlingRights());
                 }
                 if (ROCHADE_L_BLACK.check(board)) {
-                    moves.addRochadeLongBlack();
+                    moves.addRochadeLongBlack(board.getCastlingRights());
                 }
                 break;
         }

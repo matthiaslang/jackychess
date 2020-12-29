@@ -14,11 +14,6 @@ import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
 public class BasicMoveList implements MoveList {
 
-    public static final RochadeMove ROCHADE_MOVE_LW = new RochadeMove(4, 2, 0, 3);
-    public static final RochadeMove ROCHADE_MOVE_SW = new RochadeMove(4, 6, 7, 5);
-    public static final RochadeMove ROCHADE_MOVE_SB = new RochadeMove(60, 62, 63, 61);
-    public static final RochadeMove ROCHADE_MOVE_LB = new RochadeMove(60, 58, 56, 59);
-
     private List<Move> moves = new ArrayList<>(60);
 
     public BasicMoveList() {
@@ -62,23 +57,23 @@ public class BasicMoveList implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite() {
-        moves.add(ROCHADE_MOVE_LW);
+    public void addRochadeLongWhite(byte castlingRightsBefore) {
+        moves.add(RochadeMove.createCastlingWhiteLong(castlingRightsBefore));
     }
 
     @Override
-    public void addRochadeShortWhite() {
-        moves.add(ROCHADE_MOVE_SW);
+    public void addRochadeShortWhite(byte castlingRightsBefore) {
+        moves.add(RochadeMove.createCastlingWhiteShort(castlingRightsBefore));
     }
 
     @Override
-    public void addRochadeShortBlack() {
-        moves.add(ROCHADE_MOVE_SB);
+    public void addRochadeShortBlack(byte castlingRightsBefore) {
+        moves.add(RochadeMove.createCastlingBlackShort(castlingRightsBefore));
     }
 
     @Override
-    public void addRochadeLongBlack() {
-        moves.add(ROCHADE_MOVE_LB);
+    public void addRochadeLongBlack(byte castlingRightsBefore) {
+        moves.add(RochadeMove.createCastlingBlackLong(castlingRightsBefore));
     }
 
     @Override

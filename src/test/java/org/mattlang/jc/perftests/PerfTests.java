@@ -46,21 +46,6 @@ public class PerfTests {
 //      assertPerft(generator, board, WHITE, 6, 119060324, 2812008, 0, 0);
     }
 
-
-    @Test
-    public void initialPositionPerformanceOptBoardAndLegalMoves() {
-        Board2 board = new Board2();
-        board.setStartPosition();
-
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
-
-        LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
-
-        perftInitialPosition(board, legalMoveGen);
-
-        Factory.setDefaults(Factory.createDefaultParameter());
-    }
-
     @Test
     public void position2() {
         Board2 board = new Board2();
