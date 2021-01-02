@@ -68,4 +68,5 @@ public interface BoardRepresentation {
 
     PieceList getWhitePieces();
 
+    long getZobristHash();
 }

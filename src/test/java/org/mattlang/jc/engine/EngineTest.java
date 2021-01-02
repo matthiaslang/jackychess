@@ -3,15 +3,16 @@ package org.mattlang.jc.engine;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board2;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBeta;
+import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
+import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
 
@@ -41,7 +42,9 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
+        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        .setTimeout(60000)
+        .setMaxDepth(7));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -54,6 +57,30 @@ public class EngineTest {
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
+
+    @Test
+    public void testIterativeDeepeningZobrist() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                .setTimeout(60000)
+                .setMaxDepth(7)
+        .boards.set(() -> new Board3())
+                .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))
+                .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
+                );
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
 
 
     @Test

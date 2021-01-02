@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.PieceList;
@@ -25,9 +24,8 @@ public class MaterialNegaMaxEvalOpt implements EvaluateFunction {
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
-        Board2 board = (Board2) currBoard;
-        PieceList wp = board.getWhitePieces();
-        PieceList bp = board.getBlackPieces();
+        PieceList wp = currBoard.getWhitePieces();
+        PieceList bp = currBoard.getBlackPieces();
 
         int wKingCount = wp.getKing() < 0 ? 0 : 1;
         int bKingCount = bp.getKing() < 0 ? 0 : 1;

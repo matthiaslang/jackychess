@@ -318,6 +318,11 @@ public class Board2 implements BoardRepresentation {
     }
 
     @Override
+    public long getZobristHash() {
+        throw new IllegalStateException("zobrist hashing not implemented in Board2!");
+    }
+
+    @Override
     public boolean isCastlingAllowed(Color color, RochadeType type) {
         return castlingRights.isAllowed(color, type);
     }

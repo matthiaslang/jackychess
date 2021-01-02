@@ -4,22 +4,23 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
 import java.util.HashMap;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public class BoardCache<T> {
 
-    public static final int CAPACITY = 50_000_000;
+    public static final int CAPACITY = 5_0_000;
 
     private int cacheHit;
     private int cacheFail;
 
-    private HashMap<BoardRepresentation, T> whitemap = new HashMap<>(CAPACITY);
-    private HashMap<BoardRepresentation, T> blackmap = new HashMap<>(CAPACITY);
+    private HashMap<Long, T> whitemap = new HashMap<>(CAPACITY);
+    private HashMap<Long, T> blackmap = new HashMap<>(CAPACITY);
 
     private BoardCacheEntryCreator<T> creator;
 
     public BoardCache(BoardCacheEntryCreator<T> creator) {
-        this.creator = Objects.requireNonNull(creator);
+        this.creator = requireNonNull(creator);
     }
 
     public T getCache(BoardRepresentation board, Color side) {
@@ -37,15 +38,15 @@ public class BoardCache<T> {
     private T get(BoardRepresentation board, Color side) {
         switch (side) {
         case WHITE:
-            return whitemap.get(board);
+            return whitemap.get(board.getZobristHash());
         case BLACK:
-            return blackmap.get(board);
+            return blackmap.get(board.getZobristHash());
         }
         throw new IllegalStateException("something is completely wrong here?!");
     }
 
     private void put(BoardRepresentation board, Color side, T value) {
-        BoardRepresentation key = board.copy();
+        long key = board.getZobristHash();
         switch (side) {
         case WHITE:
             whitemap.put(key, value);

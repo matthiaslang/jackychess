@@ -249,7 +249,7 @@ public class Board3 implements BoardRepresentation {
     }
 
     @Override
-    public byte getFigureCode(int i) {
+    public final byte getFigureCode(int i) {
         return board[i];
     }
 
@@ -361,6 +361,7 @@ public class Board3 implements BoardRepresentation {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
+    @Override
     public long getZobristHash() {
         return zobristHash;
     }
