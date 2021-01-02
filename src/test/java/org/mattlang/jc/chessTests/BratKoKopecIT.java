@@ -6,15 +6,11 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.UCI;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Main.initLogging;
 
 /**
@@ -56,22 +52,19 @@ public class BratKoKopecIT {
                     "r2qnrnk/p2b2b1/1p1p2pp/2pPpp2/1PP1P3/PRNBB3/3QNPPP/5RK1 w - - bm f4; id \"BK.24\";";
 
 
-    @Parameterized.Parameters(name = "{index}: {0}")
-    public static Iterable<String> getEPDTests() {
-        return Arrays.asList(bratkoKopec.split("\n"));
+    @Parameterized.Parameters(name = "{index}: {2}")
+    public static Iterable<String[]> getEPDTests() {
+        return EpdParsing.getEPDTests(bratkoKopec);
     }
 
     private String position;
     private String expectedBestMove;
     private String testName;
 
-    public BratKoKopecIT(String epd) {
-        String[] split = epd.split("bm ");
-        position = split[0];
-        String cmdPart = split[1];
-        String[] cmds = cmdPart.split(";");
-        expectedBestMove = cmds[0];
-        testName = cmds[1];
+    public BratKoKopecIT(String position, String expectedBestMove, String testName) {
+        this.position = position;
+        this.expectedBestMove = expectedBestMove;
+        this.testName = testName;
     }
 
     @BeforeClass
@@ -85,7 +78,7 @@ public class BratKoKopecIT {
         // create engine
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
         Engine engine = new Engine();
-        testPosition(engine);
+        EpdParsing.testPosition(engine, position, expectedBestMove);
     }
 
     //@Test
@@ -95,23 +88,7 @@ public class BratKoKopecIT {
         // create engine
         Factory.setDefaults(Factory.createIterativeDeepeningMtdf());
         Engine engine = new Engine();
-        testPosition(engine);
+        EpdParsing.testPosition(engine, position, expectedBestMove);
     }
 
-    private void testPosition(Engine engine) {
-        System.out.println(position + " " + expectedBestMove);
-
-        // set fen position out of the epd description:
-        // todo we are not able to parse epd correctly right now, but with that workaround we get it to work
-        // as FEN:
-        GameState gameState = engine.getBoard().setFenPosition("position fen " + position + " 0 0");
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState);
-
-        System.out.println(move.toStr());
-        // we have no short algebraic notation, therefore do some weak comparison...
-        String targetSquare = move.toStr().substring(2);
-        assertThat(expectedBestMove).contains(targetSquare);
-
-    }
 }
