@@ -1,6 +1,7 @@
 package org.mattlang.jc.board;
 
 import org.mattlang.jc.uci.FenParser;
+import org.mattlang.jc.zobrist.Zobrist;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,8 +19,10 @@ import static org.mattlang.jc.board.RochadeType.SHORT;
  * This variant keeps a redundant piece list in addition to the board.
  * Expectation would be that certain actions like check tests, move generation would be a bit faster..
  *
+ * this version holds a zobrist key for the board representation.
+ *
  */
-public class Board2 implements BoardRepresentation {
+public class Board3 implements BoardRepresentation {
 
     public static final String[] FEN_START_POSITION = {
             "rnbqkbnr",
@@ -39,11 +42,12 @@ public class Board2 implements BoardRepresentation {
     private PieceList blackPieces = new PieceList();
     private PieceList whitePieces = new PieceList();
 
+    private long zobristHash=0L;
 
-    public Board2() {
+    public Board3() {
     }
 
-    public Board2(byte[] board, CastlingRights castlingRights,
+    public Board3(byte[] board, CastlingRights castlingRights,
                   int enPassantCapturePos, int enPassantMoveTargetPos) {
         this.board = board;
         this.castlingRights = castlingRights;
@@ -79,6 +83,7 @@ public class Board2 implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
+        zobristHash = Zobrist.hash(this);
     }
 
     private void cleanPeaceList() {
@@ -99,11 +104,13 @@ public class Board2 implements BoardRepresentation {
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
             PieceList pieceList = ((oldFigure & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
             pieceList.remove(pos, (byte) (oldFigure & MASK_OUT_COLOR));
+            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
             PieceList pieceList = ((figureCode & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
             pieceList.set(pos, (byte) (figureCode & MASK_OUT_COLOR));
+            zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
         }
     }
 
@@ -200,19 +207,31 @@ public class Board2 implements BoardRepresentation {
         byte figure = board[from];
         // remove castling rights when rooks or kings are moved:
         if (figure == W_KING) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(WHITE, SHORT);
             castlingRights.retain(WHITE, LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         } else if (figure == B_KING) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(BLACK, SHORT);
             castlingRights.retain(BLACK, LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         } else if (figure == W_ROOK && from == 0) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(WHITE, LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         } else if (figure == W_ROOK && from == 7) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(WHITE, SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         } else if (figure == B_ROOK && from == 56) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(BLACK, LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         } else if (figure == B_ROOK && from == 63) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.retain(BLACK, SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         }
 
         set(from, Figure.EMPTY.figureCode);
@@ -238,7 +257,7 @@ public class Board2 implements BoardRepresentation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Board2 board1 = (Board2) o;
+        Board3 board1 = (Board3) o;
         return enPassantMoveTargetPos == board1.enPassantMoveTargetPos &&
                 enPassantCapturePos == board1.enPassantCapturePos &&
                 Arrays.equals(board, board1.board) &&
@@ -253,9 +272,8 @@ public class Board2 implements BoardRepresentation {
     }
 
     @Override
-    public Board2 copy() {
-        return new Board2(board.clone(), castlingRights.copy(),
-                enPassantCapturePos, enPassantMoveTargetPos);
+    public Board3 copy() {
+        return new Board3(board.clone(), castlingRights.copy(), enPassantCapturePos, enPassantMoveTargetPos);
     }
 
     @Override
@@ -293,26 +311,28 @@ public class Board2 implements BoardRepresentation {
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
         this.enPassantMoveTargetPos = enPassantOption;
         if (enPassantMoveTargetPos >=16 && enPassantMoveTargetPos<=23) {
             enPassantCapturePos = enPassantMoveTargetPos + 8;
         } else {
             enPassantCapturePos = enPassantMoveTargetPos - 8;
         }
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
     }
 
 
     private void resetEnPassant() {
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
         enPassantMoveTargetPos = -1;
         enPassantCapturePos = -1;
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
     }
 
-    @Override
     public PieceList getBlackPieces() {
         return blackPieces;
     }
 
-    @Override
     public PieceList getWhitePieces() {
         return whitePieces;
     }
@@ -324,7 +344,9 @@ public class Board2 implements BoardRepresentation {
 
     @Override
     public void setCastlingAllowed(Color color, RochadeType type) {
-       castlingRights.setAllowed(color, type);
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        castlingRights.setAllowed(color, type);
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
     @Override
@@ -334,6 +356,12 @@ public class Board2 implements BoardRepresentation {
 
     @Override
     public void setCastlingRights(byte newCastlingRights) {
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         castlingRights.setRights(newCastlingRights);
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+    }
+
+    public long getZobristHash() {
+        return zobristHash;
     }
 }

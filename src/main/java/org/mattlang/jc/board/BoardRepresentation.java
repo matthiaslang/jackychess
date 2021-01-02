@@ -50,6 +50,9 @@ public interface BoardRepresentation {
      */
     int getEnPassantCapturePos();
 
+
+    int getEnPassantMoveTargetPos();
+
     void setEnPassantOption(int enPassantOption);
 
     boolean isCastlingAllowed(Color color, RochadeType type);
@@ -59,4 +62,10 @@ public interface BoardRepresentation {
     byte getCastlingRights();
 
     void setCastlingRights(byte castlingRights);
+
+
+    PieceList getBlackPieces();
+
+    PieceList getWhitePieces();
+
 }

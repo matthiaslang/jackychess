@@ -1,7 +1,6 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.PieceList;
@@ -26,14 +25,12 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
     private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color color) {
         Color otherColor = color.invert();
 
-        Board2 board2 = (Board2) currBoard;
-
         MoveList legals = Factory.getDefaults().moveList.create();
 
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            if (!isInChess(board2, otherColor)) {
+            if (!isInChess(currBoard, otherColor)) {
                 legals.addMove(moveCursor);
             }
             moveCursor.undoMove(currBoard);
@@ -46,9 +43,9 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
      * @param otherColor
      * @return
      */
-    private boolean isInChess(Board2 board2, Color otherColor) {
-        PieceList otherPieces = otherColor == Color.WHITE ? board2.getWhitePieces() : board2.getBlackPieces();
+    private boolean isInChess(BoardRepresentation board, Color otherColor) {
+        PieceList otherPieces = otherColor == Color.WHITE ? board.getWhitePieces() : board.getBlackPieces();
         int kingPos = otherPieces.getKing();
-        return moveGeneratorImpl2.canFigureCaptured(board2, kingPos);
+        return moveGeneratorImpl2.canFigureCaptured(board, kingPos);
     }
 }
