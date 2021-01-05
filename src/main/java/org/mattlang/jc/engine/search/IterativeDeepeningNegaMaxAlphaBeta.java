@@ -6,10 +6,10 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBeta.NegaMaxResult;
 import org.mattlang.jc.uci.UCI;
 
 import java.util.List;
@@ -21,12 +21,18 @@ import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
 
 
-    private NegaMaxAlphaBeta negaMaxAlphaBeta = new NegaMaxAlphaBeta();
+    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBeta();
 
     private int maxDepth;
 
     private long timeout = Factory.getDefaults().getTimeout();
 
+    public IterativeDeepeningNegaMaxAlphaBeta(AlphaBetaSearchMethod negaMaxAlphaBeta) {
+        this.negaMaxAlphaBeta = negaMaxAlphaBeta;
+    }
+
+    public IterativeDeepeningNegaMaxAlphaBeta() {
+    }
 
     @Override
     public Move search(GameState gameState, int depth) {

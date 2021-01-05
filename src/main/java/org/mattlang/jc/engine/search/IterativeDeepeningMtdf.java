@@ -7,7 +7,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBeta.NegaMaxResult;
 import org.mattlang.jc.uci.UCI;
 
 import java.util.logging.Logger;

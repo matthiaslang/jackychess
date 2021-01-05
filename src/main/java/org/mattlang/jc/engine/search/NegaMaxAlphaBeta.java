@@ -3,20 +3,19 @@ package org.mattlang.jc.engine.search;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
-public class NegaMaxAlphaBeta implements SearchMethod {
+public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod {
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
@@ -194,16 +193,6 @@ public class NegaMaxAlphaBeta implements SearchMethod {
             }
         }
         return alpha;
-    }
-
-    public static class NegaMaxResult {
-        public final int max;
-        public final List<MoveScore> moveScores;
-
-        public NegaMaxResult(int max, List<MoveScore> moveScores) {
-            this.max = max;
-            this.moveScores = moveScores;
-        }
     }
 
     private NegaMaxResult negaMaximizeWithScore(BoardRepresentation currBoard, int depth, Color color,
