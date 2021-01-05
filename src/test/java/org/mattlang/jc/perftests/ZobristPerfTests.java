@@ -1,7 +1,10 @@
 package org.mattlang.jc.perftests;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
@@ -10,15 +13,48 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Benchmarks.benchmark;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.perftests.Perft.perft;
 import static org.mattlang.jc.perftests.Perft.perftReset;
 
 /**
- * PerfTests
- * https://www.chessprogramming.org/Perft_Results
+ * PerfTests for zobrist hashing.
+ *
  */
 public class ZobristPerfTests {
+
+    @Test
+    public void compareSpeed() {
+
+        StopWatch hashMeasure = benchmark(
+                "board2 normal hash",
+                () -> {
+            Board2 board = new Board2();
+            board.setStartPosition();
+            perftReset();
+            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, visitedBoard -> {
+                int hash = visitedBoard.hashCode();
+            });
+        });
+
+        StopWatch zobristMeasure = benchmark(
+                "board3 zobrist hash",
+                () -> {
+            Board3 board = new Board3();
+            board.setStartPosition();
+            perftReset();
+            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, visitedBoard -> {
+                long zobristHash = visitedBoard.getZobristHash();
+            });
+        });
+
+        System.out.println("zobrist time: " + zobristMeasure.toString());
+        System.out.println("hash    time: " + hashMeasure.toString());
+
+        Assertions.assertThat(zobristMeasure.getDuration()).isLessThan(hashMeasure.getDuration());
+
+    }
 
     @Test
     public void initialPosZobristHashUnique() {
@@ -45,7 +81,7 @@ public class ZobristPerfTests {
         HashMap<Long, Set<Board3>> collisionMap = new HashMap<>();
         perftReset();
         perft(new LegalMoveGeneratorImpl3(), board, WHITE, depth, visitedBoard -> {
-            long zobristHash= ((Board3)visitedBoard).getZobristHash();
+            long zobristHash = ((Board3) visitedBoard).getZobristHash();
             Set<Board3> entries = collisionMap.get(zobristHash);
             if (entries == null) {
                 entries = new HashSet<>();
