@@ -8,8 +8,8 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
-import org.mattlang.jc.movegenerator.BoardCache;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.ZobristBoardCache;
 
 import java.util.ArrayList;
 
@@ -153,7 +153,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod {
         return max;
     }
 
-    private BoardCache<TTEntry> ttCache = new BoardCache<>((board, side) -> null);
+    private ZobristBoardCache<TTEntry> ttCache = new ZobristBoardCache<>((board, side) -> null);
 
     private TTEntry getTTEntry(BoardRepresentation currBoard, Color side) {
         return ttCache.get(currBoard, side);
