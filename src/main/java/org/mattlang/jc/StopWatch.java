@@ -1,5 +1,8 @@
 package org.mattlang.jc;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 public class StopWatch {
 
     private long start = System.currentTimeMillis();
@@ -13,16 +16,14 @@ public class StopWatch {
         stop = System.currentTimeMillis();
     }
 
-    public long getDuration(){
+    public long getDuration() {
         return stop - start;
     }
 
     @Override
     public String toString() {
-        long diff = stop - start;
-        long seconds = diff / 1000;
-        long minutes = seconds / 60;
-        return String.format("m: %d s: %d", minutes, seconds);
+        Duration d = Duration.of(stop - start, ChronoUnit.MILLIS);
+        return d.toString();
     }
 
     public long getCurrDuration() {
