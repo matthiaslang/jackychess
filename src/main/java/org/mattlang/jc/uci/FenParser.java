@@ -1,7 +1,5 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.board.*;
-
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
@@ -10,9 +8,14 @@ import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 
+import org.mattlang.jc.board.*;
+
 public class FenParser {
 
     public GameState setPosition(String positionStr, BoardRepresentation board) {
+        if (!positionStr.startsWith("position")) {
+            throw new IllegalStateException("Error Parsing fen position string: Not starting with 'position':" + positionStr);
+        }
         RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
         Color who2Move = WHITE;
         String[] splitted = positionStr.split(" ");
