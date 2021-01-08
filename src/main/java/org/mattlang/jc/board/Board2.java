@@ -1,10 +1,5 @@
 package org.mattlang.jc.board;
 
-import org.mattlang.jc.uci.FenParser;
-
-import java.util.Arrays;
-import java.util.Objects;
-
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.Color.BLACK;
@@ -12,6 +7,11 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+import org.mattlang.jc.uci.FenParser;
 
 /**
  * Represents a board with figures.
@@ -149,7 +149,7 @@ public class Board2 implements BoardRepresentation {
     }
 
     @Override
-    public Figure getFigurePos(int row, int col) {
+    public final Figure getFigurePos(int row, int col) {
         return Figure.getFigureByCode(board[(7 - row) * 8 + col]);
     }
 
@@ -230,7 +230,7 @@ public class Board2 implements BoardRepresentation {
     }
 
     @Override
-    public byte getFigureCode(int i) {
+    public final byte getFigureCode(int i) {
         return board[i];
     }
 

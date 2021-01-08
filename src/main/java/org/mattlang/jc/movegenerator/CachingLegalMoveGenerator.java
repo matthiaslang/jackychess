@@ -1,19 +1,25 @@
 package org.mattlang.jc.movegenerator;
 
+import static java.util.Objects.requireNonNull;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
-import java.util.Objects;
-
 public class CachingLegalMoveGenerator implements LegalMoveGenerator {
 
-    private BoardCache<MoveList> legalMoveCache = new BoardCache<>(this::generateLegalMoves);
+    private BoardCache<MoveList> legalMoveCache = new BoardCacheImpl<>(this::generateLegalMoves);
 
     private LegalMoveGenerator delegate;
 
     public CachingLegalMoveGenerator(LegalMoveGenerator delegate) {
-        this.delegate = Objects.requireNonNull(delegate);
+        this.delegate = requireNonNull(delegate);
+    }
+
+    public CachingLegalMoveGenerator(BoardCache<MoveList> legalMoveCache, LegalMoveGenerator delegate) {
+        this.delegate = requireNonNull(delegate);
+        this.legalMoveCache = requireNonNull(legalMoveCache);
+        this.legalMoveCache.setCreator(this::generateLegalMoves);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static java.util.Objects.requireNonNull;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.movegenerator.BoardCache;
-
-import static java.util.Objects.requireNonNull;
+import org.mattlang.jc.movegenerator.BoardCacheImpl;
 
 /**
  * Caches Board stats. Currently this doesnt give a performance improvement, mainly because evaulations
@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class CachingBoardStatsGenerator implements BoardStatsGenerator {
 
-    private BoardCache<BoardStats> cache = new BoardCache<>(this::generateStats);
+    private BoardCacheImpl<BoardStats> cache = new BoardCacheImpl<>(this::generateStats);
 
     private BoardStatsGenerator delegate;
 

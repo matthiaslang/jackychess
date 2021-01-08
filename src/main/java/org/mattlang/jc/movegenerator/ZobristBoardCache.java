@@ -1,15 +1,15 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 
-import static java.util.Objects.requireNonNull;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 
-public class ZobristBoardCache<T> {
+public class ZobristBoardCache<T> implements BoardCache<T> {
 
-    public static final int CAPACITY = 5_0_000;
+    public static final int CAPACITY = 50_000;
 
     private int cacheHit;
     private int cacheFail;
@@ -19,11 +19,20 @@ public class ZobristBoardCache<T> {
 
     private BoardCacheEntryCreator<T> creator;
 
+    public ZobristBoardCache() {
+    }
+
     public ZobristBoardCache(BoardCacheEntryCreator<T> creator) {
         this.creator = requireNonNull(creator);
     }
 
-    public T getCache(BoardRepresentation board, Color side) {
+    @Override
+    public void setCreator(BoardCacheEntryCreator<T> creator) {
+        this.creator = requireNonNull(creator);
+    }
+
+    @Override
+    public final T getCache(BoardRepresentation board, Color side) {
         T result = get(board, side);
         if (result != null) {
             cacheHit++;
@@ -35,7 +44,8 @@ public class ZobristBoardCache<T> {
         return value;
     }
 
-    public T get(BoardRepresentation board, Color side) {
+    @Override
+    public final T get(BoardRepresentation board, Color side) {
         switch (side) {
         case WHITE:
             return whitemap.get(board.getZobristHash());
@@ -45,7 +55,8 @@ public class ZobristBoardCache<T> {
         throw new IllegalStateException("something is completely wrong here?!");
     }
 
-    public void put(BoardRepresentation board, Color side, T value) {
+    @Override
+    public final void put(BoardRepresentation board, Color side, T value) {
         long key = board.getZobristHash();
         switch (side) {
         case WHITE:
