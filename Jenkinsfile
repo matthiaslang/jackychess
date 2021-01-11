@@ -35,7 +35,7 @@ pipeline {
 
         stage('IT Test') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                catchError/*(buildResult: 'SUCCESS', stageResult: 'FAILURE')*/ {
                     sh 'mvn verify '
                 }
             }
