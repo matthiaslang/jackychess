@@ -1,5 +1,8 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -12,14 +15,11 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
 public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;
 
-    private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
+    private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.instance();
 
     // statistics
     private int nodesVisited = 0;

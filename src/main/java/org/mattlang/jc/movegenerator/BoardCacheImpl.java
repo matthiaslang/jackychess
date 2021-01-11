@@ -1,6 +1,7 @@
 package org.mattlang.jc.movegenerator;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -61,6 +62,22 @@ public class BoardCacheImpl<T> implements BoardCache<T> {
         case BLACK:
             blackmap.put(key, value);
             break;
+        }
+    }
+
+    @Override
+    public void resetStatistics() {
+        cacheHit = 0;
+        cacheFail = 0;
+    }
+
+    @Override
+    public void collectStatistics(Map stats) {
+        stats.put("size", whitemap.size() + blackmap.size());
+        stats.put("cacheHit", cacheHit);
+        stats.put("cacheFail", cacheFail);
+        if (cacheHit + cacheFail != 0) {
+            stats.put("hit/all", cacheHit * 100 / (cacheHit + cacheFail) + "%");
         }
     }
 }

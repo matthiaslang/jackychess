@@ -9,7 +9,7 @@ import org.mattlang.jc.engine.MoveList;
 
 public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
-    MoveGenerator generator = Factory.getDefaults().moveGenerator.create();
+    MoveGenerator generator = Factory.getDefaults().moveGenerator.instance();
 
     MoveGeneratorImpl2 moveGeneratorImpl2 = new MoveGeneratorImpl2();
 

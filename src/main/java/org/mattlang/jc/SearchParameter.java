@@ -1,5 +1,11 @@
 package org.mattlang.jc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.BasicMoveList;
@@ -16,11 +22,11 @@ import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
-import java.util.logging.Logger;
-
 public class SearchParameter {
 
     private static final Logger LOGGER = Logger.getLogger(SearchParameter.class.getSimpleName());
+
+    private List<Impl> impls = new ArrayList<>();
 
     private int maxDepth;
 
@@ -85,4 +91,40 @@ public class SearchParameter {
 
     }
 
+    public Map collectStatistics() {
+        HashMap stats = new HashMap();
+        for (Impl impl : impls) {
+            impl.collectStatistics(stats);
+        }
+        return stats;
+    }
+
+    public <T> void register(Impl impl) {
+        impls.add(impl);
+    }
+
+    public static void printStats(Map stats) {
+        printStats("", stats);
+    }
+
+    public void printStats() {
+        printStats(collectStatistics());
+    }
+
+    public static void printStats(String prefix, Map stats) {
+        StringBuilder b = new StringBuilder();
+        stats.forEach((key, value) -> {
+            if (value instanceof Map) {
+                printStats(prefix + "." + key.toString(), (Map) value);
+            } else {
+                if (b.length() > 0) {
+                    b.append(", ");
+                }
+                b.append(key + ":" + value);
+            }
+        });
+        if (b.length() > 0) {
+            System.out.println(prefix + ": " + b.toString());
+        }
+    }
 }

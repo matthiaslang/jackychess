@@ -1,6 +1,14 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -10,12 +18,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
-import java.util.ArrayList;
-
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
-public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod {
+public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollector {
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
@@ -64,12 +67,18 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod {
         return savedMove;
     }
 
-    public void reset() {
+
+
+    public void resetStatistics() {
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
         nodes = 0;
         cutOff = 0;
         savedMove = null;
+    }
+
+    public void reset() {
+        resetStatistics();
         generator = Factory.getDefaults().legalMoveGenerator.create();
         evaluate = Factory.getDefaults().evaluateFunction.create();
     }
@@ -261,5 +270,24 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod {
 
     public int getSavedMoveScore() {
         return savedMoveScore;
+    }
+
+    @Override
+    public void collectStatistics(Map stats) {
+        if (nodes > 0) {
+            Map rslts = new LinkedHashMap();
+            stats.put("negamax alpha/beta", rslts);
+            if (nodes != 0) {
+                rslts.put("visited/all Nodes", nodesVisited * 100 / nodes + "%");
+            }
+            rslts.put("nodesVisited", nodesVisited);
+            rslts.put("nodes", nodes);
+            if (maxQuiescenceDepth>0) {
+                rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
+            }
+            rslts.put("cutoff", cutOff);
+            rslts.put("savedMove", savedMove);
+            rslts.put("savedMoveScore", savedMoveScore);
+        }
     }
 }

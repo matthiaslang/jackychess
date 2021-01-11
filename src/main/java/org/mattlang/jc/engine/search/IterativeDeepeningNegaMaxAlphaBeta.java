@@ -1,6 +1,15 @@
 package org.mattlang.jc.engine.search;
 
+import static java.util.stream.Collectors.toList;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -12,13 +21,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.uci.UCI;
 
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
-
-public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
+public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, StatisticsCollector {
 
 
     private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBeta();
@@ -71,11 +74,16 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
                 }
                 moves = reOrderMoves(rslt.moveScores);
 
+                Map statOfDepth = new LinkedHashMap();
+                negaMaxAlphaBeta.collectStatistics(statOfDepth);
+                stats.put("depth=" + currdepth, statOfDepth);
+                negaMaxAlphaBeta.resetStatistics();
+
             }
         } catch (TimeoutException te) {
             return savedMove;
         } finally {
-            negaMaxAlphaBeta.reset();
+            //negaMaxAlphaBeta.reset();
         }
 
         return savedMove;
@@ -88,5 +96,15 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod {
         return new BasicMoveList(list);
     }
 
+    private Map stats = new LinkedHashMap();
 
+    @Override
+    public void collectStatistics(Map stats) {
+     stats.put("it.deep", this.stats);
+    }
+
+    @Override
+    public void resetStatistics() {
+        stats = new LinkedHashMap();
+    }
 }

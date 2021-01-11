@@ -1,8 +1,11 @@
 package org.mattlang.jc;
 
-import java.util.function.Supplier;
-
 import static java.util.Objects.requireNonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class Impl<T> {
 
@@ -10,8 +13,11 @@ public class Impl<T> {
     private Supplier<T> supplier;
     private T instance = null;
 
+    private List<StatisticsCollector> statCollectorInstances = new ArrayList<>();
+
     public Impl(SearchParameter searchParameter, Supplier<T> supplier) {
         this.searchParameter = requireNonNull(searchParameter);
+        searchParameter.register(this);
         set(supplier);
     }
 
@@ -21,7 +27,15 @@ public class Impl<T> {
      * @return
      */
     public T create() {
-        return supplier.get();
+        return internCreate();
+    }
+
+    private T internCreate() {
+        T t= supplier.get();
+        if (t instanceof StatisticsCollector) {
+            statCollectorInstances.add((StatisticsCollector) t);
+        }
+        return t;
     }
 
     /**
@@ -31,7 +45,7 @@ public class Impl<T> {
      */
     public T instance() {
         if (instance == null) {
-            instance = supplier.get();
+            instance = internCreate();
         }
         return instance;
     }
@@ -40,5 +54,11 @@ public class Impl<T> {
         this.supplier = requireNonNull(supplier);
         instance = null;
         return searchParameter;
+    }
+
+    public void collectStatistics(Map stats) {
+        for (StatisticsCollector collector : statCollectorInstances) {
+            collector.collectStatistics(stats);
+        }
     }
 }

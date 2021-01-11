@@ -1,5 +1,9 @@
 package org.mattlang.jc.engine.evaluation;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
@@ -9,7 +13,7 @@ import org.mattlang.jc.movegenerator.BoardCacheImpl;
 /**
  * Caching Evaluation Function.
  */
-public class CachingEvaluateFunction implements EvaluateFunction {
+public class CachingEvaluateFunction implements EvaluateFunction, StatisticsCollector {
 
     private EvaluateFunction delegate;
 
@@ -32,5 +36,17 @@ public class CachingEvaluateFunction implements EvaluateFunction {
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
         return cache.getCache(currBoard, who2Move);
+    }
+
+    @Override
+    public void resetStatistics() {
+        cache.resetStatistics();
+    }
+
+    @Override
+    public void collectStatistics(Map stats) {
+        Map nested = new LinkedHashMap();
+        stats.put("caching evaluation", nested);
+        cache.collectStatistics(nested);
     }
 }

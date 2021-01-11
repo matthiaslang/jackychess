@@ -1,9 +1,10 @@
 package org.mattlang.jc.movegenerator;
 
+import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public interface BoardCache<T> {
+public interface BoardCache<T> extends StatisticsCollector {
 
     void setCreator(BoardCacheEntryCreator<T> creator);
 
