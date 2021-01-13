@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine;
 
+import java.util.Iterator;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
-
-import java.util.Iterator;
 
 public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
@@ -12,10 +12,13 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
     private Move currMove;
     private Iterator<Move> iterator;
 
+    private byte castlingrightsBefore;
+
     private MoveCursor curr = new MoveCursor() {
 
         @Override
         public void move(BoardRepresentation board) {
+            castlingrightsBefore = board.getCastlingRights();
             currMove.move(board);
         }
 
@@ -27,6 +30,9 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
         @Override
         public void undoMove(BoardRepresentation board) {
             currMove.undo(board);
+            if (castlingrightsBefore != -1) {
+                board.setCastlingRights(castlingrightsBefore);
+            }
         }
 
         @Override

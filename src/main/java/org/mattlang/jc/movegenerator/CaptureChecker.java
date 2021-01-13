@@ -1,15 +1,15 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 
 public class CaptureChecker implements MoveList {
 
@@ -17,7 +17,7 @@ public class CaptureChecker implements MoveList {
 
 
     @Override
-    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigureCode) {
+    public void genMove(int from, int to, byte capturedFigureCode) {
         addCapture(capturedFigureCode);
     }
 
@@ -35,22 +35,22 @@ public class CaptureChecker implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite(byte castlingRightsBefore) {
+    public void addRochadeLongWhite() {
 
     }
 
     @Override
-    public void addRochadeShortWhite(byte castlingRightsBefore) {
+    public void addRochadeShortWhite() {
 
     }
 
     @Override
-    public void addRochadeShortBlack(byte castlingRightsBefore) {
+    public void addRochadeShortBlack() {
 
     }
 
     @Override
-    public void addRochadeLongBlack(byte castlingRightsBefore) {
+    public void addRochadeLongBlack() {
 
     }
 

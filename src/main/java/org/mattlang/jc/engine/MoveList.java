@@ -5,17 +5,17 @@ import org.mattlang.jc.board.Figure;
 
 public interface MoveList extends Iterable<MoveCursor> {
 
-    void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigureCode);
+    void genMove(int from, int to, byte capturedFigureCode);
 
     void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption);
 
-    void addRochadeLongWhite(byte castlingRightsBefore);
+    void addRochadeLongWhite();
 
-    void addRochadeShortWhite(byte castlingRightsBefore);
+    void addRochadeShortWhite();
 
-    void addRochadeShortBlack(byte castlingRightsBefore);
+    void addRochadeShortBlack();
 
-    void addRochadeLongBlack(byte castlingRightsBefore);
+    void addRochadeLongBlack();
 
     /**
      * Add move from another move cursor. This is used for filtering move lists.

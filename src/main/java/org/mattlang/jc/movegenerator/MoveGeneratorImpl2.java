@@ -1,13 +1,13 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.MoveList;
-
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.MoveList;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -110,7 +110,6 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     private static void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
                                int[] figOffsets, boolean slide) {
 
-        byte castlingRightsBefore = board.getCastlingRights();
         for (int j = 0; j < figOffsets.length; ++j) { /* for all knight or ray directions */
             for (int n = i;;) { /* starting with from square */
                 n = mailbox[mailbox64[n] + figOffsets[j]]; /* next square along the ray j */
@@ -118,10 +117,10 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 byte targetN = board.getFigureCode(n);
                 if (targetN != FigureConstants.FT_EMPTY) {
                     if (Figure.getColor(targetN) == xside)
-                        moves.genMove(castlingRightsBefore, i, n, targetN); /* capture from i to n */
+                        moves.genMove(i, n, targetN); /* capture from i to n */
                     break;
                 }
-                moves.genMove(castlingRightsBefore, i, n, (byte)0); /* quiet move from i to n */
+                moves.genMove(i, n, (byte)0); /* quiet move from i to n */
                 if (!slide) break; /* next direction */
             }
         }
@@ -276,18 +275,18 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         switch (side) {
             case WHITE:
                 if (ROCHADE_L_WHITE.check(board)) {
-                    moves.addRochadeLongWhite(board.getCastlingRights());
+                    moves.addRochadeLongWhite();
                 }
                 if (ROCHADE_S_WHITE.check(board)) {
-                    moves.addRochadeShortWhite(board.getCastlingRights());
+                    moves.addRochadeShortWhite();
                 }
                 break;
             case BLACK:
                 if (ROCHADE_S_BLACK.check(board)) {
-                    moves.addRochadeShortBlack(board.getCastlingRights());
+                    moves.addRochadeShortBlack();
                 }
                 if (ROCHADE_L_BLACK.check(board)) {
-                    moves.addRochadeLongBlack(board.getCastlingRights());
+                    moves.addRochadeLongBlack();
                 }
                 break;
         }

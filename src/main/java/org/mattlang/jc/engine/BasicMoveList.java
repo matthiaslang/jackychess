@@ -1,16 +1,16 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.board.*;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import org.mattlang.jc.board.*;
 
 public class BasicMoveList implements MoveList {
 
@@ -23,8 +23,8 @@ public class BasicMoveList implements MoveList {
         this.moves = moves;
     }
 
-    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
-        moves.add(new BasicMove(castlingRightsBefore, from, to, capturedFigure));
+    public void genMove(int from, int to, byte capturedFigure) {
+        moves.add(new BasicMove(from, to, capturedFigure));
     }
 
     public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
@@ -57,23 +57,23 @@ public class BasicMoveList implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite(byte castlingRightsBefore) {
-        moves.add(RochadeMove.createCastlingWhiteLong(castlingRightsBefore));
+    public void addRochadeLongWhite() {
+        moves.add(RochadeMove.createCastlingWhiteLong());
     }
 
     @Override
-    public void addRochadeShortWhite(byte castlingRightsBefore) {
-        moves.add(RochadeMove.createCastlingWhiteShort(castlingRightsBefore));
+    public void addRochadeShortWhite() {
+        moves.add(RochadeMove.createCastlingWhiteShort());
     }
 
     @Override
-    public void addRochadeShortBlack(byte castlingRightsBefore) {
-        moves.add(RochadeMove.createCastlingBlackShort(castlingRightsBefore));
+    public void addRochadeShortBlack() {
+        moves.add(RochadeMove.createCastlingBlackShort());
     }
 
     @Override
-    public void addRochadeLongBlack(byte castlingRightsBefore) {
-        moves.add(RochadeMove.createCastlingBlackLong(castlingRightsBefore));
+    public void addRochadeLongBlack() {
+        moves.add(RochadeMove.createCastlingBlackLong());
     }
 
     @Override

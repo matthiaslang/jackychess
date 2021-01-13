@@ -18,22 +18,12 @@ public class BasicMove implements Move {
 
     private byte capturedFigure;
 
-    private byte castlingRightsBefore = -1;
-
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
-
     public BasicMove(int from, int to, byte capturedFigure) {
-        this.fromIndex = from;
-        this.toIndex = to;
-        this.capturedFigure = capturedFigure;
-    }
-
-    public BasicMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
-        this.castlingRightsBefore = castlingRightsBefore;
         this.fromIndex = from;
         this.toIndex = to;
         this.capturedFigure = capturedFigure;
@@ -74,9 +64,6 @@ public class BasicMove implements Move {
         board.move(getToIndex(), getFromIndex());
         if (capturedFigure != 0) {
             board.setPos(getToIndex(), capturedFigure);
-        }
-        if (castlingRightsBefore != -1) {
-            board.setCastlingRights(castlingRightsBefore);
         }
     }
 

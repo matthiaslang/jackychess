@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.evaluation;
 
+import java.util.Iterator;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-
-import java.util.Iterator;
 
 public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator {
 
@@ -35,7 +35,7 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void genMove(byte castlingRightsBefore, int from, int to, byte capturedFigure) {
+    public void genMove(int from, int to, byte capturedFigure) {
         countMove(from, to, capturedFigure);
     }
 
@@ -56,22 +56,22 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void addRochadeLongWhite(byte castlingRightsBefore) {
+    public void addRochadeLongWhite() {
         // nothing to do
     }
 
     @Override
-    public void addRochadeShortWhite(byte castlingRightsBefore) {
+    public void addRochadeShortWhite() {
         // nothing to do
     }
 
     @Override
-    public void addRochadeShortBlack(byte castlingRightsBefore) {
+    public void addRochadeShortBlack() {
         // nothing to do
     }
 
     @Override
-    public void addRochadeLongBlack(byte castlingRightsBefore) {
+    public void addRochadeLongBlack() {
         // nothing to do
     }
 
