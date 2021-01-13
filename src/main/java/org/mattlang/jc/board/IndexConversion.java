@@ -14,9 +14,9 @@ public class IndexConversion {
         return b.toString();
     }
 
-    public static int parsePos(String pos) {
+    public static byte parsePos(String pos) {
         int x = pos.charAt(0) - 'a';
         int y = pos.charAt(1) - '0' - 1;
-        return y * 8 + x;
+        return (byte) (y * 8 + x);
     }
 }

@@ -56,13 +56,13 @@ public class FenParser {
     private BasicMove parseMove(BoardRepresentation board, String moveStr) {
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr)) {
-            return RochadeMove.createCastlingWhiteShort();
+            return RochadeMove.CASTLING_WHITE_SHORT;
         } else if ("e1c1".equals(moveStr)) {
-            return RochadeMove.createCastlingWhiteLong();
+            return RochadeMove.CASTLING_WHITE_LONG;
         } else if ("e8g8".equals(moveStr)) {
-            return RochadeMove.createCastlingBlackShort();
+            return RochadeMove.CASTLING_BLACK_SHORT;
         } else if ("e8c8".equals(moveStr)) {
-            return RochadeMove.createCastlingBlackLong();
+            return RochadeMove.CASTLING_BLACK_LONG;
         }
 
         if (moveStr.endsWith("q")) {

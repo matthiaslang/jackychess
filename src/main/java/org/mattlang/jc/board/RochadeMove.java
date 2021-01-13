@@ -2,22 +2,13 @@ package org.mattlang.jc.board;
 
 public class RochadeMove extends BasicMove {
 
-    public static final RochadeMove createCastlingWhiteLong() {
-        return new RochadeMove(4, 2, 0, 3);
-    }
+    public static final RochadeMove CASTLING_WHITE_LONG = new RochadeMove(4, 2, 0, 3);
 
-    public static final RochadeMove createCastlingWhiteShort() {
-       return new RochadeMove(4, 6, 7, 5);
-    }
+    public static final RochadeMove CASTLING_WHITE_SHORT = new RochadeMove(4, 6, 7, 5);
 
-    public static final RochadeMove createCastlingBlackShort() {
-        return new RochadeMove(60, 62, 63, 61);
-    }
+    public static final RochadeMove CASTLING_BLACK_SHORT = new RochadeMove(60, 62, 63, 61);
 
-    public static final RochadeMove createCastlingBlackLong() {
-        return new RochadeMove(60, 58, 56, 59);
-    }
-
+    public static final RochadeMove CASTLING_BLACK_LONG = new RochadeMove(60, 58, 56, 59);
 
 
     private BasicMove second;

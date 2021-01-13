@@ -58,22 +58,22 @@ public class BasicMoveList implements MoveList {
 
     @Override
     public void addRochadeLongWhite() {
-        moves.add(RochadeMove.createCastlingWhiteLong());
+        moves.add(RochadeMove.CASTLING_WHITE_LONG);
     }
 
     @Override
     public void addRochadeShortWhite() {
-        moves.add(RochadeMove.createCastlingWhiteShort());
+        moves.add(RochadeMove.CASTLING_WHITE_SHORT);
     }
 
     @Override
     public void addRochadeShortBlack() {
-        moves.add(RochadeMove.createCastlingBlackShort());
+        moves.add(RochadeMove.CASTLING_BLACK_SHORT);
     }
 
     @Override
     public void addRochadeLongBlack() {
-        moves.add(RochadeMove.createCastlingBlackLong());
+        moves.add(RochadeMove.CASTLING_BLACK_LONG);
     }
 
     @Override
