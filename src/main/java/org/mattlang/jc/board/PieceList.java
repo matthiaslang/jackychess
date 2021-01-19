@@ -47,12 +47,12 @@ public class PieceList {
             Arrays.fill(arr, -1);
         }
 
-        public void insert(int val) {
+        public final void insert(int val) {
             arr[size] = val;
             size++;
         }
 
-        public void remove(int val) {
+        public final void remove(int val) {
             for (int i = 0; i < size; i++) {
                 if (arr[i] == val) {
                     removeFromArray(i);
@@ -70,41 +70,41 @@ public class PieceList {
             size--;
         }
 
-        public void clean() {
+        public final void clean() {
             Arrays.fill(arr, -1);
             size = 0;
         }
 
-        public int size() {
+        public final int size() {
             return size;
         }
     }
 
-    public Array getPawns() {
+    public final Array getPawns() {
         return pawns;
     }
 
-    public Array getBishops() {
+    public final Array getBishops() {
         return bishops;
     }
 
-    public Array getKnights() {
+    public final Array getKnights() {
         return knights;
     }
 
-    public Array getRooks() {
+    public final Array getRooks() {
         return rooks;
     }
 
-    public Array getQueens() {
+    public final Array getQueens() {
         return queens;
     }
 
-    public int getKing() {
+    public final int getKing() {
         return king;
     }
 
-    public PieceList setKing(int king) {
+    public final PieceList setKing(int king) {
         this.king = king;
         return this;
     }

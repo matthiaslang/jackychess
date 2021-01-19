@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -13,11 +15,6 @@ import org.mattlang.jc.engine.EvaluateFunction;
  */
 public class MaterialNegaMaxEvalOpt implements EvaluateFunction {
 
-    /* King wheight, aka Matt Wheight. */
-    public static final int KING_WHEIGHT = 32000;
-    public static final int PATT_WEIGHT = 10000;
-
-
     BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 
     @Override
@@ -30,25 +27,27 @@ public class MaterialNegaMaxEvalOpt implements EvaluateFunction {
         int wKingCount = wp.getKing() < 0 ? 0 : 1;
         int bKingCount = bp.getKing() < 0 ? 0 : 1;
 
-        int score = KING_WHEIGHT * (wKingCount - bKingCount) * who2mov +
-                900 * (wp.getQueens().size() - bp.getQueens().size()) * who2mov +
-                500 * (wp.getRooks().size() - bp.getRooks().size()) * who2mov +
-                330 * (wp.getBishops().size() - bp.getBishops().size()) * who2mov +
-                320 * (wp.getKnights().size() - bp.getKnights().size()) * who2mov +
-                100 * (wp.getPawns().size() - bp.getPawns().size()) * who2mov +
+        int score = KING_WEIGHT * (wKingCount - bKingCount) * who2mov +
+                QUEEN_WEIGHT * (wp.getQueens().size() - bp.getQueens().size()) * who2mov +
+                ROOK_WEIGHT * (wp.getRooks().size() - bp.getRooks().size()) * who2mov +
+                BISHOP_WEIGHT * (wp.getBishops().size() - bp.getBishops().size()) * who2mov +
+                KNIGHT_WEIGHT * (wp.getKnights().size() - bp.getKnights().size()) * who2mov +
+                PAWN_WEIGHT * (wp.getPawns().size() - bp.getPawns().size()) * who2mov +
                 // two bishop bonus:
-                50 * (wp.getBishops().size() == 2 ? 1 : 0 - bp.getBishops().size() == 2 ? 1 : 0) * who2mov +
+                TWO_BISHOP_BONUS * (wp.getBishops().size() == 2 ? 1 : 0 - bp.getBishops().size() == 2 ? 1 : 0) * who2mov
+                +
                 // penalty for two knights:
-                -50 * (wp.getKnights().size() == 2 ? 1 : 0 - bp.getKnights().size() == 2 ? 1 : 0) * who2mov
+                TWO_ROOKS_PENALTY * (wp.getKnights().size() == 2 ? 1 : 0 - bp.getKnights().size() == 2 ? 1 : 0)
+                        * who2mov
                 +
                 // penalty for having no pawns (especially in endgame)
-                -500 * (wp.getPawns().size() == 0 ? 1 : 0 - bp.getPawns().size() == 0 ? 1 : 0) * who2mov;
+                NO_PAWNS_PENALTY * (wp.getPawns().size() == 0 ? 1 : 0 - bp.getPawns().size() == 0 ? 1 : 0) * who2mov;
 
 
         BoardStats wstats = statsgenerator.gen(currBoard, Color.WHITE);
         BoardStats bstats = statsgenerator.gen(currBoard, Color.BLACK);
-        score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
-                20 * (wstats.captures - bstats.captures) * who2mov;
+        score += COMMON_MOBILITY_WEIGHT * (wstats.mobility - bstats.mobility) * who2mov +
+                COMMON_CAPTURABILITY_WEIGHT * (wstats.captures - bstats.captures) * who2mov;
 
         int whiteMakesPatt = isPatt(wstats, bstats);
         int blackMakesPatt = isPatt(bstats, wstats);

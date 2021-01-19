@@ -1,13 +1,14 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureType.*;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.EvaluateFunction;
-
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-import static org.mattlang.jc.board.FigureType.*;
 
 /**
  * Experimental Material Evaluation.
@@ -15,11 +16,6 @@ import static org.mattlang.jc.board.FigureType.*;
  * https://www.chessprogramming.org/Simplified_Evaluation_Function
  */
 public class MaterialNegaMaxEval implements EvaluateFunction {
-
-    /* King wheight, aka Matt Wheight. */
-    public static final int KING_WHEIGHT = 32000;
-    public static final int PATT_WEIGHT = 10000;
-
 
     BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 
@@ -36,25 +32,25 @@ public class MaterialNegaMaxEval implements EvaluateFunction {
             }
         }
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
-        int score = KING_WHEIGHT * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
-                900 * (counts[0][Queen.figureCode] - counts[1][Queen.figureCode]) * who2mov +
-                500 * (counts[0][Rook.figureCode] - counts[1][Rook.figureCode]) * who2mov +
-                330 * (counts[0][Bishop.figureCode] - counts[1][Bishop.figureCode]) * who2mov +
-                320 * (counts[0][Knight.figureCode] - counts[1][Knight.figureCode]) * who2mov +
-                100 * (counts[0][Pawn.figureCode] - counts[1][Pawn.figureCode]) * who2mov +
+        int score = KING_WEIGHT * (counts[0][King.figureCode] - counts[1][King.figureCode]) * who2mov +
+                QUEEN_WEIGHT * (counts[0][Queen.figureCode] - counts[1][Queen.figureCode]) * who2mov +
+                ROOK_WEIGHT * (counts[0][Rook.figureCode] - counts[1][Rook.figureCode]) * who2mov +
+                BISHOP_WEIGHT * (counts[0][Bishop.figureCode] - counts[1][Bishop.figureCode]) * who2mov +
+                KNIGHT_WEIGHT * (counts[0][Knight.figureCode] - counts[1][Knight.figureCode]) * who2mov +
+                PAWN_WEIGHT * (counts[0][Pawn.figureCode] - counts[1][Pawn.figureCode]) * who2mov +
                 // two bishop bonus:
-                50 * (counts[0][Bishop.figureCode] == 2 ? 1 : 0 - counts[1][Bishop.figureCode] == 2 ? 1 : 0) * who2mov +
+                TWO_BISHOP_BONUS * (counts[0][Bishop.figureCode] == 2 ? 1 : 0 - counts[1][Bishop.figureCode] == 2 ? 1 : 0) * who2mov +
                 // penalty for two knights:
-                -50 * (counts[0][Knight.figureCode] == 2 ? 1 : 0 - counts[1][Knight.figureCode] == 2 ? 1 : 0) * who2mov
+                TWO_ROOKS_PENALTY * (counts[0][Knight.figureCode] == 2 ? 1 : 0 - counts[1][Knight.figureCode] == 2 ? 1 : 0) * who2mov
                 +
                 // penalty for having no pawns (especially in endgame)
-                -500 * (counts[0][Pawn.figureCode] == 0 ? 1 : 0 - counts[1][Pawn.figureCode] == 0 ? 1 : 0) * who2mov;
+                NO_PAWNS_PENALTY * (counts[0][Pawn.figureCode] == 0 ? 1 : 0 - counts[1][Pawn.figureCode] == 0 ? 1 : 0) * who2mov;
 
 
         BoardStats wstats = statsgenerator.gen(currBoard, Color.WHITE);
         BoardStats bstats = statsgenerator.gen(currBoard, Color.BLACK);
-        score += 10 * (wstats.mobility - bstats.mobility) * who2mov +
-                20 * (wstats.captures - bstats.captures) * who2mov;
+        score += COMMON_MOBILITY_WEIGHT * (wstats.mobility - bstats.mobility) * who2mov +
+                COMMON_CAPTURABILITY_WEIGHT * (wstats.captures - bstats.captures) * who2mov;
 
         int whiteMakesPatt = isPatt(wstats, bstats);
         int blackMakesPatt = isPatt(bstats, wstats);

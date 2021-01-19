@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -12,7 +14,6 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMax implements SearchMethod {
@@ -46,7 +47,7 @@ public class NegaMax implements SearchMethod {
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
             // no more legal moves, that means we have checkmate:
-            return new MoveScore(null, - MaterialNegaMaxEval.KING_WHEIGHT);
+            return new MoveScore(null, -KING_WEIGHT);
         }
         int max = Integer.MIN_VALUE;
         for (MoveCursor moveCursor : moves) {
@@ -69,7 +70,7 @@ public class NegaMax implements SearchMethod {
         if (depth == 0)
             return eval;
         // patt node:
-        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
             return eval;
         }
 

@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
 
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.ZobristBoardCache;
 
@@ -105,7 +106,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
         int eval = evaluate.eval(currBoard, color);
         // patt node:
-        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
             return eval;
         }
         if (repetitionChecker.isRepetition()) {
@@ -125,7 +126,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
             // no more legal moves, that means we have checkmate:
-            return -MaterialNegaMaxEval.KING_WHEIGHT;
+            return -KING_WEIGHT;
         }
         nodes += moves.size();
         int max = alpha;
@@ -181,7 +182,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
         int eval = evaluate.eval(currBoard, color);
         // patt node:
-        if (eval == -MaterialNegaMaxEval.PATT_WEIGHT || eval == MaterialNegaMaxEval.PATT_WEIGHT) {
+        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
             return eval;
         }
         if (repetitionChecker.isRepetition()) {
@@ -221,7 +222,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
             // no more legal moves, that means we have checkmate:
-            return -MaterialNegaMaxEval.KING_WHEIGHT;
+            return -KING_WEIGHT;
         }
         nodes += moves.size();
         quiescenceNodesVisited++;
