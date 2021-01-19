@@ -2,7 +2,6 @@ package org.mattlang.jc.movegenerator;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -15,8 +14,8 @@ public class ZobristBoardCache<T> implements BoardCache<T> {
     private int cacheHit;
     private int cacheFail;
 
-    private HashMap<Long, T> whitemap = new HashMap<>(CAPACITY);
-    private HashMap<Long, T> blackmap = new HashMap<>(CAPACITY);
+    private LimitedHashMap<Long, T> whitemap = new LimitedHashMap<>(CAPACITY);
+    private LimitedHashMap<Long, T> blackmap = new LimitedHashMap<>(CAPACITY);
 
     private BoardCacheEntryCreator<T> creator;
 
