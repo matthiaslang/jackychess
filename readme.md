@@ -8,7 +8,7 @@ Inspiration was mainly given by the great chess programming wiki
 https://www.chessprogramming.org/ where you can get a good overview about all used
 algorithms.
 
-Goals of the engine
+## Goals of the engine
 
 - educational purpose: main focus is for me to learn about chess programming
 - the code is very simple and clear since the main purpose is to understand the algorithms.
@@ -17,11 +17,13 @@ Goals of the engine
 - the engine should be at least so good that it can defeat me (a mediocre amateur chess player, I hope.. :)
 - having fun to program it :)
 
-
+## Requirements
 
 The chess engine should work under any UCI chess client.
 It was mainly tested with Arena http://www.playwitharena.de/ 
 and works find with this client. It was also tested with pyChess.
+
+## Implementation
 
 The chess engine uses 
 
@@ -49,6 +51,28 @@ is something I will try to investigate and to tackle with special evaluation fun
 - not all chess rules are implemented: patt rules like 50 move rules; Rochade is not fully implemented. This should get fixed during time together with other upcoming bugs.
 
 - no quescence handling: so the engine can choose "bad moves" due to horizon effects. This is something I will try to implement but I think this will take care and time. Maybe I start with a first simple approach.
+
+              
+## Experimental Implementations
+   
+### Zobrist
+Zobrist Hashing is implenmented by the Board3.
+Its not clear if it is beneficial, looks like it could getting beneficial on depths >=8 compared to no caching.
+
+It is at least much better than the simple java hash based cache implementation (Board2)
+
+
+### table based move generation
+
+in branch experimental/tableBasedMoveGenerator
+
+This implementation uses a pre-filled move table with all possible moves, instead of a 12x8 field. But it does not look like an improvement.
+First simple tests show that it is slightly slower than the current move generator implementation.
+
+### mtdf
+
+The mtdf implementation currently is slower than the normal alpha/beta pruning, probably because it does not use
+zobrist hashing. It should be retested with the NegaMaxAlphaBetaTT implementation if it then works better.
 
 
 
