@@ -1,19 +1,19 @@
 package org.mattlang.jc.engine;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Main.initLogging;
+
+import java.io.IOException;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
-import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
 
 public class EngineTest {
 
@@ -119,7 +119,7 @@ public class EngineTest {
     public void testNegMax2() {
 
         // now starting engine:
-        Engine engine = new Engine(new NegaMax(new SimpleNegaMaxEval()), 2);
+        Engine engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt()), 2);
         FenParser parser = new FenParser();
         parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
         System.out.println(engine.getBoard().toUniCodeStr());
@@ -135,7 +135,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
-        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
+        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -156,7 +156,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
+        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -180,7 +180,7 @@ public class EngineTest {
     @Test
     public void testProblemNoBestMoveFound() {
 
-        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
+        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
 
         BoardRepresentation board = new Board2();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");

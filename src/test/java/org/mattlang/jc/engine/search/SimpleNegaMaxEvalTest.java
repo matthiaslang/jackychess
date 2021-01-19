@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.search;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
@@ -7,26 +9,12 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BoardStats;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
-import org.mattlang.jc.engine.evaluation.SimpleNegaMaxEval;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.uci.FenParser;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleNegaMaxEvalTest {
 
-    @Test
-    public void testChess() {
 
-        SimpleNegaMaxEval eval = new SimpleNegaMaxEval();
-        BoardRepresentation board = new Board2();
-
-        FenParser parser = new FenParser();
-        parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
-
-        System.out.println(eval.eval(board, Color.BLACK));
-    }
 
 
     @Test
