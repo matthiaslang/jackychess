@@ -8,6 +8,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
 
+import static org.mattlang.jc.uci.UciProcessor.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.*;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.UCILogger;
@@ -16,6 +23,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.TaperedEval;
+
 
 public class AsyncEngine {
 
@@ -39,6 +47,9 @@ public class AsyncEngine {
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, Map<String, Long> options) {
         SearchParameter searchParams = Factory.createDefaultParameter();
+        if (options.containsKey(OP_MAXDEPTH)) {
+            searchParams.setMaxDepth(options.get(OP_MAXDEPTH).intValue());
+        }
         if (options.containsKey(OP_THINKTIME)) {
             searchParams.setTimeout(options.get(OP_THINKTIME) * 1000);
         }
