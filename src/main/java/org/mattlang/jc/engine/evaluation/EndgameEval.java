@@ -6,14 +6,14 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.evaluation.evaltables.Opening;
+import org.mattlang.jc.engine.evaluation.evaltables.EndGame;
 
 /**
- * Evaluation for Opening Phase.
+ * Experimental Material Evaluation.
  * <p>
  * https://www.chessprogramming.org/Simplified_Evaluation_Function
  */
-public class OpeningEval implements EvaluateFunction {
+public class EndgameEval implements EvaluateFunction {
 
     BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 
@@ -28,7 +28,7 @@ public class OpeningEval implements EvaluateFunction {
             return pattCheck;
         }
 
-        int score = Evaluations.materialEval(currBoard, who2Move, false);
+        int score = Evaluations.materialEval(currBoard, who2Move, true);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
 
@@ -36,10 +36,12 @@ public class OpeningEval implements EvaluateFunction {
                 COMMON_CAPTURABILITY_WEIGHT * (wstats.captures - bstats.captures) * who2mov;
 
         // apply opening patterns:
-        score += Opening.openingPatterns(currBoard, who2Move);
+        score += EndGame.endgamePatterns(currBoard, who2Move);
 
         return score;
 
     }
+
+
 
 }

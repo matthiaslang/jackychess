@@ -9,8 +9,8 @@ import org.mattlang.jc.engine.EvaluateFunction;
  */
 public class GamePhaseEvaluation implements EvaluateFunction {
 
-    private OpeningEval openingEval = new OpeningEval();
-    private EvaluateFunction endgameEval = new MaterialNegaMaxEvalOpt();
+    private EvaluateFunction openingEval = new OpeningEval();
+    private EvaluateFunction endgameEval = new EndgameEval();
 
     private TaperedEval taperedEval = new TaperedEval();
 

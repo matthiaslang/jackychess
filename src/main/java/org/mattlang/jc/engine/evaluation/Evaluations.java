@@ -8,7 +8,7 @@ import org.mattlang.jc.board.PieceList;
 
 public class Evaluations {
 
-    public static final int materialEval(BoardRepresentation currBoard, Color who2Move) {
+    public static final int materialEval(BoardRepresentation currBoard, Color who2Move, boolean endGame) {
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         PieceList wp = currBoard.getWhitePieces();
@@ -32,6 +32,14 @@ public class Evaluations {
                 +
                 // penalty for having no pawns (especially in endgame)
                 NO_PAWNS_PENALTY * (wp.getPawns().size() == 0 ? 1 : 0 - bp.getPawns().size() == 0 ? 1 : 0) * who2mov;
+
+        /**
+         * Special end game material evaluations:
+         */
+        if (endGame) {
+            // pawns are more worth in endgame: lets say thery are 1 1/2 of pawns normally:
+           score+= PAWN_WEIGHT/2 * (wp.getPawns().size() - bp.getPawns().size()) * who2mov;
+        }
 
         // - 0.5(D-D' + S-S' + I-I')     D,S,I = doubled, blocked and isolated pawns
 
