@@ -1,14 +1,14 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 
 public class UciProcessor {
 
@@ -38,6 +38,8 @@ public class UciProcessor {
         cmdStr = cmdStr.trim();
         if ("uci".equals(cmdStr)) {
             identifyYourself();
+        } else if ("quit".equals(cmdStr)) {
+            quit();
         } else if ("isready".equals(cmdStr)) {
             UCI.instance.putCommand("readyok");
         } else if ("ucinewgame".equals(cmdStr)) {
@@ -55,6 +57,12 @@ public class UciProcessor {
         } else if ("stop".equals(cmdStr)) {
             asyncEngine.stop();
         }
+
+    }
+
+    private void quit() {
+        UCI.instance.quit();
+        finished = true;
 
     }
 
