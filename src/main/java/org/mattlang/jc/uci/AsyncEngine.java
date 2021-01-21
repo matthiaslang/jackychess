@@ -1,19 +1,21 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.Factory;
-import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.Engine;
+import static org.mattlang.jc.uci.UciProcessor.OP_QUIESCENCE;
+import static org.mattlang.jc.uci.UciProcessor.OP_THINKTIME;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
 
-import static org.mattlang.jc.uci.UciProcessor.OP_QUIESCENCE;
-import static org.mattlang.jc.uci.UciProcessor.OP_THINKTIME;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
+import org.mattlang.jc.UCILogger;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.evaluation.TaperedEval;
 
 public class AsyncEngine {
 
@@ -60,6 +62,11 @@ public class AsyncEngine {
         }
         Factory.setDefaults(searchParams);
         Factory.getDefaults().log();
+        // log game phase
+        TaperedEval taperedEval = new TaperedEval();
+        int phase = taperedEval.calcPhase(gameState.getBoard());
+        UCILogger.log("Tapered Phase: " + phase);
+
 
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> future = executorService.submit(() -> {
