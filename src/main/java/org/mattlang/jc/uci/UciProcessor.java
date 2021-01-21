@@ -18,6 +18,8 @@ public class UciProcessor {
 
     public static final String OP_THINKTIME="thinktime";
     public static final String OP_QUIESCENCE="quiescence";
+    public static final String OP_MAXDEPTH="maxdepth";
+
 
     private Map<String, Long> options = new HashMap<>();
 
@@ -132,6 +134,7 @@ public class UciProcessor {
         UCI.instance.putCommand("id author Matthias Lang");
 
         UCI.instance.putCommand("option name " + OP_THINKTIME + " type spin default 15 min 5 max 600");
+        UCI.instance.putCommand("option name " + OP_MAXDEPTH + " type spin default 15 min 5 max 30");
         UCI.instance.putCommand("option name " + OP_QUIESCENCE + " type spin default 0 min 0 max 6");
         UCI.instance.putCommand("uciok");
     }
