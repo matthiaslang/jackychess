@@ -70,6 +70,10 @@ public class PieceList {
             size--;
         }
 
+        public final int[] getArr() {
+            return Arrays.copyOf(arr, size);
+        }
+
         public final void clean() {
             Arrays.fill(arr, -1);
             size = 0;
