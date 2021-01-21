@@ -244,7 +244,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
         NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
 
         UCILogger.info(depth, nodesVisited, result.max);
-        UCILogger.log("depth:\t %d\t nodes:\t %d\t searched:\t %d\t quiescence:\t %d\t alpha beta cutoff:\t %d\t score:\t %d",
+        UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
                 depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }

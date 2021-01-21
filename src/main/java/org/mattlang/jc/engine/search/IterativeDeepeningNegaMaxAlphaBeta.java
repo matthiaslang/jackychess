@@ -11,6 +11,7 @@ import java.util.Map;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -51,6 +52,9 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, Statist
 
         BoardRepresentation currBoard = gameState.getBoard();
         Color color = gameState.getWho2Move();
+
+        // write a kind of UCI "header" for our stats:
+        UCILogger.log(" Depth\t nodes/visited \t quiescence\t alpha beta cutoff\t score");
 
         MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {
