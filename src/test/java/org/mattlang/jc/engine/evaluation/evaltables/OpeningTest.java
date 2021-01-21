@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.evaluation.opening;
+package org.mattlang.jc.engine.evaluation.evaltables;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
