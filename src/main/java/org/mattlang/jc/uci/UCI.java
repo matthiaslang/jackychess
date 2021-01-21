@@ -3,6 +3,7 @@ package org.mattlang.jc.uci;
 import java.io.*;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class UCI {
@@ -12,6 +13,8 @@ public class UCI {
     private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
     private LinkedBlockingQueue<String> outQueue = new LinkedBlockingQueue<>();
 
+    private  PrintStream out;
+
     private boolean finished = false;
 
     public static final UCI instance = new UCI();
@@ -20,11 +23,16 @@ public class UCI {
     }
 
     public void putCommand(String cmd) {
-        outQueue.add(cmd);
+        logger.info("OUT: " + cmd);
+        out.println(cmd);
     }
 
     public Optional<String> readCommand() {
-        return Optional.ofNullable(inQueue.poll());
+        try {
+            return Optional.ofNullable(inQueue.poll(1000, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            return Optional.empty();
+        }
     }
 
     public void attachStreams() throws IOException {
@@ -32,6 +40,7 @@ public class UCI {
     }
 
     public void attachStreams(final InputStream in, final PrintStream out) throws IOException {
+        this.out = out;
         Thread inThread = new Thread(
                 () -> {
                     try {
@@ -41,23 +50,6 @@ public class UCI {
                     }
                 });
         inThread.start();
-        Thread outThread = new Thread(() -> {
-            try {
-                gobbleOut(out);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        outThread.start();
-    }
-
-    private void gobbleOut(PrintStream out) throws InterruptedException {
-        while (!finished) {
-            String line = outQueue.take();
-            logger.info("OUT: " + line);
-            out.println(line);
-        }
     }
 
     private void gobbleIn(InputStream in) throws IOException {
@@ -67,5 +59,9 @@ public class UCI {
             logger.info("IN: " + line);
             inQueue.add(line);
         }
+    }
+
+    public void quit() {
+        finished = true;
     }
 }
