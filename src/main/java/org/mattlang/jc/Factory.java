@@ -1,15 +1,16 @@
 package org.mattlang.jc;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.engine.evaluation.GamePhaseEvaluation;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -35,7 +36,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
-                .evaluateFunction.set(() -> new MaterialNegaMaxEvalOpt())
+                .evaluateFunction.set(() -> new GamePhaseEvaluation())
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
                 .boards.set(() -> new Board2())
