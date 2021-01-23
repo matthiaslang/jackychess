@@ -75,14 +75,15 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
      */
     public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = Factory.getDefaults().moveList.create();
-        return generate(board, side, moves);
+        generate(board, side, moves);
+        return moves;
     }
 
     /**
      * @param board current board
      * @param side  the side to move
      */
-    public MoveList generate(BoardRepresentation board, Color side, MoveList moves) {
+    public void generate(BoardRepresentation board, Color side, MoveCollector collector) {
 
         Color xside = side.invert();  /* the side not to move */
 
@@ -95,19 +96,18 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 if (!isPawn) { /* piece or pawn */
                     byte figureCode = (byte) (figure & MASK_OUT_COLOR);
                     int[] figOffsets = offset[figureCode];
-                    genPieceMoves(board, i, moves, xside, figureCode, figOffsets, slide[figureCode]);
+                    genPieceMoves(board, i, collector, xside, figureCode, figOffsets, slide[figureCode]);
                 } else {
                     /* pawn moves */
-                    genPawnMoves(board, moves, i, side);
+                    genPawnMoves(board, collector, i, side);
 
                 }
             }
         }
-        generateRochade(board, side, moves);
-        return moves;
+        generateRochade(board, side, collector);
     }
 
-    private static void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
+    private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,
                                byte figureType,
                                       int[] figOffsets, boolean slide) {
 
@@ -118,10 +118,10 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 byte targetN = board.getFigureCode(n);
                 if (targetN != FigureConstants.FT_EMPTY) {
                     if (Figure.getColor(targetN) == xside)
-                        moves.genMove(figureType, i, n, targetN); /* capture from i to n */
+                        collector.genMove(figureType, i, n, targetN); /* capture from i to n */
                     break;
                 }
-                moves.genMove(figureType, i, n, (byte)0); /* quiet move from i to n */
+                collector.genMove(figureType, i, n, (byte)0); /* quiet move from i to n */
                 if (!slide) break; /* next direction */
             }
         }
@@ -272,28 +272,28 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             new int[]{58, 59, 60});
 
 
-    private void generateRochade(BoardRepresentation board, Color side, MoveList moves) {
+    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
         switch (side) {
             case WHITE:
                 if (ROCHADE_L_WHITE.check(board)) {
-                    moves.addRochadeLongWhite();
+                    collector.addRochadeLongWhite();
                 }
                 if (ROCHADE_S_WHITE.check(board)) {
-                    moves.addRochadeShortWhite();
+                    collector.addRochadeShortWhite();
                 }
                 break;
             case BLACK:
                 if (ROCHADE_S_BLACK.check(board)) {
-                    moves.addRochadeShortBlack();
+                    collector.addRochadeShortBlack();
                 }
                 if (ROCHADE_L_BLACK.check(board)) {
-                    moves.addRochadeLongBlack();
+                    collector.addRochadeLongBlack();
                 }
                 break;
         }
     }
 
-    private void genPawnMoves(BoardRepresentation board, MoveList moves, int i, Color side) {
+    private void genPawnMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
         boolean isOnBaseLine = false;
         if (side == WHITE) {
             isOnBaseLine = i >= 8 && i <= 15;
@@ -308,23 +308,23 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             byte target = board.getFigureCode(n);
             if (target ==  FigureConstants.FT_EMPTY) {
 
-                moves.genPawnMove(i, n, side, (byte)0, -1);
+                collector.genPawnMove(i, n, side, (byte)0, -1);
                 int singlemove=n;
                 if (isOnBaseLine) {
                     // get double move from baseline:
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigureCode(n);
                     if (target ==  FigureConstants.FT_EMPTY) {
-                        moves.genPawnMove(i, n, side, (byte)0, singlemove);
+                        collector.genPawnMove(i, n, side, (byte)0, singlemove);
                     }
                 }
             }
         }
         // check capture:
-        genPawnCaptureMoves(board, moves, i, side);
+        genPawnCaptureMoves(board, collector, i, side);
     }
 
-    private static void genPawnCaptureMoves(BoardRepresentation board, MoveList moves, int i, Color side) {
+    private static void genPawnCaptureMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
         int n;
         int m = side == WHITE ? 1 : -1;
         Color xside = side.invert();
@@ -333,11 +333,11 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
             if (n != -1) {
                 byte target = board.getFigureCode(n);
                 if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
-                    moves.genPawnMove(i, n, side, target, -1);
+                    collector.genPawnMove(i, n, side, target, -1);
                 } else if (board.isEnPassantCapturePossible(n)) {
-                    moves.genEnPassant(i, n, side, board.getEnPassantCapturePos());
+                    collector.genEnPassant(i, n, side, board.getEnPassantCapturePos());
                 } else if (target == FigureConstants.FT_EMPTY) {
-                    moves.hypotheticalPawnCapture(i, n);
+                    collector.hypotheticalPawnCapture(i, n);
                 }
             }
         }

@@ -1,19 +1,15 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
-public class CaptureChecker implements MoveList {
+public class CaptureChecker implements MoveCollector {
 
     private Set<Byte> capturedFigures = new HashSet<>();
-
 
     @Override
     public void genMove(byte figureType, int from, int to, byte capturedFigureCode) {
@@ -54,21 +50,6 @@ public class CaptureChecker implements MoveList {
     }
 
     @Override
-    public void addMove(MoveCursor moveCursor) {
-
-    }
-
-    @Override
-    public void sortByCapture() {
-
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
     public void genEnPassant(int i, int n, Color side, int enPassantCapturePos) {
 
     }
@@ -76,11 +57,6 @@ public class CaptureChecker implements MoveList {
     @Override
     public void hypotheticalPawnCapture(int from, int to) {
         // hypothetical pawn captures are no real captures, therefore we do not count this.
-    }
-
-    @Override
-    public Iterator<MoveCursor> iterator() {
-        return null;
     }
 
     public boolean hasCapturesBy(byte figureCode) {

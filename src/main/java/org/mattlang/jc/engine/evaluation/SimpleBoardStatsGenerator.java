@@ -5,13 +5,10 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 
-import java.util.Iterator;
-
-public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator {
+public class SimpleBoardStatsGenerator implements MoveCollector, BoardStatsGenerator {
 
     public long mobility = 0L;
     private long captures = 0L;
@@ -79,22 +76,6 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void addMove(MoveCursor moveCursor) {
-        // nothing to do
-    }
-
-    @Override
-    public void sortByCapture() {
-        // nothing to do
-    }
-
-    @Override
-    public int size() {
-        // nothing to do
-        return 0;
-    }
-
-    @Override
     public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
         countMove(from, to, side == Color.WHITE ? FigureConstants.B_PAWN : FigureConstants.W_PAWN);
     }
@@ -109,9 +90,4 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
         hypotheticalPawnCaptures |= (1L << to);
     }
 
-    @Override
-    public Iterator<MoveCursor> iterator() {
-        // nothing to do
-        return null;
-    }
 }

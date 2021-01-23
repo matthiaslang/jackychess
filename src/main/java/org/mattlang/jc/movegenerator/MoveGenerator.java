@@ -14,6 +14,6 @@ public interface MoveGenerator extends PositionBasedGenerator<MoveList> {
      * @param board current board
      * @param side  the side to move
      */
-    MoveList generate(BoardRepresentation board, Color side, MoveList moves);
+    void generate(BoardRepresentation board, Color side, MoveCollector moves);
 
 }
