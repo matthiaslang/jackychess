@@ -1,14 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
@@ -17,7 +8,17 @@ import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.evaluation.PattChecker;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 
 public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollector {
 
@@ -27,6 +28,8 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
     private EvaluateFunction evaluate;
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
+
+    private PattChecker pattChecker = new PattChecker();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
 
@@ -88,31 +91,20 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
                              int alpha, int beta) {
         nodesVisited++;
 
-        //int eval = evaluate.eval(currBoard, color);
-        //if (depth == 0)
-        //    return eval;
-
         if (depth == 0)
             return quiesce(currBoard, depth-1, color, alpha, beta);
 
-        int eval = evaluate.eval(currBoard, color);
+        int pattCheckEval = pattChecker.eval(currBoard, color);
         // patt node:
-        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
-            return eval;
+        if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
+            return pattCheckEval;
         }
         if (repetitionChecker.isRepetition()) {
             // remis due to 3 times same position.
             return 0;
         }
 
-        if (stopTime != 0 && nodesVisited % 100000 == 0) {
-            if (System.currentTimeMillis() > stopTime) {
-                throw new TimeoutException();
-            }
-            if (Thread.interrupted()) {
-                throw new TimeoutException();
-            }
-        }
+        checkTimeout();
 
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
@@ -143,6 +135,17 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
         return max;
     }
 
+    private void checkTimeout() {
+        if (stopTime != 0 && nodesVisited % 100000 == 0) {
+            if (System.currentTimeMillis() > stopTime) {
+                throw new TimeoutException();
+            }
+            if (Thread.interrupted()) {
+                throw new TimeoutException();
+            }
+        }
+    }
+
     private int quiesce(BoardRepresentation currBoard, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
 
@@ -157,14 +160,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
             return 0;
         }
 
-        if (stopTime != 0 && nodesVisited % 100000 == 0) {
-            if (System.currentTimeMillis() > stopTime) {
-                throw new TimeoutException();
-            }
-            if (Thread.interrupted()) {
-                throw new TimeoutException();
-            }
-        }
+        checkTimeout();
 
         /* are we too deep? */
         if (depth< -maxQuiescenceDepth)
