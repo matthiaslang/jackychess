@@ -5,7 +5,7 @@ public class EnPassantMove extends BasicMove {
     private int enPassantCapturePos;
 
     public EnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        super(from, to, capturedFigure);
+        super(FigureConstants.FT_PAWN, from, to, capturedFigure);
         this.enPassantCapturePos = enPassantCapturePos;
     }
 

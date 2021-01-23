@@ -1,16 +1,16 @@
 package org.mattlang.jc.engine;
 
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import org.mattlang.jc.board.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mattlang.jc.board.*;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
 public class BasicMoveList implements MoveList {
 
@@ -23,8 +23,8 @@ public class BasicMoveList implements MoveList {
         this.moves = moves;
     }
 
-    public void genMove(int from, int to, byte capturedFigure) {
-        moves.add(new BasicMove(from, to, capturedFigure));
+    public void genMove(byte figureType, int from, int to, byte capturedFigure) {
+        moves.add(new BasicMove(figureType, from, to, capturedFigure));
     }
 
     public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
@@ -40,7 +40,7 @@ public class BasicMoveList implements MoveList {
             moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
             moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(new BasicMove(from, to, capturedFigure, enPassantOption));
+            moves.add(new BasicMove(FigureConstants.FT_PAWN, from, to, capturedFigure, enPassantOption));
 
         }
     }
@@ -79,17 +79,6 @@ public class BasicMoveList implements MoveList {
     @Override
     public void addMove(MoveCursor moveCursor) {
         moves.add(moveCursor.getMove());
-    }
-
-    @Override
-    public boolean capturesFigure(Figure figure) {
-        byte searchedFigCode = figure.figureCode;
-        for (Move move : moves) {
-            if (searchedFigCode == move.getCapturedFigure()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

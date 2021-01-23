@@ -1,12 +1,15 @@
 package org.mattlang.jc.engine.evaluation;
 
-import java.util.Iterator;
-
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.MoveGenerator;
+
+import java.util.Iterator;
 
 public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator {
 
@@ -35,7 +38,7 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     }
 
     @Override
-    public void genMove(int from, int to, byte capturedFigure) {
+    public void genMove(byte figureType, int from, int to, byte capturedFigure) {
         countMove(from, to, capturedFigure);
     }
 
@@ -78,11 +81,6 @@ public class SimpleBoardStatsGenerator implements MoveList, BoardStatsGenerator 
     @Override
     public void addMove(MoveCursor moveCursor) {
         // nothing to do
-    }
-
-    @Override
-    public boolean capturesFigure(Figure figure) {
-        return false;
     }
 
     @Override

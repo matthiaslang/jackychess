@@ -8,5 +8,7 @@ public interface Move {
 
     byte getCapturedFigure();
 
+    byte getFigureType();
+
     String toStr();
 }

@@ -14,8 +14,8 @@ public class RochadeMove extends BasicMove {
     private BasicMove second;
 
     private RochadeMove(int from1, int to1, int from2, int to2) {
-        super(from1, to1, (byte)0);
-        second = new BasicMove(from2, to2, (byte)0);
+        super(FigureConstants.FT_KING, from1, to1, (byte)0);
+        second = new BasicMove(FigureConstants.FT_ROOK, from2, to2, (byte)0);
     }
 
     @Override

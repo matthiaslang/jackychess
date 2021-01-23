@@ -1,13 +1,13 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -95,7 +95,7 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 if (!isPawn) { /* piece or pawn */
                     byte figureCode = (byte) (figure & MASK_OUT_COLOR);
                     int[] figOffsets = offset[figureCode];
-                    genPieceMoves(board, i, moves, xside, figOffsets, slide[figureCode]);
+                    genPieceMoves(board, i, moves, xside, figureCode, figOffsets, slide[figureCode]);
                 } else {
                     /* pawn moves */
                     genPawnMoves(board, moves, i, side);
@@ -108,7 +108,8 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
     }
 
     private static void genPieceMoves(BoardRepresentation board, int i, MoveList moves, Color xside,
-                               int[] figOffsets, boolean slide) {
+                               byte figureType,
+                                      int[] figOffsets, boolean slide) {
 
         for (int j = 0; j < figOffsets.length; ++j) { /* for all knight or ray directions */
             for (int n = i;;) { /* starting with from square */
@@ -117,10 +118,10 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
                 byte targetN = board.getFigureCode(n);
                 if (targetN != FigureConstants.FT_EMPTY) {
                     if (Figure.getColor(targetN) == xside)
-                        moves.genMove(i, n, targetN); /* capture from i to n */
+                        moves.genMove(figureType, i, n, targetN); /* capture from i to n */
                     break;
                 }
-                moves.genMove(i, n, (byte)0); /* quiet move from i to n */
+                moves.genMove(figureType, i, n, (byte)0); /* quiet move from i to n */
                 if (!slide) break; /* next direction */
             }
         }
@@ -157,8 +158,8 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
 
         CaptureChecker captureChecker = new CaptureChecker();
         // 1. test rook && queen vertical & horizontal captures:
-        genPieceMoves(board, i, captureChecker, xside, offset[FigureConstants.FT_ROOK], slide[FigureConstants.FT_ROOK]);
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_ROOK)) {
+        genPieceMoves(board, i, captureChecker, xside, FT_ROOK, offset[FT_ROOK], slide[FT_ROOK]);
+        if (captureChecker.hasCapturesBy(FT_ROOK)) {
             return true;
         }
         if (captureChecker.hasCapturesBy(FigureConstants.FT_QUEEN)) {
@@ -166,8 +167,8 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
         }
         // 2. test bishop and queen diagonal captures:
         captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, offset[FigureConstants.FT_BISHOP], slide[FigureConstants.FT_BISHOP]);
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_BISHOP)) {
+        genPieceMoves(board, i, captureChecker, xside, FT_BISHOP, offset[FT_BISHOP], slide[FT_BISHOP]);
+        if (captureChecker.hasCapturesBy(FT_BISHOP)) {
             return true;
         }
         if (captureChecker.hasCapturesBy(FigureConstants.FT_QUEEN)) {
@@ -176,8 +177,8 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
 
         // 3. test knight
         captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, offset[FigureConstants.FT_KNIGHT], slide[FigureConstants.FT_KNIGHT]);
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_KNIGHT)) {
+        genPieceMoves(board, i, captureChecker, xside, FT_KNIGHT, offset[FT_KNIGHT], slide[FT_KNIGHT]);
+        if (captureChecker.hasCapturesBy(FT_KNIGHT)) {
             return true;
         }
 
@@ -190,8 +191,8 @@ public class MoveGeneratorImpl2 implements MoveGenerator {
 
         // 5. test king
         captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, offset[FigureConstants.FT_KING], slide[FigureConstants.FT_KING]);
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_KING)) {
+        genPieceMoves(board, i, captureChecker, xside, FT_KING, offset[FT_KING], slide[FT_KING]);
+        if (captureChecker.hasCapturesBy(FT_KING)) {
             return true;
         }
 

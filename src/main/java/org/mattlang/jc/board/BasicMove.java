@@ -10,6 +10,8 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
  */
 public class BasicMove implements Move {
 
+    private byte figureType;
+
     private byte fromIndex;
 
     private byte toIndex;
@@ -23,14 +25,15 @@ public class BasicMove implements Move {
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
-    public BasicMove(int from, int to, byte capturedFigure) {
+    public BasicMove(byte figureType, int from, int to, byte capturedFigure) {
+        this.figureType=figureType;
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
     }
 
-    public BasicMove(int from, int to, byte capturedFigure, int enPassantOption) {
-        this(from, to, capturedFigure);
+    public BasicMove(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
+        this(figureType, from, to, capturedFigure);
         this.enPassantOption = (byte) enPassantOption;
     }
 
@@ -70,5 +73,10 @@ public class BasicMove implements Move {
     @Override
     public byte getCapturedFigure() {
         return capturedFigure;
+    }
+
+    @Override
+    public byte getFigureType() {
+        return figureType;
     }
 }

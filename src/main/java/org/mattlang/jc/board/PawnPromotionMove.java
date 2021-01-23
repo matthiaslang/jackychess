@@ -5,7 +5,7 @@ public class PawnPromotionMove extends BasicMove {
     private final Figure promotedFigure;
 
     public PawnPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        super(from, to, capturedFigure);
+        super(FigureConstants.FT_PAWN, from, to, capturedFigure);
         this.promotedFigure = promotedFigure;
     }
 

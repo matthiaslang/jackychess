@@ -16,21 +16,20 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
     @Override
     public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = generator.generate(board, side);
-        MoveList legalMoves = filterLegalMoves(board, moves, side.invert());
+        MoveList legalMoves = filterLegalMoves(board, moves, side);
         // simple ordering by capture first, to be a bit bettr in alpha beta pruning
         legalMoves.sortByCapture();
         return legalMoves;
     }
 
-    private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color color) {
-        Color otherColor = color.invert();
+    private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
 
         MoveList legals = Factory.getDefaults().moveList.create();
 
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            if (!isInChess(currBoard, otherColor)) {
+            if (!isInChess(currBoard, side)) {
                 legals.addMove(moveCursor);
             }
             moveCursor.undoMove(currBoard);

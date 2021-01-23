@@ -1,15 +1,14 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 public class CaptureChecker implements MoveList {
 
@@ -17,7 +16,7 @@ public class CaptureChecker implements MoveList {
 
 
     @Override
-    public void genMove(int from, int to, byte capturedFigureCode) {
+    public void genMove(byte figureType, int from, int to, byte capturedFigureCode) {
         addCapture(capturedFigureCode);
     }
 
@@ -57,11 +56,6 @@ public class CaptureChecker implements MoveList {
     @Override
     public void addMove(MoveCursor moveCursor) {
 
-    }
-
-    @Override
-    public boolean capturesFigure(Figure figure) {
-        return false;
     }
 
     @Override
