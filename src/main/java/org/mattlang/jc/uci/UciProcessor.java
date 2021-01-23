@@ -118,6 +118,11 @@ public class UciProcessor {
                 param.movestogo = Long.parseLong(result[x]);
                 x++;
             }
+            if ("movetime".equals(tok)) {
+                x++;
+                param.movetime = Long.parseLong(result[x]);
+                x++;
+            }
         }
         return param;
 

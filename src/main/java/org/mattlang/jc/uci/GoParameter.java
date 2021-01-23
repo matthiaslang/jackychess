@@ -10,4 +10,6 @@ public class GoParameter {
     public long winc;
     public long binc;
     public long movestogo;
+
+    public long movetime;
 }

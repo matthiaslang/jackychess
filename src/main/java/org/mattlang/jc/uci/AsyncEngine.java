@@ -56,8 +56,13 @@ public class AsyncEngine {
                 restTime = goParams.btime;
             }
             restMoves = goParams.movestogo;
-            long averageTimeForThisMove = restTime / restMoves;
-            searchParams.setTimeout(averageTimeForThisMove);
+            if (restMoves != 0 && restTime > 0) {
+                long averageTimeForThisMove = restTime / restMoves;
+                searchParams.setTimeout(averageTimeForThisMove);
+            }
+            if (goParams.movetime > 0) {
+                searchParams.setTimeout(goParams.movetime);
+            }
 
         }
         Factory.setDefaults(searchParams);
