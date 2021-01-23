@@ -1,14 +1,14 @@
 package org.mattlang.jc.uci;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class UciProcessor {
 
@@ -116,6 +116,11 @@ public class UciProcessor {
             if ("movestogo".equals(tok)) {
                 x++;
                 param.movestogo = Long.parseLong(result[x]);
+                x++;
+            }
+            if ("movetime".equals(tok)) {
+                x++;
+                param.movetime = Long.parseLong(result[x]);
                 x++;
             }
         }

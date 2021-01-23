@@ -1,20 +1,5 @@
 package org.mattlang.jc.uci;
 
-import static org.mattlang.jc.uci.UciProcessor.OP_QUIESCENCE;
-import static org.mattlang.jc.uci.UciProcessor.OP_THINKTIME;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.*;
-
-import static org.mattlang.jc.uci.UciProcessor.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.*;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.UCILogger;
@@ -23,6 +8,13 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.TaperedEval;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.*;
+
+import static org.mattlang.jc.uci.UciProcessor.*;
 
 
 public class AsyncEngine {
@@ -67,8 +59,13 @@ public class AsyncEngine {
                 restTime = goParams.btime;
             }
             restMoves = goParams.movestogo;
-            long averageTimeForThisMove = restTime / restMoves;
-            searchParams.setTimeout(averageTimeForThisMove);
+            if (restMoves != 0 && restTime > 0) {
+                long averageTimeForThisMove = restTime / restMoves;
+                searchParams.setTimeout(averageTimeForThisMove);
+            }
+            if (goParams.movetime > 0) {
+                searchParams.setTimeout(goParams.movetime);
+            }
 
         }
         Factory.setDefaults(searchParams);
