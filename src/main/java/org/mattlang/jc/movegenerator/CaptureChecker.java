@@ -1,15 +1,12 @@
 package org.mattlang.jc.movegenerator;
 
-import org.mattlang.jc.board.Color;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
-public class CaptureChecker implements MoveCollector {
+import org.mattlang.jc.board.Color;
 
-    private Set<Byte> capturedFigures = new HashSet<>();
+public final class CaptureChecker implements MoveCollector {
+
+    private long capturedFigures = 0L;
 
     @Override
     public void genMove(byte figureType, int from, int to, byte capturedFigureCode) {
@@ -25,7 +22,7 @@ public class CaptureChecker implements MoveCollector {
     private void addCapture(byte capturedFigureCode) {
         if (capturedFigureCode != 0) {
             byte capturedFigure = (byte) (capturedFigureCode & MASK_OUT_COLOR);
-            capturedFigures.add(capturedFigure);
+            capturedFigures |= (1L << capturedFigure);
         }
     }
 
@@ -60,10 +57,10 @@ public class CaptureChecker implements MoveCollector {
     }
 
     public boolean hasCapturesBy(byte figureCode) {
-        return capturedFigures.contains(figureCode);
+        return (capturedFigures & (1L << figureCode)) > 0;
     }
 
     public void reset() {
-        capturedFigures.clear();
+        capturedFigures = 0L;
     }
 }
