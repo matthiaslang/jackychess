@@ -2,8 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
 
 import java.util.ArrayList;
@@ -111,7 +110,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         }
         if (repetitionChecker.isRepetition()) {
             // remis due to 3 times same position.
-            return 0;
+            return -REPETITION_WEIGHT;
         }
 
         if (stopTime != 0 && nodesVisited % 100000 == 0) {
@@ -187,7 +186,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         }
         if (repetitionChecker.isRepetition()) {
             // remis due to 3 times same position.
-            return 0;
+            return -REPETITION_WEIGHT;
         }
 
         if (stopTime != 0 && nodesVisited % 100000 == 0) {

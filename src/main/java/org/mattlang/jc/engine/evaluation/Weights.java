@@ -13,6 +13,8 @@ public class Weights {
      */
     public static final int PATT_WEIGHT = 10000;
 
+    public static final int REPETITION_WEIGHT = 9000;
+
     public static final int QUEEN_WEIGHT = 900;
     public static final int ROOK_WEIGHT = 500;
     public static final int BISHOP_WEIGHT = 330;
