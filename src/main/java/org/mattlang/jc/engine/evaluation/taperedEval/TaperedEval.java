@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.evaluation;
+package org.mattlang.jc.engine.evaluation.taperedEval;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.PieceList;
@@ -17,6 +17,7 @@ public class TaperedEval {
             PAWN_PHASE * 16 + KNIGHT_PHASE * 4 + BISHOP_PHASE * 4 + ROOK_PHASE * 4 + QUEEN_PHASE * 2;
 
     public int calcPhase(BoardRepresentation board) {
+
         int phase = TOTAL_PHASE;
 
         PieceList white = board.getWhitePieces();
@@ -36,12 +37,22 @@ public class TaperedEval {
 
         phase = (phase * 256 + (TOTAL_PHASE / 2)) / TOTAL_PHASE;
 
+        cachedPhase = phase;
+
         return phase;
     }
 
-    public int eval(BoardRepresentation board, int opening, int endgame) {
-        int phase = calcPhase(board);
-        int eval = ((opening * (256 - phase)) + (endgame * phase)) / 256;
+    /**
+     * we calc the phase only one time at the beginning of the search and hold it constant for the whole search.
+     * This saves time and probably is also more constant, since during the search of some ply the phase will
+     * not dramatically change.
+     */
+    private int cachedPhase = -1;
+
+    public int eval(BoardRepresentation board, int common, int opening, int endgame) {
+
+        int phase = cachedPhase >= 0 ? cachedPhase : calcPhase(board);
+        int eval = common + ((opening * (256 - phase)) + (endgame * phase)) / 256;
         return eval;
     }
 }
