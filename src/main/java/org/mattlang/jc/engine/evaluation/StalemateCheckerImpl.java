@@ -3,8 +3,12 @@ package org.mattlang.jc.engine.evaluation;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.StalemateChecker;
 
-public class PattChecker {
+/**
+ * Stalemate checker for nodes where usually no full evaluation function is executed (inner nodes).
+ */
+public class StalemateCheckerImpl implements StalemateChecker {
 
     private BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 

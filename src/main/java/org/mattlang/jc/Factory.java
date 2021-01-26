@@ -36,14 +36,14 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
-                .evaluateFunction.set(() -> new GamePhaseEvaluation())
-                .moveGenerator.set(() -> new MoveGeneratorImpl2())
-                .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
-                .boards.set(() -> new Board2())
+                .evaluateFunction.set(GamePhaseEvaluation::new)
+                .moveGenerator.set(MoveGeneratorImpl2::new)
+                .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
+                .boards.set(Board2::new)
                 .setMaxDepth(15)
                 .setMaxQuiescenceDepth(0)
                 .setTimeout(15000)
-                .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta());
+                .searchMethod.set(IterativeDeepeningNegaMaxAlphaBeta::new);
     }
 
     public static SearchParameter createIterativeDeepeningMtdf() {

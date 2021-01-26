@@ -8,14 +8,8 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.engine.BasicMoveList;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
-import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
-import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
+import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.evaluation.*;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
@@ -48,6 +42,7 @@ public class SearchParameter {
 
     public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, () -> new SimpleBoardStatsGenerator());
 
+    public final Impl<StalemateChecker> stalemateChecker = new Impl<>(this, StalemateCheckerImpl::new);
 
     public SearchParameter setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;

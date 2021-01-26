@@ -1,24 +1,20 @@
 package org.mattlang.jc.engine.search;
 
-import org.mattlang.jc.Factory;
-import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.UCILogger;
-import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.AlphaBetaSearchMethod;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.PattChecker;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.StatisticsCollector;
+import org.mattlang.jc.UCILogger;
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.*;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollector {
 
@@ -29,7 +25,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
-    private PattChecker pattChecker = new PattChecker();
+    private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
 
@@ -94,7 +90,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
         if (depth == 0)
             return quiesce(currBoard, depth-1, color, alpha, beta);
 
-        int pattCheckEval = pattChecker.eval(currBoard, color);
+        int pattCheckEval = stalemateChecker.eval(currBoard, color);
         // patt node:
         if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
             return pattCheckEval;
@@ -148,8 +144,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
 
     private int quiesce(BoardRepresentation currBoard, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
-
-
+        
         int eval = evaluate.eval(currBoard, color);
         // patt node:
         if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
