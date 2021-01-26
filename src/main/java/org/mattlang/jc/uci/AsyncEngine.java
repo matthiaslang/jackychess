@@ -1,5 +1,12 @@
 package org.mattlang.jc.uci;
 
+import static org.mattlang.jc.uci.UciProcessor.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.*;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.UCILogger;
@@ -7,14 +14,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.TaperedEval;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.*;
-
-import static org.mattlang.jc.uci.UciProcessor.*;
+import org.mattlang.jc.engine.evaluation.taperedEval.TaperedEval;
 
 
 public class AsyncEngine {
