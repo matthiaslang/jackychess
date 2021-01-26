@@ -10,5 +10,9 @@ public interface Move {
 
     byte getFigureType();
 
+    int getFromIndex();
+
+    int getToIndex();
+
     String toStr();
 }
