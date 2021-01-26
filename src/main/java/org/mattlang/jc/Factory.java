@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.mattlang.jc.board.Board2;
-import org.mattlang.jc.engine.evaluation.GamePhaseEvaluation;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
+import org.mattlang.jc.engine.evaluation.taperedEval.GamePhaseEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
