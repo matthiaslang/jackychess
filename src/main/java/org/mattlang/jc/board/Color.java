@@ -10,7 +10,7 @@ public enum Color {
         this.code = code;
     }
 
-    public Color invert() {
+    public final Color invert() {
         return this == WHITE ? BLACK : WHITE;
     }
 }
