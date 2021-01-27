@@ -13,10 +13,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.AlphaBetaSearchMethod;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.*;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.ZobristBoardCache;
 
@@ -28,6 +25,8 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
     private EvaluateFunction evaluate;
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
+
+    private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
 
@@ -103,24 +102,17 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         if (depth == 0)
             return quiesce(currBoard, depth-1, color, alpha, beta);
 
-        int eval = evaluate.eval(currBoard, color);
+        int pattCheckEval = stalemateChecker.eval(currBoard, color);
         // patt node:
-        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
-            return eval;
+        if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
+            return pattCheckEval;
         }
         if (repetitionChecker.isRepetition()) {
             // remis due to 3 times same position.
             return -REPETITION_WEIGHT;
         }
 
-        if (stopTime != 0 && nodesVisited % 100000 == 0) {
-            if (System.currentTimeMillis() > stopTime) {
-                throw new TimeoutException();
-            }
-            if (Thread.interrupted()) {
-                throw new TimeoutException();
-            }
-        }
+        checkTimeout();
 
         MoveList moves = generator.generate(currBoard, color);
         if (moves.size() == 0) {
@@ -160,6 +152,17 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         return max;
     }
 
+    private void checkTimeout() {
+        if (stopTime != 0 && nodesVisited % 100000 == 0) {
+            if (System.currentTimeMillis() > stopTime) {
+                throw new TimeoutException();
+            }
+            if (Thread.interrupted()) {
+                throw new TimeoutException();
+            }
+        }
+    }
+
     private ZobristBoardCache<TTEntry> ttCache = new ZobristBoardCache<>((board, side) -> null);
 
     private TTEntry getTTEntry(BoardRepresentation currBoard, Color side) {
@@ -189,14 +192,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             return -REPETITION_WEIGHT;
         }
 
-        if (stopTime != 0 && nodesVisited % 100000 == 0) {
-            if (System.currentTimeMillis() > stopTime) {
-                throw new TimeoutException();
-            }
-            if (Thread.interrupted()) {
-                throw new TimeoutException();
-            }
-        }
+        checkTimeout();
 
         /* are we too deep? */
         if (depth< -maxQuiescenceDepth) {
@@ -292,7 +288,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
 
         UCILogger.info(depth, nodesVisited, result.max);
-        UCILogger.log("depth:\t %d\t nodes:\t %d\t searched:\t %d\t quiescence:\t %d\t alpha beta cutoff:\t %d\t score:\t %d",
+        UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
                 depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }
