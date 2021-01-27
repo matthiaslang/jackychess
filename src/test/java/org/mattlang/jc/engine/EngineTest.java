@@ -18,8 +18,9 @@ import org.mattlang.jc.uci.UCI;
 public class EngineTest {
 
     @Test
-    public void testNegMaxAlpaBeta() {
-
+    public void testNegMaxAlpaBeta() throws IOException {
+        initLogging();
+        UCI.instance.attachStreams();
         // now starting engine:
         Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEval()), 6);
         engine.getBoard().setStartPosition();

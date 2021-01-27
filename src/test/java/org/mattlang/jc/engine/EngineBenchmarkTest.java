@@ -10,7 +10,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl4;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.uci.UCI;
 
 public class EngineBenchmarkTest {
@@ -40,7 +40,8 @@ public class EngineBenchmarkTest {
                 () ->{
                     Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
                             .setTimeout(600000)
-                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
+                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
+//                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
 
                             .setMaxDepth(7));
                     // now starting engine:
