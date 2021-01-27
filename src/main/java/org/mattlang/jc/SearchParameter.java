@@ -10,11 +10,8 @@ import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.*;
-import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.movegenerator.*;
 
 public class SearchParameter {
 
@@ -28,21 +25,23 @@ public class SearchParameter {
 
     private int maxQuiescenceDepth = 5;
 
-    public final Impl<MoveList> moveList = new Impl<>(this, () -> new BasicMoveList());
+    public final Impl<MoveList> moveList = new Impl<>(this, BasicMoveList::new);
 
-    public final Impl<BoardRepresentation> boards = new Impl<>(this, () -> new Board2());
+    public final Impl<BoardRepresentation> boards = new Impl<>(this, Board2::new);
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new MaterialNegaMaxEval()));
 
-    public final Impl<SearchMethod> searchMethod = new Impl<>(this, () -> new IterativeDeepeningMtdf());
+    public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningNegaMaxAlphaBeta::new);
 
-    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, () -> new LegalMoveGeneratorImpl3());
+    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, LegalMoveGeneratorImpl3::new);
 
-    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, () -> new MoveGeneratorImpl2());
+    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, MoveGeneratorImpl2::new);
 
-    public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, () -> new SimpleBoardStatsGenerator());
+    public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, SimpleBoardStatsGenerator::new);
 
     public final Impl<StalemateChecker> stalemateChecker = new Impl<>(this, StalemateCheckerImpl::new);
+
+    public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
 
     public SearchParameter setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;

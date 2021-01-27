@@ -3,7 +3,7 @@ package org.mattlang.jc.movegenerator;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.PieceList;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 
@@ -11,7 +11,7 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
     MoveGenerator generator = Factory.getDefaults().moveGenerator.instance();
 
-    MoveGeneratorImpl2 moveGeneratorImpl2 = new MoveGeneratorImpl2();
+    CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
     @Override
     public MoveList generate(BoardRepresentation board, Color side) {
@@ -29,7 +29,7 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            if (!isInChess(currBoard, side)) {
+            if (!checkChecker.isInChess(currBoard, side)) {
                 legals.addMove(moveCursor);
             }
             moveCursor.undoMove(currBoard);
@@ -37,14 +37,4 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
         return legals;
     }
 
-    /**
-     * Is the other colors king in check?
-     * @param otherColor
-     * @return
-     */
-    private boolean isInChess(BoardRepresentation board, Color otherColor) {
-        PieceList otherPieces = otherColor == Color.WHITE ? board.getWhitePieces() : board.getBlackPieces();
-        int kingPos = otherPieces.getKing();
-        return moveGeneratorImpl2.canFigureCaptured(board, kingPos);
-    }
 }
