@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.search;
 
 public class TTEntry {
 
-    public static enum TTType{
+    public enum TTType{
         EXACT_VALUE, LOWERBOUND, UPPERBOUND
     }
 

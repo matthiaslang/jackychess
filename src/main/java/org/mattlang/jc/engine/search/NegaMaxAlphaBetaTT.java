@@ -15,7 +15,6 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
-import org.mattlang.jc.movegenerator.ZobristBoardCache;
 
 public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsCollector {
 
@@ -29,6 +28,8 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
     private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
+
+    private TTCache ttCache = new TTCache();
 
     private long stopTime = 0;
 
@@ -86,7 +87,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
                              int alpha, int beta) {
         nodesVisited++;
 
-        TTEntry tte = getTTEntry(currBoard, color);
+        TTEntry tte = ttCache.getTTEntry(currBoard, color);
         if(tte != null && tte.depth >= depth)
         {
             if(tte.type == EXACT_VALUE) // stored value is exact
@@ -140,14 +141,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             }
 
         }
-        if(max <= alpha) // a lowerbound value
-            storeTTEntry(currBoard, color, max, LOWERBOUND, depth);
-        else if(max >= beta) // an upperbound value
-            storeTTEntry(currBoard, color, max, UPPERBOUND, depth);
-        else // a true minimax value
-            storeTTEntry(currBoard, color, max, EXACT_VALUE, depth);
-        //return best;
-
+        ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
 
         return max;
     }
@@ -160,21 +154,6 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             if (Thread.interrupted()) {
                 throw new TimeoutException();
             }
-        }
-    }
-
-    private ZobristBoardCache<TTEntry> ttCache = new ZobristBoardCache<>((board, side) -> null);
-
-    private TTEntry getTTEntry(BoardRepresentation currBoard, Color side) {
-        return ttCache.get(currBoard, side);
-    }
-
-
-    private void storeTTEntry(BoardRepresentation board, Color side, int eval, TTEntry.TTType tpe, int depth) {
-       // only store entries with lower depth:
-        TTEntry existing = ttCache.get(board, side);
-        if (existing == null || existing.depth> depth) {
-            ttCache.put(board, side, new TTEntry(eval, tpe, depth));
         }
     }
 
@@ -196,13 +175,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
         /* are we too deep? */
         if (depth< -maxQuiescenceDepth) {
-            if(eval <= alpha) // a lowerbound value
-                storeTTEntry(currBoard, color, eval, LOWERBOUND, depth);
-            else if(eval >= beta) // an upperbound value
-                storeTTEntry(currBoard, color, eval, UPPERBOUND, depth);
-            else // a true minimax value
-                storeTTEntry(currBoard, color, eval, EXACT_VALUE, depth);
-
+            ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
             return eval;
         }
 
@@ -238,13 +211,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
             }
         }
-        if(x <= alpha) // a lowerbound value
-            storeTTEntry(currBoard, color, x, LOWERBOUND, depth);
-        else if(x >= beta) // an upperbound value
-            storeTTEntry(currBoard, color, x, UPPERBOUND, depth);
-        else // a true minimax value
-            storeTTEntry(currBoard, color, x, EXACT_VALUE, depth);
-        //return best;
+        ttCache.storeTTEntry(currBoard, color, x, alpha, beta, depth);
 
         return alpha;
     }
