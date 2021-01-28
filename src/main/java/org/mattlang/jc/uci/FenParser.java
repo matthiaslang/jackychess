@@ -37,6 +37,8 @@ public class FenParser {
             who2Move = setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
 
             movesSection = 8;
+        } else {
+            throw new IllegalArgumentException("fen position wrong: no 'position startpos' nor 'position fen' found!");
         }
         repetitionChecker.push(board);
         if (splitted.length > movesSection) {
