@@ -223,7 +223,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
             }
 
         }
-        return new NegaMaxResult(max, moveScores);
+        return new NegaMaxResult(max, moveScores, new PVList());
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
@@ -238,6 +238,14 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
                 depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }
+
+
+    public NegaMaxResult searchWithScore(GameState gameState, int depth,
+            int alpha, int beta, MoveList moves, long stopTime, PVList prevPvList) {
+       // todo support pvlist
+       return searchWithScore(gameState, depth, alpha, beta, moves, stopTime);
+    }
+
 
     public Move getSavedMove() {
         return savedMove;

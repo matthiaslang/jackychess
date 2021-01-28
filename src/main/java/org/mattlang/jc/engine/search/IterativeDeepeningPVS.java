@@ -22,20 +22,20 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.uci.UCI;
 
-public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, StatisticsCollector {
+public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
 
 
-    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBeta();
+    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
     private int maxDepth;
 
     private long timeout = Factory.getDefaults().getTimeout();
 
-    public IterativeDeepeningNegaMaxAlphaBeta(AlphaBetaSearchMethod negaMaxAlphaBeta) {
+    public IterativeDeepeningPVS(AlphaBetaSearchMethod negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
     }
 
-    public IterativeDeepeningNegaMaxAlphaBeta() {
+    public IterativeDeepeningPVS() {
     }
 
     @Override
@@ -56,6 +56,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, Statist
         // write a kind of UCI "header" for our stats:
         UCILogger.log(" Depth\t nodes/visited \t quiescence\t alpha beta cutoff\t score");
 
+        PVList pvList = new PVList();
         MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {
             for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
@@ -65,7 +66,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, Statist
                 NegaMaxResult rslt =
                         negaMaxAlphaBeta.searchWithScore(gameState, currdepth,
                                 ALPHA_START, BETA_START, moves,
-                                stopTime);
+                                stopTime, pvList);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
 
@@ -73,9 +74,11 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, Statist
                     long nodes = negaMaxAlphaBeta.getNodesVisited();
                     long duration = watch.getCurrDuration();
                     long nps = duration == 0? nodes : nodes  * 1000 / duration;
-                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes + " nps " + nps);
+                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes
+                            + " nps " + nps + " pv " + rslt.pvList.toPvStr());
                     UCI.instance.putCommand("info currmove " + savedMove.toStr());
                 }
+                pvList = rslt.pvList;
                 moves = reOrderMoves(rslt.moveScores);
 
                 Map statOfDepth = new LinkedHashMap();

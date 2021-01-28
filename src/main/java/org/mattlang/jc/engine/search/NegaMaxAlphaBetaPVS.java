@@ -1,11 +1,11 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
-public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsCollector {
+public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
@@ -42,16 +42,20 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
     private int savedMoveScore;
 
     private int targetDepth;
+    private PVList prevPvlist;
+
     private int cutOff;
+
+    private boolean doPVSSearch = false;
+    private boolean doCaching = false;
 
     private RepetitionChecker repetitionChecker;
 
-
-    public NegaMaxAlphaBetaTT() {
+    public NegaMaxAlphaBetaPVS() {
         reset();
     }
 
-    public NegaMaxAlphaBetaTT(EvaluateFunction evaluate) {
+    public NegaMaxAlphaBetaPVS(EvaluateFunction evaluate) {
         reset();
         this.evaluate = evaluate;
     }
@@ -84,24 +88,29 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
     }
 
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
-                             int alpha, int beta) {
+                             int alpha, int beta, PVList pvList) {
         nodesVisited++;
 
-        TTEntry tte = ttCache.getTTEntry(currBoard, color);
-        if(tte != null && tte.depth >= depth)
-        {
-            if(tte.type == EXACT_VALUE) // stored value is exact
-                return tte.value;
-            if(tte.type == LOWERBOUND && tte.value > alpha)
-                alpha = tte.value; // update lowerbound alpha if needed
-            else if(tte.type == UPPERBOUND && tte.value < beta)
-                beta = tte.value; // update upperbound beta if needed
-            if(alpha >= beta)
-                return tte.value; // if lowerbound surpasses upperbound
+        PVList myPvlist = new PVList();
+
+        if (doCaching) {
+            TTEntry tte = ttCache.getTTEntry(currBoard, color);
+            if (tte != null && tte.depth <= depth) {
+                if (tte.type == EXACT_VALUE) // stored value is exact
+                    return tte.value;
+                if (tte.type == LOWERBOUND && tte.value > alpha)
+                    alpha = tte.value; // update lowerbound alpha if needed
+                else if (tte.type == UPPERBOUND && tte.value < beta)
+                    beta = tte.value; // update upperbound beta if needed
+                if (alpha >= beta)
+                    return tte.value; // if lowerbound surpasses upperbound
+            }
         }
 
-        if (depth == 0)
-            return quiesce(currBoard, depth-1, color, alpha, beta);
+        if (depth == 0) {
+            pvList.clear();
+            return quiesce(currBoard, depth - 1, color, alpha, beta);
+        }
 
         int pattCheckEval = stalemateChecker.eval(currBoard, color);
         // patt node:
@@ -120,16 +129,35 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }
+        moves.sortMoves(createMoveComparator(currBoard, depth, color));
+
         nodes += moves.size();
         int max = alpha;
+        boolean firstChild = true;
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             repetitionChecker.push(currBoard);
-            int score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max);
+
+            int score;
+            if (firstChild) {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                if (doPVSSearch) {
+                    firstChild = false;
+                }
+            } else {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -alpha-1, -alpha, myPvlist);
+                if (alpha < score && score < beta) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                }
+            }
+
             moveCursor.undoMove(currBoard);
             repetitionChecker.pop();
             if (score > max) {
                 max = score;
+
+                pvList.set(moveCursor.getMove());
+                pvList.add(myPvlist);
                 if (depth == targetDepth) {
                     savedMove = moveCursor.getMove();
                     savedMoveScore = score;
@@ -141,8 +169,9 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             }
 
         }
-        ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
-
+        if (doCaching) {
+            ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
+        }
         return max;
     }
 
@@ -224,15 +253,37 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
         nodes += moves.size();
         int max = alpha;
+        boolean firstChild = true;
+
+        moves.sortMoves(createMoveComparator(currBoard, depth, color));
+        PVList pvList = new PVList();
+
+        PVList myPvlist = new PVList();
+
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             repetitionChecker.push(currBoard);
-            int score = -negaMaximize(currBoard, depth - 1, color == WHITE ? BLACK : WHITE, -beta, -max);
+
+            int score;
+            if (firstChild) {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                if (doPVSSearch) {
+                    firstChild = false;
+                }
+            } else {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -alpha-1, -alpha, myPvlist);
+                if (alpha < score && score < beta) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                }
+            }
+
             moveScores.add(new MoveScore(moveCursor.getMove(), score));
             moveCursor.undoMove(currBoard);
             repetitionChecker.pop();
             if (score > max) {
                 max = score;
+                pvList.set(moveCursor.getMove());
+                pvList.add(myPvlist);
                 if (depth == targetDepth) {
                     savedMove = moveCursor.getMove();
                     savedMoveScore = score;
@@ -244,12 +295,67 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             }
 
         }
-        return new NegaMaxResult(max, moveScores, new PVList());
+        return new NegaMaxResult(max, moveScores, pvList);
+    }
+
+    private Comparator<Move> createMoveComparator(final BoardRepresentation currBoard, final int depth, final Color color) {
+
+        int index = targetDepth - depth;
+        Move pvMove = prevPvlist.get(index);
+
+        return new Comparator<Move>() {
+
+            @Override
+            public int compare(Move o1, Move o2) {
+                if (o1.getOrder() == 0){
+                    o1.setOrder(fullCalcCmpVal(o1));
+                }
+                if (o2.getOrder() == 0){
+                    o2.setOrder(fullCalcCmpVal(o2));
+                }
+
+                return o1.getOrder() - o2.getOrder();
+            }
+
+            private int fullCalcCmpVal(Move m) {
+                int cmp = 0;
+                if (pvMove != null) {
+                    if (pvMove.toStr().equals(m.toStr())) {
+                        return -1000000;
+                    }
+                }
+
+                if (cmp != 0) {
+                    return cmp;
+                }
+                return simpleCmpVal(m);
+            }
+
+            private int simpleCmpVal(Move m) {
+                if (m.getCapturedFigure() != 0 && m.getCapturedFigure() != FigureConstants.FT_EMPTY) {
+                    byte captFigureType = (byte) (m.getCapturedFigure() & MASK_OUT_COLOR);
+                    byte figureType = m.getFigureType();
+                    if (figureType > captFigureType) {
+                        return -5;
+                    }
+                    if (captFigureType > figureType) {
+                        return -10;
+                    }
+                    return -7;
+                }
+                if (m.getFigureType() == FigureConstants.FT_PAWN) {
+                    return -3;
+                }
+                return  0;
+            }
+
+        };
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
-                                         int alpha, int beta, MoveList moves, long stopTime) {
+                                         int alpha, int beta, MoveList moves, long stopTime, PVList prevPvlist) {
         targetDepth = depth;
+        this.prevPvlist = prevPvlist;
         this.stopTime = stopTime;
         repetitionChecker= gameState.getRepetitionChecker();
         NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
@@ -260,19 +366,18 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         return result;
     }
 
-    @Override
-    public NegaMaxResult searchWithScore(GameState gameState, int depth,
-            int alpha, int beta, MoveList moves, long stopTime, PVList prevPvList) {
-        // todo support pvlist
-        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime);
-    }
-
     public Move getSavedMove() {
         return savedMove;
     }
 
     public MoveList generateMoves(BoardRepresentation currBoard, Color color) {
         return generator.generate(currBoard, color);
+    }
+
+    @Override
+    public NegaMaxResult searchWithScore(GameState gameState, int depth,
+            int alpha, int beta, MoveList moves, long stopTime) {
+        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime, new PVList());
     }
 
     public int getNodesVisited() {
