@@ -17,7 +17,7 @@ public class TTCache {
     public final void storeTTEntry(BoardRepresentation board, Color side, int eval, TTEntry.TTType tpe, int depth) {
         // only store entries with lower depth:
         TTEntry existing = ttCache.get(board, side);
-        if (existing == null || existing.depth> depth) {
+        if (existing == null || existing.depth > depth) {
             ttCache.put(board, side, new TTEntry(eval, tpe, depth));
         }
     }
