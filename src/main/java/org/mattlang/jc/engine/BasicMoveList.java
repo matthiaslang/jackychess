@@ -1,16 +1,16 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.board.*;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import org.mattlang.jc.board.*;
 
 public class BasicMoveList implements MoveList {
 
@@ -84,6 +84,11 @@ public class BasicMoveList implements MoveList {
     @Override
     public void sortByCapture() {
         moves.sort(CMP);
+    }
+
+    @Override
+    public void sortMoves(Comparator<Move> moveComparator) {
+        moves.sort(moveComparator);
     }
 
     private static final Comparator<Move> CMP = new Comparator<Move>() {

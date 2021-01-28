@@ -15,4 +15,8 @@ public interface Move {
     int getToIndex();
 
     String toStr();
+
+    void setOrder(int order);
+
+    int getOrder();
 }
