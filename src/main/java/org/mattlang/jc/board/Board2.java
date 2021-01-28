@@ -41,6 +41,9 @@ public class Board2 implements BoardRepresentation {
 
 
     public Board2() {
+        for(int i=0; i<64; i++) {
+            board[i] = FT_EMPTY;
+        }
     }
 
     public Board2(byte[] board, CastlingRights castlingRights,

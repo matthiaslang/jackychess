@@ -1,11 +1,5 @@
 package org.mattlang.jc.board;
 
-import org.mattlang.jc.uci.FenParser;
-import org.mattlang.jc.zobrist.Zobrist;
-
-import java.util.Arrays;
-import java.util.Objects;
-
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.Color.BLACK;
@@ -13,6 +7,12 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+import org.mattlang.jc.uci.FenParser;
+import org.mattlang.jc.zobrist.Zobrist;
 
 /**
  * Represents a board with figures.
@@ -45,6 +45,9 @@ public class Board3 implements BoardRepresentation {
     private long zobristHash=0L;
 
     public Board3() {
+        for(int i=0; i<64; i++) {
+            board[i] = FT_EMPTY;
+        }
     }
 
     public Board3(byte[] board, CastlingRights castlingRights,
