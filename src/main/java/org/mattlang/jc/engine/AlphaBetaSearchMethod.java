@@ -16,6 +16,8 @@ public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector
 
     int getNodesVisited();
 
+    int getNodes();
+
     MoveList generateMoves(BoardRepresentation currBoard, Color color);
 
     NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime);
