@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
@@ -360,9 +359,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         repetitionChecker= gameState.getRepetitionChecker();
         NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
 
-        UCILogger.info(depth, nodesVisited, result.max);
-        UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
-                depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
+        //UCILogger.info(depth, nodesVisited, result.max);
+       // UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
+       //         depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }
 
@@ -413,5 +412,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             rslts.put("savedMove", savedMove);
             rslts.put("savedMoveScore", savedMoveScore);
         }
+    }
+
+    public boolean isDoPVSSearch() {
+        return doPVSSearch;
+    }
+
+    public NegaMaxAlphaBetaPVS setDoPVSSearch(boolean doPVSSearch) {
+        this.doPVSSearch = doPVSSearch;
+        return this;
+    }
+
+    public boolean isDoCaching() {
+        return doCaching;
+    }
+
+    public NegaMaxAlphaBetaPVS setDoCaching(boolean doCaching) {
+        this.doCaching = doCaching;
+        return this;
     }
 }
