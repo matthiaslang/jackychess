@@ -35,7 +35,7 @@ public class AsyncEngine {
     }
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options) {
-        SearchParameter searchParams = Factory.createDefaultParameter();
+        SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
         searchParams.setConfig(options);
 
         // if we have special "go" parameters, then override thinktime:
@@ -50,6 +50,10 @@ public class AsyncEngine {
             restMoves = goParams.movestogo;
             if (restMoves != 0 && restTime > 0) {
                 long averageTimeForThisMove = restTime / restMoves;
+                // subtract a bit to not overceed the time:
+                if (averageTimeForThisMove>1000) {
+                    averageTimeForThisMove-=500;
+                }
                 searchParams.getConfig().timeout.setValue((int)averageTimeForThisMove);
             }
             if (goParams.movetime > 0) {

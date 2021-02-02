@@ -3,10 +3,7 @@ package org.mattlang.jc;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.mattlang.jc.uci.UCICheckOption;
-import org.mattlang.jc.uci.UCIOption;
-import org.mattlang.jc.uci.UCISpinOption;
-import org.mattlang.jc.uci.UCITimeoutOption;
+import org.mattlang.jc.uci.*;
 
 public class ConfigValues {
 
@@ -18,6 +15,8 @@ public class ConfigValues {
 
     public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, "activatePvsSearch", false);
     public final UCICheckOption useTTCache = new UCICheckOption(allOptions, "useTTCache", false);
+
+    public final UCIComboOption<SearchAlgorithms> searchAlgorithm = new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.ALPHA_BETA);
 
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;

@@ -45,8 +45,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private int cutOff;
 
-    private boolean doPVSSearch = false;
-    private boolean doCaching = false;
+    private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
+    private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 
     private RepetitionChecker repetitionChecker;
 
