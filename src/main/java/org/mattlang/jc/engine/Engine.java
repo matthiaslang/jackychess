@@ -9,7 +9,7 @@ public class Engine {
 
     private SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
 
-    private int depth = Factory.getDefaults().getMaxDepth();
+    private int depth = Factory.getDefaults().getConfig().maxDepth.getValue();
 
     public Engine(BoardRepresentation board) {
         this.board = board;

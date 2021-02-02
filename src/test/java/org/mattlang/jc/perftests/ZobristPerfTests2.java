@@ -42,8 +42,8 @@ public class ZobristPerfTests2 {
                 "iterative deepening alpha beta",
                 () -> {
                     Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                            .setTimeout(60000)
-                            .setMaxDepth(7)
+                            .config(c->c.timeout.setValue(60000))
+                            .config(c->c.maxDepth.setValue(7))
                             .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))
                             .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
                     );
@@ -60,8 +60,8 @@ public class ZobristPerfTests2 {
                 "iterative deepening alpha beta TT with zobrist",
                 () -> {
                     Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                                    .setTimeout(60000)
-                                    .setMaxDepth(7)
+                                    .config(c->c.timeout.setValue(60000))
+                                    .config(c->c.maxDepth.setValue(7))
                                     .boards.set(() -> new Board3())
                                     .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(new NegaMaxAlphaBetaTT()))
                             .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(), new MaterialNegaMaxEvalOpt()))

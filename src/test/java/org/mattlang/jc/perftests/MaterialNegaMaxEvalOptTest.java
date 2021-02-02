@@ -85,8 +85,8 @@ public class MaterialNegaMaxEvalOptTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-        .setMaxDepth(6)
-        .setTimeout(200000));
+                .config(c -> c.maxDepth.setValue(6))
+                .config(c -> c.timeout.setValue(200000)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -106,8 +106,8 @@ public class MaterialNegaMaxEvalOptTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-        .setTimeout(200000)
-        .setMaxDepth(6)
+                .config(c -> c.maxDepth.setValue(6))
+                .config(c -> c.timeout.setValue(200000))
         .evaluateFunction.set(() -> new MaterialNegaMaxEvalOpt()));
         // now starting engine:
         Engine engine = new Engine();

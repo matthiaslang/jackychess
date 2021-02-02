@@ -29,7 +29,7 @@ public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, Statist
 
     private int maxDepth;
 
-    private long timeout = Factory.getDefaults().getTimeout();
+    private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
     public IterativeDeepeningNegaMaxAlphaBeta(AlphaBetaSearchMethod negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;

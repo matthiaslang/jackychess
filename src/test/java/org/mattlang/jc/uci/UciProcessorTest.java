@@ -1,8 +1,8 @@
 package org.mattlang.jc.uci;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 public class UciProcessorTest {
 
@@ -10,7 +10,7 @@ public class UciProcessorTest {
     public void optionsParsing() {
         UciProcessor ucip = new UciProcessor();
         ucip.parseOption("setoption name thinktime value 16");
-        assertThat(ucip.getOptions()).containsEntry("thinktime", 16L);
+        assertThat(ucip.getConfigValues().timeout.getValue()).isEqualTo( 16);
     }
 
     @Test

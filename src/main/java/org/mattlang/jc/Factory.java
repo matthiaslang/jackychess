@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
-import org.mattlang.jc.engine.evaluation.taperedEval.GamePhaseEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
@@ -36,14 +35,16 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
-                .evaluateFunction.set(GamePhaseEvaluation::new)
+                .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
                 .moveGenerator.set(MoveGeneratorImpl2::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
-                .boards.set(Board2::new)
-                .setMaxDepth(15)
-                .setMaxQuiescenceDepth(0)
-                .setTimeout(15000)
-                .searchMethod.set(IterativeDeepeningNegaMaxAlphaBeta::new);
+                .boards.set(Board3::new)
+                .searchMethod.set(IterativeDeepeningPVS::new)
+                .config(c -> {
+                    c.maxDepth.setValue(15);
+                    c.maxQuiescence.setValue(2);
+                    c.timeout.setValue(15000);
+                });
     }
 
     public static SearchParameter createIterativeDeepeningMtdf() {
@@ -51,10 +52,13 @@ public class Factory {
                 .evaluateFunction.set(() -> new MaterialNegaMaxEvalOpt())
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
-                .setMaxDepth(6)
-                .setMaxQuiescenceDepth(0)
-                .setTimeout(15000)
-                .searchMethod.set(() -> new IterativeDeepeningMtdf());
+                .searchMethod.set(() -> new IterativeDeepeningMtdf())
+                .config(c -> {
+                    c.maxDepth.setValue(6);
+                    c.maxQuiescence.setValue(0);
+                    c.timeout.setValue(15000);
+                })
+                ;
     }
 
     public static SearchParameter createDefaultParameter() {

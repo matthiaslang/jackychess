@@ -1,5 +1,9 @@
 package org.mattlang.jc.chessTests;
 
+import static org.mattlang.jc.Main.initLogging;
+
+import java.io.IOException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -8,10 +12,6 @@ import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.UCI;
-
-import java.io.IOException;
-
-import static org.mattlang.jc.Main.initLogging;
 
 /**
  * Eigenmann Rapid Engine Tests Suite.
@@ -166,7 +166,7 @@ public class EigenmannRapidEngineChessIT {
     public void testWithDefaultConfig() {
         // create engine
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-        .setTimeout(5000));
+                .config(c -> c.timeout.setValue(5000)));
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }

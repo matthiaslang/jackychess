@@ -29,7 +29,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
     private int maxDepth;
 
-    private long timeout = Factory.getDefaults().getTimeout();
+    private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
     public IterativeDeepeningPVS(AlphaBetaSearchMethod negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;

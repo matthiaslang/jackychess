@@ -1,5 +1,10 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
+
+import java.util.logging.Logger;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -8,11 +13,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.uci.UCI;
-
-import java.util.logging.Logger;
-
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 
 /**
  * mtf implementation.
@@ -27,7 +27,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
     private int maxDepth ;
 
-    private long timeout = Factory.getDefaults().getTimeout();
+    private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
     @Override
     public Move search(GameState gameState, int depth) {

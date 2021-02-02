@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.board.Board2;
@@ -12,6 +13,7 @@ import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.*;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.uci.UCIOption;
 
 public class SearchParameter {
 
@@ -19,11 +21,7 @@ public class SearchParameter {
 
     private List<Impl> impls = new ArrayList<>();
 
-    private int maxDepth;
-
-    private long timeout;
-
-    private int maxQuiescenceDepth = 5;
+    private ConfigValues config = new ConfigValues();
 
     public final Impl<MoveList> moveList = new Impl<>(this, BasicMoveList::new);
 
@@ -43,45 +41,22 @@ public class SearchParameter {
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
 
-    public SearchParameter setMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
-        return this;
-    }
 
-    public SearchParameter setTimeout(long timeout) {
-        this.timeout = timeout;
-        return this;
-    }
 
-    public SearchParameter setMaxQuiescenceDepth(int maxQuiescenceDepth) {
-        this.maxQuiescenceDepth = maxQuiescenceDepth;
-        return this;
-    }
 
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public int getMaxQuiescenceDepth() {
-        return maxQuiescenceDepth;
-    }
 
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         UCILogger.log("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        UCILogger.log("Max Depth: " + getMaxDepth());
-        UCILogger.log("Max Quiescence Depth: " + getMaxQuiescenceDepth());
-        UCILogger.log("Timeout ms: " + getTimeout());
+        for (UCIOption option : config.getAllOptions().values()) {
+            UCILogger.log(option.getName() + ": " + option.getValue());
+        }
 
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        LOGGER.info("Max Depth: " + getMaxDepth());
-        LOGGER.info("Timeout ms: " + getTimeout());
-        LOGGER.info("Max Quiescence Depth: " + getMaxQuiescenceDepth());
+        for (UCIOption option : config.getAllOptions().values()) {
+            LOGGER.info(option.getName() + ": " + option.getValue());
+        }
 
     }
 
@@ -120,5 +95,19 @@ public class SearchParameter {
         if (b.length() > 0) {
             System.out.println(prefix + ": " + b.toString());
         }
+    }
+
+    public ConfigValues getConfig() {
+        return config;
+    }
+
+    public SearchParameter config(Consumer<ConfigValues> cfgChange) {
+        cfgChange.accept(config);
+        return this;
+    }
+
+    public SearchParameter setConfig(ConfigValues config) {
+        this.config = config;
+        return this;
     }
 }

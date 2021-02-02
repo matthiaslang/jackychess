@@ -27,7 +27,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
 
     private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
 
-    private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
+    private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
     private TTCache ttCache = new TTCache();
 

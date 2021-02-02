@@ -1,5 +1,10 @@
 package org.mattlang.jc.problemanalyzing;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Main.initLogging;
+
+import java.io.IOException;
+
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
@@ -9,11 +14,6 @@ import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.uci.UCI;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
 
 public class PattChosenTest {
 
@@ -33,7 +33,7 @@ public class PattChosenTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
-        .setMaxDepth(2));
+        .config(c->c.maxDepth.setValue(2)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");

@@ -38,8 +38,8 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-        .setTimeout(60000)
-        .setMaxDepth(7));
+        .config(c->c.timeout.setValue(60000))
+        .config(c->c.maxDepth.setValue(7)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -59,8 +59,8 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                .setTimeout(60000)
-                .setMaxDepth(7)
+                        .config(c->c.timeout.setValue(60000))
+                        .config(c->c.maxDepth.setValue(7))
         .boards.set(() -> new Board3())
                 .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(new NegaMaxAlphaBetaTT()))
                 //.evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))

@@ -1,12 +1,9 @@
 package org.mattlang.jc.uci;
 
-import static org.mattlang.jc.uci.UciProcessor.*;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
 
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.UCILogger;
@@ -34,20 +31,12 @@ public class AsyncEngine {
     public CompletableFuture<Move> start(final GameState gameState) {
         GoParameter goParams = new GoParameter();
         goParams.infinite = true;
-        return start(gameState, goParams, new HashMap<>());
+        return start(gameState, goParams, new ConfigValues());
     }
 
-    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, Map<String, Long> options) {
+    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options) {
         SearchParameter searchParams = Factory.createDefaultParameter();
-        if (options.containsKey(OP_MAXDEPTH)) {
-            searchParams.setMaxDepth(options.get(OP_MAXDEPTH).intValue());
-        }
-        if (options.containsKey(OP_THINKTIME)) {
-            searchParams.setTimeout(options.get(OP_THINKTIME) * 1000);
-        }
-        if (options.containsKey(OP_QUIESCENCE)) {
-            searchParams.setMaxQuiescenceDepth(options.get(OP_QUIESCENCE).intValue());
-        }
+        searchParams.setConfig(options);
 
         // if we have special "go" parameters, then override thinktime:
         if (!goParams.infinite) {
@@ -61,10 +50,10 @@ public class AsyncEngine {
             restMoves = goParams.movestogo;
             if (restMoves != 0 && restTime > 0) {
                 long averageTimeForThisMove = restTime / restMoves;
-                searchParams.setTimeout(averageTimeForThisMove);
+                searchParams.getConfig().timeout.setValue((int)averageTimeForThisMove);
             }
             if (goParams.movetime > 0) {
-                searchParams.setTimeout(goParams.movetime);
+                searchParams.getConfig().timeout.setValue((int)goParams.movetime);
             }
 
         }

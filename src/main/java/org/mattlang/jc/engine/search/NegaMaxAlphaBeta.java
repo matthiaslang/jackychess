@@ -26,7 +26,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
 
     private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
 
-    private int maxQuiescenceDepth = Factory.getDefaults().getMaxQuiescenceDepth();
+    private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
     private long stopTime = 0;
 
