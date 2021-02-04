@@ -293,7 +293,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
         }
-        return new NegaMaxResult(max, moveScores, pvList);
+        return new NegaMaxResult(max, moveScores, pvList, targetDepth);
     }
 
     private Comparator<Move> createMoveComparator(final BoardRepresentation currBoard, final int depth, final Color color) {

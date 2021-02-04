@@ -16,6 +16,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
@@ -70,12 +71,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
 
                 if (savedMove != null) {
-                    long nodes = negaMaxAlphaBeta.getNodesVisited();
-                    long duration = watch.getCurrDuration();
-                    long nps = duration == 0? nodes : nodes  * 1000 / duration;
-                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes
-                            + " nps " + nps + " pv " + rslt.pvList.toPvStr());
-                    UCI.instance.putCommand("info currmove " + savedMove.toStr());
+                    printRoundInfo(rslt, watch, negaMaxAlphaBeta);
                 }
                 pvList = rslt.pvList;
                 moves = reOrderMoves(rslt.moveScores);
@@ -97,6 +93,19 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         }
 
         return savedMove;
+    }
+
+    public static void printRoundInfo(
+            NegaMaxResult rslt,
+            StopWatch watch,
+            AlphaBetaSearchMethod negaMaxAlphaBeta )
+    {
+        long nodes = negaMaxAlphaBeta.getNodesVisited();
+        long duration = watch.getCurrDuration();
+        long nps = duration == 0? nodes : nodes  * 1000 / duration;
+        UCI.instance.putCommand("info depth " + rslt.targetDepth + " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes
+                + " nps " + nps + " pv " + rslt.pvList.toPvStr());
+        UCI.instance.putCommand("info currmove " + negaMaxAlphaBeta.getSavedMove().toStr());
     }
 
     public static MoveList reOrderMoves(List<MoveScore> rslt) {

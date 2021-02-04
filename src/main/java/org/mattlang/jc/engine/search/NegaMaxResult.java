@@ -8,9 +8,13 @@ public class NegaMaxResult {
 
     public final PVList pvList;
 
-    public NegaMaxResult(int max, List<MoveScore> moveScores, PVList pvList) {
+    public final int targetDepth;
+
+    public NegaMaxResult(int max, List<MoveScore> moveScores, PVList pvList, int targetDepth) {
         this.max = max;
         this.moveScores = moveScores;
         this.pvList = pvList;
+        this.targetDepth=targetDepth;
+
     }
 }

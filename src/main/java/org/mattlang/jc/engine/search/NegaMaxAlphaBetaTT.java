@@ -249,7 +249,7 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
             }
 
         }
-        return new NegaMaxResult(max, moveScores, new PVList());
+        return new NegaMaxResult(max, moveScores, new PVList(), targetDepth);
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,

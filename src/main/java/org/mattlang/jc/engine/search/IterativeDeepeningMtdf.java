@@ -6,6 +6,7 @@ import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -23,7 +24,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
 
     Logger logger = Logger.getLogger("MTDF");
 
-    private NegaMaxAlphaBeta negaMaxAlphaBeta = new NegaMaxAlphaBeta();
+    private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
     private int maxDepth ;
 
@@ -32,11 +33,14 @@ public class IterativeDeepeningMtdf implements SearchMethod {
     @Override
     public Move search(GameState gameState, int depth) {
         negaMaxAlphaBeta.reset();
+        negaMaxAlphaBeta.setDoCaching(true);
         this.maxDepth = depth;
         int currdepth = 1;
         Move savedMove = null;
 
         long stopTime = System.currentTimeMillis() + timeout;
+        StopWatch watch = new StopWatch();
+        watch.start();
 
         BoardRepresentation currBoard = gameState.getBoard();
         Color color = gameState.getWho2Move();
@@ -52,11 +56,11 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 firstguess = rslt.max;
 
                 if (savedMove != null) {
-                    UCI.instance.putCommand("info depth " + currdepth + " score cp " + firstguess + " nodes " + negaMaxAlphaBeta.getNodes());
-                    UCI.instance.putCommand("info currmove " + savedMove.toStr());
+                    IterativeDeepeningPVS.printRoundInfo(rslt, watch, negaMaxAlphaBeta);
+
                 }
                 //moves = reOrderMoves(rslt.moveScores);
-
+                negaMaxAlphaBeta.resetCaches();
             }
         } catch (TimeoutException te) {
             return savedMove;
