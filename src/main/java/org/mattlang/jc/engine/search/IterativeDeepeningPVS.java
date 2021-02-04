@@ -16,7 +16,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
@@ -25,13 +24,13 @@ import org.mattlang.jc.uci.UCI;
 public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
 
 
-    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
+    private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
     private int maxDepth;
 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
-    public IterativeDeepeningPVS(AlphaBetaSearchMethod negaMaxAlphaBeta) {
+    public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
     }
 
@@ -86,6 +85,10 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                 stats.put("depth=" + currdepth, statOfDepth);
                 negaMaxAlphaBeta.resetStatistics();
 
+                // experiment: !!!
+                // reset cache after each depth, otherwise we would get cache fails with previous lower depth results
+                // which is not useful
+                negaMaxAlphaBeta.resetCaches();
             }
         } catch (TimeoutException te) {
             return savedMove;

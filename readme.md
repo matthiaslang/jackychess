@@ -76,3 +76,9 @@ zobrist hashing. It should be retested with the NegaMaxAlphaBetaTT implementatio
 
 
 
+                                                                 
+### todo/bugs
+
+- draw (stellungswiederholung): the engine seems to run into this situation due to the current eval wheight. need unit tests
+and analysis how to better handle this
+  

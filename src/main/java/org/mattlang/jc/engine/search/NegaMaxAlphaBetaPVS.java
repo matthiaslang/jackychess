@@ -28,7 +28,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
-    private TTCache ttCache = new TTCache();
+    public TTCache ttCache = new TTCache();
 
     private long stopTime = 0;
 
@@ -94,7 +94,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (doCaching) {
             TTEntry tte = ttCache.getTTEntry(currBoard, color);
-            if (tte != null && tte.depth <= depth) {
+            if (tte != null && tte.depth >= depth) {
                 if (tte.type == EXACT_VALUE) // stored value is exact
                     return tte.value;
                 if (tte.type == LOWERBOUND && tte.value > alpha)
@@ -144,8 +144,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     firstChild = false;
                 }
             } else {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -alpha-1, -alpha, myPvlist);
-                if (alpha < score && score < beta) {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max-1, -max, myPvlist);
+                if (max < score && score < beta) {
                     score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
                 }
             }
@@ -169,7 +169,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         }
         if (doCaching) {
-            ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
+            ttCache.storeTTEntry(currBoard, color, max, max, beta, depth);
         }
         return max;
     }
@@ -199,14 +199,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return -REPETITION_WEIGHT;
         }
 
-        checkTimeout();
-
         /* are we too deep? */
         if (depth< -maxQuiescenceDepth) {
             ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
             return eval;
         }
 
+        checkTimeout();
 
         /* check with the evaluation function */
         int x = eval;
@@ -270,8 +269,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     firstChild = false;
                 }
             } else {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -alpha-1, -alpha, myPvlist);
-                if (alpha < score && score < beta) {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max-1, -max, myPvlist);
+                if (max < score && score < beta) {
                     score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
                 }
             }
@@ -331,21 +330,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
             private int simpleCmpVal(Move m) {
+                byte figureType = m.getFigureType();
                 if (m.getCapturedFigure() != 0 && m.getCapturedFigure() != FigureConstants.FT_EMPTY) {
                     byte captFigureType = (byte) (m.getCapturedFigure() & MASK_OUT_COLOR);
-                    byte figureType = m.getFigureType();
+
                     if (figureType > captFigureType) {
-                        return -5;
+                        return -500 + (figureType-captFigureType);
                     }
                     if (captFigureType > figureType) {
-                        return -10;
+                        return -10000 - (captFigureType-figureType);
                     }
-                    return -7;
+                    return -700;
                 }
-                if (m.getFigureType() == FigureConstants.FT_PAWN) {
-                    return -3;
-                }
-                return  0;
+                return - figureType;
+//                if (m.getFigureType() == FigureConstants.FT_PAWN) {
+//                    return -3;
+//                }
+//                return  0;
             }
 
         };
@@ -430,5 +431,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public NegaMaxAlphaBetaPVS setDoCaching(boolean doCaching) {
         this.doCaching = doCaching;
         return this;
+    }
+
+    @Override
+    public void resetCaches() {
+        ttCache = new TTCache();
     }
 }

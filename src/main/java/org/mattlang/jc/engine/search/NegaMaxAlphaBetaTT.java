@@ -83,6 +83,11 @@ public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsColl
         evaluate = Factory.getDefaults().evaluateFunction.create();
     }
 
+    @Override
+    public void resetCaches() {
+        ttCache = new TTCache();
+    }
+
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
                              int alpha, int beta) {
         nodesVisited++;

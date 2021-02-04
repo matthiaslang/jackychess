@@ -12,6 +12,8 @@ public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector
 
     void reset();
 
+    void resetCaches();
+
     Move getSavedMove();
 
     int getNodesVisited();
