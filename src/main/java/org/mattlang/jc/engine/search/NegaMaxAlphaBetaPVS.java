@@ -1,6 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
 
@@ -13,6 +12,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.sorting.SimpleMoveComparator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
@@ -297,59 +297,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private Comparator<Move> createMoveComparator(final BoardRepresentation currBoard, final int depth, final Color color) {
-
-        int index = targetDepth - depth;
-        Move pvMove = prevPvlist.get(index);
-
-        return new Comparator<Move>() {
-
-            @Override
-            public int compare(Move o1, Move o2) {
-                if (o1.getOrder() == 0){
-                    o1.setOrder(fullCalcCmpVal(o1));
-                }
-                if (o2.getOrder() == 0){
-                    o2.setOrder(fullCalcCmpVal(o2));
-                }
-
-                return o1.getOrder() - o2.getOrder();
-            }
-
-            private int fullCalcCmpVal(Move m) {
-                int cmp = 0;
-                if (pvMove != null) {
-                    if (pvMove.toStr().equals(m.toStr())) {
-                        return -1000000;
-                    }
-                }
-
-                if (cmp != 0) {
-                    return cmp;
-                }
-                return simpleCmpVal(m);
-            }
-
-            private int simpleCmpVal(Move m) {
-                byte figureType = m.getFigureType();
-                if (m.getCapturedFigure() != 0 && m.getCapturedFigure() != FigureConstants.FT_EMPTY) {
-                    byte captFigureType = (byte) (m.getCapturedFigure() & MASK_OUT_COLOR);
-
-                    if (figureType > captFigureType) {
-                        return -500 + (figureType-captFigureType);
-                    }
-                    if (captFigureType > figureType) {
-                        return -10000 - (captFigureType-figureType);
-                    }
-                    return -700;
-                }
-                return - figureType;
-//                if (m.getFigureType() == FigureConstants.FT_PAWN) {
-//                    return -3;
-//                }
-//                return  0;
-            }
-
-        };
+        return new SimpleMoveComparator(prevPvlist, depth, targetDepth);
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
