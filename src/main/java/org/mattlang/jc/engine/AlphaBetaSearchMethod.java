@@ -6,7 +6,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.engine.search.PVList;
+import org.mattlang.jc.engine.sorting.OrderHints;
 
 public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector {
 
@@ -24,7 +24,7 @@ public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector
 
     NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime);
 
-    NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime, PVList prevPvList);
+    NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime, OrderHints orderHints);
 
     int getSavedMoveScore();
 }

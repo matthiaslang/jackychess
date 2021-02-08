@@ -1,10 +1,10 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,7 +12,8 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
-import org.mattlang.jc.engine.sorting.SimpleMoveComparator;
+import org.mattlang.jc.engine.sorting.MoveSorter;
+import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
@@ -25,6 +26,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
+
+    private MoveSorter moveSorter = Factory.getDefaults().moveSorter.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
@@ -41,7 +44,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int savedMoveScore;
 
     private int targetDepth;
-    private PVList prevPvlist;
+    private OrderHints orderHints;
 
     private int cutOff;
 
@@ -116,10 +119,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
             return pattCheckEval;
         }
-        if (repetitionChecker.isRepetition()) {
-            // remis due to 3 times same position.
-            return -REPETITION_WEIGHT;
-        }
+        //        if (repetitionChecker.isRepetition()) {
+        //            // remis due to 3 times same position.
+        //            return -REPETITION_WEIGHT;
+        //        }
 
         checkTimeout();
 
@@ -128,45 +131,47 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }
-        moves.sortMoves(createMoveComparator(currBoard, depth, color));
+        moves = moveSorter.sort(moves, orderHints, depth, targetDepth);
 
         nodes += moves.size();
         int max = alpha;
         boolean firstChild = true;
         for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-            repetitionChecker.push(currBoard);
+            // we do not evaluate repetitions, we always want to either win or loos:
+            if (!repetitionChecker.isRepetition()) {
+                moveCursor.move(currBoard);
+                repetitionChecker.push(currBoard);
 
-            int score;
-            if (firstChild) {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
-                if (doPVSSearch) {
-                    firstChild = false;
+                int score;
+                if (firstChild) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                    if (doPVSSearch) {
+                        firstChild = false;
+                    }
+                } else {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
+                    if (max < score && score < beta) {
+                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                    }
                 }
-            } else {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max-1, -max, myPvlist);
-                if (max < score && score < beta) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+
+                moveCursor.undoMove(currBoard);
+                repetitionChecker.pop();
+                if (score > max) {
+                    max = score;
+
+                    pvList.set(moveCursor.getMove());
+                    pvList.add(myPvlist);
+                    if (depth == targetDepth) {
+                        savedMove = moveCursor.getMove();
+                        savedMoveScore = score;
+                    }
+                    if (max >= beta) {
+                        cutOff++;
+                        break;
+                    }
                 }
             }
-
-            moveCursor.undoMove(currBoard);
-            repetitionChecker.pop();
-            if (score > max) {
-                max = score;
-
-                pvList.set(moveCursor.getMove());
-                pvList.add(myPvlist);
-                if (depth == targetDepth) {
-                    savedMove = moveCursor.getMove();
-                    savedMoveScore = score;
-                }
-                if (max >= beta) {
-                    cutOff++;
-                    break;
-                }
-            }
-
         }
         if (doCaching) {
             ttCache.storeTTEntry(currBoard, color, max, max, beta, depth);
@@ -188,19 +193,18 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int quiesce(BoardRepresentation currBoard, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
 
-
         int eval = evaluate.eval(currBoard, color);
         // patt node:
         if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
             return eval;
         }
-        if (repetitionChecker.isRepetition()) {
-            // remis due to 3 times same position.
-            return -REPETITION_WEIGHT;
-        }
+        //        if (repetitionChecker.isRepetition()) {
+        //            // remis due to 3 times same position.
+        //            return -REPETITION_WEIGHT;
+        //        }
 
         /* are we too deep? */
-        if (depth< -maxQuiescenceDepth) {
+        if (depth < -maxQuiescenceDepth) {
             ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
             return eval;
         }
@@ -224,7 +228,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {
-            if (moveCursor.isCapture()) {
+            if (moveCursor.isCapture() && !repetitionChecker.isRepetition()) {
                 moveCursor.move(currBoard);
                 repetitionChecker.push(currBoard);
                 x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
@@ -253,64 +257,63 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         int max = alpha;
         boolean firstChild = true;
 
-        moves.sortMoves(createMoveComparator(currBoard, depth, color));
+        moves = moveSorter.sort(moves, orderHints, depth, targetDepth);
         PVList pvList = new PVList();
 
         PVList myPvlist = new PVList();
 
         for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-            repetitionChecker.push(currBoard);
+            // we do not evaluate repetitions, we always want to either win or loos:
+            if (!repetitionChecker.isRepetition()) {
+                moveCursor.move(currBoard);
+                repetitionChecker.push(currBoard);
 
-            int score;
-            if (firstChild) {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
-                if (doPVSSearch) {
-                    firstChild = false;
+                int score;
+                if (firstChild) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                    if (doPVSSearch) {
+                        firstChild = false;
+                    }
+                } else {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
+                    if (max < score && score < beta) {
+                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                    }
                 }
-            } else {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max-1, -max, myPvlist);
-                if (max < score && score < beta) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+
+                moveScores.add(new MoveScore(moveCursor.getMove(), score));
+                moveCursor.undoMove(currBoard);
+                repetitionChecker.pop();
+                if (score > max) {
+                    max = score;
+                    pvList.set(moveCursor.getMove());
+                    pvList.add(myPvlist);
+                    if (depth == targetDepth) {
+                        savedMove = moveCursor.getMove();
+                        savedMoveScore = score;
+                    }
+                    if (max >= beta) {
+                        cutOff++;
+                        break;
+                    }
                 }
             }
-
-            moveScores.add(new MoveScore(moveCursor.getMove(), score));
-            moveCursor.undoMove(currBoard);
-            repetitionChecker.pop();
-            if (score > max) {
-                max = score;
-                pvList.set(moveCursor.getMove());
-                pvList.add(myPvlist);
-                if (depth == targetDepth) {
-                    savedMove = moveCursor.getMove();
-                    savedMoveScore = score;
-                }
-                if (max >= beta) {
-                    cutOff++;
-                    break;
-                }
-            }
-
         }
         return new NegaMaxResult(max, moveScores, pvList, targetDepth);
     }
 
-    private Comparator<Move> createMoveComparator(final BoardRepresentation currBoard, final int depth, final Color color) {
-        return new SimpleMoveComparator(prevPvlist, depth, targetDepth);
-    }
-
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
-                                         int alpha, int beta, MoveList moves, long stopTime, PVList prevPvlist) {
+            int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
         targetDepth = depth;
-        this.prevPvlist = prevPvlist;
+        this.orderHints = orderHints;
         this.stopTime = stopTime;
-        repetitionChecker= gameState.getRepetitionChecker();
-        NegaMaxResult result = negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
+        repetitionChecker = gameState.getRepetitionChecker();
+        NegaMaxResult result =
+                negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
 
         //UCILogger.info(depth, nodesVisited, result.max);
-       // UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
-       //         depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
+        // UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
+        //         depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
         return result;
     }
 
@@ -325,7 +328,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     @Override
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
             int alpha, int beta, MoveList moves, long stopTime) {
-        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime, new PVList());
+        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime, OrderHints.NO_HINTS);
     }
 
     public int getNodesVisited() {

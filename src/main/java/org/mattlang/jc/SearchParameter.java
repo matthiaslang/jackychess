@@ -12,6 +12,8 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.*;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.sorting.BasicMoveSorter;
+import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.movegenerator.*;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -41,8 +43,7 @@ public class SearchParameter {
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
 
-
-
+    public final Impl<MoveSorter> moveSorter = new Impl<>(this, BasicMoveSorter::new);
 
 
     public void log() {

@@ -13,6 +13,7 @@ import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollector {
@@ -246,7 +247,7 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
 
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
-            int alpha, int beta, MoveList moves, long stopTime, PVList prevPvList) {
+            int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
        // todo support pvlist
        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime);
     }
