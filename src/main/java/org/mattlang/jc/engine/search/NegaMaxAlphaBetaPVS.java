@@ -44,6 +44,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int savedMoveScore;
 
     private int targetDepth;
+    private int selDepth;
+
     private OrderHints orderHints;
 
     private int cutOff;
@@ -111,7 +113,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (depth == 0) {
             pvList.clear();
-            return quiesce(currBoard, depth - 1, color, alpha, beta);
+            return quiesce(currBoard, - 1, color, alpha, beta);
         }
 
         int pattCheckEval = stalemateChecker.eval(currBoard, color);
@@ -225,6 +227,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
         nodes += moves.size();
         quiescenceNodesVisited++;
+        // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
+        // ever used in this round:
+        if (targetDepth - depth > selDepth) {
+            selDepth = targetDepth - depth;
+        }
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {
@@ -299,12 +306,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
             }
         }
-        return new NegaMaxResult(max, moveScores, pvList, targetDepth);
+        return new NegaMaxResult(max, moveScores, pvList, targetDepth, selDepth);
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
             int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
         targetDepth = depth;
+        selDepth = depth;
         this.orderHints = orderHints;
         this.stopTime = stopTime;
         repetitionChecker = gameState.getRepetitionChecker();

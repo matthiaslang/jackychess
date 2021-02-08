@@ -54,6 +54,26 @@ public class EngineTest {
 
 
     @Test
+    public void testIterativeDeepeningPVS() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                .config(c->c.timeout.setValue(60000))
+                .config(c->c.maxDepth.setValue(7)));
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+    @Test
     public void testIterativeDeepeningZobrist() throws IOException {
 
         initLogging();
