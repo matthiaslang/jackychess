@@ -14,7 +14,7 @@ public class SimpleMoveComparator implements Comparator<Move> {
 
     public SimpleMoveComparator(final PVList prevPvlist, final int depth, int targetDepth) {
         int index = targetDepth - depth;
-        pvMove = prevPvlist.get(index);
+        pvMove =prevPvlist != null ? prevPvlist.get(index) : null;
     }
 
     @Override
