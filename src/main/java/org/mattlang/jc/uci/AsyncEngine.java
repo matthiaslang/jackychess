@@ -36,6 +36,7 @@ public class AsyncEngine {
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options) {
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
+        searchParams.evaluateFunction.set(options.evluateFunctions.getValue().createSupplier());
         searchParams.setConfig(options);
 
         // if we have special "go" parameters, then override thinktime:
