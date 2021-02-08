@@ -34,6 +34,10 @@ public class SimpleRepetitionChecker implements RepetitionChecker {
 
     @Override
     public boolean isRepetition() {
+        // no states (changes) happened yet, so no repetition:
+        if (boardStates.size() == 0) {
+            return false;
+        }
         return repCounts.get(boardStates.peek()).intValue() == 3;
     }
 }
