@@ -1,5 +1,14 @@
 package org.mattlang.jc.perftests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.Benchmarks.benchmark;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.perftests.Perft.perft;
+import static org.mattlang.jc.perftests.Perft.perftReset;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
@@ -8,15 +17,7 @@ import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Benchmarks.benchmark;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.perftests.Perft.perft;
-import static org.mattlang.jc.perftests.Perft.perftReset;
+import org.mattlang.jc.zobrist.Zobrist;
 
 /**
  * PerfTests for zobrist hashing.
@@ -81,14 +82,18 @@ public class ZobristPerfTests {
         HashMap<Long, Set<Board3>> collisionMap = new HashMap<>();
         perftReset();
         perft(new LegalMoveGeneratorImpl3(), board, WHITE, depth, visitedBoard -> {
-            long zobristHash = ((Board3) visitedBoard).getZobristHash();
+            Board3 visitedBoard1 = (Board3) visitedBoard;
+            long zobristHash = visitedBoard1.getZobristHash();
+            long zobristFromScratch = Zobrist.hash(visitedBoard);
+            assertThat(zobristHash).isEqualTo(zobristFromScratch);
+
             Set<Board3> entries = collisionMap.get(zobristHash);
             if (entries == null) {
                 entries = new HashSet<>();
-                entries.add(((Board3) visitedBoard).copy());
+                entries.add(visitedBoard1.copy());
                 collisionMap.put(zobristHash, entries);
             } else {
-                entries.add(((Board3) visitedBoard).copy());
+                entries.add(visitedBoard1.copy());
             }
         });
 
