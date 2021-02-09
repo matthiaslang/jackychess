@@ -1,7 +1,10 @@
 package org.mattlang.jc.uci;
 
+import static java.util.logging.Level.SEVERE;
+
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
@@ -16,6 +19,7 @@ import org.mattlang.jc.engine.evaluation.taperedEval.TaperedEval;
 
 public class AsyncEngine {
 
+    Logger logger = Logger.getLogger("ASYNC");
     /**
      * "outer" completable future. CompletableFutures unfortunately dont support cancel of asynchronous
      * attached work. therefore we need to work with two futures.
@@ -26,7 +30,19 @@ public class AsyncEngine {
      */
     private Future<Move> future;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(4);
+    /**
+     * Thread factory to log at least each uncaught exception
+     */
+    private ThreadFactory threadFactory = new ThreadFactory() {
+
+        @Override
+        public Thread newThread(Runnable r) {
+            final Thread thread =new Thread(r);
+            thread.setUncaughtExceptionHandler((t, e) -> logger.log(SEVERE,"error during async execution!", e));
+            return thread;
+        }
+    };
+    private ExecutorService executorService = Executors.newFixedThreadPool(4, threadFactory);
 
     public CompletableFuture<Move> start(final GameState gameState) {
         GoParameter goParams = new GoParameter();
@@ -86,7 +102,7 @@ public class AsyncEngine {
         if (future != null) {
             future.cancel(true);
             try {
-                return Optional.of(result.get(2000, TimeUnit.MILLISECONDS));
+                return Optional.ofNullable(result.get(2000, TimeUnit.MILLISECONDS));
             } catch (InterruptedException | IllegalMonitorStateException | ExecutionException | TimeoutException e) {
                 //e.printStackTrace();
             }
