@@ -9,9 +9,12 @@ import org.mattlang.jc.engine.evaluation.BoardStats;
 import org.mattlang.jc.engine.evaluation.Evaluations;
 
 /**
- * Common evaluation.
- * <p>
- * https://www.chessprogramming.org/Simplified_Evaluation_Function
+ * Common evaluation:
+ *
+ * - simple material considerations
+ * - mobility
+ * - capturability
+ *
  */
 public class CommonEval {
 
