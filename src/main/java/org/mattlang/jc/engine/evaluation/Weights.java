@@ -30,6 +30,8 @@ public class Weights {
     public static final int COMMON_MOBILITY_WEIGHT = 10;
     public static final int COMMON_CAPTURABILITY_WEIGHT = 20;
 
-    public static final int PASSED_PAWN_WEIGHT = 8;
-    public static final int DOUBLED_PAWN_PENALTY = -10;
+    public static final int  DOUBLED_PAWN_PENALTY= -10;
+    public static final int  ISOLATED_PAWN_PENALTY = -20;
+    public static final int  BACKWARDS_PAWN_PENALTY =-8;
+    public static final int  PASSED_PAWN_BONUS = 20;
 }
