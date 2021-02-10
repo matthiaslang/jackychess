@@ -116,7 +116,8 @@ public class PawnStructureEval {
             if (wline.rowRank[x - 1] <= y
                     && wline.rowRank[x] <= y
                     && wline.rowRank[x + 1] <= y) {
-                r += (7 - y) * PASSED_PAWN_BONUS;
+
+                r += y * PASSED_PAWN_BONUS;
             }
         }
         return r;
