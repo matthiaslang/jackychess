@@ -8,7 +8,6 @@ import static org.mattlang.jc.board.Figure.W_Pawn;
 
 import org.junit.Test;
 import org.mattlang.jc.board.Board3;
-import org.mattlang.jc.engine.evaluation.taperedEval.PawnStructureEval.PawnLineChecker;
 
 public class PawnStructureEvalTest {
 
@@ -126,8 +125,8 @@ public class PawnStructureEvalTest {
 
         System.out.println(board.toUniCodeStr());
 
-        PawnLineChecker wChecker = new PawnLineChecker(board.getWhitePieces().getPawns(), WHITE);
-        PawnLineChecker bChecker = new PawnLineChecker(board.getBlackPieces().getPawns(), BLACK);
+        PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
+        PawnRanks bChecker = new PawnRanks(board.getBlackPieces().getPawns(), BLACK);
 
         // than we should have no advantage nor penalty at all (no passed ones, all no backwards, no isolated):
         assertThat(pse.analyzeWhite(wChecker, bChecker)).isEqualTo(0);
@@ -153,8 +152,8 @@ public class PawnStructureEvalTest {
         assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
 
         // individual each one has a passed pawn on the rank before promotion (but isolated):
-        PawnLineChecker wChecker = new PawnLineChecker(board.getWhitePieces().getPawns(), WHITE);
-        PawnLineChecker bChecker = new PawnLineChecker(board.getBlackPieces().getPawns(), BLACK);
+        PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
+        PawnRanks bChecker = new PawnRanks(board.getBlackPieces().getPawns(), BLACK);
 
         // so it has 6* 20 (passed pawn) - 20 (isolated)
         assertThat(pse.analyzeWhite(wChecker, bChecker)).isEqualTo(120 - 20);
@@ -180,8 +179,8 @@ public class PawnStructureEvalTest {
         assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
-        PawnLineChecker wChecker = new PawnLineChecker(board.getWhitePieces().getPawns(), WHITE);
-        PawnLineChecker bChecker = new PawnLineChecker(board.getBlackPieces().getPawns(), BLACK);
+        PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
+        PawnRanks bChecker = new PawnRanks(board.getBlackPieces().getPawns(), BLACK);
 
         // so it has 6* 20 (passed pawn) - 20 (isolated)
         assertThat(pse.analyzeWhite(wChecker, bChecker)).isEqualTo(-20);
@@ -208,8 +207,8 @@ public class PawnStructureEvalTest {
         assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
-        PawnLineChecker wChecker = new PawnLineChecker(board.getWhitePieces().getPawns(), WHITE);
-        PawnLineChecker bChecker = new PawnLineChecker(board.getBlackPieces().getPawns(), BLACK);
+        PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
+        PawnRanks bChecker = new PawnRanks(board.getBlackPieces().getPawns(), BLACK);
 
         // so it has 6* 20 (passed pawn) - 20 (isolated)
         assertThat(pse.analyzeWhite(wChecker, bChecker)).isEqualTo(-20);
@@ -235,8 +234,8 @@ public class PawnStructureEvalTest {
         assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
-        PawnLineChecker wChecker = new PawnLineChecker(board.getWhitePieces().getPawns(), WHITE);
-        PawnLineChecker bChecker = new PawnLineChecker(board.getBlackPieces().getPawns(), BLACK);
+        PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
+        PawnRanks bChecker = new PawnRanks(board.getBlackPieces().getPawns(), BLACK);
 
         // so it has 6* 20 (passed pawn) - 20 (isolated)
         assertThat(pse.analyzeWhite(wChecker, bChecker)).isEqualTo(-20);
