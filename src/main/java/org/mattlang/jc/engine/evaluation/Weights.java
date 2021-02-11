@@ -34,4 +34,11 @@ public class Weights {
     public static final int  ISOLATED_PAWN_PENALTY = -20;
     public static final int  BACKWARDS_PAWN_PENALTY =-8;
     public static final int  PASSED_PAWN_BONUS = 20;
+
+    /**
+     * Penalty if we have too less material to win in endgame:
+     */
+    public static final int TOO_LESS_MATERIAL_PENALTY = -400;
+
+    public static final int NOT_ENOUGH_MORE_MATERIAL_THAN_OPPONENT = -400;
 }

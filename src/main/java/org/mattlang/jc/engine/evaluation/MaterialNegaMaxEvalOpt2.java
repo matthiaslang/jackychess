@@ -7,6 +7,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.taperedEval.CommonEval;
+import org.mattlang.jc.engine.evaluation.taperedEval.EndGameMaterialEval;
 import org.mattlang.jc.engine.evaluation.taperedEval.PawnStructureEval;
 
 /**
@@ -21,6 +22,8 @@ public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
     private CommonEval commonEval = new CommonEval();
 
     private PawnStructureEval pawnStructureEval = new PawnStructureEval();
+
+    private EndGameMaterialEval endGameMaterialEval = new EndGameMaterialEval();
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
@@ -37,6 +40,9 @@ public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
 
         score+=pawnStructureEval.eval(currBoard, wstats, bstats, who2Move);
 
+        score+=endGameMaterialEval.eval(currBoard, wstats, bstats, who2Move);
+
+        
         return score;
     }
 
