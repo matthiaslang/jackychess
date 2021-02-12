@@ -19,6 +19,12 @@ public enum SearchAlgorithms {
         public SearchParameter createSearchParameter() {
             return Factory.createIterativeDeepeningPVS();
         }
+    },
+    STABLE {
+        @Override
+        public SearchParameter createSearchParameter() {
+            return Factory.createStable();
+        }
     };
 
     public abstract SearchParameter createSearchParameter();
