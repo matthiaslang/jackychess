@@ -2,9 +2,7 @@ package org.mattlang.jc.engine.evaluation.taperedEval;
 
 import static org.mattlang.jc.engine.evaluation.Weights.*;
 
-import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.BoardStats;
 
 /**
  * Analyzes pawn structure. Idea copied from TSCP-rust: https://github.com/kristopherjohnson/tscp-rust/blob/master/src/eval.rs
@@ -12,10 +10,10 @@ import org.mattlang.jc.engine.evaluation.BoardStats;
 public class PawnStructureEval {
 
 
-    public int eval(BoardRepresentation currBoard, BoardStats wstats, BoardStats bstats, Color who2Move) {
+    public int eval(EvalStats evalStats, Color who2Move) {
 
-        PawnRanks wChecker = new PawnRanks(currBoard.getWhitePieces().getPawns(), Color.WHITE);
-        PawnRanks bChecker = new PawnRanks(currBoard.getBlackPieces().getPawns(), Color.BLACK);
+        PawnRanks wChecker = evalStats.wRank;
+        PawnRanks bChecker = evalStats.bRank;
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         return (analyzeWhite(wChecker, bChecker) - analyzeBlack(wChecker, bChecker)) * who2mov;

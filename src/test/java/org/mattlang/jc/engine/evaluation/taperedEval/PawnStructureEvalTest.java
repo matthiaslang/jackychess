@@ -22,8 +22,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, but penalty of 20 for isolation (border pawn), so
         // we get 6*20 - 20 = 100
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(100);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(-100);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(100);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(-100);
     }
 
     @Test
@@ -37,8 +37,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, but penalty of 20 for isolation (border pawn), so
         // we get 6*20 - 20 = 100
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(-100);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(100);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(-100);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(100);
     }
 
     @Test
@@ -56,8 +56,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, but penalty of 20 for isolation (border pawn), so
         // we get 6*20 - 20 = 100
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(240);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(-240);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(240);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(-240);
     }
 
     @Test
@@ -75,8 +75,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, but penalty of 20 for isolation (border pawn), so
         // we get 6*20 - 20 = 100
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(-240);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(240);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(-240);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(240);
     }
 
     @Test
@@ -94,8 +94,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, the other is passed on initial row (+20), but backwarded - 8.
         // so we get 6*20 + 20 - 8 = 132
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(132);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(-132);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(132);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(-132);
     }
 
     @Test
@@ -113,8 +113,8 @@ public class PawnStructureEvalTest {
 
         // passed pawn one row before promotion = 6*20, the other is passed on initial row (+20), but backwarded - 8.
         // so we get 6*20 + 20 - 8 = 132
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(-132);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(132);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(-132);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(132);
     }
 
     @Test
@@ -148,8 +148,8 @@ public class PawnStructureEvalTest {
         System.out.println(board.toUniCodeStr());
 
         // evaluated they are both equal:
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(0);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(0);
 
         // individual each one has a passed pawn on the rank before promotion (but isolated):
         PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
@@ -175,8 +175,8 @@ public class PawnStructureEvalTest {
         System.out.println(board.toUniCodeStr());
 
         // evaluated they are both equal:
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(0);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
         PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
@@ -203,8 +203,8 @@ public class PawnStructureEvalTest {
         System.out.println(board.toUniCodeStr());
 
         // evaluated they are both equal:
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(0);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
         PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);
@@ -230,8 +230,8 @@ public class PawnStructureEvalTest {
         System.out.println(board.toUniCodeStr());
 
         // evaluated they are both equal:
-        assertThat(pse.eval(board, null, null, WHITE)).isEqualTo(0);
-        assertThat(pse.eval(board, null, null, BLACK)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), WHITE)).isEqualTo(0);
+        assertThat(pse.eval(new EvalStats(board), BLACK)).isEqualTo(0);
 
         // individual each one has no passed one; and they are isolated:
         PawnRanks wChecker = new PawnRanks(board.getWhitePieces().getPawns(), WHITE);

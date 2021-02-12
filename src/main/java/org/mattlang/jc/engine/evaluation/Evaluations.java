@@ -33,8 +33,6 @@ public class Evaluations {
                 // penalty for having no pawns (especially in endgame)
                 NO_PAWNS_PENALTY * (wp.getPawns().size() == 0 ? 1 : 0 - bp.getPawns().size() == 0 ? 1 : 0) * who2mov;
 
-        // - 0.5(D-D' + S-S' + I-I')     D,S,I = doubled, blocked and isolated pawns
-
         return score;
     }
 

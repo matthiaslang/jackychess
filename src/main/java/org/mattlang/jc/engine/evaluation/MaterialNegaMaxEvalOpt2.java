@@ -6,9 +6,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.evaluation.taperedEval.CommonEval;
-import org.mattlang.jc.engine.evaluation.taperedEval.EndGameMaterialEval;
-import org.mattlang.jc.engine.evaluation.taperedEval.PawnStructureEval;
+import org.mattlang.jc.engine.evaluation.taperedEval.*;
 
 /**
  * Experimental Material Evaluation evaluating pawn structure.
@@ -25,6 +23,8 @@ public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
 
     private EndGameMaterialEval endGameMaterialEval = new EndGameMaterialEval();
 
+    private KingSafetyEval kingSafetyEval = new KingSafetyEval();
+
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 
@@ -38,11 +38,15 @@ public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
 
         int score = commonEval.eval(currBoard, wstats, bstats, who2Move);
 
-        score+=pawnStructureEval.eval(currBoard, wstats, bstats, who2Move);
+        EvalStats evalStats = new EvalStats(currBoard);
 
-        score+=endGameMaterialEval.eval(currBoard, wstats, bstats, who2Move);
+        score+=pawnStructureEval.eval(evalStats, who2Move);
 
-        
+        score+=endGameMaterialEval.eval(evalStats, who2Move);
+
+        // king safety does not yet make it stronger...
+//        score+=kingSafetyEval.eval(currBoard, evalStats, who2Move);
+
         return score;
     }
 

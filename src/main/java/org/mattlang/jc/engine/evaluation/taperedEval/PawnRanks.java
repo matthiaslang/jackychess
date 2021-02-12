@@ -5,10 +5,12 @@ import org.mattlang.jc.board.PieceList;
 
 /**
  * For analysing the pawn ranks of one side.
+ * Ranks are inverse to chess board rows: row 8 is rank 0, row 7 is rank 1, etc.
+ * 
  */
 public class PawnRanks {
 
-    // use "impossible" empty values for both sied which are outside the promotion line of each side:
+    // use "impossible" empty values for both sides which are outside the promotion line of each side:
     public static final int W_EMPTY = -1;
     public static final int B_EMPTY = 8;
     // offset because of borders in rank array:
