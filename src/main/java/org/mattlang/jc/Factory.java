@@ -6,9 +6,11 @@ import java.util.Properties;
 
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
@@ -61,6 +63,25 @@ public class Factory {
                     c.timeout.setValue(15000);
                 });
     }
+
+    /**
+     * Stable is currently PVS Search (without caching) and with new material eval.
+     * @return
+     */
+    public static SearchParameter createStable() {
+        return new SearchParameter()
+                .evaluateFunction.set(MaterialNegaMaxEvalOpt2::new)
+                .moveGenerator.set(MoveGeneratorImpl2::new)
+                .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
+                .boards.set(Board3::new)
+                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
+                .config(c -> {
+                    c.maxDepth.setValue(15);
+                    c.maxQuiescence.setValue(2);
+                    c.timeout.setValue(15000);
+                });
+    }
+
 
     public static SearchParameter createIterativeDeepeningMtdf() {
         return new SearchParameter()
