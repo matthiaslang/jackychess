@@ -15,7 +15,8 @@ public class OpeningTest {
         board.setFenPosition("position fen 8/8/8/8/8/2B5/8/8 b k - 2 17 ");
         System.out.println(board.toUniCodeStr());
         int score = Opening.openingPatterns(board, Color.WHITE);
-        assertThat(score).isEqualTo(3);
+        // 10 + 50 (virtually two kings on pos 0)
+        assertThat(score).isEqualTo(10 + 50);
     }
 
 
@@ -25,6 +26,7 @@ public class OpeningTest {
         board.setFenPosition("position fen 8/8/2b5/8/8/8/8/8 b k - 2 17 ");
         System.out.println(board.toUniCodeStr());
         int score = Opening.openingPatterns(board, Color.BLACK);
-        assertThat(score).isEqualTo(3);
+        // 10 - 50 (virtually two kings on pos 0)
+        assertThat(score).isEqualTo(10 - 50);
     }
 }
