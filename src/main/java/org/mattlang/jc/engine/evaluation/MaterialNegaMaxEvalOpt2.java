@@ -44,8 +44,7 @@ public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
 
         score+=endGameMaterialEval.eval(evalStats, who2Move);
 
-        // king safety does not yet make it stronger...
-//        score+=kingSafetyEval.eval(currBoard, evalStats, who2Move);
+        score+=kingSafetyEval.eval(currBoard, evalStats, who2Move);
 
         return score;
     }
