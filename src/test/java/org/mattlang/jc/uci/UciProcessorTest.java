@@ -10,7 +10,7 @@ public class UciProcessorTest {
     public void optionsParsing() {
         UciProcessor ucip = new UciProcessor();
         ucip.parseOption("setoption name thinktime value 16");
-        assertThat(ucip.getConfigValues().timeout.getValue()).isEqualTo( 16);
+        assertThat(ucip.getConfigValues().timeout.getValue()).isEqualTo( 16000);
     }
 
     @Test
