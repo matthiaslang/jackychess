@@ -16,6 +16,10 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
+/**
+ * Negamax search method. Only for demonstration, use NegaMaxAlphaBetaPVS for real search.
+ */
+@Deprecated
 public class NegaMax implements SearchMethod {
 
     private EvaluateFunction evaluate;

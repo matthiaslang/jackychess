@@ -17,6 +17,10 @@ import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
+/**
+ * Deprectated. use NegaMaxAlphaBetaPVS instead.
+ */
+@Deprecated
 public class NegaMaxAlphaBetaTT implements AlphaBetaSearchMethod, StatisticsCollector {
 
     public static final int ALPHA_START = -1000000000;
