@@ -17,10 +17,10 @@ public class ConfigValues {
     public final UCICheckOption useTTCache = new UCICheckOption(allOptions, "useTTCache", false);
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.ALPHA_BETA);
+            new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
-            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.SIMPLE);
+            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.SIMPLE_AND_PAWN_STRUCTURE);
 
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;
