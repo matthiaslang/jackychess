@@ -16,6 +16,10 @@ import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
+/**
+ * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
+ * Supports TT Cache (not working properly currently)
+ */
 public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
 
     public static final int ALPHA_START = -1000000000;
@@ -26,6 +30,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
+
+    private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
     private MoveSorter moveSorter = Factory.getDefaults().moveSorter.instance();
 
@@ -52,6 +58,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
+
+    private boolean doExtend = false;
 
     private RepetitionChecker repetitionChecker;
 
@@ -92,7 +100,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
-                             int alpha, int beta, PVList pvList) {
+            int alpha, int beta, PVList pvList) {
         nodesVisited++;
 
         PVList myPvlist = new PVList();
@@ -138,6 +146,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         nodes += moves.size();
         int max = alpha;
         boolean firstChild = true;
+
+        depth = checkToExtend(currBoard, color, depth);
+
         for (MoveCursor moveCursor : moves) {
             // we do not evaluate repetitions, we always want to either win or loos:
             if (!repetitionChecker.isRepetition()) {
@@ -255,10 +266,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private NegaMaxResult negaMaximizeWithScore(BoardRepresentation currBoard, int depth, Color color,
-                                                int alpha, int beta, MoveList moves) {
+            int alpha, int beta, MoveList moves) {
         nodesVisited++;
         ArrayList<MoveScore> moveScores = new ArrayList<>();
-
 
         nodes += moves.size();
         int max = alpha;
@@ -268,6 +278,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         PVList pvList = new PVList();
 
         PVList myPvlist = new PVList();
+
+        depth = checkToExtend(currBoard, color, depth);
 
         for (MoveCursor moveCursor : moves) {
             // we do not evaluate repetitions, we always want to either win or loos:
@@ -307,6 +319,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
         }
         return new NegaMaxResult(max, moveScores, pvList, targetDepth, selDepth);
+    }
+
+    private int checkToExtend(BoardRepresentation currBoard, Color color, int currDepth) {
+        if (doExtend) {
+            if (checkChecker.isInChess(currBoard, color)) {
+                return currDepth + 1;
+            }
+        }
+        return currDepth;
     }
 
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
