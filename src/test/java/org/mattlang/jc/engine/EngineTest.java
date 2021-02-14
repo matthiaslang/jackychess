@@ -9,7 +9,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
+import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
@@ -21,7 +21,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEvalOpt2()), 6);
+        Engine engine = new Engine(new NegaMaxAlphaBeta(new DefaultEvaluateFunction()), 6);
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
@@ -143,7 +143,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
-        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
+        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -164,7 +164,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
+        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -190,7 +190,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         
-        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
+        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
 
         BoardRepresentation board = new Board2();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");

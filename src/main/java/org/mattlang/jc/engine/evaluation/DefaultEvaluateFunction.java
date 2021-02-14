@@ -9,11 +9,11 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.taperedEval.*;
 
 /**
- * Experimental Material Evaluation evaluating pawn structure.
+ * Experimental Material Evaluation evaluating pawn structure and king safety.
  * <p>
  * https://www.chessprogramming.org/Simplified_Evaluation_Function
  */
-public class MaterialNegaMaxEvalOpt2 implements EvaluateFunction {
+public class DefaultEvaluateFunction implements EvaluateFunction {
 
     BoardStatsGenerator statsgenerator = Factory.getDefaults().boardStatsGenerator.instance();
 

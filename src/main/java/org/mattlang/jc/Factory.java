@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.mattlang.jc.board.Board3;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
+import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
@@ -37,7 +37,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningAlphaBeta() {
         return new SearchParameter()
-                .evaluateFunction.set(MaterialNegaMaxEvalOpt2::new)
+                .evaluateFunction.set(DefaultEvaluateFunction::new)
                 .moveGenerator.set(MoveGeneratorImpl2::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(Board3::new)
@@ -51,7 +51,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningPVS() {
         return new SearchParameter()
-                .evaluateFunction.set(MaterialNegaMaxEvalOpt2::new)
+                .evaluateFunction.set(DefaultEvaluateFunction::new)
                 .moveGenerator.set(MoveGeneratorImpl2::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(Board3::new)
@@ -69,7 +69,7 @@ public class Factory {
      */
     public static SearchParameter createStable() {
         return new SearchParameter()
-                .evaluateFunction.set(MaterialNegaMaxEvalOpt2::new)
+                .evaluateFunction.set(DefaultEvaluateFunction::new)
                 .moveGenerator.set(MoveGeneratorImpl2::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(Board3::new)
@@ -84,7 +84,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningMtdf() {
         return new SearchParameter()
-                .evaluateFunction.set(() -> new MaterialNegaMaxEvalOpt2())
+                .evaluateFunction.set(() -> new DefaultEvaluateFunction())
                 .moveGenerator.set(() -> new MoveGeneratorImpl2())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
                 .searchMethod.set(() -> new IterativeDeepeningMtdf())

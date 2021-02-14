@@ -16,7 +16,7 @@ import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
+import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 import org.mattlang.jc.uci.UCI;
 
@@ -36,7 +36,7 @@ public class MaterialNegaMaxEvalOptTest {
 
         StopWatch watchOpt=Benchmarks.benchmark("Opt Eval",
                 () ->{
-                    MaterialNegaMaxEvalOpt2 evalOpt = new MaterialNegaMaxEvalOpt2();
+                    DefaultEvaluateFunction evalOpt = new DefaultEvaluateFunction();
                     perftReset();
                     perft(new MoveGeneratorImpl2(), board, WHITE, 4, b -> {
                         int e = evalOpt.eval(b, WHITE);
@@ -76,7 +76,7 @@ public class MaterialNegaMaxEvalOptTest {
         Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
                 .config(c -> c.maxDepth.setValue(6))
                 .config(c -> c.timeout.setValue(200000))
-        .evaluateFunction.set(() -> new MaterialNegaMaxEvalOpt2()));
+        .evaluateFunction.set(() -> new DefaultEvaluateFunction()));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
