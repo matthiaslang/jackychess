@@ -17,7 +17,7 @@ import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBetaTT;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.ZobristBoardCache;
@@ -60,10 +60,11 @@ public class ZobristPerfTests2 {
                 "iterative deepening alpha beta TT with zobrist",
                 () -> {
                     Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                                    .config(c->c.timeout.setValue(60000))
-                                    .config(c->c.maxDepth.setValue(7))
-                                    .boards.set(() -> new Board3())
-                                    .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(new NegaMaxAlphaBetaTT()))
+                            .config(c -> c.timeout.setValue(60000))
+                            .config(c -> c.maxDepth.setValue(7))
+                            .boards.set(() -> new Board3())
+                            .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(
+                                    new NegaMaxAlphaBetaPVS().setDoCaching(true)))
                             .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(), new MaterialNegaMaxEvalOpt()))
                             .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new ZobristBoardCache<>(), new LegalMoveGeneratorImpl3()))
                     );
