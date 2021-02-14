@@ -63,6 +63,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private RepetitionChecker repetitionChecker;
 
+    private ArrayList<MoveScore> moveScores ;
+
     public NegaMaxAlphaBetaPVS() {
         reset();
     }
@@ -77,10 +79,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         assert depth > 0;
         reset();
 
-        MoveList moves = generateMoves(gameState.getBoard(), gameState.getWho2Move());
         NegaMaxResult rslt =
                 searchWithScore(gameState, depth,
-                        ALPHA_START, BETA_START, moves,
+                        ALPHA_START, BETA_START, null,
                         stopTime);
         return savedMove;
     }
@@ -129,10 +130,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
             return pattCheckEval;
         }
-        //        if (repetitionChecker.isRepetition()) {
-        //            // remis due to 3 times same position.
-        //            return -REPETITION_WEIGHT;
-        //        }
 
         checkTimeout();
 
@@ -166,6 +163,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     if (max < score && score < beta) {
                         score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
                     }
+                }
+
+                if (depth == targetDepth) {
+                    moveScores.add(new MoveScore(moveCursor.getMove(), score));
                 }
 
                 moveCursor.undoMove(currBoard);
@@ -211,10 +212,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
             return eval;
         }
-        //        if (repetitionChecker.isRepetition()) {
-        //            // remis due to 3 times same position.
-        //            return -REPETITION_WEIGHT;
-        //        }
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
@@ -265,62 +262,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return alpha;
     }
 
-    private NegaMaxResult negaMaximizeWithScore(BoardRepresentation currBoard, int depth, Color color,
-            int alpha, int beta, MoveList moves) {
-        nodesVisited++;
-        ArrayList<MoveScore> moveScores = new ArrayList<>();
-
-        nodes += moves.size();
-        int max = alpha;
-        boolean firstChild = true;
-
-        moves = moveSorter.sort(moves, orderHints, depth, targetDepth);
-        PVList pvList = new PVList();
-
-        PVList myPvlist = new PVList();
-
-        depth = checkToExtend(currBoard, color, depth);
-
-        for (MoveCursor moveCursor : moves) {
-            // we do not evaluate repetitions, we always want to either win or loos:
-            if (!repetitionChecker.isRepetition()) {
-                moveCursor.move(currBoard);
-                repetitionChecker.push(currBoard);
-
-                int score;
-                if (firstChild) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
-                    if (doPVSSearch) {
-                        firstChild = false;
-                    }
-                } else {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
-                    if (max < score && score < beta) {
-                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
-                    }
-                }
-
-                moveScores.add(new MoveScore(moveCursor.getMove(), score));
-                moveCursor.undoMove(currBoard);
-                repetitionChecker.pop();
-                if (score > max) {
-                    max = score;
-                    pvList.set(moveCursor.getMove());
-                    pvList.add(myPvlist);
-                    if (depth == targetDepth) {
-                        savedMove = moveCursor.getMove();
-                        savedMoveScore = score;
-                    }
-                    if (max >= beta) {
-                        cutOff++;
-                        break;
-                    }
-                }
-            }
-        }
-        return new NegaMaxResult(max, moveScores, pvList, targetDepth, selDepth);
-    }
-
     private int checkToExtend(BoardRepresentation currBoard, Color color, int currDepth) {
         if (doExtend) {
             if (checkChecker.isInChess(currBoard, color)) {
@@ -330,21 +271,29 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return currDepth;
     }
 
+    @Override
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
             int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
+        return searchWithScore(gameState, depth, alpha, beta, stopTime, orderHints);
+    }
+
+
+    @Override
+    public NegaMaxResult searchWithScore(GameState gameState, int depth,
+            int alpha, int beta, long stopTime, OrderHints orderHints) {
         targetDepth = depth;
         selDepth = depth;
         this.orderHints = orderHints;
         this.stopTime = stopTime;
         repetitionChecker = gameState.getRepetitionChecker();
-        NegaMaxResult result =
-                negaMaximizeWithScore(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, moves);
+        moveScores = new ArrayList<>();
+        PVList pvList = new PVList();
+        negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, pvList);
 
-        //UCILogger.info(depth, nodesVisited, result.max);
-        // UCILogger.log(" %d\t %d/%d\t %d\t %d\t %d",
-        //         depth, nodes, nodesVisited, quiescenceNodesVisited, cutOff, result.max);
-        return result;
+        return new NegaMaxResult(savedMoveScore, moveScores, pvList, targetDepth, selDepth);
+
     }
+
 
     public Move getSavedMove() {
         return savedMove;

@@ -22,9 +22,13 @@ public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector
 
     MoveList generateMoves(BoardRepresentation currBoard, Color color);
 
+    @Deprecated
     NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime);
 
+    @Deprecated
     NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, MoveList moves, long stopTime, OrderHints orderHints);
+
+    NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart, long stopTime, OrderHints orderHints);
 
     int getSavedMoveScore();
 }

@@ -252,6 +252,11 @@ public class NegaMaxAlphaBeta implements AlphaBetaSearchMethod, StatisticsCollec
        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime);
     }
 
+    @Override
+    public NegaMaxResult searchWithScore(GameState gameState, int currdepth, int alphaStart, int betaStart,
+            long stopTime, OrderHints orderHints) {
+        throw new IllegalStateException("not supported!");
+    }
 
     public Move getSavedMove() {
         return savedMove;
