@@ -10,12 +10,9 @@ import java.util.Map;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.UCI;
@@ -47,12 +44,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
         long stopTime = System.currentTimeMillis() + timeout;
 
-        BoardRepresentation currBoard = gameState.getBoard();
-        Color color = gameState.getWho2Move();
-
         OrderHints orderHints = NO_HINTS;
 
-        MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
@@ -60,7 +53,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
                 NegaMaxResult rslt =
                         negaMaxAlphaBeta.searchWithScore(gameState, currdepth,
-                                ALPHA_START, BETA_START, moves,
+                                ALPHA_START, BETA_START,
                                 stopTime, orderHints);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();

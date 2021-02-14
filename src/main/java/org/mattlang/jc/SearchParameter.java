@@ -11,7 +11,7 @@ import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.*;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.sorting.BasicMoveSorter;
 import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.movegenerator.*;
@@ -31,7 +31,7 @@ public class SearchParameter {
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new DefaultEvaluateFunction()));
 
-    public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningNegaMaxAlphaBeta::new);
+    public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
     public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, LegalMoveGeneratorImpl3::new);
 

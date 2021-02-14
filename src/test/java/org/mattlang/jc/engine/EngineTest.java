@@ -11,7 +11,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
@@ -39,7 +39,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        Factory.setDefaults(Factory.createStable()
         .config(c->c.timeout.setValue(60000))
         .config(c->c.maxDepth.setValue(7)));
         // now starting engine:
@@ -80,11 +80,11 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        Factory.setDefaults(Factory.createStable()
                         .config(c->c.timeout.setValue(60000))
                         .config(c->c.maxDepth.setValue(7))
         .boards.set(() -> new Board3())
-                .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(new NegaMaxAlphaBetaPVS().setDoCaching(true)))
+                .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoCaching(true)))
                 //.evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))
                 //.legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
                 );

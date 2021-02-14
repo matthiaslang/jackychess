@@ -52,7 +52,7 @@ public class MaterialNegaMaxEvalOptTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
                 .config(c -> c.maxDepth.setValue(6))
                 .config(c -> c.timeout.setValue(200000)));
         // now starting engine:
@@ -73,7 +73,7 @@ public class MaterialNegaMaxEvalOptTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
                 .config(c -> c.maxDepth.setValue(6))
                 .config(c -> c.timeout.setValue(200000))
         .evaluateFunction.set(() -> new DefaultEvaluateFunction()));

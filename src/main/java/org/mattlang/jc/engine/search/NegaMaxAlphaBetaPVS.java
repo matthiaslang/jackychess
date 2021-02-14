@@ -274,8 +274,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return currDepth;
     }
 
-    @Override
-    public NegaMaxResult searchWithScore(GameState gameState, int depth,
+
+    private NegaMaxResult searchWithScore(GameState gameState, int depth,
             int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
         return searchWithScore(gameState, depth, alpha, beta, stopTime, orderHints);
     }

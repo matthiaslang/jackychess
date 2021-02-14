@@ -17,7 +17,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
@@ -43,9 +43,9 @@ public class ZobristPerfTests2 {
         StopWatch hashMeasure = benchmark(
                 "iterative deepening alpha beta",
                 () -> {
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
-                            .config(c->c.timeout.setValue(60000))
-                            .config(c->c.maxDepth.setValue(7))
+                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                            .config(c -> c.timeout.setValue(60000))
+                            .config(c -> c.maxDepth.setValue(7))
                             .evaluateFunction.set(() -> new CachingEvaluateFunction(new DefaultEvaluateFunction()))
                             .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
                     );
@@ -61,14 +61,16 @@ public class ZobristPerfTests2 {
         StopWatch zobristMeasure = benchmark(
                 "iterative deepening alpha beta TT with zobrist",
                 () -> {
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
                             .config(c -> c.timeout.setValue(60000))
                             .config(c -> c.maxDepth.setValue(7))
                             .boards.set(() -> new Board3())
-                            .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(
+                            .searchMethod.set(() -> new IterativeDeepeningPVS(
                                     new NegaMaxAlphaBetaPVS().setDoCaching(true)))
-                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(), new DefaultEvaluateFunction()))
-                            .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new ZobristBoardCache<>(), new LegalMoveGeneratorImpl3()))
+                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(),
+                                    new DefaultEvaluateFunction()))
+                            .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new ZobristBoardCache<>(),
+                                    new LegalMoveGeneratorImpl3()))
                     );
                     // now starting engine:
                     Engine engine = new Engine();

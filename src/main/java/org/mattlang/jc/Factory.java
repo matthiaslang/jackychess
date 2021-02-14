@@ -7,7 +7,6 @@ import java.util.Properties;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
@@ -33,20 +32,6 @@ public class Factory {
 
     public static Properties getAppProps() {
         return appProps;
-    }
-
-    public static SearchParameter createIterativeDeepeningAlphaBeta() {
-        return new SearchParameter()
-                .evaluateFunction.set(DefaultEvaluateFunction::new)
-                .moveGenerator.set(MoveGeneratorImpl2::new)
-                .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
-                .boards.set(Board3::new)
-                .searchMethod.set(IterativeDeepeningNegaMaxAlphaBeta::new)
-                .config(c -> {
-                    c.maxDepth.setValue(15);
-                    c.maxQuiescence.setValue(2);
-                    c.timeout.setValue(15000);
-                });
     }
 
     public static SearchParameter createIterativeDeepeningPVS() {
@@ -97,7 +82,7 @@ public class Factory {
     }
 
     public static SearchParameter createDefaultParameter() {
-        return createIterativeDeepeningAlphaBeta();
+        return createIterativeDeepeningPVS();
     }
 
     private static SearchParameter defaults = createDefaultParameter();

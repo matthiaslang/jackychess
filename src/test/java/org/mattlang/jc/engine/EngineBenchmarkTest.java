@@ -25,7 +25,7 @@ public class EngineBenchmarkTest {
         
         StopWatch watchNormal= Benchmarks.benchmark("Normal iterat deep",
                 () ->{
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                    Factory.setDefaults(Factory.createStable()
                             .config(c -> {
                                 c.timeout.setValue(600000);
                                 c.maxDepth.setValue(7);
@@ -43,7 +43,7 @@ public class EngineBenchmarkTest {
 
         StopWatch watchOpt= Benchmarks.benchmark("optimized",
                 () ->{
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                    Factory.setDefaults(Factory.createStable()
                             .config(c ->c.timeout.setValue(600000))
                             .searchMethod.set(() -> new IterativeDeepeningPVS())
 //                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
@@ -72,7 +72,7 @@ public class EngineBenchmarkTest {
 
         StopWatch watchNormal= Benchmarks.benchmark("Normal iterat deep",
                 () ->{
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                    Factory.setDefaults(Factory.createStable()
                             .config(c -> {
                                 c.timeout.setValue(600000);
                                 c.maxDepth.setValue(7);
@@ -88,7 +88,7 @@ public class EngineBenchmarkTest {
 
         StopWatch watchOpt= Benchmarks.benchmark("optimized",
                 () ->{
-                    Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+                    Factory.setDefaults(Factory.createStable()
                             .config(c ->c.timeout.setValue(600000))
                             .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoCaching(true).setDoPVSSearch(true)))
                             //                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)

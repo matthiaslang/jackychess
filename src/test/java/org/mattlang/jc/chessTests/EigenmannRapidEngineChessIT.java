@@ -165,7 +165,7 @@ public class EigenmannRapidEngineChessIT {
     @Test
     public void testWithDefaultConfig() {
         // create engine
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
+        Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(5000)));
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);

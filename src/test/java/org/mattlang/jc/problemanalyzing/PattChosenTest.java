@@ -50,7 +50,7 @@ public class PattChosenTest {
         assertThat(whiteMoves.size()).isGreaterThan(0);
 
 
-        Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta());
+        Factory.setDefaults(Factory.createDefaultParameter());
     }
 
 }
