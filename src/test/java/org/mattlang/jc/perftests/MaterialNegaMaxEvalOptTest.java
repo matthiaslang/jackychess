@@ -16,7 +16,6 @@ import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 import org.mattlang.jc.uci.UCI;
@@ -31,40 +30,9 @@ public class MaterialNegaMaxEvalOptTest {
 
 
     @Test
-    public void tstOptMatEvalFunc() {
-        BoardRepresentation board = new Board2();
-        board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
-
-        MaterialNegaMaxEval eval = new MaterialNegaMaxEval();
-        MaterialNegaMaxEvalOpt evalOpt = new MaterialNegaMaxEvalOpt();
-
-        final int[] diffs = {0};
-
-        perftReset();
-        perft(new MoveGeneratorImpl2(), board, WHITE, 3, b -> {
-            int e = eval.eval(b, WHITE);
-            int eOpt = evalOpt.eval(b, WHITE);
-            if (e != eOpt) {
-                diffs[0]++;
-            }
-        });
-
-        assertThat(diffs[0]).isZero();
-    }
-
-    @Test
     public void cmpSpeed() {
         BoardRepresentation board = new Board2();
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
-
-        StopWatch watchNormal=Benchmarks.benchmark("Normal Eval",
-                () ->{
-                    MaterialNegaMaxEval eval = new MaterialNegaMaxEval();
-                    perftReset();
-                    perft(new MoveGeneratorImpl2(), board, WHITE, 4, b -> {
-                        int e = eval.eval(b, WHITE);
-                    });
-                });
 
         StopWatch watchOpt=Benchmarks.benchmark("Opt Eval",
                 () ->{
@@ -75,7 +43,7 @@ public class MaterialNegaMaxEvalOptTest {
                     });
                 });
 
-        assertThat(watchOpt.getDuration()).isLessThan(watchNormal.getDuration());
+//        assertThat(watchOpt.getDuration()).isLessThan(watchNormal.getDuration());
     }
 
 

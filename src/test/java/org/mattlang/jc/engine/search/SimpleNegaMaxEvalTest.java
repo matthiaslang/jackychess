@@ -7,8 +7,9 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BoardStats;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
+import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 
@@ -27,9 +28,10 @@ public class SimpleNegaMaxEvalTest {
         SimpleBoardStatsGenerator sbsg = new SimpleBoardStatsGenerator();
         BoardStats stats = sbsg.gen(board, Color.BLACK);
 
-        MaterialNegaMaxEval eval = new MaterialNegaMaxEval();
+        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
         int score = eval.eval(board, Color.WHITE);
         System.out.println(score);
+        assertThat(score).isEqualTo(-Weights.PATT_WEIGHT);
     }
 
 

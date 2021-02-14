@@ -9,8 +9,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEval;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
@@ -22,7 +22,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEval()), 6);
+        Engine engine = new Engine(new NegaMaxAlphaBeta(new MaterialNegaMaxEvalOpt2()), 6);
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();

@@ -29,7 +29,7 @@ public class SearchParameter {
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, Board2::new);
 
-    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new MaterialNegaMaxEval()));
+    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt2()));
 
     public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningNegaMaxAlphaBeta::new);
 
