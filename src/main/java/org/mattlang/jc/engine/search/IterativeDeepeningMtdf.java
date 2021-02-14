@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
 import java.util.logging.Logger;
 

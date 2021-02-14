@@ -10,7 +10,10 @@ import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
-import org.mattlang.jc.engine.search.*;
+import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
+import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
+import org.mattlang.jc.engine.search.NegaMax;
+import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.UCI;
 
@@ -21,7 +24,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBeta(new DefaultEvaluateFunction()), 6);
+        Engine engine = new Engine(new NegaMaxAlphaBetaPVS(new DefaultEvaluateFunction()), 6);
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go();
@@ -151,7 +154,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        SearchMethod negaMax = new NegaMaxAlphaBeta(eval);
+        SearchMethod negaMax = new NegaMaxAlphaBetaPVS(eval);
         Move move = negaMax.search(gameState, 2);
 
         // block with other figure:
@@ -197,7 +200,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        NegaMaxAlphaBeta negaMax = new NegaMaxAlphaBeta(eval);
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS(eval);
         Move move = negaMax.search(gameState, 4);
 
         System.out.println(board.toUniCodeStr());

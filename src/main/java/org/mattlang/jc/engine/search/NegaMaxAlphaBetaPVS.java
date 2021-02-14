@@ -215,7 +215,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
-            ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
+            if (doCaching) {
+                ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
+            }
             return eval;
         }
 
@@ -257,8 +259,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             }
         }
-        ttCache.storeTTEntry(currBoard, color, x, alpha, beta, depth);
-
+        if (doCaching) {
+            ttCache.storeTTEntry(currBoard, color, x, alpha, beta, depth);
+        }
         return alpha;
     }
 

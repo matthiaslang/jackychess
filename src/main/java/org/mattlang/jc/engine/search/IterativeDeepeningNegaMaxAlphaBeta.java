@@ -1,8 +1,8 @@
 package org.mattlang.jc.engine.search;
 
 import static java.util.stream.Collectors.toList;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBeta.BETA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.mattlang.jc.uci.UCI;
 public class IterativeDeepeningNegaMaxAlphaBeta implements SearchMethod, StatisticsCollector {
 
 
-    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBeta();
+    private AlphaBetaSearchMethod negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS().setDoCaching(false).setDoPVSSearch(false);
 
     private int maxDepth;
 
