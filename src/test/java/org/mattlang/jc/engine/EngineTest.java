@@ -9,7 +9,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
 import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.uci.FenParser;
@@ -136,18 +135,6 @@ public class EngineTest {
     }
 
 
-    @Test
-    public void testNegMax2() {
-
-        // now starting engine:
-        Engine engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt()), 2);
-        FenParser parser = new FenParser();
-        parser.setPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4", engine.getBoard());
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
-
-        System.out.println(move.toStr());
-    }
 
     /**
      * "Check" is not defined as "invalid" move position, instead we have a weight function which evals a captured
@@ -156,7 +143,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
-        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
+        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -177,7 +164,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
+        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -199,9 +186,11 @@ public class EngineTest {
 
 
     @Test
-    public void testProblemNoBestMoveFound() {
-
-        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
+    public void testProblemNoBestMoveFound() throws IOException {
+        initLogging();
+        UCI.instance.attachStreams();
+        
+        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
 
         BoardRepresentation board = new Board2();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");

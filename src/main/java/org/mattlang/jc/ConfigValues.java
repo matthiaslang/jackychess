@@ -20,7 +20,7 @@ public class ConfigValues {
             new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
-            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.SIMPLE_AND_PAWN_STRUCTURE);
+            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.DEFAULT);
 
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;

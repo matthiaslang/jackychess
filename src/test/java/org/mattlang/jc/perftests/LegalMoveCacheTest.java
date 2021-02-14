@@ -16,7 +16,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
@@ -95,7 +95,7 @@ public class LegalMoveCacheTest {
 
         Factory.getDefaults().moveList.set(() -> new BasicMoveList());
 
-        MaterialNegaMaxEvalOpt eval = new MaterialNegaMaxEvalOpt();
+        MaterialNegaMaxEvalOpt2 eval = new MaterialNegaMaxEvalOpt2();
 
         stopwatch.start();
         int num = 100_000_000;
@@ -135,7 +135,7 @@ public class LegalMoveCacheTest {
 
         Factory.getDefaults().legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3());
         // now starting engine:
-        Engine engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt()), depth);
+        Engine engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt2()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
         System.out.println(engine.getBoard().toUniCodeStr());
         stopWatch.start();
@@ -147,7 +147,7 @@ public class LegalMoveCacheTest {
 
         Factory.getDefaults().legalMoveGenerator.set(
                 () -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()));
-        engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt()), depth);
+        engine = new Engine(new NegaMax(new MaterialNegaMaxEvalOpt2()), depth);
         engine.getBoard().setFenPosition("position startpos moves e2e4 a7a6 f2f4 a6a5 a2a4");
 
         stopWatch.start();

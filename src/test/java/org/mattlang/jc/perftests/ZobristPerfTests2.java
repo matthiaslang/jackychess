@@ -2,6 +2,7 @@ package org.mattlang.jc.perftests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Benchmarks.benchmark;
+import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,12 +16,13 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
-import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt;
+import org.mattlang.jc.engine.evaluation.MaterialNegaMaxEvalOpt2;
 import org.mattlang.jc.engine.search.IterativeDeepeningNegaMaxAlphaBeta;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.ZobristBoardCache;
+import org.mattlang.jc.uci.UCI;
 
 /**
  * PerfTests for zobrist hashing.
@@ -35,8 +37,8 @@ public class ZobristPerfTests2 {
     @Test
     public void compareSpeed() throws IOException {
 
-//        initLogging();
-//        UCI.instance.attachStreams();
+        initLogging();
+        UCI.instance.attachStreams();
 
         StopWatch hashMeasure = benchmark(
                 "iterative deepening alpha beta",
@@ -44,7 +46,7 @@ public class ZobristPerfTests2 {
                     Factory.setDefaults(Factory.createIterativeDeepeningAlphaBeta()
                             .config(c->c.timeout.setValue(60000))
                             .config(c->c.maxDepth.setValue(7))
-                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))
+                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt2()))
                             .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
                     );
                     // now starting engine:
@@ -65,7 +67,7 @@ public class ZobristPerfTests2 {
                             .boards.set(() -> new Board3())
                             .searchMethod.set(() -> new IterativeDeepeningNegaMaxAlphaBeta(
                                     new NegaMaxAlphaBetaPVS().setDoCaching(true)))
-                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(), new MaterialNegaMaxEvalOpt()))
+                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(), new MaterialNegaMaxEvalOpt2()))
                             .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new ZobristBoardCache<>(), new LegalMoveGeneratorImpl3()))
                     );
                     // now starting engine:
