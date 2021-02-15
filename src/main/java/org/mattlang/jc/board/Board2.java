@@ -158,9 +158,7 @@ public class Board2 implements BoardRepresentation {
 
     @Override
     public void clearPosition() {
-        for (int i = 0; i < board.length; i++) {
-            board[i] = Figure.EMPTY.figureCode;
-        }
+        Arrays.fill(board, Figure.EMPTY.figureCode);
         cleanPeaceList();
     }
 
