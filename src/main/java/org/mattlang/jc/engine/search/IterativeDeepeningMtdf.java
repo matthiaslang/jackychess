@@ -7,12 +7,10 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -42,15 +40,13 @@ public class IterativeDeepeningMtdf implements SearchMethod {
         StopWatch watch = new StopWatch();
         watch.start();
 
-        BoardRepresentation currBoard = gameState.getBoard();
-        Color color = gameState.getWho2Move();
-        MoveList moves = negaMaxAlphaBeta.generateMoves(currBoard, color);
+        OrderHints orderHints = OrderHints.NO_HINTS;
         try {
             int firstguess = 0;
             for (currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
                 NegaMaxResult rslt =
-                        mtdf(gameState, currdepth, moves, stopTime, firstguess);
+                        mtdf(gameState, currdepth, stopTime, firstguess, orderHints);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
                 firstguess = rslt.max;
@@ -61,6 +57,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 }
                 //moves = reOrderMoves(rslt.moveScores);
                 negaMaxAlphaBeta.resetCaches();
+                orderHints = new OrderHints(rslt.pvList, rslt.moveScores);
             }
         } catch (TimeoutException te) {
             return savedMove;
@@ -71,7 +68,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
         return savedMove;
     }
 
-    NegaMaxResult mtdf(GameState gameState, int depth, MoveList moves,long stopTime,int f) {
+    private NegaMaxResult mtdf(GameState gameState, int depth, long stopTime, int f, OrderHints orderHints) {
         int lower = ALPHA_START;
         int upper = BETA_START;
         NegaMaxResult result = null;
@@ -83,7 +80,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 beta += 1;
             }
             //logger.info("alpha: " + (beta -1) + " beta: " + beta);
-            result = negaMaxAlphaBeta.searchWithScore(gameState, depth, beta - 1, beta, moves, stopTime);
+            result = negaMaxAlphaBeta.searchWithScore(gameState, depth, beta - 1, beta, stopTime, orderHints);
             f = result.max;
             if (f < beta) {
                 upper = f;

@@ -81,8 +81,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         NegaMaxResult rslt =
                 searchWithScore(gameState, depth,
-                        ALPHA_START, BETA_START, null,
-                        stopTime);
+                        ALPHA_START, BETA_START,
+                        stopTime, OrderHints.NO_HINTS);
         return savedMove;
     }
 
@@ -274,13 +274,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return currDepth;
     }
 
-
-    private NegaMaxResult searchWithScore(GameState gameState, int depth,
-            int alpha, int beta, MoveList moves, long stopTime, OrderHints orderHints) {
-        return searchWithScore(gameState, depth, alpha, beta, stopTime, orderHints);
-    }
-
-
     @Override
     public NegaMaxResult searchWithScore(GameState gameState, int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
@@ -300,16 +293,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public Move getSavedMove() {
         return savedMove;
-    }
-
-    public MoveList generateMoves(BoardRepresentation currBoard, Color color) {
-        return generator.generate(currBoard, color);
-    }
-
-    @Override
-    public NegaMaxResult searchWithScore(GameState gameState, int depth,
-            int alpha, int beta, MoveList moves, long stopTime) {
-        return searchWithScore(gameState, depth, alpha, beta, moves, stopTime, OrderHints.NO_HINTS);
     }
 
     public int getNodesVisited() {
