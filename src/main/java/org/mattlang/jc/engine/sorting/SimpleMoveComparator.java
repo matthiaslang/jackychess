@@ -30,15 +30,10 @@ public class SimpleMoveComparator implements Comparator<Move> {
     }
 
     private int fullCalcCmpVal(Move m) {
-        int cmp = 0;
         if (pvMove != null) {
             if (pvMove.toStr().equals(m.toStr())) {
                 return -1000000;
             }
-        }
-
-        if (cmp != 0) {
-            return cmp;
         }
         return simpleCmpVal(m);
     }
