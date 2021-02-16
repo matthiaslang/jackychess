@@ -80,8 +80,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         assert depth > 0;
         reset();
 
-        NegaMaxResult rslt =
-                searchWithScore(gameState, depth,
+        searchWithScore(gameState, depth,
                         ALPHA_START, BETA_START,
                         stopTime, OrderHints.NO_HINTS);
         return savedMove;

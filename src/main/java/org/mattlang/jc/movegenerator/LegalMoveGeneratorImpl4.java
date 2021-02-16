@@ -29,8 +29,6 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
     public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side);
-        // simple ordering by capture first, to be a bit bettr in alpha beta pruning
-        legalMoves.sortByCapture();
         return legalMoves;
     }
 

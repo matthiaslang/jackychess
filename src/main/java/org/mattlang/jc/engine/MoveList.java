@@ -15,13 +15,6 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector {
     void addMove(MoveCursor moveCursor);
 
     /**
-     * First simple try to order moves for alpha beta cut off relevace: "best" guessed moves should be
-     * * processed first to early cut off. First try: sort by capture first moves:
-     */
-    @Deprecated
-    void sortByCapture();
-
-    /**
      * Sort move list by a comparator.
      * @param moveComparator
      */

@@ -82,25 +82,10 @@ public class BasicMoveList implements MoveList {
     }
 
     @Override
-    public void sortByCapture() {
-        moves.sort(CMP);
-    }
-
-    @Override
     public void sortMoves(Comparator<Move> moveComparator) {
         moves.sort(moveComparator);
     }
-
-    private static final Comparator<Move> CMP = new Comparator<Move>() {
-
-        @Override
-        public int compare(Move o1, Move o2) {
-            int c1 = o1.getCapturedFigure() == FigureConstants.FT_EMPTY ? 0 : -o1.getCapturedFigure();
-            int c2 = o2.getCapturedFigure() == FigureConstants.FT_EMPTY ? 0 : -o2.getCapturedFigure();
-            return c1 - c2;
-        }
-    };
-
+    
     @Override
     public int size() {
         return moves.size();
