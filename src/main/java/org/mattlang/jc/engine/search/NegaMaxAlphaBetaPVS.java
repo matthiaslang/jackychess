@@ -12,6 +12,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
@@ -138,6 +139,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }
+
+        if (repetitionChecker.isRepetition()) {
+            return Weights.REPETITION_WEIGHT;
+        }
+
         moves = moveSorter.sort(moves, orderHints, depth, targetDepth);
 
         nodes += moves.size();
@@ -147,44 +153,42 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         depth = checkToExtend(currBoard, color, depth);
 
         for (MoveCursor moveCursor : moves) {
-            // we do not evaluate repetitions, we always want to either win or loos:
-            if (!repetitionChecker.isRepetition()) {
-                moveCursor.move(currBoard);
-                repetitionChecker.push(currBoard);
+            moveCursor.move(currBoard);
+            repetitionChecker.push(currBoard);
 
-                int score;
-                if (firstChild) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
-                    if (doPVSSearch) {
-                        firstChild = false;
-                    }
-                } else {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
-                    if (max < score && score < beta) {
-                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
-                    }
+            int score;
+            if (firstChild) {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                if (doPVSSearch) {
+                    firstChild = false;
                 }
+            } else {
+                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
+                if (max < score && score < beta) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                }
+            }
 
+            if (depth == targetDepth) {
+                moveScores.add(new MoveScore(moveCursor.getMove(), score));
+            }
+
+            moveCursor.undoMove(currBoard);
+            repetitionChecker.pop();
+            if (score > max) {
+                max = score;
+
+                pvList.set(moveCursor.getMove());
+                pvList.add(myPvlist);
                 if (depth == targetDepth) {
-                    moveScores.add(new MoveScore(moveCursor.getMove(), score));
+                    savedMove = moveCursor.getMove();
+                    savedMoveScore = score;
+                }
+                if (max >= beta) {
+                    cutOff++;
+                    break;
                 }
 
-                moveCursor.undoMove(currBoard);
-                repetitionChecker.pop();
-                if (score > max) {
-                    max = score;
-
-                    pvList.set(moveCursor.getMove());
-                    pvList.add(myPvlist);
-                    if (depth == targetDepth) {
-                        savedMove = moveCursor.getMove();
-                        savedMoveScore = score;
-                    }
-                    if (max >= beta) {
-                        cutOff++;
-                        break;
-                    }
-                }
             }
         }
         if (doCaching) {
@@ -235,6 +239,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }
+        if (repetitionChecker.isRepetition()) {
+            return Weights.REPETITION_WEIGHT;
+        }
+
         nodes += moves.size();
         quiescenceNodesVisited++;
         // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
@@ -245,7 +253,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {
-            if (moveCursor.isCapture() && !repetitionChecker.isRepetition()) {
+            if (moveCursor.isCapture()) {
                 moveCursor.move(currBoard);
                 repetitionChecker.push(currBoard);
                 x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
