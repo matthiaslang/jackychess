@@ -19,4 +19,7 @@ public interface Move {
     void setOrder(int order);
 
     int getOrder();
+
+    short getMvvLva();
+
 }

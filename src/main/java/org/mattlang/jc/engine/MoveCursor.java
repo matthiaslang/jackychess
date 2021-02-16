@@ -12,4 +12,6 @@ public interface MoveCursor {
     void undoMove(BoardRepresentation board);
 
     boolean isCapture();
+
+    boolean isPawnPromotion();
 }

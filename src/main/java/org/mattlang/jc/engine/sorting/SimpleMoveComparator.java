@@ -1,10 +1,7 @@
 package org.mattlang.jc.engine.sorting;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
 import java.util.Comparator;
 
-import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.PVList;
 
@@ -14,47 +11,34 @@ public class SimpleMoveComparator implements Comparator<Move> {
 
     public SimpleMoveComparator(final PVList prevPvlist, final int depth, int targetDepth) {
         int index = targetDepth - depth;
-        pvMove =prevPvlist != null ? prevPvlist.get(index) : null;
+        pvMove = prevPvlist != null ? prevPvlist.get(index) : null;
     }
 
     @Override
     public int compare(Move o1, Move o2) {
         if (o1.getOrder() == 0) {
-            o1.setOrder(fullCalcCmpVal(o1));
+            o1.setOrder(calcPVCmp(o1));
         }
         if (o2.getOrder() == 0) {
-            o2.setOrder(fullCalcCmpVal(o2));
+            o2.setOrder(calcPVCmp(o2));
         }
 
-        return o1.getOrder() - o2.getOrder();
+        int cmp = o1.getOrder() - o2.getOrder();
+        if (cmp != 0) {
+            return cmp;
+        }
+        return o2.getMvvLva() - o1.getMvvLva();
+
     }
 
-    private int fullCalcCmpVal(Move m) {
+    private int calcPVCmp(Move m) {
         if (pvMove != null) {
-            if (pvMove.toStr().equals(m.toStr())) {
+            if (pvMove.equals(m)) {
                 return -1000000;
             }
         }
-        return simpleCmpVal(m);
+        return 100;
     }
 
-    private int simpleCmpVal(Move m) {
-        byte figureType = m.getFigureType();
-        if (m.getCapturedFigure() != 0 && m.getCapturedFigure() != FigureConstants.FT_EMPTY) {
-            byte captFigureType = (byte) (m.getCapturedFigure() & MASK_OUT_COLOR);
 
-            if (figureType > captFigureType) {
-                return -500 + (figureType - captFigureType);
-            }
-            if (captFigureType > figureType) {
-                return -10000 - (captFigureType - figureType);
-            }
-            return -700;
-        }
-        return -figureType;
-        //                if (m.getFigureType() == FigureConstants.FT_PAWN) {
-        //                    return -3;
-        //                }
-        //                return  0;
-    }
 }

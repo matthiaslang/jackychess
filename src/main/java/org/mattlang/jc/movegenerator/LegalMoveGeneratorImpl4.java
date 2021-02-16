@@ -102,4 +102,8 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
         return legals;
     }
 
+    @Override
+    public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {
+        throw new IllegalStateException("not implemented yet...");
+    }
 }

@@ -92,6 +92,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         nodes = 0;
         cutOff = 0;
         savedMove = null;
+        savedMoveScore = 0;
     }
 
     public void reset() {
@@ -237,7 +238,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (x > alpha)
             alpha = x;
 
-        MoveList moves = generator.generate(currBoard, color);
+        MoveList moves = generator.generateNonQuietMoves(currBoard, color);
         if (moves.size() == 0) {
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
@@ -254,20 +255,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             selDepth = targetDepth - depth;
         }
 
+        // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
+        moves = moveSorter.sort(moves, OrderHints.NO_HINTS, depth, targetDepth);
+
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {
-            if (moveCursor.isCapture()) {
-                moveCursor.move(currBoard);
-                repetitionChecker.push(currBoard);
-                x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
-                moveCursor.undoMove(currBoard);
-                repetitionChecker.pop();
-                if (x > alpha) {
-                    if (x >= beta)
-                        return beta;
-                    alpha = x;
-                }
-
+            moveCursor.move(currBoard);
+            repetitionChecker.push(currBoard);
+            x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
+            moveCursor.undoMove(currBoard);
+            repetitionChecker.pop();
+            if (x > alpha) {
+                if (x >= beta)
+                    return beta;
+                alpha = x;
             }
         }
     

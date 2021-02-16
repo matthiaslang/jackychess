@@ -35,4 +35,28 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
         return legals;
     }
 
+    @Override
+    public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {
+        MoveList moves = generator.generate(board, side);
+        MoveList legalMoves = filterLegalNonQuietMoves(board, moves, side);
+        return legalMoves;
+    }
+
+    private MoveList filterLegalNonQuietMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
+
+        MoveList legals = Factory.getDefaults().moveList.create();
+        Color opponent = side.invert();
+
+        for (MoveCursor moveCursor : moves) {
+            moveCursor.move(currBoard);
+
+            if (!checkChecker.isInChess(currBoard, side)) {
+                if (moveCursor.isCapture() || moveCursor.isPawnPromotion() || checkChecker.isInChess(currBoard, opponent)) {
+                    legals.addMove(moveCursor);
+                }
+            }
+            moveCursor.undoMove(currBoard);
+        }
+        return legals;
+    }
 }

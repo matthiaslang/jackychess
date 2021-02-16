@@ -46,4 +46,9 @@ public class CachingLegalMoveGenerator implements LegalMoveGenerator, Statistics
         stats.put("caching legal moves", nested);
         legalMoveCache.collectStatistics(nested);
     }
+
+    @Override
+    public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {
+        throw new IllegalArgumentException("not implemented!");
+    }
 }

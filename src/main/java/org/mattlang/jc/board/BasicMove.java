@@ -3,6 +3,8 @@ package org.mattlang.jc.board;
 import static org.mattlang.jc.board.IndexConversion.convert;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
+import java.util.Objects;
+
 /**
  * Represents a move on the board.
  * <p>
@@ -22,6 +24,8 @@ public class BasicMove implements Move {
 
     private int order;
 
+    private short mvvLva;
+
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
@@ -32,6 +36,17 @@ public class BasicMove implements Move {
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
+        calcMMVLVA();
+    }
+
+    /**
+     * Calcs the MMV-LVA   (Most Valuable Victim - Least Valuable Aggressor) simple order heuristic,
+     * see https://www.chessprogramming.org/MVV-LVA.
+     *
+     * Higher Value, the more in front of move ordering.
+     */
+    private void calcMMVLVA() {
+        mvvLva = (short) (capturedFigure * 100 - figureType);
     }
 
     public BasicMove(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
@@ -90,5 +105,25 @@ public class BasicMove implements Move {
     @Override
     public byte getFigureType() {
         return figureType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        BasicMove basicMove = (BasicMove) o;
+        return figureType == basicMove.figureType && fromIndex == basicMove.fromIndex && toIndex == basicMove.toIndex
+                && enPassantOption == basicMove.enPassantOption && capturedFigure == basicMove.capturedFigure;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(figureType, fromIndex, toIndex, enPassantOption, capturedFigure);
+    }
+
+    public short getMvvLva() {
+        return mvvLva;
     }
 }
