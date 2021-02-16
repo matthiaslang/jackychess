@@ -191,10 +191,16 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             }
         }
-        if (doCaching) {
-            ttCache.storeTTEntry(currBoard, color, max, max, beta, depth);
-        }
+      
+        storeTT(currBoard, color, max, max, beta, depth);
+
         return max;
+    }
+
+    private void storeTT(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth) {
+        if (doCaching) {
+            ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
+        }
     }
 
     private void checkTimeout() {
@@ -219,9 +225,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
-            if (doCaching) {
-                ttCache.storeTTEntry(currBoard, color, eval, alpha, beta, depth);
-            }
+            storeTT(currBoard, color, eval, alpha, beta, depth);
             return eval;
         }
 
@@ -267,9 +271,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             }
         }
-        if (doCaching) {
-            ttCache.storeTTEntry(currBoard, color, x, alpha, beta, depth);
-        }
+    
+        storeTT(currBoard, color, x, alpha, beta, depth);
+
         return alpha;
     }
 
