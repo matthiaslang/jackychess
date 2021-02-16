@@ -30,19 +30,7 @@ public class AsyncEngine {
      */
     private Future<Move> future;
 
-    /**
-     * Thread factory to log at least each uncaught exception
-     */
-    private ThreadFactory threadFactory = new ThreadFactory() {
-
-        @Override
-        public Thread newThread(Runnable r) {
-            final Thread thread =new Thread(r);
-            thread.setUncaughtExceptionHandler((t, e) -> logger.log(SEVERE,"error during async execution!", e));
-            return thread;
-        }
-    };
-    private ExecutorService executorService = Executors.newFixedThreadPool(4, threadFactory);
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public CompletableFuture<Move> start(final GameState gameState) {
         GoParameter goParams = new GoParameter();
@@ -88,9 +76,16 @@ public class AsyncEngine {
 
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> future = executorService.submit(() -> {
-            Move move = new Engine().go(gameState);
-            completableFuture.complete(move);
-            return move;
+            try {
+                Move move = new Engine().go(gameState);
+                completableFuture.complete(move);
+                return move;
+            } catch (Exception e) {
+                completableFuture.completeExceptionally(e);
+                logger.log(SEVERE,"error during async execution!", e);
+                throw e;
+            }
+
         });
 
         this.future = future;
