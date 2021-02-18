@@ -11,6 +11,13 @@ import org.mattlang.jc.board.Move;
 
 public class UciProcessor {
 
+    public static final String CMD_UCI = "uci";
+    public static final String CMD_QUIT = "quit";
+    public static final String CMD_ISREADY = "isready";
+    public static final String CMD_UCIOK = "uciok";
+    public static final String CMD_READYOK = "readyok";
+    public static final String CMD_UCINEWGAME = "ucinewgame";
+    public static final String CMD_BESTMOVE = "bestmove";
     private BoardRepresentation board = Factory.getDefaults().boards.create();
 
     private GameState gameState;
@@ -32,13 +39,13 @@ public class UciProcessor {
 
     public void processCmd(String cmdStr) {
         cmdStr = cmdStr.trim();
-        if ("uci".equals(cmdStr)) {
+        if (CMD_UCI.equals(cmdStr)) {
             identifyYourself();
-        } else if ("quit".equals(cmdStr)) {
+        } else if (CMD_QUIT.equals(cmdStr)) {
             quit();
-        } else if ("isready".equals(cmdStr)) {
-            UCI.instance.putCommand("readyok");
-        } else if ("ucinewgame".equals(cmdStr)) {
+        } else if (CMD_ISREADY.equals(cmdStr)) {
+            UCI.instance.putCommand(CMD_READYOK);
+        } else if (CMD_UCINEWGAME.equals(cmdStr)) {
             // dont need to response anything
         } else if (cmdStr.startsWith("position")) {
             gameState = setPosition(cmdStr);
@@ -133,11 +140,11 @@ public class UciProcessor {
 
         UCIOption.writeOptionsDescriptions(configValues.getAllOptions());
 
-        UCI.instance.putCommand("uciok");
+        UCI.instance.putCommand(CMD_UCIOK);
     }
 
     private void sendBestMove(Move bestMove) {
-        UCI.instance.putCommand("bestmove " + bestMove.toStr());
+        UCI.instance.putCommand(CMD_BESTMOVE + " " + bestMove.toStr());
     }
 
     public ConfigValues getConfigValues() {

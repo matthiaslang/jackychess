@@ -55,7 +55,7 @@ public class FenParser {
         return new GameState(board, who2Move, repetitionChecker);
     }
 
-    private BasicMove parseMove(BoardRepresentation board, String moveStr) {
+    public BasicMove parseMove(BoardRepresentation board, String moveStr) {
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
             return RochadeMove.CASTLING_WHITE_SHORT;
