@@ -53,4 +53,15 @@ public class UCISpinOption extends UCIOption<Integer> {
         value = newValue;
     }
 
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public int getDefaultValue() {
+        return defaultValue;
+    }
 }

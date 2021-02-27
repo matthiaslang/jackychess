@@ -39,4 +39,7 @@ public class UCICheckOption extends UCIOption<Boolean> {
         value = newValue;
     }
 
+    public boolean isDefaultValue() {
+        return defaultValue;
+    }
 }

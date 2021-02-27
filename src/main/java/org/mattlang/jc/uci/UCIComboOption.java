@@ -46,4 +46,7 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
         value = newValue;
     }
 
+    public E getDefaultValue() {
+        return defaultValue;
+    }
 }
