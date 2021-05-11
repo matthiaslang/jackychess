@@ -29,4 +29,11 @@ public class PawnPromotionMove extends BasicMove {
         Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
         board.setPos(getFromIndex(), pawn);
     }
+
+    @Override
+    public String toStr() {
+        char figureChar = promotedFigure.figureType.figureChar;
+        figureChar = Character.toLowerCase(figureChar);
+        return super.toStr() + figureChar;
+    }
 }
