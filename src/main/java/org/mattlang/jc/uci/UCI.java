@@ -7,6 +7,7 @@ public class UCI extends Gobbler {
     public static final UCI instance = new UCI();
 
     private UCI() {
+        super("UCI Singleton");
     }
 
     public void attachStreams() throws IOException {

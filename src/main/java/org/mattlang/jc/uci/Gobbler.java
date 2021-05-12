@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -18,6 +19,16 @@ public class Gobbler {
     private PrintStream out;
 
     private boolean finished = false;
+    private static int gobblerCounter = 0;
+
+    private String name = "noname";
+
+    public Gobbler() {
+    }
+
+    public Gobbler(String name) {
+        this.name = name;
+    }
 
     public void putCommand(String cmd) {
         logger.info("OUT: " + cmd);
@@ -40,9 +51,10 @@ public class Gobbler {
                     try {
                         gobbleIn(in);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, "failed gobbling!", e);
                     }
-                });
+                    logger.log(Level.INFO, "stopped gobbling");
+                }, "Gobble Thread for " + name + gobblerCounter++);
         inThread.start();
     }
 
@@ -54,12 +66,15 @@ public class Gobbler {
         LineNumberReader r = new LineNumberReader(new InputStreamReader(in));
         while (!finished) {
             String line = r.readLine();
-            logger.info("IN: " + line);
-            inQueue.add(line);
+            logger.info(name + " IN: " + line);
+            if (line != null) {
+                inQueue.add(line);
+            }
         }
     }
 
     public void quit() {
         finished = true;
+        logger.log(Level.INFO, "gobbling got quit message");
     }
 }
