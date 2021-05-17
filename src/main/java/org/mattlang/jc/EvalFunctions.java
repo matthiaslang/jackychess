@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
+import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.taperedEval.GamePhaseEvaluation;
 
 public enum EvalFunctions {
@@ -12,6 +13,13 @@ public enum EvalFunctions {
         @Override
         public Supplier<EvaluateFunction> createSupplier() {
             return DefaultEvaluateFunction::new;
+        }
+    },
+
+    MINIMAL_PST {
+        @Override
+        public Supplier<EvaluateFunction> createSupplier() {
+            return MinimalPstEvaluation::new;
         }
     },
 

@@ -9,7 +9,7 @@ public class EndGame {
     /**
      * Pawns in endgame are most interesting for promotion
      */
-    private final static Pattern PAWN_PATTERN = new Pattern(new byte[]{
+    private final static Pattern PAWN_PATTERN = new Pattern(new int[]{
             60, 60, 60, 60, 60, 60, 60, 60,
             50, 50, 50, 50, 50, 50, 50, 50,
             40, 40, 40, 40, 40, 40, 40, 40,
@@ -24,7 +24,7 @@ public class EndGame {
      * The King is better to have not on the border in endgame and more powerful in the middle of the board,
      * or directed to the oponents end to support pawn promotion.
      */
-    private final static Pattern KING_PATTERN = new Pattern(new byte[]{
+    private final static Pattern KING_PATTERN = new Pattern(new int[]{
             -50,-40,-30,-20,-20,-30,-40,-50,
             -30,-20,-10,  0,  0,-10,-20,-30,
             -30,-10, 20, 30, 30, 20,-10,-30,

@@ -9,7 +9,7 @@ public class PatternTest {
 
     @Test
     public void patternTest() {
-        Pattern test = new Pattern(new byte[] {
+        Pattern test = new Pattern(new int[] {
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,

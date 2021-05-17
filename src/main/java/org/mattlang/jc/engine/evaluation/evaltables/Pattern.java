@@ -7,9 +7,9 @@ import org.mattlang.jc.board.PieceList;
  */
 public class Pattern {
 
-    private final byte[] boardPattern;
+    private final int[] boardPattern;
 
-    private final byte[] flippedPattern;
+    private final int[] flippedPattern;
 
     /* The FLIP array is used to calculate the piece/square values for the oppiste pieces.
      The piece/square value of a LIGHT pawn is PAWN_PCSQ[FLIP[sq]] and the value of a
@@ -18,7 +18,7 @@ public class Pattern {
      */
 
     // todo optimization could be to cache the flipped pattern to save the flipping for each calc
-    private byte[] FLIP = new byte[] {
+    private int[] FLIP = new int[] {
             56, 57, 58, 59, 60, 61, 62, 63,
             48, 49, 50, 51, 52, 53, 54, 55,
             40, 41, 42, 43, 44, 45, 46, 47,
@@ -29,9 +29,9 @@ public class Pattern {
             0, 1, 2, 3, 4, 5, 6, 7
     };
 
-    public Pattern(byte[] boardPattern) {
+    public Pattern(int[] boardPattern) {
         this.boardPattern = boardPattern;
-        this.flippedPattern = new byte[64];
+        this.flippedPattern = new int[64];
         for(int i=0; i<64; i++) {
             flippedPattern[i] = boardPattern[FLIP[i]];
         }

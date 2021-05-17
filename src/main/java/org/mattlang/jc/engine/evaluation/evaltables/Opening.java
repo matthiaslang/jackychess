@@ -9,7 +9,7 @@ public class Opening {
     /**
      * Bishop pattern with bonus to develop to center places and penalty for start position
      */
-    private final static Pattern BISHOP_PATTERN = new Pattern(new byte[] {
+    private final static Pattern BISHOP_PATTERN = new Pattern(new int[] {
             -20,-10,-10,-10,-10,-10,-10,-20,
             -10,  0,  0,  0,  0,  0,  0,-10,
             -10,  0,  5, 10, 10,  5,  0,-10,
@@ -23,7 +23,7 @@ public class Opening {
     /**
      * Knight pattern with bonus to develop to center places and penalty for start position
      */
-    private final static Pattern KNIGHT_PATTERN = new Pattern(new byte[] {
+    private final static Pattern KNIGHT_PATTERN = new Pattern(new int[] {
             -50,-40,-30,-30,-30,-30,-40,-50,
             -40,-20,  0,  0,  0,  0,-20,-40,
             -30,  0, 10, 15, 15, 10,  0,-30,
@@ -37,7 +37,7 @@ public class Opening {
     /**
      * Queen pattern with penalty to not develop to early...
      */
-    private final static Pattern QUEEN_PATTERN = new Pattern(new byte[] {
+    private final static Pattern QUEEN_PATTERN = new Pattern(new int[] {
             -20,-10,-10, -5, -5,-10,-10,-20,
             -10,  0,  0,  0,  0,  0,  0,-10,
             -10,  0,  5,  5,  5,  5,  0,-10,
@@ -48,7 +48,7 @@ public class Opening {
             -20,-10,-10, -5, -5,-10,-10,-20
     });
 
-    private final static Pattern KING_PATTERN = new Pattern(new byte[]{
+    private final static Pattern KING_PATTERN = new Pattern(new int[]{
             -30,-40,-40,-50,-50,-40,-40,-30,
             -30,-40,-40,-50,-50,-40,-40,-30,
             -30,-40,-40,-50,-50,-40,-40,-30,
