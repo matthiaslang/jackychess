@@ -339,6 +339,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             rslts.put("cutoff", cutOff);
             rslts.put("savedMove", savedMove);
             rslts.put("savedMoveScore", savedMoveScore);
+            Map ttcacheMap = new LinkedHashMap();
+            ttCache.collectStatistics(ttcacheMap);
+            rslts.put("ttcache", ttcacheMap);
         }
     }
 
@@ -362,6 +365,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     @Override
     public void resetCaches() {
-        ttCache = new TTCache();
+        //ttCache = new TTCache();
     }
 }

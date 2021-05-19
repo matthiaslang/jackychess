@@ -15,13 +15,6 @@ import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.CachingEvaluateFunction;
-import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
-import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
-import org.mattlang.jc.movegenerator.CachingLegalMoveGenerator;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.ZobristBoardCache;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -29,9 +22,15 @@ import org.mattlang.jc.uci.UCI;
  */
 public class ZobristPerfTests2 {
 
+    public static final int MAX_DEPTH = 7;
+    public static final int TIMEOUT = 60000;
+    public static final String POSITION =
+            "position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w - - 0 0";
+
     /**
      * Compares speed between "default" alpha beta deepening and the variant with TT cache and zobrist hashing.
      * the opt variatn is slightly faster on depth > 7
+     *
      * @throws IOException
      */
     @Test
@@ -40,54 +39,52 @@ public class ZobristPerfTests2 {
         initLogging();
         UCI.instance.attachStreams();
 
-        StopWatch hashMeasure = benchmark(
-                "iterative deepening alpha beta",
+        StopWatch ttMeasure = benchmark(
+                "iterative deepening alpha beta TT zobrist",
                 () -> {
                     Factory.setDefaults(Factory.createIterativeDeepeningPVS()
-                            .config(c -> c.timeout.setValue(60000))
-                            .config(c -> c.maxDepth.setValue(7))
-                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new DefaultEvaluateFunction()))
-                            .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
-                    );
-                    // now starting engine:
-                    Engine engine = new Engine();
-                    GameState state= engine.getBoard().setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w - - 0 0");
-                    System.out.println(engine.getBoard().toUniCodeStr());
-                    Move move = engine.go(state);
-                                   });
-
-        Map itDeepStats = Factory.getDefaults().collectStatistics();
-        
-        StopWatch zobristMeasure = benchmark(
-                "iterative deepening alpha beta TT with zobrist",
-                () -> {
-                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
-                            .config(c -> c.timeout.setValue(60000))
-                            .config(c -> c.maxDepth.setValue(7))
                             .boards.set(() -> new Board3())
-                            .searchMethod.set(() -> new IterativeDeepeningPVS(
-                                    new NegaMaxAlphaBetaPVS().setDoCaching(true)))
-                            .evaluateFunction.set(() -> new CachingEvaluateFunction(new ZobristBoardCache<>(),
-                                    new DefaultEvaluateFunction()))
-                            .legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new ZobristBoardCache<>(),
-                                    new LegalMoveGeneratorImpl3()))
-                    );
+                            .config(c -> c.timeout.setValue(TIMEOUT))
+                            .config(c -> c.activatePvsSearch.setValue(true))
+                            .config(c -> c.maxDepth.setValue(MAX_DEPTH))
+                            .config(c -> c.useTTCache.setValue(true)));
+
                     // now starting engine:
                     Engine engine = new Engine();
-                    GameState state =
-                            engine.getBoard().setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w - - 0 0");
+                    GameState state = engine.getBoard()
+                            .setFenPosition(POSITION);
                     System.out.println(engine.getBoard().toUniCodeStr());
                     Move move = engine.go(state);
                 });
-        Map itDeepZobrStats = Factory.getDefaults().collectStatistics();
 
-        System.out.println("zobrist time: " + zobristMeasure.toString());
-        System.out.println("hash    time: " + hashMeasure.toString());
+        Map itTT = Factory.getDefaults().collectStatistics();
 
-        SearchParameter.printStats("default", itDeepStats);
-        SearchParameter.printStats("zobrist", itDeepZobrStats);
+        StopWatch normalMeasure = benchmark(
+                "iterative deepening alpha beta",
+                () -> {
+                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                            .config(c -> c.timeout.setValue(TIMEOUT))
+                            .config(c -> c.activatePvsSearch.setValue(true))
+                            .config(c -> c.maxDepth.setValue(MAX_DEPTH))
+                            .boards.set(() -> new Board3()));
 
-        assertThat(zobristMeasure.getDuration()).isLessThan(hashMeasure.getDuration());
+                    // now starting engine:
+                    Engine engine = new Engine();
+                    GameState state =
+                            engine.getBoard()
+                                    .setFenPosition(POSITION);
+                    System.out.println(engine.getBoard().toUniCodeStr());
+                    Move move = engine.go(state);
+                });
+        Map itNormal = Factory.getDefaults().collectStatistics();
+
+        System.out.println("normal time: " + normalMeasure.toString());
+        System.out.println("tt zobrist time: " + ttMeasure.toString());
+
+        SearchParameter.printStats("tt zobrist", itTT);
+        SearchParameter.printStats("normal", itNormal);
+
+        assertThat(ttMeasure.getDuration()).isLessThan(normalMeasure.getDuration());
 
     }
 

@@ -75,9 +75,37 @@ The mtdf implementation currently is slower than the normal alpha/beta pruning, 
 zobrist hashing. It should be retested with the NegaMaxAlphaBetaTT implementation if it then works better.
 
 
+# Versions
 
-                                                                 
-### todo/bugs
+               
+### Version 0.8.2
+
+First real "stable" version with "stable" algorithms playing reasonable strong.
+
+#### Turnament Measurement: 10s per move:
+
+Stockfish Level 1 (Elo ~ 1350): wins
+
+Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
+
+
+     
+
+### Version 0.9.0
+
+new pst evaluation seems to play better: beats old Version 0.8.2 in turnaments.
+
+Stockfisch Level 2 (Elo ~ 1420): 10s move: ~50:50
+Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better                        
+
+### Version 0.9.1
+
+TT Cache fixed and seems now working properly.
+
+
+
+                                       
+# todo/bugs
 
 - draw (stellungswiederholung): the engine seems to run into this situation due to the current eval wheight. need unit tests
 and analysis how to better handle this
