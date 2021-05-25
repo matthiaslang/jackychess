@@ -16,6 +16,7 @@ import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.uci.GameContext;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -76,7 +77,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     @Override
-    public Move search(GameState gameState, int depth) {
+    public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
         reset();
 

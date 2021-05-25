@@ -32,13 +32,13 @@ public class AsyncEngine {
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-    public CompletableFuture<Move> start(final GameState gameState) {
+    public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
         GoParameter goParams = new GoParameter();
         goParams.infinite = true;
-        return start(gameState, goParams, new ConfigValues());
+        return start(gameState, goParams, new ConfigValues(), gameContext);
     }
 
-    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options) {
+    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options, GameContext gameContext) {
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
         searchParams.evaluateFunction.set(options.evluateFunctions.getValue().createSupplier());
         searchParams.setConfig(options);
@@ -77,7 +77,7 @@ public class AsyncEngine {
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> future = executorService.submit(() -> {
             try {
-                Move move = new Engine().go(gameState);
+                Move move = new Engine().go(gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
             } catch (Exception e) {

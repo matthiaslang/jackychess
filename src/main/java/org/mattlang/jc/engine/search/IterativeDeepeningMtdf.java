@@ -11,6 +11,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.sorting.OrderHints;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -29,7 +30,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
     @Override
-    public Move search(GameState gameState, int depth) {
+    public Move search(GameState gameState, GameContext context, int depth) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.setDoCaching(true);
         this.maxDepth = depth;

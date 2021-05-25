@@ -13,6 +13,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 public class PattChosenTest {
@@ -38,7 +39,7 @@ public class PattChosenTest {
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState);
+        Move move = engine.go(gameState, new GameContext());
 
         System.out.println(move.toStr());
 

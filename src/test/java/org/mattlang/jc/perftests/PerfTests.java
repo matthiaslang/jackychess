@@ -1,15 +1,15 @@
 package org.mattlang.jc.perftests;
 
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.perftests.Perft.assertPerft;
+
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
-
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.perftests.Perft.assertPerft;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 
 /**
  * PerfTests
@@ -24,7 +24,7 @@ public class PerfTests {
     public void initialPositionPerformanceLegalMoves() {
         Board2 board = new Board2();
         board.setStartPosition();
-
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
         LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
 
         perftInitialPosition(board, generator);
@@ -52,7 +52,7 @@ public class PerfTests {
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
 
         LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
 
@@ -76,7 +76,7 @@ public class PerfTests {
         Board2 board = new Board2();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
         System.out.println(board.toUniCodeStr());
-
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
         LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
 
         assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0, 0);
@@ -99,7 +99,7 @@ public class PerfTests {
         board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
         System.out.println(board.toUniCodeStr());
 
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl2());
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
 
         LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
 

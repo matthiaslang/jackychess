@@ -15,6 +15,7 @@ import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -54,7 +55,7 @@ public class ZobristPerfTests2 {
                     GameState state = engine.getBoard()
                             .setFenPosition(POSITION);
                     System.out.println(engine.getBoard().toUniCodeStr());
-                    Move move = engine.go(state);
+                    Move move = engine.go(state, new GameContext());
                 });
 
         Map itTT = Factory.getDefaults().collectStatistics();
@@ -74,7 +75,7 @@ public class ZobristPerfTests2 {
                             engine.getBoard()
                                     .setFenPosition(POSITION);
                     System.out.println(engine.getBoard().toUniCodeStr());
-                    Move move = engine.go(state);
+                    Move move = engine.go(state, new GameContext());
                 });
         Map itNormal = Factory.getDefaults().collectStatistics();
 

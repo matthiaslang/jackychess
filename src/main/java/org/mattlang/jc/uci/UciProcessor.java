@@ -22,6 +22,8 @@ public class UciProcessor {
 
     private GameState gameState;
 
+    private GameContext gameContext = new GameContext();
+
     private ConfigValues configValues = new ConfigValues();
 
     private boolean finished = false;
@@ -46,7 +48,7 @@ public class UciProcessor {
         } else if (CMD_ISREADY.equals(cmdStr)) {
             UCI.instance.putCommand(CMD_READYOK);
         } else if (CMD_UCINEWGAME.equals(cmdStr)) {
-            // dont need to response anything
+            gameContext = new GameContext();
         } else if (cmdStr.startsWith("position")) {
             gameState = setPosition(cmdStr);
         } else if (cmdStr.startsWith("setoption name ")) {
@@ -54,7 +56,7 @@ public class UciProcessor {
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
-            CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues);
+            CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
             result.thenAccept(move ->sendBestMove(move));
 
         } else if ("stop".equals(cmdStr)) {

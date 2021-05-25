@@ -1,14 +1,15 @@
 package org.mattlang.jc.chessTests;
 
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.Engine;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.uci.GameContext;
 
 /**
  * Simple epd parsing (only relevant parts for our tests...)
@@ -52,7 +53,7 @@ public class EpdParsing {
         // as FEN:
         GameState gameState = engine.getBoard().setFenPosition("position fen " + position + " 0 0");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState);
+        Move move = engine.go(gameState, new GameContext());
 
         System.out.println(move.toStr());
         // we have no short algebraic notation, therefore do some weak comparison...

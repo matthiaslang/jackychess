@@ -1,14 +1,14 @@
 package org.mattlang.jc.uci;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class AsyncEngineTest  {
 
@@ -18,7 +18,7 @@ public class AsyncEngineTest  {
         board.setStartPosition();;
 
         AsyncEngine asyncEngine = new AsyncEngine();
-        CompletableFuture<Move> future = asyncEngine.start(new GameState(board, Color.BLACK));
+        CompletableFuture<Move> future = asyncEngine.start(new GameState(board, Color.BLACK), new GameContext());
 
         future.thenAccept(move -> System.out.println(move.toStr()));
         future.get();

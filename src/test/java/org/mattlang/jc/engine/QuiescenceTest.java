@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 public class QuiescenceTest {
@@ -28,7 +29,7 @@ public class QuiescenceTest {
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen K7/8/8/2Q5/2r5/3b4/8/7k w - - 1 56 ");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState);
+        Move move = engine.go(gameState, new GameContext());
 
         assertThat(move.toStr()).isNotEqualTo("c5c4");
 

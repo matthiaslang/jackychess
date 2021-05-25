@@ -2,6 +2,7 @@ package org.mattlang.jc.engine;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.uci.GameContext;
 
 public class Engine {
 
@@ -29,16 +30,16 @@ public class Engine {
 
     @Deprecated
     public Move go() {
-        return searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), depth);
+        return searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), new GameContext(), depth);
     }
 
     @Deprecated
     public Move go(Color color) {
-        return searchMethod.search(new GameState(board, color, new SimpleRepetitionChecker()), depth);
+        return searchMethod.search(new GameState(board, color, new SimpleRepetitionChecker()), new GameContext(), depth);
     }
 
-    public Move go(GameState gameState) {
-        return searchMethod.search(gameState, depth);
+    public Move go(GameState gameState, GameContext gameContext) {
+        return searchMethod.search(gameState, gameContext, depth);
     }
 
     public void move(BasicMove move) {

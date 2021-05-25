@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.uci.GameContext;
 
 /**
  * Negamax search method. Only for demonstration, use NegaMaxAlphaBetaPVS for real search.
@@ -33,7 +34,8 @@ public class NegaMax implements SearchMethod {
         this.evaluate = evaluate;
     }
 
-    public Move search(GameState gameState, int depth) {
+    @Override
+    public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
         reset();
         MoveScore scoreResult = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move());

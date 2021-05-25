@@ -12,6 +12,7 @@ import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.jc.uci.GameContext;
 
 public class SimpleNegaMaxEvalTest {
 
@@ -42,7 +43,7 @@ public class SimpleNegaMaxEvalTest {
 
         System.out.println(board.toUniCodeStr());
 
-        Move move =Factory.getDefaults().searchMethod.create().search(gameState, 6);
+        Move move =Factory.getDefaults().searchMethod.create().search(gameState, new GameContext(),6);
         // since we recognize patts, we avoid moves which make patt:
         board.move(move);
         // means we should have no patt situation:

@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 public class EngineTest {
@@ -155,7 +156,7 @@ public class EngineTest {
         System.out.println(board.toUniCodeStr());
 
         SearchMethod negaMax = new NegaMaxAlphaBetaPVS(eval);
-        Move move = negaMax.search(gameState, 2);
+        Move move = negaMax.search(gameState, new GameContext(),2);
 
         // block with other figure:
         assertThat(move.toStr()).isEqualTo("d8d7");
@@ -176,7 +177,7 @@ public class EngineTest {
         System.out.println(board.toUniCodeStr());
 
         NegaMax negaMax = new NegaMax(eval);
-        Move move = negaMax.search(gameState, 2);
+        Move move = negaMax.search(gameState, new GameContext(),2);
 
         System.out.println(board.toUniCodeStr());
         
@@ -201,7 +202,7 @@ public class EngineTest {
         System.out.println(board.toUniCodeStr());
 
         NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS(eval);
-        Move move = negaMax.search(gameState, 4);
+        Move move = negaMax.search(gameState, new GameContext(),4);
 
         System.out.println(board.toUniCodeStr());
 

@@ -102,11 +102,19 @@ Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better
 
 TT Cache fixed and seems now working properly.
 
+### Version 0.9.2
 
+Slightly faster move generation using piece list instead of iterating complete board.
 
                                        
 # todo/bugs
 
+- todo add pseudo rnd opening option to better measure turnaments          
+
 - draw (stellungswiederholung): the engine seems to run into this situation due to the current eval wheight. need unit tests
 and analysis how to better handle this
+  
+- simple winning end game positions like QK vs pk leads to sacrifice the queen during game after some moves (caused by the existing pawn); (why?)
+- more simple end game winning positions like QK vs k: sometimes the engine finds the check mate, but seems to be more by accident...
+
   

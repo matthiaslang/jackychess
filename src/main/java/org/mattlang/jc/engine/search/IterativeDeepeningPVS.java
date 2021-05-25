@@ -15,6 +15,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.sorting.OrderHints;
+import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
@@ -34,7 +35,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     }
 
     @Override
-    public Move search(GameState gameState, int maxDepth) {
+    public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
         this.maxDepth = maxDepth;
         Move savedMove = null;
