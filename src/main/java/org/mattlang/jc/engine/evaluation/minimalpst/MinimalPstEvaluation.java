@@ -170,7 +170,7 @@ public class MinimalPstEvaluation implements EvaluateFunction {
                 BISHOP_MG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
                 ROOK_MG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
                 QUEEN_MG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
-                KING_EG.calcScore(wp.getKing(), bp.getKing(), who2mov);
+                KING_MG.calcScore(wp.getKing(), bp.getKing(), who2mov);
         int endGame =  PAWN_EG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
                 KNIGHT_EG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
                 BISHOP_EG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
