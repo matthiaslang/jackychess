@@ -84,9 +84,8 @@ First real "stable" version with "stable" algorithms playing reasonable strong.
 
 #### Turnament Measurement: 10s per move:
 
-Stockfish Level 1 (Elo ~ 1350): wins
-
-Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
+    Stockfish Level 1 (Elo ~ 1350): wins
+    Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
 
 
      
@@ -95,8 +94,8 @@ Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
 
 new pst evaluation seems to play better: beats old Version 0.8.2 in turnaments.
 
-Stockfisch Level 2 (Elo ~ 1420): 10s move: ~50:50
-Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better                        
+    Stockfisch Level 2 (Elo ~ 1420): 10s move: ~50:50
+    Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better                        
 
 ### Version 0.9.1
 
@@ -110,8 +109,9 @@ Slightly faster move generation using piece list instead of iterating complete b
 
 Experimental history heuristic for move ordering
 
-Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
-
+    Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
+    Stockfisch Level 3 (Elo ~ 1490): 10s move: jacky wins
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky loss 70% of Games
                                        
 # todo/bugs
 

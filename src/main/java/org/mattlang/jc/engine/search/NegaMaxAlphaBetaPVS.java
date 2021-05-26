@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.search.TTEntry.TTType.*;
+import static org.mattlang.jc.engine.tt.TTEntry.TTType.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,6 +15,8 @@ import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.engine.sorting.OrderHints;
+import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.TTEntry;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.uci.GameContext;
 
@@ -116,7 +118,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int alpha, int beta, PVList pvList) {
         nodesVisited++;
 
-        PVList myPvlist = new PVList();
+
 
         if (doCaching) {
             TTEntry tte = ttCache.getTTEntry(currBoard, color);
@@ -163,6 +165,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         depth = checkToExtend(currBoard, color, depth);
 
+        PVList myPvlist = new PVList();
+        
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
             repetitionChecker.push(currBoard);
