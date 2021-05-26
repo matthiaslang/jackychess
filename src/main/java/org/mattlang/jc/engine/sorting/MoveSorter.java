@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.sorting;
 
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -17,5 +18,5 @@ public interface MoveSorter {
      * @param targetDepth the target depth of the current alpha/beta execution
      * @return
      */
-    MoveList sort(MoveList movelist, final OrderHints orderHints, final int depth, int targetDepth);
+    MoveList sort(MoveList movelist, final OrderHints orderHints, Color color, final int depth, int targetDepth);
 }

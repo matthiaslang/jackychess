@@ -22,6 +22,9 @@ public class ConfigValues {
     public final UCIComboOption<EvalFunctions> evluateFunctions =
             new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.DEFAULT);
 
+
+    public final UCICheckOption useHistoryHeuristic = new UCICheckOption(allOptions, "useHistoryHeuristic", true);
+
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;
     }

@@ -8,6 +8,8 @@ public interface Move {
 
     byte getCapturedFigure();
 
+    boolean isCapture();
+
     byte getFigureType();
 
     int getFromIndex();

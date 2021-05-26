@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.*;
 
 import java.util.logging.Logger;
 
@@ -58,7 +57,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 }
                 //moves = reOrderMoves(rslt.moveScores);
                 negaMaxAlphaBeta.resetCaches();
-                orderHints = new OrderHints(rslt.pvList, rslt.moveScores);
+                orderHints = new OrderHints(rslt.pvList, rslt.moveScores, context.getContext(HISTORY_HEURISTIC));
             }
         } catch (TimeoutException te) {
             return savedMove;

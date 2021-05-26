@@ -88,37 +88,37 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
 
         PieceList pieces = side == WHITE ? board.getWhitePieces() : board.getBlackPieces();
 
-        byte figureCode = FigureType.King.figureCode;
-        int[] figOffsets = offset[figureCode];
-        genPieceMoves(board, pieces.getKing(), collector, xside, figureCode, figOffsets, slide[figureCode]);
-
         for (int pawn : pieces.getPawns().getArr()) {
             genPawnMoves(board, collector, pawn, side);
         }
 
         for (int bishop : pieces.getBishops().getArr()) {
-            figureCode = FigureType.Bishop.figureCode;
-            figOffsets = offset[figureCode];
+            byte figureCode = FigureType.Bishop.figureCode;
+            int[] figOffsets = offset[figureCode];
             genPieceMoves(board, bishop, collector, xside, figureCode, figOffsets, slide[figureCode]);
         }
 
         for (int knight : pieces.getKnights().getArr()) {
-            figureCode = FigureType.Knight.figureCode;
-            figOffsets = offset[figureCode];
+            byte figureCode = FigureType.Knight.figureCode;
+            int[] figOffsets = offset[figureCode];
             genPieceMoves(board, knight, collector, xside, figureCode, figOffsets, slide[figureCode]);
         }
 
         for (int rook : pieces.getRooks().getArr()) {
-            figureCode = FigureType.Rook.figureCode;
-            figOffsets = offset[figureCode];
+            byte figureCode = FigureType.Rook.figureCode;
+            int[] figOffsets = offset[figureCode];
             genPieceMoves(board, rook, collector, xside, figureCode, figOffsets, slide[figureCode]);
         }
 
         for (int queen : pieces.getQueens().getArr()) {
-            figureCode = FigureType.Queen.figureCode;
-            figOffsets = offset[figureCode];
+            byte figureCode = FigureType.Queen.figureCode;
+            int[] figOffsets = offset[figureCode];
             genPieceMoves(board, queen, collector, xside, figureCode, figOffsets, slide[figureCode]);
         }
+
+        byte figureCode = FigureType.King.figureCode;
+        int[] figOffsets = offset[figureCode];
+        genPieceMoves(board, pieces.getKing(), collector, xside, figureCode, figOffsets, slide[figureCode]);
 
         generateRochade(board, side, collector);
     }

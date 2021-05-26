@@ -106,6 +106,12 @@ TT Cache fixed and seems now working properly.
 
 Slightly faster move generation using piece list instead of iterating complete board.
 
+### Version 0.9.3
+
+Experimental history heuristic for move ordering
+
+Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
+
                                        
 # todo/bugs
 

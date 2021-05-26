@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
@@ -15,14 +16,14 @@ import org.mattlang.jc.engine.search.MoveScore;
 public class BasicMoveSorter implements MoveSorter {
 
     @Override
-    public MoveList sort(MoveList movelist, OrderHints orderHints, int depth, int targetDepth) {
+    public MoveList sort(MoveList movelist, OrderHints orderHints, Color color, int depth, int targetDepth) {
         int index = targetDepth - depth;
         // if we are at the root and have scores from a previous run, lets take them:
         if (index == 0 && orderHints.moveScores != null) {
             // todo assert that the first pvs should be the highest score...
             return reOrderMoves(orderHints.moveScores);
         }
-        movelist.sortMoves(new SimpleMoveComparator(orderHints.prevPvlist, depth, targetDepth));
+        movelist.sortMoves(new SimpleMoveComparator(orderHints.prevPvlist, color, orderHints.historyHeuristic, depth, targetDepth));
         return movelist;
     }
 

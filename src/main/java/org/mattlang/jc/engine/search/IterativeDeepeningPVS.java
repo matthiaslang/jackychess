@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.*;
 import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.LinkedHashMap;
@@ -63,7 +62,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                     printRoundInfo(rslt, watch, negaMaxAlphaBeta);
                 }
 
-                orderHints = new OrderHints(rslt.pvList, rslt.moveScores);
+                orderHints = new OrderHints(rslt.pvList, rslt.moveScores, gameContext.getContext(HISTORY_HEURISTIC));
 
                 Map statOfDepth = new LinkedHashMap();
                 negaMaxAlphaBeta.collectStatistics(statOfDepth);

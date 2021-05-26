@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.sorting;
 
 import java.util.List;
 
+import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.MoveScore;
 import org.mattlang.jc.engine.search.PVList;
 
@@ -10,7 +11,7 @@ import org.mattlang.jc.engine.search.PVList;
  */
 public class OrderHints {
 
-    public static final OrderHints NO_HINTS = new OrderHints(null, null);
+    public static final OrderHints NO_HINTS = new OrderHints(null, null, null);
 
     /**
      * an optional previous pv list of the last round. Could be null. If set, it should be used for move ordering.
@@ -22,8 +23,11 @@ public class OrderHints {
      */
     public final List<MoveScore> moveScores;
 
-    public OrderHints(PVList prevPvlist, List<MoveScore> moveScores) {
+    public final HistoryHeuristic historyHeuristic;
+
+    public OrderHints(PVList prevPvlist, List<MoveScore> moveScores, HistoryHeuristic historyHeuristic) {
         this.prevPvlist = prevPvlist;
         this.moveScores = moveScores;
+        this.historyHeuristic = historyHeuristic;
     }
 }

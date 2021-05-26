@@ -44,9 +44,15 @@ public class BasicMove implements Move {
      * see https://www.chessprogramming.org/MVV-LVA.
      *
      * Higher Value, the more in front of move ordering.
+     *
+     * best value: Pawn x Queen == (4-0)*100 == 400
+     * worst value: Queen * Pawn = (0-4)*100 = -400
+     *
+     * (in theory pawn x King; king x pawn are the min/max get values from [500, -500]
      */
+    @Deprecated
     private void calcMMVLVA() {
-        mvvLva = (short) (capturedFigure * 100 - figureType);
+        mvvLva = (short) ((capturedFigure - figureType)*100);
     }
 
     public BasicMove(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
@@ -100,6 +106,11 @@ public class BasicMove implements Move {
     @Override
     public byte getCapturedFigure() {
         return capturedFigure;
+    }
+
+    @Override
+    public boolean isCapture() {
+        return getCapturedFigure() != 0;
     }
 
     @Override

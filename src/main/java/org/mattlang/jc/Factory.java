@@ -10,7 +10,7 @@ import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -37,7 +37,7 @@ public class Factory {
     public static SearchParameter createIterativeDeepeningPVS() {
         return new SearchParameter()
                 .evaluateFunction.set(DefaultEvaluateFunction::new)
-                .moveGenerator.set(MoveGeneratorImpl2::new)
+                .moveGenerator.set(MoveGeneratorImpl3::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(Board3::new)
                 .searchMethod.set(IterativeDeepeningPVS::new)
@@ -55,7 +55,7 @@ public class Factory {
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(DefaultEvaluateFunction::new)
-                .moveGenerator.set(MoveGeneratorImpl2::new)
+                .moveGenerator.set(MoveGeneratorImpl3::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(Board3::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
@@ -70,7 +70,7 @@ public class Factory {
     public static SearchParameter createIterativeDeepeningMtdf() {
         return new SearchParameter()
                 .evaluateFunction.set(() -> new DefaultEvaluateFunction())
-                .moveGenerator.set(() -> new MoveGeneratorImpl2())
+                .moveGenerator.set(() -> new MoveGeneratorImpl3())
                 .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
                 .searchMethod.set(() -> new IterativeDeepeningMtdf())
                 .config(c -> {

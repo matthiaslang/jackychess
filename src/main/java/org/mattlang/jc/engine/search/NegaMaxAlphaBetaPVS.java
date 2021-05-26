@@ -26,6 +26,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
+    public static final String HISTORY_HEURISTIC = "historyHeuristic";
 
     private EvaluateFunction evaluate;
 
@@ -38,6 +39,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private MoveSorter moveSorter = Factory.getDefaults().moveSorter.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
+
+    private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
 
     public TTCache ttCache = new TTCache();
 
@@ -67,6 +70,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private ArrayList<MoveScore> moveScores ;
 
+    private HistoryHeuristic historyHeuristic = null;
+
     public NegaMaxAlphaBetaPVS() {
         reset();
     }
@@ -80,6 +85,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
         reset();
+        historyHeuristic = context.getContext(HISTORY_HEURISTIC);
+        if (historyHeuristic == null){
+            historyHeuristic = new HistoryHeuristic();
+            context.setContext(HISTORY_HEURISTIC, historyHeuristic);
+        }
 
         searchWithScore(gameState, depth,
                         ALPHA_START, BETA_START,
@@ -145,7 +155,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return Weights.REPETITION_WEIGHT;
         }
 
-        moves = moveSorter.sort(moves, orderHints, depth, targetDepth);
+        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
         nodes += moves.size();
         int max = alpha;
@@ -186,6 +196,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     savedMoveScore = score;
                 }
                 if (max >= beta) {
+                    if (useHistoryHeuristic && !moveCursor.getMove().isCapture()) {
+                        updateHistoryHeuristic(color, moveCursor.getMove(), depth);
+                    }
                     cutOff++;
                     break;
                 }
@@ -196,6 +209,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         storeTT(currBoard, color, max, max, beta, depth);
 
         return max;
+    }
+
+    private void updateHistoryHeuristic(Color color, Move move, int depth) {
+        if (historyHeuristic != null) {
+            historyHeuristic.update(color, move, depth);
+        }
     }
 
     private void storeTT(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth) {
@@ -257,7 +276,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-        moves = moveSorter.sort(moves, OrderHints.NO_HINTS, depth, targetDepth);
+        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {

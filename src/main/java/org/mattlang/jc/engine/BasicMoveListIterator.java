@@ -38,7 +38,7 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
         @Override
         public boolean isCapture() {
-            return currMove.getCapturedFigure() != 0;
+            return currMove.isCapture();
         }
 
         @Override
