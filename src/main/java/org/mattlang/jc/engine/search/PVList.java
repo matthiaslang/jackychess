@@ -10,6 +10,14 @@ public class PVList {
 
     private ArrayList<Move> list = new ArrayList<>();
 
+    public PVList() {
+
+    }
+
+    public PVList(ArrayList<Move> pvs) {
+        list.addAll(pvs);
+    }
+
     public final void clear() {
         list.clear();
     }
