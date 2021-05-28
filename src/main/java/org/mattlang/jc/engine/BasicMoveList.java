@@ -15,6 +15,9 @@ import org.mattlang.jc.board.*;
 public class BasicMoveList implements MoveList {
 
     private List<Move> moves = new ArrayList<>(60);
+    private boolean subset = false;
+    private boolean legal = false;
+    private boolean checkMate = false;
 
     public BasicMoveList() {
     }
@@ -89,6 +92,33 @@ public class BasicMoveList implements MoveList {
     @Override
     public int size() {
         return moves.size();
+    }
+
+    @Override
+    public boolean isSubset() {
+        return subset;
+    }
+
+    @Override
+    public boolean isLegal() {
+        return legal;
+    }
+
+    @Override
+    public boolean isCheckMate() {
+        return checkMate;
+    }
+
+    public void setSubset(boolean subset) {
+        this.subset = subset;
+    }
+
+    public void setLegal(boolean legal) {
+        this.legal = legal;
+    }
+
+    public void setCheckMate(boolean checkMate) {
+        this.checkMate = checkMate;
     }
 
     public List<Move> getMoves() {

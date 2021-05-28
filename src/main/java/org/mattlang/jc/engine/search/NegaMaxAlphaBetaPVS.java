@@ -148,7 +148,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         checkTimeout();
 
         MoveList moves = generator.generate(currBoard, color);
-        if (moves.size() == 0) {
+        if (moves.isCheckMate()) {
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }
@@ -263,7 +263,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             alpha = x;
 
         MoveList moves = generator.generateNonQuietMoves(currBoard, color);
-        if (moves.size() == 0) {
+        if (moves.isCheckMate()) {
             // no more legal moves, that means we have checkmate:
             return -KING_WEIGHT;
         }

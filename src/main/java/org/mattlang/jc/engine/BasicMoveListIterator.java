@@ -45,6 +45,11 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
         public boolean isPawnPromotion() {
             return currMove instanceof PawnPromotionMove;
         }
+
+        @Override
+        public void remove() {
+             iterator.remove();
+        }
     };
 
     public BasicMoveListIterator(BasicMoveList movelist) {
@@ -61,5 +66,10 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
     public MoveCursor next() {
         currMove = iterator.next();
         return curr;
+    }
+
+    @Override
+    public void remove() {
+        iterator.remove();
     }
 }

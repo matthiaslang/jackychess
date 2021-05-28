@@ -112,15 +112,29 @@ Experimental history heuristic for move ordering
     Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
     Stockfisch Level 3 (Elo ~ 1490): 10s move: jacky wins
     Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky loss 70% of Games
-                                       
-# todo/bugs
+
+### Version 0.9.4
+                 
+- fixed problem in quiescence: incorrectly decided to have check mate
+- reworked legal move filtering
+
+                              
+# todo
+         
+
 
 - todo add pseudo rnd opening option to better measure turnaments          
+     
+- "check mate - distance" metric to prefer early check mates
+
+
+# bugs
 
 - draw (stellungswiederholung): the engine seems to run into this situation due to the current eval wheight. need unit tests
-and analysis how to better handle this
-  
+  and analysis how to better handle this
+
 - simple winning end game positions like QK vs pk leads to sacrifice the queen during game after some moves (caused by the existing pawn); (why?)
 - more simple end game winning positions like QK vs k: sometimes the engine finds the check mate, but seems to be more by accident...
 
   
+      

@@ -22,17 +22,17 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
     private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
 
-        MoveList legals = Factory.getDefaults().moveList.create();
-
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            if (!checkChecker.isInChess(currBoard, side)) {
-                legals.addMove(moveCursor);
+            if (checkChecker.isInChess(currBoard, side)) {
+                moveCursor.remove();
             }
             moveCursor.undoMove(currBoard);
         }
-        return legals;
+        moves.setLegal(true);
+        moves.setCheckMate(moves.size() == 0);
+        return moves;
     }
 
     @Override
@@ -44,19 +44,25 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
     private MoveList filterLegalNonQuietMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
 
-        MoveList legals = Factory.getDefaults().moveList.create();
         Color opponent = side.invert();
 
+        boolean atLeastOneLegalMove = false;
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);
 
-            if (!checkChecker.isInChess(currBoard, side)) {
-                if (moveCursor.isCapture() || moveCursor.isPawnPromotion() || checkChecker.isInChess(currBoard, opponent)) {
-                    legals.addMove(moveCursor);
-                }
+            if (checkChecker.isInChess(currBoard, side)) {
+                moveCursor.remove();
+            } else if (!moveCursor.isCapture() || !moveCursor.isPawnPromotion() || !checkChecker.isInChess(currBoard, opponent)) {
+                moveCursor.remove();
+                atLeastOneLegalMove= true;
+            } else {
+                atLeastOneLegalMove=true;
             }
             moveCursor.undoMove(currBoard);
         }
-        return legals;
+        moves.setSubset(true);
+        moves.setCheckMate(!atLeastOneLegalMove);
+        moves.setLegal(true);
+        return moves;
     }
 }
