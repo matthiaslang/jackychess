@@ -117,8 +117,16 @@ Experimental history heuristic for move ordering
                  
 - fixed problem in quiescence: incorrectly decided to have check mate
 - reworked legal move filtering
+                       
 
-                              
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
+
+
+### Version 0.9.5
+
+- killer move heuristic
+- clean up & rework move ordering (especially mvvlva)
+
 # todo
          
 

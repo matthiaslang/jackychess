@@ -17,9 +17,16 @@ public class Benchmarks {
      */
     public static StopWatch benchmark(
             String benchMarkName,
-            Runnable doSomethingToMeasure) {
+            Runnable doSomethingToMeasure)
+    {
+        return benchmark(benchMarkName, doSomethingToMeasure, 10);
+    }
 
-        int maxRounds = 10;
+
+    public static StopWatch benchmark(
+            String benchMarkName,
+            Runnable doSomethingToMeasure, int maxRounds) {
+
         int rounds = 0;
         long lastMeasuredTime = 0;
         long measuredTime = 0;
