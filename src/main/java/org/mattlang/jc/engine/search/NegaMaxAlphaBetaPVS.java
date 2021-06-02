@@ -28,7 +28,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
-    public static final String HISTORY_HEURISTIC = "historyHeuristic";
 
     private EvaluateFunction evaluate;
 
@@ -43,6 +42,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
     private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
+    private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
 
     public TTCache ttCache = new TTCache();
 
@@ -74,6 +74,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private HistoryHeuristic historyHeuristic = null;
 
+    private KillerMoves killerMoves = null;
+
     public NegaMaxAlphaBetaPVS() {
         reset();
     }
@@ -87,16 +89,16 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
         reset();
-        historyHeuristic = context.getContext(HISTORY_HEURISTIC);
-        if (historyHeuristic == null){
-            historyHeuristic = new HistoryHeuristic();
-            context.setContext(HISTORY_HEURISTIC, historyHeuristic);
-        }
 
-        searchWithScore(gameState, depth,
+        searchWithScore(gameState, context, depth,
                         ALPHA_START, BETA_START,
                         stopTime, OrderHints.NO_HINTS);
         return savedMove;
+    }
+
+    private void initContext(GameContext context) {
+          killerMoves = context.getKillerMoves();
+          historyHeuristic = context.getHistoryHeuristic();
     }
 
     public void resetStatistics() {
@@ -203,6 +205,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     if (useHistoryHeuristic && !moveCursor.getMove().isCapture()) {
                         updateHistoryHeuristic(color, moveCursor.getMove(), depth);
                     }
+                    if (useKillerMoves && !moveCursor.getMove().isCapture()) {
+                        updateKillerMoves(color, moveCursor.getMove(), targetDepth - depth);
+                    }
                     cutOff++;
                     break;
                 }
@@ -216,9 +221,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private void updateHistoryHeuristic(Color color, Move move, int depth) {
-        if (historyHeuristic != null) {
-            historyHeuristic.update(color, move, depth);
-        }
+        historyHeuristic.update(color, move, depth);
+    }
+
+    private void updateKillerMoves(Color color, Move move, int ply) {
+        killerMoves.addKiller(color, move, ply);
     }
 
     private void storeTT(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth) {
@@ -311,7 +318,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     @Override
-    public NegaMaxResult searchWithScore(GameState gameState, int depth,
+    public NegaMaxResult searchWithScore(GameState gameState,
+            GameContext context,
+            int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
         targetDepth = depth;
         selDepth = depth;
@@ -319,6 +328,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         this.stopTime = stopTime;
         repetitionChecker = gameState.getRepetitionChecker();
         moveScores = new ArrayList<>();
+
+        initContext(context);
+
         PVList pvList = new PVList();
         negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta, pvList);
 

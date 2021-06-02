@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 public class BasicMove implements Move {
 
+    public static final int NOT_SORTED = Integer.MAX_VALUE;
     private byte figureType;
 
     private byte fromIndex;
@@ -22,9 +23,7 @@ public class BasicMove implements Move {
 
     private byte capturedFigure;
 
-    private int order;
-
-    private short mvvLva;
+    private int order = NOT_SORTED;
 
     public BasicMove(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
@@ -36,23 +35,6 @@ public class BasicMove implements Move {
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
-        calcMMVLVA();
-    }
-
-    /**
-     * Calcs the MMV-LVA   (Most Valuable Victim - Least Valuable Aggressor) simple order heuristic,
-     * see https://www.chessprogramming.org/MVV-LVA.
-     *
-     * Higher Value, the more in front of move ordering.
-     *
-     * best value: Pawn x Queen == (4-0)*100 == 400
-     * worst value: Queen * Pawn = (0-4)*100 = -400
-     *
-     * (in theory pawn x King; king x pawn are the min/max get values from [500, -500]
-     */
-    @Deprecated
-    private void calcMMVLVA() {
-        mvvLva = (short) ((capturedFigure - figureType)*100);
     }
 
     public BasicMove(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
@@ -134,7 +116,4 @@ public class BasicMove implements Move {
         return Objects.hash(figureType, fromIndex, toIndex, enPassantOption, capturedFigure);
     }
 
-    public short getMvvLva() {
-        return mvvLva;
-    }
 }

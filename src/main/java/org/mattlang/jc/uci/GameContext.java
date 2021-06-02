@@ -2,6 +2,11 @@ package org.mattlang.jc.uci;
 
 import java.util.HashMap;
 
+import org.mattlang.jc.engine.search.HistoryHeuristic;
+import org.mattlang.jc.engine.search.KillerMoves;
+
+import lombok.Getter;
+
 /**
  * Represents the "context" of a uci game. The context is recreated each time a ucinewgame command gets send
  * to the engine.
@@ -9,6 +14,12 @@ import java.util.HashMap;
  * a game.
  */
 public class GameContext {
+
+    @Getter
+    private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
+
+    @Getter
+    private KillerMoves killerMoves = new KillerMoves();
 
     private HashMap<String, Object> context = new HashMap<>();
 

@@ -29,4 +29,23 @@ public class StopWatch {
     public long getCurrDuration() {
         return System.currentTimeMillis() - start;
     }
+
+    public String getFormattedDuration(){
+        Duration d = Duration.of(stop - start, ChronoUnit.MILLIS);
+        return formatDuration(d);
+    }
+
+    public static String formatDuration(Duration duration) {
+
+       int millis= duration.getNano()/1_000_000;
+        long seconds = duration.getSeconds();
+        long absSeconds = Math.abs(seconds);
+        String positive = String.format(
+                "%d:%02d:%02d,%03d",
+                absSeconds / 3600,
+                (absSeconds % 3600) / 60,
+                absSeconds % 60,
+                millis);
+        return seconds < 0 ? "-" + positive : positive;
+    }
 }

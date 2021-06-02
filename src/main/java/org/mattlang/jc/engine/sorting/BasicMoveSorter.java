@@ -23,7 +23,9 @@ public class BasicMoveSorter implements MoveSorter {
             // todo assert that the first pvs should be the highest score...
             return reOrderMoves(orderHints.moveScores);
         }
-        movelist.sortMoves(new SimpleMoveComparator(orderHints.prevPvlist, color, orderHints.historyHeuristic, depth, targetDepth));
+
+
+        movelist.sortMoves(new SimpleMoveComparator(orderHints, color, depth, targetDepth));
         return movelist;
     }
 

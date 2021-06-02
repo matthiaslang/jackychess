@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.*;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.LinkedHashMap;
@@ -25,6 +26,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     private int maxDepth;
 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
+
+    private boolean useMvvLvaSorting = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
 
     public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
@@ -52,7 +55,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                 UCI.instance.putCommand("info depth " + currdepth);
 
                 NegaMaxResult rslt =
-                        negaMaxAlphaBeta.searchWithScore(gameState, currdepth,
+                        negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                                currdepth,
                                 ALPHA_START, BETA_START,
                                 stopTime, orderHints);
 
@@ -62,7 +66,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                     printRoundInfo(rslt, watch, negaMaxAlphaBeta);
                 }
 
-                orderHints = new OrderHints(rslt.pvList, rslt.moveScores, gameContext.getContext(HISTORY_HEURISTIC));
+                orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
 
                 Map statOfDepth = new LinkedHashMap();
                 negaMaxAlphaBeta.collectStatistics(statOfDepth);
