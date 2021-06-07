@@ -38,9 +38,14 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
+        return iterativeSearch(gameState, gameContext, maxDepth).getSavedMove();
+    }
+
+    public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
         this.maxDepth = maxDepth;
         Move savedMove = null;
+        NegaMaxResult rslt = null;
 
         StopWatch watch = new StopWatch();
         watch.start();
@@ -54,11 +59,10 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
                 UCI.instance.putCommand("info depth " + currdepth);
 
-                NegaMaxResult rslt =
-                        negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
-                                currdepth,
-                                ALPHA_START, BETA_START,
-                                stopTime, orderHints);
+                rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                        currdepth,
+                        ALPHA_START, BETA_START,
+                        stopTime, orderHints);
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
 
@@ -79,22 +83,21 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                 negaMaxAlphaBeta.resetCaches();
             }
         } catch (TimeoutException te) {
-            return savedMove;
+            return new IterativeSearchResult(savedMove, rslt);
         } finally {
             //negaMaxAlphaBeta.reset();
         }
 
-        return savedMove;
+        return new IterativeSearchResult(savedMove, rslt);
     }
 
     public static void printRoundInfo(
             NegaMaxResult rslt,
             StopWatch watch,
-            AlphaBetaSearchMethod negaMaxAlphaBeta )
-    {
+            AlphaBetaSearchMethod negaMaxAlphaBeta) {
         long nodes = negaMaxAlphaBeta.getNodesVisited();
         long duration = watch.getCurrDuration();
-        long nps = duration == 0? nodes : nodes  * 1000 / duration;
+        long nps = duration == 0 ? nodes : nodes * 1000 / duration;
         UCI.instance.putCommand("info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
                 " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes

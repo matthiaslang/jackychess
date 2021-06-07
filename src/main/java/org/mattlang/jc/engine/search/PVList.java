@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mattlang.jc.board.Move;
 
@@ -42,5 +43,9 @@ public class PVList {
         return list.stream()
                 .map(m -> m.toStr())
                 .collect(joining(" "));
+    }
+
+    public List<Move> getPvMoves() {
+        return new ArrayList<>(list);
     }
 }
