@@ -6,12 +6,12 @@ import java.util.Stack;
 
 public class SimpleRepetitionChecker implements RepetitionChecker {
 
-    private Stack<Integer> boardStates = new Stack<>();
-    private Map<Integer, Integer> repCounts = new HashMap<>();
+    private Stack<Long> boardStates = new Stack<>();
+    private Map<Long, Integer> repCounts = new HashMap<>();
 
     @Override
     public void push(BoardRepresentation board) {
-        int hash = board.hashCode();
+        long hash = board.getZobristHash();
         boardStates.push(hash);
         Integer count = repCounts.get(hash);
         if (count == null) {
@@ -23,7 +23,7 @@ public class SimpleRepetitionChecker implements RepetitionChecker {
 
     @Override
     public void pop() {
-        int hash = boardStates.pop();
+        long hash = boardStates.pop();
         Integer count = repCounts.get(hash);
         if (count == 1) {
             repCounts.remove(hash);
