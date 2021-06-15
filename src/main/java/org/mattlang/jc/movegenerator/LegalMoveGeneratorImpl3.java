@@ -52,7 +52,7 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
             if (checkChecker.isInChess(currBoard, side)) {
                 moveCursor.remove();
-            } else if (!moveCursor.isCapture() || !moveCursor.isPawnPromotion() || !checkChecker.isInChess(currBoard, opponent)) {
+            } else if (!moveCursor.isCapture() && !moveCursor.isPawnPromotion() && !checkChecker.isInChess(currBoard, opponent)) {
                 moveCursor.remove();
                 atLeastOneLegalMove= true;
             } else {

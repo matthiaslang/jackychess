@@ -127,6 +127,14 @@ Experimental history heuristic for move ordering
 - killer move heuristic
 - clean up & rework move ordering (especially mvvlva)
 
+### Version 0.9.6
+
+- small code changes tt caching
+
+### Version 0.9.7
+
+- fix generation of non quiet moves.
+
 # todo
          
 
@@ -134,7 +142,12 @@ Experimental history heuristic for move ordering
 - todo add pseudo rnd opening option to better measure turnaments          
      
 - "check mate - distance" metric to prefer early check mates
+      
 
+- move gen/sorting: sorting field should not be part of move class; e.g. rochade moves are static....
+
+- try out internal "compact move" representation with a single long (or int if it works..) for a move. may reduce mem consumption and object creation during
+  move generation. 
 
 # bugs
 
