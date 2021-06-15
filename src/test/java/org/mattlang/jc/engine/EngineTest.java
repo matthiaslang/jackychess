@@ -8,10 +8,12 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
@@ -75,33 +77,7 @@ public class EngineTest {
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
-
-    @Test
-    public void testIterativeDeepeningZobrist() throws IOException {
-
-        initLogging();
-        UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
-                        .config(c->c.timeout.setValue(60000))
-                        .config(c->c.maxDepth.setValue(7))
-        .boards.set(() -> new Board3())
-                .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoCaching(true)))
-                //.evaluateFunction.set(() -> new CachingEvaluateFunction(new MaterialNegaMaxEvalOpt()))
-                //.legalMoveGenerator.set(() -> new CachingLegalMoveGenerator(new LegalMoveGeneratorImpl3()))
-                );
-        // now starting engine:
-        Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
-
-        System.out.println(move.toStr());
-
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e6");
-    }
-
-
+    
     @Test
     @Ignore
     public void testIterativeDeepeningMtdf() throws IOException {
