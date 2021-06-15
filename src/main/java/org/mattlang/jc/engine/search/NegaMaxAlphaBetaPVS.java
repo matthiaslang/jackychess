@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.tt.TTEntry.TTType.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -124,15 +123,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (doCaching) {
             TTEntry tte = ttCache.getTTEntry(currBoard, color);
-            if (tte != null && tte.depth >= depth) {
-                if (tte.type == EXACT_VALUE) // stored value is exact
-                    return tte.value;
-                if (tte.type == LOWERBOUND && tte.value > alpha)
-                    alpha = tte.value; // update lowerbound alpha if needed
-                else if (tte.type == UPPERBOUND && tte.value < beta)
-                    beta = tte.value; // update upperbound beta if needed
+            if (tte != null && tte.getDepth() >= depth) {
+                if (tte.isExact()) // stored value is exact
+                    return tte.getValue();
+                if (tte.isLowerBound() && tte.getValue() > alpha)
+                    alpha = tte.getValue(); // update lowerbound alpha if needed
+                else if (tte.isUpperBound() && tte.getValue() < beta)
+                    beta = tte.getValue(); // update upperbound beta if needed
                 if (alpha >= beta)
-                    return tte.value; // if lowerbound surpasses upperbound
+                    return tte.getValue(); // if lowerbound surpasses upperbound
             }
         }
 

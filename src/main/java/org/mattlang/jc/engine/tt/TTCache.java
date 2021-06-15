@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
-import static org.mattlang.jc.engine.tt.TTEntry.TTType.*;
+import static org.mattlang.jc.engine.tt.TTEntry.*;
 
 import java.util.Map;
 
@@ -10,7 +10,9 @@ import org.mattlang.jc.board.Color;
 
 public class TTCache implements StatisticsCollector {
 
-    public static final int CAPACITY = 10_000_000;
+    public static final int bitSize = 23;
+
+    public static final int CAPACITY = 1 << bitSize;
 
     private int cacheHit;
     private int cacheFail;
@@ -22,7 +24,7 @@ public class TTCache implements StatisticsCollector {
 
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
-        int hashEntry = (int) Math.floorMod(boardZobristHash, CAPACITY);
+        int hashEntry = h0(boardZobristHash);
         switch (side) {
         case WHITE:
             return checkFoundEntry(whitemap[hashEntry], boardZobristHash);
@@ -37,7 +39,7 @@ public class TTCache implements StatisticsCollector {
             cacheFail++;
             return null;
         }
-        if (entry.zobristHash == boardZobristHash) {
+        if (!entry.isEmpty() && entry.zobristHash == boardZobristHash) {
             cacheHit++;
             return entry;
         } else {
@@ -47,17 +49,20 @@ public class TTCache implements StatisticsCollector {
         }
     }
 
-    public final void storeTTEntry(BoardRepresentation board, Color side, int eval, TTEntry.TTType tpe, int depth) {
+    public final void storeTTEntry(BoardRepresentation board, Color side, int eval, byte tpe, int depth) {
+        long boardZobristHash = board.getZobristHash();
+
         // only store entries with lower depth:
         TTEntry existing = getTTEntry(board, side);
-        if (existing == null || existing.depth > depth) {
-            long boardZobristHash = board.getZobristHash();
+        if (existing == null) {
             storeTT(boardZobristHash, side, new TTEntry(boardZobristHash, eval, tpe, depth));
+        } else if (existing.isEmpty() || existing.depth > depth) {
+            existing.update(boardZobristHash, eval, tpe, depth);
         }
     }
 
     private void storeTT(long boardZobristHash, Color side, TTEntry ttEntry) {
-        int hashEntry = (int) Math.floorMod(boardZobristHash, CAPACITY);
+        int hashEntry = h0(boardZobristHash);
         switch (side) {
         case WHITE:
             if (whitemap[hashEntry] == null) {
@@ -100,5 +105,13 @@ public class TTCache implements StatisticsCollector {
         if (cacheHit + cacheFail != 0) {
             stats.put("hit/all", cacheHit * 100 / (cacheHit + cacheFail) + "%");
         }
+    }
+
+    private final int h0(long key) {
+        return (int) (key & (CAPACITY - 1));
+    }
+
+    private final int h1(long key) {
+        return (int) ((key >> 32) & (CAPACITY - 1));
     }
 }

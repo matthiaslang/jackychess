@@ -23,7 +23,7 @@ public class PVExtraction {
             moveCursor.move(rootBoard);
             TTEntry entry = cache.getTTEntry(rootBoard, color);
             moveCursor.undoMove(rootBoard);
-            if (entry != null && entry.type == TTEntry.TTType.EXACT_VALUE) {
+            if (entry != null && entry.isExact()) {
                 return Optional.of(moveCursor.getMove());
             }
         }

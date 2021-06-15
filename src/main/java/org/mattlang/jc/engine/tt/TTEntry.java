@@ -1,22 +1,48 @@
 package org.mattlang.jc.engine.tt;
 
+import lombok.Getter;
+
 public class TTEntry<T> {
 
-    public enum TTType {
-        EXACT_VALUE,
-        LOWERBOUND,
-        UPPERBOUND
+    public static final byte EMPTY = 0;
+    public static final byte EXACT_VALUE = 1;
+    public static final byte LOWERBOUND = 2;
+    public static final byte UPPERBOUND = 3;
+
+    long zobristHash;
+
+    @Getter
+    private int value;
+
+    private byte type;
+
+    @Getter
+    int depth;
+
+    public TTEntry(long zobristHash, int value, byte type, int depth) {
+        this.zobristHash = zobristHash;
+        this.value = value;
+        this.type = type;
+        this.depth = depth;
     }
 
-    public final long zobristHash;
+    public boolean isExact() {
+        return type == EXACT_VALUE;
+    }
 
-    public final int value;
+    public boolean isLowerBound() {
+        return type == LOWERBOUND;
+    }
 
-    public final TTType type;
+    public boolean isUpperBound() {
+        return type == UPPERBOUND;
+    }
 
-    public final int depth;
+    public boolean isEmpty() {
+        return type == EMPTY;
+    }
 
-    public TTEntry(long zobristHash, int value, TTType type, int depth) {
+    void update(long zobristHash, int value, byte type, int depth) {
         this.zobristHash = zobristHash;
         this.value = value;
         this.type = type;
