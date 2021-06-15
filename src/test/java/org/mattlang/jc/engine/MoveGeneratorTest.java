@@ -1,27 +1,27 @@
 package org.mattlang.jc.engine;
 
-import org.junit.Test;
-import org.mattlang.jc.board.*;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
+import org.junit.Test;
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+
 
 public class MoveGeneratorTest {
 
     @Test
     public void testPawnPromotionAndUndoing1() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         String fen = "position fen 8/P7/8/8/8/8/p7/8 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -54,7 +54,7 @@ public class MoveGeneratorTest {
         wQPromotion.undo(board);
 
         System.out.println(board.toUniCodeStr());
-        BoardRepresentation cmpboard = new Board2();
+        BoardRepresentation cmpboard = new Board3();
         cmpboard.setFenPosition(fen);
 
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
@@ -64,7 +64,7 @@ public class MoveGeneratorTest {
     @Test
     public void testPawnPromotionAndUndoing2() {
 
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -81,7 +81,7 @@ public class MoveGeneratorTest {
         // undoing:
         a7PawnMove.undo(board);
 
-        BoardRepresentation cmpboard = new Board2();
+        BoardRepresentation cmpboard = new Board3();
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
@@ -101,7 +101,7 @@ public class MoveGeneratorTest {
     @Test
     public void testMoveGenFromStartWhite() {
 
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         board.setStartPosition();
 
         MoveGenerator moveGenerator = new MoveGeneratorImpl2();
@@ -153,12 +153,12 @@ public class MoveGeneratorTest {
     @Test
     public void testRochade() {
 
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         String fen = "position fen r3k2r/8/8/8/8/8/8/R3K2R b k - 2 17 ";
         board.setFenPosition(fen);
         System.out.println(board.toUniCodeStr());
 
-        BoardRepresentation cmpboard = new Board2();
+        BoardRepresentation cmpboard = new Board3();
         cmpboard.setFenPosition(fen);
 
         MoveGenerator moveGenerator = new MoveGeneratorImpl2();
@@ -183,7 +183,7 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassant() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         String fen = "position fen 8/3p4/8/2P1P3/2p1p3/8/3P4/8 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -222,7 +222,7 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassantFromFEN() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         String fen = "position fen 8/3p4/8/2P1P3/2pPp3/8/8/8 b k d3 2 17 ";
         board.setFenPosition(fen);
 

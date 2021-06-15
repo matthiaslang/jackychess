@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
@@ -32,7 +31,7 @@ public class EngineBenchmarkTest {
                             }));
 
                     // now starting engine:
-                    Engine engine = new Engine(new Board2());
+                    Engine engine = new Engine(new Board3());
 
                     engine.getBoard().setStartPosition();
                     Move move = engine.go();

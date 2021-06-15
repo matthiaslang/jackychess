@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
@@ -26,7 +26,7 @@ public class LegalMoveCacheTest {
      */
     @Test
     public void compareMoveListHashCache() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
 
         board.setStartPosition();
 
@@ -78,7 +78,7 @@ public class LegalMoveCacheTest {
      */
     @Test
     public void compareEvalFunctionHashCache() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
 
         board.setStartPosition();
 

@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -172,7 +172,7 @@ public class EngineTest {
         
         DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
 
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
 
         System.out.println(board.toUniCodeStr());

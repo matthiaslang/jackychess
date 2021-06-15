@@ -7,14 +7,14 @@ public class BoardTest {
 
     @Test
     public void testStartPosition() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         board.setStartPosition();
         System.out.println(board.toUniCodeStr());
     }
 
     @Test
     public void testStartPositionWithMoves() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         board.setStartPosition();
 
         board.move(new BasicMove("e2e4"));
@@ -25,7 +25,7 @@ public class BoardTest {
 
     @Test
     public void testUndoingMoves() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         board.setStartPosition();
 
         System.out.println("doing moves...");
@@ -44,7 +44,7 @@ public class BoardTest {
 
         System.out.println(board.toUniCodeStr());
 
-        BoardRepresentation cmpboard = new Board2();
+        BoardRepresentation cmpboard = new Board3();
         cmpboard.setStartPosition();
         Assertions.assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }

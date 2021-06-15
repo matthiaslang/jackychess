@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.board.Board2;
+import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.*;
@@ -27,7 +27,7 @@ public class SearchParameter {
 
     public final Impl<MoveList> moveList = new Impl<>(this, BasicMoveList::new);
 
-    public final Impl<BoardRepresentation> boards = new Impl<>(this, Board2::new);
+    public final Impl<BoardRepresentation> boards = new Impl<>(this, Board3::new);
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new DefaultEvaluateFunction()));
 

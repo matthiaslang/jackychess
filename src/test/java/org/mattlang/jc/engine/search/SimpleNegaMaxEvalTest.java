@@ -21,7 +21,7 @@ public class SimpleNegaMaxEvalTest {
 
     @Test
     public void testPatt() {
-        BoardRepresentation board = new Board2();
+        BoardRepresentation board = new Board3();
         board.setFenPosition("position fen 7k/8/6Q1/8/3K4/8/8/8 b k - 2 17 ");
 
         System.out.println(board.toUniCodeStr());

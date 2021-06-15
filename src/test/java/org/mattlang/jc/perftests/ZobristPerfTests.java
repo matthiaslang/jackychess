@@ -13,7 +13,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board2;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
@@ -31,7 +30,7 @@ public class ZobristPerfTests {
         StopWatch hashMeasure = benchmark(
                 "board2 normal hash",
                 () -> {
-            Board2 board = new Board2();
+            Board3 board = new Board3();
             board.setStartPosition();
             perftReset();
             perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, visitedBoard -> {
