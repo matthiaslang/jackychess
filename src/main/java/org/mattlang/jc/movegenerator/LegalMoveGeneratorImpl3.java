@@ -16,11 +16,12 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
     @Override
     public MoveList generate(BoardRepresentation board, Color side) {
         MoveList moves = generator.generate(board, side);
-        MoveList legalMoves = filterLegalMoves(board, moves, side);
+        MoveList legalMoves = filterLegalMoves(board, checkChecker, moves, side);
         return legalMoves;
     }
 
-    private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
+    public static MoveList filterLegalMoves(BoardRepresentation currBoard, CheckChecker checkChecker, MoveList moves,
+            Color side) {
 
         for (MoveCursor moveCursor : moves) {
             moveCursor.move(currBoard);

@@ -2,11 +2,14 @@ package org.mattlang.jc.engine.sorting;
 
 import static org.mattlang.jc.engine.evaluation.Weights.PAWN_WEIGHT;
 
+import java.util.HashMap;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
+import org.mattlang.jc.engine.search.MoveScore;
 
 public class OrderCalculator {
 
@@ -26,8 +29,24 @@ public class OrderCalculator {
     private final boolean useMvvLva;
     private final Boolean usePvSorting;
 
+    private final HashMap<Move, Integer> scores;
+
     public OrderCalculator(final OrderHints orderHints, Color color,
             final int depth, int targetDepth) {
+
+        int index = targetDepth - depth;
+        // if we are at the root and have scores from a previous run, lets take them:
+        if (index == 0 && orderHints.moveScores != null) {
+            // todo assert that the first pvs should be the highest score...
+            scores = new HashMap<>();
+            for (MoveScore moveScore : orderHints.moveScores) {
+                scores.put(moveScore.move, moveScore.score);
+            }
+
+        } else {
+            scores = null;
+        }
+
         this.ply = targetDepth - depth;
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.get(ply) : null;
         this.historyHeuristic = orderHints.historyHeuristic;
@@ -56,6 +75,10 @@ public class OrderCalculator {
      * @return
      */
     public int calcOrder(Move m) {
+        if (scores != null) {
+            return -scores.get(m);
+        }
+
         if (usePvSorting && pvMove != null && pvMove.equals(m)) {
             return PV_SCORE;
         } else {

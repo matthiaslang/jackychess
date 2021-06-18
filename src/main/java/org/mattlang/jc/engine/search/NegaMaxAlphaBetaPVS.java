@@ -13,6 +13,7 @@ import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.MoveSorter;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTEntry;
@@ -158,7 +159,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return Weights.REPETITION_WEIGHT;
         }
 
-        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
+        moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+//        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
         nodes += moves.size();
         int max = alpha;
@@ -286,7 +288,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
+        moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+//        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
         /* loop through the capture moves */
         for (MoveCursor moveCursor : moves) {

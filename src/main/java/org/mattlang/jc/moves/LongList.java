@@ -45,7 +45,11 @@ public final class LongList {
         size--;
     }
 
-     long[] getRaw() {
+    long[] getRaw() {
         return data;
+    }
+
+    public void reset() {
+        size = 0;
     }
 }

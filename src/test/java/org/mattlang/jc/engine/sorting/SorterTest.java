@@ -10,11 +10,11 @@ public class SorterTest {
     @Test
     public void alreadySorted(){
         
-        Long objects[] = new Long[]{new Long(1), new Long(2), new Long(3)};
+        long objects[] = new long[]{1, 2, 3};
 
         int order[] = new int[]{ 1, 2, 3};
 
-        Sorter<Long> sorter = new Sorter<>(objects, order);
+        LongSorter sorter = new LongSorter(objects, objects.length, order);
 
         ArrayList<Long> sortedList = new ArrayList<>();
         while(sorter.hasNext()){
@@ -29,11 +29,11 @@ public class SorterTest {
     @Test
     public void unsorted(){
 
-        Long objects[] = new Long[]{ new Long(3), new Long(2), new Long(1)};
+        long objects[] = new long[]{3,2,1};
 
         int order[] = new int[]{ 3, 2, 1};
 
-        Sorter<Long> sorter = new Sorter<>(objects, order);
+        LongSorter sorter = new LongSorter(objects, objects.length, order);
 
         ArrayList<Long> sortedList = new ArrayList<>();
         while(sorter.hasNext()){

@@ -133,7 +133,15 @@ Experimental history heuristic for move ordering
 
 ### Version 0.9.7
 
-- fix generation of non quiet moves.
+- fix generation of non quiet moves which where introduced probably in 0.9.4.
+                                    
+
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
+
+### Version 0.9.8
+
+- experimental rewrite of move class and movelist
+
 
 # todo
          

@@ -38,13 +38,11 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
          * if we are already in check, then do the regular way:
          */
         if (checkChecker.isInChess(currBoard, side)) {
-            return simpleLegalMovesFiltering(currBoard, moves, side);
+            return LegalMoveGeneratorImpl3.filterLegalMoves(currBoard, checkChecker, moves, side);
         }
 
         long kingRayMask = produceRayMask(
                 side == Color.WHITE ? currBoard.getWhitePieces().getKing() : currBoard.getBlackPieces().getKing());
-
-        MoveList legals = Factory.getDefaults().moveList.create();
 
         /**
          * find out king pos:
@@ -56,20 +54,18 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
              * for king moves, do the full check;
              * do also full check if the moving figure starts from a king ray:
              */
-
             Move move = moveCursor.getMove();
             if (move.getFigureType() == FT_KING || (kingRayMask & 1L << move.getFromIndex()) > 0) {
                 moveCursor.move(currBoard);
-                if (!checkChecker.isInChess(currBoard, side)) {
-                    legals.addMove(moveCursor);
+                if (checkChecker.isInChess(currBoard, side)) {
+                    moveCursor.remove();
                 }
                 moveCursor.undoMove(currBoard);
-            } else {
-                // since the moving figure starts not from a king ray, it could not lead into a check situation:
-                legals.addMove(moveCursor);
             }
         }
-        return legals;
+        moves.setLegal(true);
+        moves.setCheckMate(moves.size() == 0);
+        return moves;
     }
 
     /**
@@ -81,26 +77,6 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
         return bitmaskProducer.genMobilityBitMask(pos, FT_QUEEN);
     }
 
-    /**
-     * Noive filtering of legal moves: check each move on the board if it puts the king into check.
-     * This is done, if no other optimization is possible.
-     *
-     * @param currBoard
-     * @param moves
-     * @param side
-     * @return
-     */
-    private MoveList simpleLegalMovesFiltering(BoardRepresentation currBoard, MoveList moves, Color side) {
-        MoveList legals = Factory.getDefaults().moveList.create();
-        for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-            if (!checkChecker.isInChess(currBoard, side)) {
-                legals.addMove(moveCursor);
-            }
-            moveCursor.undoMove(currBoard);
-        }
-        return legals;
-    }
 
     @Override
     public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {

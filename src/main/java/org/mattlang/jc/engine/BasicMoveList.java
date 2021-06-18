@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 public class BasicMoveList implements MoveList {
 
@@ -80,15 +81,18 @@ public class BasicMoveList implements MoveList {
     }
 
     @Override
-    public void addMove(MoveCursor moveCursor) {
-        moves.add(moveCursor.getMove());
-    }
-
-    @Override
     public void sortMoves(Comparator<Move> moveComparator) {
         moves.sort(moveComparator);
     }
-    
+
+    @Override
+    public void sort(OrderCalculator orderCalculator) {
+        for (Move move : moves) {
+            move.setOrder(orderCalculator.calcOrder(move));
+        }
+        moves.sort(Comparator.comparingInt(Move::getOrder));
+    }
+
     @Override
     public int size() {
         return moves.size();

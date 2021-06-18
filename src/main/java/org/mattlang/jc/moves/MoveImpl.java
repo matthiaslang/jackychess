@@ -7,21 +7,28 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.*;
 
+import lombok.Getter;
+
 /**
  * Represents a move on the board.
  * <p>
  * Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
  */
+@Getter
 public class MoveImpl implements Move {
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
+    private static final byte NO_EN_PASSANT_OPTION = 100;
+
     private byte figureType;
 
     private byte fromIndex;
 
     private byte toIndex;
 
-    private static final byte NO_EN_PASSANT_OPTION=100;
+    /**
+     * optional en passant option (for a pawn move doing a two steps move).
+     */
     private byte enPassantOption = NO_EN_PASSANT_OPTION;
 
     /**
@@ -36,6 +43,9 @@ public class MoveImpl implements Move {
      */
     private byte promotedFigure;
 
+    /**
+     * type of move.
+     */
     private byte type = NORMAL_MOVE;
 
     public static final byte NORMAL_MOVE = 1;
@@ -56,6 +66,8 @@ public class MoveImpl implements Move {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
+
+
 
     public MoveImpl(byte figureType, int from, int to, byte capturedFigure) {
         this.figureType = figureType;
@@ -95,8 +107,33 @@ public class MoveImpl implements Move {
         return new MoveImpl(from, to, capturedFigure, promotedFigure);
     }
 
-    public static MoveImpl createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
+    public static MoveImpl createEnPassant(int from, int to, byte capturedFigure, int enPassantCapturePos) {
         return new MoveImpl(from, to, capturedFigure, enPassantCapturePos);
+    }
+
+    public static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
+            int enPassantOption
+    ) {
+        return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, (byte)enPassantOption, (byte) 0,
+                capturedFigure, (byte) 0);
+    }
+
+    public static long createCastlingMove(CastlingMove castlingMove) {
+        return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
+                castlingMove.getToIndex(), (byte) 0, (byte) 0,
+                (byte) 0, (byte) 0);
+    }
+
+    public static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
+        return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, (byte) 0,
+                (byte) 0,
+                capturedFigure, promotedFigure.figureCode);
+    }
+
+    public static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
+        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, (byte) 0,
+                (byte) enPassantCapturePos,
+                capturedFigure, (byte) 0);
     }
 
     public int getFromIndex() {
@@ -226,6 +263,21 @@ public class MoveImpl implements Move {
     }
 
     public long toLongEncoded() {
+        long l = (long) type |
+                (long) figureType << 8 |
+                (long) fromIndex << 16 |
+                (long) toIndex << 24 |
+                (long) enPassantOption << 32 |
+                (long) enPassantCapturePos << 40 |
+                (long) capturedFigure << 48 |
+                (long) promotedFigure << 56;
+
+        return l;
+    }
+
+    public static long longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
+            byte enPassantOption, byte enPassantCapturePos,
+            byte capturedFigure, byte promotedFigure) {
         long l = (long) type |
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |

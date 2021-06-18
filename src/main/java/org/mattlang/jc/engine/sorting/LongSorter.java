@@ -5,9 +5,9 @@ package org.mattlang.jc.engine.sorting;
  * Does this lazy, to safe time when e.g. not all moves are needed when a cut off happened.
  * Kind of lazy merge sort to prevent sorting the complete array.
  */
-public class Sorter<T> {
+public class LongSorter {
 
-    private T[] objects;
+    private long[] objects;
     private int[] orders;
 
     private int size = 0;
@@ -17,17 +17,27 @@ public class Sorter<T> {
     private int swapCounter = 0;
     private boolean alreadyFullySorted = false;
 
-    public Sorter(T[] objects, int[] orders) {
+    public LongSorter(long[] objects, int size, int[] orders) {
         this.objects = objects;
         this.orders = orders;
-        size = objects.length;
+        this.size = size;
+    }
+
+    public static void sort(long[] data, int size, int[] order) {
+        new LongSorter(data, size, order).sortData();
+    }
+
+    private void sortData() {
+        while (!alreadyFullySorted) {
+            sortRound();
+        }
     }
 
     public boolean hasNext() {
         return size > 0;
     }
 
-    public T next() {
+    public long next() {
         if (!alreadyFullySorted) {
             sortRound();
         }
@@ -36,13 +46,13 @@ public class Sorter<T> {
     }
 
     private void sortRound() {
-        if (start == objects.length - 1) {
+        if (start >= size - 1) {
             return;
         }
         swapCounter = 0;
         int currLowest = -1;
         int currLowestIndex = -1;
-        for (int i = start; i < objects.length - 1; i++) {
+        for (int i = start; i < size - 1; i++) {
             if (orders[i] > orders[i + 1]) {
                 swap(i, i + 1);
 
@@ -68,7 +78,7 @@ public class Sorter<T> {
         orders[i] = orders[j];
         orders[j] = tmp;
 
-        T ttmp = objects[i];
+        long ttmp = objects[i];
         objects[i] = objects[j];
         objects[j] = ttmp;
     }
