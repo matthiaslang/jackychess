@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import java.util.Objects;
+
 public class PawnPromotionMove extends BasicMove {
 
     private final Figure promotedFigure;
@@ -35,5 +37,22 @@ public class PawnPromotionMove extends BasicMove {
         char figureChar = promotedFigure.figureType.figureChar;
         figureChar = Character.toLowerCase(figureChar);
         return super.toStr() + figureChar;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
+        PawnPromotionMove that = (PawnPromotionMove) o;
+        return promotedFigure == that.promotedFigure;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), promotedFigure);
     }
 }

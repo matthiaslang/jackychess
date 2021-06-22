@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import java.util.Objects;
+
 public class RochadeMove extends BasicMove {
 
     public static final RochadeMove CASTLING_WHITE_LONG = new RochadeMove(4, 2, 0, 3);
@@ -29,5 +31,22 @@ public class RochadeMove extends BasicMove {
     public void undo(BoardRepresentation board) {
         board.move(second.getToIndex(), second.getFromIndex());
         super.undo(board);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
+        RochadeMove that = (RochadeMove) o;
+        return second.equals(that.second);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), second);
     }
 }

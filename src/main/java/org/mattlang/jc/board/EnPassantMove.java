@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import java.util.Objects;
+
 public class EnPassantMove extends BasicMove {
 
     private int enPassantCapturePos;
@@ -24,5 +26,22 @@ public class EnPassantMove extends BasicMove {
         board.setPos(getToIndex(), FigureConstants.FT_EMPTY);
         // because we have the special en passant capture pos which we need to reset with the captured figure
         board.setPos(enPassantCapturePos, getCapturedFigure());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
+        EnPassantMove that = (EnPassantMove) o;
+        return enPassantCapturePos == that.enPassantCapturePos;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), enPassantCapturePos);
     }
 }
