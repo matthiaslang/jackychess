@@ -8,6 +8,8 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.PositionBasedGenerator;
+import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.moves.MoveListPool;
 
 /**
  * PerfTests Methods
@@ -76,13 +78,13 @@ public class Perft {
                     }
 
                 }
-                if (moveCursor.getMove().isEnPassant()) {
+                if (moveCursor.isEnPassant()) {
                     ep++;
                 }
-                if (moveCursor.getMove().isCastling()) {
+                if (moveCursor.isCastling()) {
                     castles++;
                 }
-                if (moveCursor.getMove().isPromotion()) {
+                if (moveCursor.isPawnPromotion()) {
                     promotion++;
                 }
             }
@@ -92,6 +94,9 @@ public class Perft {
 
             perft(generator, board, color.invert(), depth - 1, nodeConsumer);
             moveCursor.undoMove(board);
+        }
+        if (moves instanceof MoveListImpl) {
+            MoveListPool.instance.dispose((MoveListImpl) moves);
         }
     }
 }
