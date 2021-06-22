@@ -5,6 +5,7 @@ import static org.mattlang.jc.engine.evaluation.Weights.PAWN_WEIGHT;
 import java.util.HashMap;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
@@ -76,7 +77,12 @@ public class OrderCalculator {
      */
     public int calcOrder(Move m) {
         if (scores != null) {
-            return -scores.get(m);
+            Integer rslt = scores.get(m);
+            if (rslt == null){
+                UCILogger.log("hey!! this should not happen!!!!");
+                return 0;
+            }
+            return -rslt;
         }
 
         if (usePvSorting && pvMove != null && pvMove.equals(m)) {
