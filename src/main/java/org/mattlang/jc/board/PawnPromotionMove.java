@@ -33,6 +33,12 @@ public class PawnPromotionMove extends BasicMove {
     }
 
     @Override
+    public boolean isPromotion() {
+        return true;
+    }
+
+
+    @Override
     public String toStr() {
         char figureChar = promotedFigure.figureType.figureChar;
         figureChar = Character.toLowerCase(figureChar);

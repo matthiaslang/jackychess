@@ -18,6 +18,12 @@ public interface Move {
 
     String toStr();
 
+    boolean isEnPassant();
+
+    boolean isCastling();
+
+    boolean isPromotion();
+
     void setOrder(int order);
 
     int getOrder();

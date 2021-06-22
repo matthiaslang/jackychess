@@ -55,6 +55,21 @@ public class BasicMove implements Move {
     }
 
     @Override
+    public boolean isEnPassant() {
+        return false;
+    }
+
+    @Override
+    public boolean isCastling() {
+        return false;
+    }
+
+    @Override
+    public boolean isPromotion() {
+        return false;
+    }
+
+    @Override
     public void setOrder(int order) {
         this.order = order;
     }

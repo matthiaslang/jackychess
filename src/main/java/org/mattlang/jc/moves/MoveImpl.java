@@ -18,7 +18,7 @@ import lombok.Getter;
 public class MoveImpl implements Move {
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
-    private static final byte NO_EN_PASSANT_OPTION = 100;
+    public static final byte NO_EN_PASSANT_OPTION = 100;
 
     private byte figureType;
 
@@ -76,11 +76,6 @@ public class MoveImpl implements Move {
         this.capturedFigure = capturedFigure;
     }
 
-    public MoveImpl(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
-        this(figureType, from, to, capturedFigure);
-        this.enPassantOption = (byte) enPassantOption;
-    }
-
     private MoveImpl(int from, int to, byte capturedFigure, Figure promotedFigure) {
         this(FigureConstants.FT_PAWN, from, to, capturedFigure);
         this.promotedFigure = promotedFigure.figureCode;
@@ -120,18 +115,18 @@ public class MoveImpl implements Move {
 
     public static long createCastlingMove(CastlingMove castlingMove) {
         return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
-                castlingMove.getToIndex(), (byte) 0, (byte) 0,
+                castlingMove.getToIndex(), NO_EN_PASSANT_OPTION, (byte) 0,
                 (byte) 0, (byte) 0);
     }
 
     public static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, (byte) 0,
+        return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, NO_EN_PASSANT_OPTION,
                 (byte) 0,
                 capturedFigure, promotedFigure.figureCode);
     }
 
     public static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, (byte) 0,
+        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,  NO_EN_PASSANT_OPTION,
                 (byte) enPassantCapturePos,
                 capturedFigure, (byte) 0);
     }
@@ -146,6 +141,21 @@ public class MoveImpl implements Move {
 
     public String toStr() {
         return convert(fromIndex) + convert(toIndex);
+    }
+
+    @Override
+    public boolean isEnPassant() {
+        return type == ENPASSANT_MOVE;
+    }
+
+    @Override
+    public boolean isCastling() {
+        return type >= CASTLING_WHITE_LONG;
+    }
+
+    @Override
+    public boolean isPromotion() {
+        return type == PAWN_PROMOTION_MOVE;
     }
 
     @Override

@@ -29,6 +29,11 @@ public class EnPassantMove extends BasicMove {
     }
 
     @Override
+    public boolean isEnPassant() {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

@@ -1,12 +1,13 @@
 package org.mattlang.jc.perftests;
 
+import java.util.function.Consumer;
+
 import org.assertj.core.api.SoftAssertions;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.PositionBasedGenerator;
-
-import java.util.function.Consumer;
 
 /**
  * PerfTests Methods
@@ -75,13 +76,13 @@ public class Perft {
                     }
 
                 }
-                if (moveCursor.getMove() instanceof EnPassantMove) {
+                if (moveCursor.getMove().isEnPassant()) {
                     ep++;
                 }
-                if (moveCursor.getMove() instanceof RochadeMove) {
+                if (moveCursor.getMove().isCastling()) {
                     castles++;
                 }
-                if (moveCursor.getMove() instanceof PawnPromotionMove) {
+                if (moveCursor.getMove().isPromotion()) {
                     promotion++;
                 }
             }

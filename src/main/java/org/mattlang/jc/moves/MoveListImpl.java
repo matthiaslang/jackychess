@@ -20,7 +20,7 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 public class MoveListImpl implements MoveList {
 
     private LongList moves = new LongList();
-    private int[] order = new int[60];
+    private int[] order = new int[200];
 
     private boolean subset = false;
     private boolean legal = false;
@@ -30,10 +30,13 @@ public class MoveListImpl implements MoveList {
     }
 
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
-        moves.add(createNormalMove(figureType, from, to, capturedFigure, 0));
+        moves.add(createNormalMove(figureType, from, to, capturedFigure, NO_EN_PASSANT_OPTION));
     }
 
     public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
+
+        // todo backward compatibility. should be cleaned up, once we use only this impl
+        enPassantOption = enPassantOption == -1? NO_EN_PASSANT_OPTION : enPassantOption;
         boolean isOnLastLine = false;
         if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;

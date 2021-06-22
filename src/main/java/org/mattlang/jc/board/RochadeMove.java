@@ -34,6 +34,11 @@ public class RochadeMove extends BasicMove {
     }
 
     @Override
+    public boolean isCastling() {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
