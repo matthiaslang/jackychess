@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.PawnPromotionMove;
 
 public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
@@ -43,7 +42,17 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
 
         @Override
         public boolean isPawnPromotion() {
-            return currMove instanceof PawnPromotionMove;
+            return currMove.isPromotion();
+        }
+
+        @Override
+        public boolean isEnPassant() {
+            return currMove.isEnPassant();
+        }
+
+        @Override
+        public boolean isCastling() {
+            return currMove.isCastling();
         }
 
         @Override

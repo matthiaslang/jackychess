@@ -18,5 +18,9 @@ public interface MoveCursor {
 
     boolean isPawnPromotion();
 
+    boolean isEnPassant();
+
+    boolean isCastling();
+
     void remove();
 }

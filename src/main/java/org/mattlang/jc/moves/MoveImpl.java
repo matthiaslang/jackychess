@@ -15,7 +15,7 @@ import lombok.Getter;
  * Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
  */
 @Getter
-public class MoveImpl implements Move {
+public final class MoveImpl implements Move {
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
     public static final byte NO_EN_PASSANT_OPTION = 100;
@@ -106,26 +106,26 @@ public class MoveImpl implements Move {
         return new MoveImpl(from, to, capturedFigure, enPassantCapturePos);
     }
 
-    public static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
+    public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
             int enPassantOption
     ) {
         return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, (byte)enPassantOption, (byte) 0,
                 capturedFigure, (byte) 0);
     }
 
-    public static long createCastlingMove(CastlingMove castlingMove) {
+    public final static long createCastlingMove(CastlingMove castlingMove) {
         return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
                 castlingMove.getToIndex(), NO_EN_PASSANT_OPTION, (byte) 0,
                 (byte) 0, (byte) 0);
     }
 
-    public static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
+    public final static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
         return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, NO_EN_PASSANT_OPTION,
                 (byte) 0,
                 capturedFigure, promotedFigure.figureCode);
     }
 
-    public static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
+    public final static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
         return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,  NO_EN_PASSANT_OPTION,
                 (byte) enPassantCapturePos,
                 capturedFigure, (byte) 0);
