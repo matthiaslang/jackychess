@@ -203,10 +203,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     savedMoveScore = score;
                 }
                 if (max >= beta) {
-                    if (useHistoryHeuristic && !moveCursor.getMove().isCapture()) {
+                    if (useHistoryHeuristic && !moveCursor.isCapture()) {
                         updateHistoryHeuristic(color, moveCursor.getMove(), depth);
                     }
-                    if (useKillerMoves && !moveCursor.getMove().isCapture()) {
+                    if (useKillerMoves && !moveCursor.isCapture()) {
                         updateKillerMoves(color, moveCursor.getMove(), targetDepth - depth);
                     }
                     cutOff++;
