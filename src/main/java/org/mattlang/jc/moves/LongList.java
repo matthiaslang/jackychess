@@ -7,7 +7,7 @@ public final class LongList {
     private int size = 0;
 
     public LongList() {
-        this(60);
+        this(40);
     }
 
     public LongList(int maxSize) {
