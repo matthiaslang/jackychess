@@ -138,4 +138,8 @@ public class BasicMoveList implements MoveList {
         return new BasicMoveListIterator(this);
     }
 
+    @Override
+    public void close() {
+        // dont do anything, since this impl has nothing to do here
+    }
 }

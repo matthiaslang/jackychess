@@ -156,4 +156,9 @@ public class MoveListImpl implements MoveList {
         checkMate = false;
         sorted = false;
     }
+
+    @Override
+    public void close() {
+        MoveListPool.instance.dispose(this);
+    }
 }

@@ -138,7 +138,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (depth == 0) {
             pvList.clear();
-            return quiesce(currBoard, - 1, color, alpha, beta);
+            return quiesce(currBoard, -1, color, alpha, beta);
         }
 
         int pattCheckEval = stalemateChecker.eval(currBoard, color);
@@ -149,73 +149,76 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         checkTimeout();
 
-        MoveList moves = generator.generate(currBoard, color);
-        if (moves.isCheckMate()) {
-            // no more legal moves, that means we have checkmate:
-            return -KING_WEIGHT;
-        }
-
-        if (repetitionChecker.isRepetition()) {
-            return Weights.REPETITION_WEIGHT;
-        }
-
-        moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
-//        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
-
-        nodes += moves.size();
         int max = alpha;
-        boolean firstChild = true;
 
-        depth = checkToExtend(currBoard, color, depth);
-
-        PVList myPvlist = new PVList();
-        
-        for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-            repetitionChecker.push(currBoard);
-
-            int score;
-            if (firstChild) {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
-                if (doPVSSearch) {
-                    firstChild = false;
-                }
-            } else {
-                score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
-                if (max < score && score < beta) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
-                }
+        try (MoveList moves = generator.generate(currBoard, color)) {
+            if (moves.isCheckMate()) {
+                // no more legal moves, that means we have checkmate:
+                return -KING_WEIGHT;
             }
 
-            if (depth == targetDepth) {
-                moveScores.add(new MoveScore(moveCursor.getMove(), score));
+            if (repetitionChecker.isRepetition()) {
+                return Weights.REPETITION_WEIGHT;
             }
 
-            moveCursor.undoMove(currBoard);
-            repetitionChecker.pop();
-            if (score > max) {
-                max = score;
+            moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+            //        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
-                pvList.set(moveCursor.getMove());
-                pvList.add(myPvlist);
+            nodes += moves.size();
+
+            boolean firstChild = true;
+
+            depth = checkToExtend(currBoard, color, depth);
+
+            PVList myPvlist = new PVList();
+
+            for (MoveCursor moveCursor : moves) {
+                moveCursor.move(currBoard);
+                repetitionChecker.push(currBoard);
+
+                int score;
+                if (firstChild) {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max, myPvlist);
+                    if (doPVSSearch) {
+                        firstChild = false;
+                    }
+                } else {
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max, myPvlist);
+                    if (max < score && score < beta) {
+                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score, myPvlist);
+                    }
+                }
+
                 if (depth == targetDepth) {
-                    savedMove = moveCursor.getMove();
-                    savedMoveScore = score;
-                }
-                if (max >= beta) {
-                    if (useHistoryHeuristic && !moveCursor.isCapture()) {
-                        updateHistoryHeuristic(color, moveCursor.getMove(), depth);
-                    }
-                    if (useKillerMoves && !moveCursor.isCapture()) {
-                        updateKillerMoves(color, moveCursor.getMove(), targetDepth - depth);
-                    }
-                    cutOff++;
-                    break;
+                    moveScores.add(new MoveScore(moveCursor.getMove(), score));
                 }
 
+                moveCursor.undoMove(currBoard);
+                repetitionChecker.pop();
+                if (score > max) {
+                    max = score;
+
+                    pvList.set(moveCursor.getMove());
+                    pvList.add(myPvlist);
+                    if (depth == targetDepth) {
+                        savedMove = moveCursor.getMove();
+                        savedMoveScore = score;
+                    }
+                    if (max >= beta) {
+                        if (useHistoryHeuristic && !moveCursor.isCapture()) {
+                            updateHistoryHeuristic(color, moveCursor.getMove(), depth);
+                        }
+                        if (useKillerMoves && !moveCursor.isCapture()) {
+                            updateKillerMoves(color, moveCursor.getMove(), targetDepth - depth);
+                        }
+                        cutOff++;
+                        break;
+                    }
+
+                }
             }
         }
-      
+
         storeTT(currBoard, color, max, max, beta, depth);
 
         return max;
@@ -270,41 +273,42 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (x > alpha)
             alpha = x;
 
-        MoveList moves = generator.generateNonQuietMoves(currBoard, color);
-        if (moves.isCheckMate()) {
-            // no more legal moves, that means we have checkmate:
-            return -KING_WEIGHT;
-        }
-        if (repetitionChecker.isRepetition()) {
-            return Weights.REPETITION_WEIGHT;
-        }
+        try (MoveList moves = generator.generateNonQuietMoves(currBoard, color)) {
+            if (moves.isCheckMate()) {
+                // no more legal moves, that means we have checkmate:
+                return -KING_WEIGHT;
+            }
+            if (repetitionChecker.isRepetition()) {
+                return Weights.REPETITION_WEIGHT;
+            }
 
-        nodes += moves.size();
-        quiescenceNodesVisited++;
-        // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
-        // ever used in this round:
-        if (targetDepth - depth > selDepth) {
-            selDepth = targetDepth - depth;
-        }
+            nodes += moves.size();
+            quiescenceNodesVisited++;
+            // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
+            // ever used in this round:
+            if (targetDepth - depth > selDepth) {
+                selDepth = targetDepth - depth;
+            }
 
-        // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-        moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
-//        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
+            // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
+            moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+            //        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
-        /* loop through the capture moves */
-        for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-            repetitionChecker.push(currBoard);
-            x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
-            moveCursor.undoMove(currBoard);
-            repetitionChecker.pop();
-            if (x > alpha) {
-                if (x >= beta)
-                    return beta;
-                alpha = x;
+            /* loop through the capture moves */
+            for (MoveCursor moveCursor : moves) {
+                moveCursor.move(currBoard);
+                repetitionChecker.push(currBoard);
+                x = -quiesce(currBoard, depth - 1, color.invert(), -beta, -alpha);
+                moveCursor.undoMove(currBoard);
+                repetitionChecker.pop();
+                if (x > alpha) {
+                    if (x >= beta)
+                        return beta;
+                    alpha = x;
+                }
             }
         }
-    
+
         storeTT(currBoard, color, x, alpha, beta, depth);
 
         return alpha;

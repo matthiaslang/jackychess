@@ -6,7 +6,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
 
-public interface MoveList extends Iterable<MoveCursor>, MoveCollector {
+public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoCloseable {
 
     /**
      * Sort move list by a comparator.
@@ -54,4 +54,8 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector {
 
     void setCheckMate(boolean checkMate);
 
+    /**
+     * override autoclosable close to not throw any exception.
+     */
+    void close();
 }
