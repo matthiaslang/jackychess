@@ -25,6 +25,7 @@ public class MoveListImpl implements MoveList {
     private boolean subset = false;
     private boolean legal = false;
     private boolean checkMate = false;
+    private boolean sorted = false;
 
     public MoveListImpl() {
     }
@@ -95,7 +96,7 @@ public class MoveListImpl implements MoveList {
             move.fromLongEncoded(moves.get(i));
             order[i] = orderCalculator.calcOrder(move);
         }
-        LongSorter.sort(moves.getRaw(), moves.size(), order);
+        sorted = true;
     }
 
     @Override
@@ -132,7 +133,11 @@ public class MoveListImpl implements MoveList {
 
     @Override
     public Iterator<MoveCursor> iterator() {
-        return new MoveListIteratorImpl(this);
+        if (sorted) {
+            return new LazySortedMoveListIteratorImpl(new LongSorter(moves.getRaw(), moves.size(), order));
+        } else {
+            return new MoveListIteratorImpl(this);
+        }
     }
 
     public final long get(int i) {
@@ -149,5 +154,6 @@ public class MoveListImpl implements MoveList {
         subset = false;
         legal = false;
         checkMate = false;
+        sorted = false;
     }
 }

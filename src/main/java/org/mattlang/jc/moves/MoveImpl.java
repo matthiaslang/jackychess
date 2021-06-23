@@ -288,7 +288,7 @@ public final class MoveImpl implements Move {
     public static long longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
             byte enPassantOption, byte enPassantCapturePos,
             byte capturedFigure, byte promotedFigure) {
-        long l = (long) type |
+        return (long) type |
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |
                 (long) toIndex << 24 |
@@ -296,19 +296,28 @@ public final class MoveImpl implements Move {
                 (long) enPassantCapturePos << 40 |
                 (long) capturedFigure << 48 |
                 (long) promotedFigure << 56;
-
-        return l;
     }
 
     public void fromLongEncoded(long l) {
-        type = (byte) (l & 0xFFL);
-        figureType = (byte) (l >>> 8 & 0xFFL);
-        fromIndex = (byte) (l >>> 16 & 0xFFL);
-        toIndex = (byte) (l >>> 24 & 0xFFL);
-        enPassantOption = (byte) (l >>> 32 & 0xFFL);
-        enPassantCapturePos = (byte) (l >>> 40 & 0xFFL);
-        capturedFigure = (byte) (l >>> 48 & 0xFFL);
-        promotedFigure = (byte) (l >>> 56 & 0xFFL);
+        type = (byte) (l & 0b1111111);
+        figureType = (byte) (l >>> 8 & 0b1111111);
+        fromIndex = (byte) (l >>> 16 & 0b1111111);
+        toIndex = (byte) (l >>> 24 & 0b1111111);
+        enPassantOption = (byte) (l >>> 32 & 0b1111111);
+        if (type == ENPASSANT_MOVE) {
+            enPassantCapturePos = (byte) (l >>> 40 & 0b1111111);
+        }
+        capturedFigure = (byte) (l >>> 48 & 0b1111111);
+        if (type == PAWN_PROMOTION_MOVE) {
+            promotedFigure = (byte) (l >>> 56 & 0b1111111);
+        }
     }
 
+    // index == 12* 64 * 64 * 12 * 12 * 64
+    /*
+    normal: 2*6*64*64*6 == ~300000
+
+    rochade: 4
+    enpassant: 64*64*64
+     */
 }
