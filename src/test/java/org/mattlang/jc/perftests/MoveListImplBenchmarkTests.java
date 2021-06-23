@@ -64,7 +64,7 @@ public class MoveListImplBenchmarkTests {
             for (int j = 0; j < 50; j++) {
                 b.genMove(Figure.B_King.figureCode, 2, 10, (byte) 32);
             }
-            for (MoveCursor cursor: b){
+            for (MoveCursor cursor : b) {
                 cursor.isPawnPromotion();
             }
         }
