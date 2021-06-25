@@ -304,13 +304,10 @@ public final class MoveImpl implements Move {
         fromIndex = (byte) (l >>> 16 & 0b1111111);
         toIndex = (byte) (l >>> 24 & 0b1111111);
         enPassantOption = (byte) (l >>> 32 & 0b1111111);
-        if (type == ENPASSANT_MOVE) {
-            enPassantCapturePos = (byte) (l >>> 40 & 0b1111111);
-        }
+        enPassantCapturePos = (byte) (l >>> 40 & 0b1111111);
+
         capturedFigure = (byte) (l >>> 48 & 0b1111111);
-        if (type == PAWN_PROMOTION_MOVE) {
-            promotedFigure = (byte) (l >>> 56 & 0b1111111);
-        }
+        promotedFigure = (byte) (l >>> 56 & 0b1111111);
     }
 
     // index == 12* 64 * 64 * 12 * 12 * 64
