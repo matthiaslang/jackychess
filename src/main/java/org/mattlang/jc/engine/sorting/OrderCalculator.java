@@ -14,11 +14,12 @@ import org.mattlang.jc.engine.search.MoveScore;
 
 public class OrderCalculator {
 
-    private static final int PV_SCORE = -(1 << 30);
-    private static final int GOOD_CAPTURES_SCORE = -(1 << 26);
-    private static final int KILLER_SCORE = -(1 << 24);
-    private static final int HISTORY_SCORE = -(1 << 23);
-    private static final int BAD_CAPTURES_SCORE = -(1 << 22);
+    private static final int PV_SCORE = -1000_000_000;
+    private static final int GOOD_CAPTURES_SCORE = -100_000_000;
+    private static final int KILLER_SCORE = -10_000_000;
+    private static final int HISTORY_SCORE = -1_000_000;
+    private static final int BAD_CAPTURES_SCORE = -100_000;
+    private static final int QUIET_MOVE_SCORE = -10_000;
 
     private final Move pvMove;
     private final HistoryHeuristic historyHeuristic;
@@ -79,7 +80,7 @@ public class OrderCalculator {
         if (scores != null) {
             Integer rslt = scores.get(m);
             if (rslt == null){
-                UCILogger.log("hey!! this should not happen!!!!");
+                UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
                 return 0;
             }
             return -rslt;
@@ -114,7 +115,7 @@ public class OrderCalculator {
                 }
             }
             // otherwise same as "bad move". a negative value, this should then be sorted at latest
-            return useMvvLva ? -mvvLva + BAD_CAPTURES_SCORE : 0;
+            return useMvvLva ? -mvvLva + QUIET_MOVE_SCORE : 0;
         }
 
     }
