@@ -76,6 +76,15 @@ public final class MoveImpl implements Move {
         this.capturedFigure = capturedFigure;
     }
 
+    public MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure, byte enPassantOption) {
+        this.type = type;
+        this.figureType = figureType;
+        this.fromIndex = (byte) from;
+        this.toIndex = (byte) to;
+        this.capturedFigure = capturedFigure;
+        this.enPassantOption = enPassantOption;
+    }
+
     private MoveImpl(int from, int to, byte capturedFigure, Figure promotedFigure) {
         this(FigureConstants.FT_PAWN, from, to, capturedFigure);
         this.promotedFigure = promotedFigure.figureCode;
@@ -104,6 +113,12 @@ public final class MoveImpl implements Move {
 
     public static MoveImpl createEnPassant(int from, int to, byte capturedFigure, int enPassantCapturePos) {
         return new MoveImpl(from, to, capturedFigure, enPassantCapturePos);
+    }
+
+    public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
+            int enPassantOption
+    ) {
+        return new MoveImpl(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, capturedFigure, (byte)enPassantOption);
     }
 
     public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
