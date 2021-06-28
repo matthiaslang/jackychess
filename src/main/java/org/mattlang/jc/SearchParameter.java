@@ -10,7 +10,10 @@ import java.util.logging.Logger;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.*;
-import org.mattlang.jc.engine.evaluation.*;
+import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
+import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
+import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
+import org.mattlang.jc.engine.evaluation.StalemateCheckerImpl;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.sorting.BasicMoveSorter;
 import org.mattlang.jc.engine.sorting.MoveSorter;
@@ -29,7 +32,7 @@ public class SearchParameter {
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, Board3::new);
 
-    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new CachingEvaluateFunction(new DefaultEvaluateFunction()));
+    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new DefaultEvaluateFunction());
 
     public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
