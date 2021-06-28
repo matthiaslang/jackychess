@@ -129,10 +129,6 @@ public class BasicMoveList implements MoveList {
         return moves;
     }
 
-    public void setMoves(List<Move> moves) {
-        this.moves = moves;
-    }
-
     @Override
     public Iterator<MoveCursor> iterator() {
         return new BasicMoveListIterator(this);
