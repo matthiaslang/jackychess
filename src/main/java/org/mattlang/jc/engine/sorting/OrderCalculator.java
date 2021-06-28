@@ -16,6 +16,8 @@ public class OrderCalculator {
 
     private static final int PV_SCORE = -1000_000_000;
     private static final int GOOD_CAPTURES_SCORE = -100_000_000;
+    private static final int GOOD_PROMOTIONS = -90_000_000;
+
     private static final int KILLER_SCORE = -10_000_000;
     private static final int HISTORY_SCORE = -1_000_000;
     private static final int BAD_CAPTURES_SCORE = -100_000;
@@ -90,8 +92,11 @@ public class OrderCalculator {
             return PV_SCORE;
         } else {
             int mvvLva = MvvLva.calcMMVLVA(m);
-            // mvvLva = 500 best - -500 worst
-            if (m.isCapture()) {
+            // for now do not distinguish different promotions, but captures:
+            if (m.isPromotion()) {
+                return -mvvLva + GOOD_PROMOTIONS;
+            } else if (m.isCapture()) {
+                // mvvLva = 500 best - -500 worst
                 if (useMvvLva) {
                     // good captures. we should more fine grain distinguish "good"
                     if (mvvLva >= PAWN_WEIGHT) {
