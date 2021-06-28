@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
+import org.mattlang.jc.moves.BasicMoveList2;
 import org.mattlang.jc.moves.MoveListPool;
 import org.mattlang.jc.uci.UCI;
 
@@ -41,6 +42,16 @@ public class PerfNewMoveListImplBenchmarkTests {
                 });
 
         Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
+        Factory.getDefaults().moveList.set(() -> new BasicMoveList2());
+
+        StopWatch measureNew2 = Benchmarks.benchmark(
+                "new basicmovelist2",
+                () -> {
+                    runPosition3();
+                });
+
+
+        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
         Factory.getDefaults().moveList.set(() -> MoveListPool.instance.newOne());
 
         StopWatch measureNew = Benchmarks.benchmark(
@@ -49,8 +60,11 @@ public class PerfNewMoveListImplBenchmarkTests {
                     runPosition3();
                 });
 
+
+
         System.out.println("normal move list: " + measureNormal.toString());
         System.out.println("new move list impl: " + measureNew.toString());
+        System.out.println("new basicmovelist2: " + measureNew2.toString());
     }
 
     public void runPosition3() {

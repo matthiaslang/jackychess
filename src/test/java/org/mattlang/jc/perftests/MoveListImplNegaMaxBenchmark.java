@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.Board3;
+import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.moves.MoveListPool;
 import org.mattlang.jc.uci.UCI;
 
@@ -15,7 +16,7 @@ import org.mattlang.jc.uci.UCI;
  */
 public class MoveListImplNegaMaxBenchmark {
 
-    public static final int MAX_DEPTH = 5;
+    public static final int MAX_DEPTH = 6;
     public static final int TIMEOUT = 60000;
 
     /**
@@ -39,6 +40,11 @@ public class MoveListImplNegaMaxBenchmark {
         runner.benchmarkExecute(
                 normalParams()
                         .moveList.set(() -> MoveListPool.instance.newOne()));
+
+        // run with Basicmovelist2:
+        runner.benchmarkExecute(
+                normalParams()
+                        .moveList.set(() -> new BasicMoveList()));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
