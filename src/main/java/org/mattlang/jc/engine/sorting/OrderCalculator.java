@@ -21,7 +21,11 @@ public class OrderCalculator {
     private static final int KILLER_SCORE = -10_000_000;
     private static final int HISTORY_SCORE = -1_000_000;
     private static final int BAD_CAPTURES_SCORE = -100_000;
+    private static final int CASTLING_SCORE = -20_000;
     private static final int QUIET_MOVE_SCORE = -10_000;
+
+    /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
+    private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
 
     private final Move pvMove;
     private final HistoryHeuristic historyHeuristic;
@@ -99,7 +103,7 @@ public class OrderCalculator {
                 // mvvLva = 500 best - -500 worst
                 if (useMvvLva) {
                     // good captures. we should more fine grain distinguish "good"
-                    if (mvvLva >= PAWN_WEIGHT) {
+                    if (mvvLva >= GOOD_CAPTURE_WEIGHT) {
                         // good capture [100000-800000]
                         return -mvvLva + GOOD_CAPTURES_SCORE;
                     } else {
@@ -119,7 +123,11 @@ public class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-            // otherwise same as "bad move". a negative value, this should then be sorted at latest
+
+            if (m.isCastling()){
+                return CASTLING_SCORE;
+            }
+            // otherwise a quiet move:
             return useMvvLva ? -mvvLva + QUIET_MOVE_SCORE : 0;
         }
 
