@@ -8,17 +8,26 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.PawnPromotionMove;
+import org.mattlang.jc.board.RochadeMove;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.MoveScore;
 
 public class OrderCalculator {
 
-    private static final int PV_SCORE = -(1 << 30);
-    private static final int GOOD_CAPTURES_SCORE = -(1 << 26);
-    private static final int KILLER_SCORE = -(1 << 24);
-    private static final int HISTORY_SCORE = -(1 << 23);
-    private static final int BAD_CAPTURES_SCORE = -(1 << 22);
+    private static final int PV_SCORE = -1000_000_000;
+    private static final int GOOD_CAPTURES_SCORE = -100_000_000;
+    private static final int GOOD_PROMOTIONS = -90_000_000;
+
+    private static final int KILLER_SCORE = -10_000_000;
+    private static final int HISTORY_SCORE = -1_000_000;
+    private static final int BAD_CAPTURES_SCORE = -100_000;
+    private static final int CASTLING_SCORE = -20_000;
+    private static final int QUIET_MOVE_SCORE = -10_000;
+
+    /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
+    private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
 
     private final Move pvMove;
     private final HistoryHeuristic historyHeuristic;
@@ -79,7 +88,7 @@ public class OrderCalculator {
         if (scores != null) {
             Integer rslt = scores.get(m);
             if (rslt == null){
-                UCILogger.log("hey!! this should not happen!!!!");
+                UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
                 return 0;
             }
             return -rslt;
@@ -89,11 +98,14 @@ public class OrderCalculator {
             return PV_SCORE;
         } else {
             int mvvLva = MvvLva.calcMMVLVA(m);
-            // mvvLva = 500 best - -500 worst
-            if (m.isCapture()) {
+            // for now do not distinguish different promotions, but captures:
+            if (m instanceof PawnPromotionMove) {
+                return -mvvLva + GOOD_PROMOTIONS;
+            } else if (m.isCapture()) {
+                // mvvLva = 500 best - -500 worst
                 if (useMvvLva) {
                     // good captures. we should more fine grain distinguish "good"
-                    if (mvvLva >= PAWN_WEIGHT) {
+                    if (mvvLva >= GOOD_CAPTURE_WEIGHT) {
                         // good capture [100000-800000]
                         return -mvvLva + GOOD_CAPTURES_SCORE;
                     } else {
@@ -113,8 +125,12 @@ public class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-            // otherwise same as "bad move". a negative value, this should then be sorted at latest
-            return useMvvLva ? -mvvLva + BAD_CAPTURES_SCORE : 0;
+
+            if (m instanceof RochadeMove){
+                return CASTLING_SCORE;
+            }
+            // otherwise a quiet move:
+            return useMvvLva ? -mvvLva + QUIET_MOVE_SCORE : 0;
         }
 
     }
