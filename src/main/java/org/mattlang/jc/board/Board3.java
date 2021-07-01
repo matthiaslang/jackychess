@@ -357,9 +357,11 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public void setCastlingRights(byte newCastlingRights) {
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.setRights(newCastlingRights);
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        if (newCastlingRights != castlingRights.getRights()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.setRights(newCastlingRights);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        }
     }
 
     @Override
