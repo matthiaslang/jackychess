@@ -53,7 +53,7 @@ public class BenchmarkResults {
         this.pvSearch = config.activatePvsSearch.getValue();
         this.maxQuiescence = config.maxQuiescence.getValue();
         this.searchAlgorithm = config.searchAlgorithm.getValue().name();
-        this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getName();
+        this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getSimpleName();
 
     }
 
