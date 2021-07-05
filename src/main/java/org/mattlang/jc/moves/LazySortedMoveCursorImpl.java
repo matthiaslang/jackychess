@@ -60,6 +60,26 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
+    public byte getCapturedFigure() {
+        return currMoveObj.getCapturedFigure();
+    }
+
+    @Override
+    public byte getFigureType() {
+        return currMoveObj.getFigureType();
+    }
+
+    @Override
+    public int getFromIndex() {
+        return currMoveObj.getFromIndex();
+    }
+
+    @Override
+    public int getToIndex() {
+        return currMoveObj.getToIndex();
+    }
+
+    @Override
     public void remove() {
         throw new IllegalStateException("not allowed in a lazy sorted move cursor impl!");
     }
