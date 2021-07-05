@@ -22,5 +22,13 @@ public interface MoveCursor {
 
     boolean isCastling();
 
+    byte getCapturedFigure();
+
+    byte getFigureType();
+
+    int getFromIndex();
+
+    int getToIndex();
+
     void remove();
 }

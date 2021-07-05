@@ -63,6 +63,26 @@ public final class MoveCursorImpl implements MoveCursor {
     }
 
     @Override
+    public byte getCapturedFigure() {
+        return currMoveObj.getCapturedFigure();
+    }
+
+    @Override
+    public byte getFigureType() {
+        return currMoveObj.getFigureType();
+    }
+
+    @Override
+    public int getFromIndex() {
+        return currMoveObj.getFromIndex();
+    }
+
+    @Override
+    public int getToIndex() {
+        return currMoveObj.getToIndex();
+    }
+
+    @Override
     public void remove() {
         movelist.remove(iterCurser);
         size = movelist.size();

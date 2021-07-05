@@ -56,6 +56,26 @@ public class BasicMoveListIterator implements Iterator<MoveCursor> {
         }
 
         @Override
+        public byte getCapturedFigure() {
+            return currMove.getCapturedFigure();
+        }
+
+        @Override
+        public byte getFigureType() {
+            return currMove.getFigureType();
+        }
+
+        @Override
+        public int getFromIndex() {
+            return currMove.getFromIndex();
+        }
+
+        @Override
+        public int getToIndex() {
+            return currMove.getToIndex();
+        }
+
+        @Override
         public void remove() {
              iterator.remove();
         }
