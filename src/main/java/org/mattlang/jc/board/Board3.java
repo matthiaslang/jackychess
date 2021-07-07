@@ -241,6 +241,14 @@ public class Board3 implements BoardRepresentation {
 
         resetEnPassant();
 
+        // check double pawn move. here we need to mark an possible en passant follow up move:
+        // be careful: we must not set the en passant option by undoing a double pawn move:
+        if (figure == W_PAWN && to - from == 16) {
+            setEnPassantOption((from + to) / 2);
+        } else if (figure == B_PAWN && from - to == 16) {
+            setEnPassantOption((from + to) / 2);
+        }
+
         return capturedFigure;
     }
 

@@ -14,7 +14,7 @@ public final class CaptureChecker implements MoveCollector {
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption) {
+    public void genPawnMove(int from, int to, Color color, byte capturedFigureCode) {
         addCapture(capturedFigureCode);
     }
 

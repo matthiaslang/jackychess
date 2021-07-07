@@ -18,18 +18,12 @@ import lombok.Getter;
 public final class MoveImpl implements Move {
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
-    public static final byte NO_EN_PASSANT_OPTION = 100;
 
     private byte figureType;
 
     private byte fromIndex;
 
     private byte toIndex;
-
-    /**
-     * optional en passant option (for a pawn move doing a two steps move).
-     */
-    private byte enPassantOption = NO_EN_PASSANT_OPTION;
 
     /**
      * capture pos for an en passant move.
@@ -76,13 +70,12 @@ public final class MoveImpl implements Move {
         this.capturedFigure = capturedFigure;
     }
 
-    public MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure, byte enPassantOption) {
+    public MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure) {
         this.type = type;
         this.figureType = figureType;
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
-        this.enPassantOption = enPassantOption;
     }
 
     private MoveImpl(int from, int to, byte capturedFigure, Figure promotedFigure) {
@@ -115,33 +108,30 @@ public final class MoveImpl implements Move {
         return new MoveImpl(from, to, capturedFigure, enPassantCapturePos);
     }
 
-    public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
-            int enPassantOption
+    public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure
     ) {
-        return new MoveImpl(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, capturedFigure, (byte)enPassantOption);
+        return new MoveImpl(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, capturedFigure);
     }
 
-    public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure,
-            int enPassantOption
-    ) {
-        return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, (byte)enPassantOption, (byte) 0,
+    public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
+        return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, (byte) 0,
                 capturedFigure, (byte) 0);
     }
 
     public final static long createCastlingMove(CastlingMove castlingMove) {
         return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
-                castlingMove.getToIndex(), NO_EN_PASSANT_OPTION, (byte) 0,
+                castlingMove.getToIndex(), (byte) 0,
                 (byte) 0, (byte) 0);
     }
 
     public final static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to, NO_EN_PASSANT_OPTION,
+        return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,
                 (byte) 0,
                 capturedFigure, promotedFigure.figureCode);
     }
 
     public final static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,  NO_EN_PASSANT_OPTION,
+        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,  
                 (byte) enPassantCapturePos,
                 capturedFigure, (byte) 0);
     }
@@ -191,9 +181,7 @@ public final class MoveImpl implements Move {
     @Override
     public void move(BoardRepresentation board) {
         board.move(getFromIndex(), getToIndex());
-        if (enPassantOption != NO_EN_PASSANT_OPTION) {
-            board.setEnPassantOption(enPassantOption);
-        }
+
         switch (type) {
         case ENPASSANT_MOVE:
             board.setPos(enPassantCapturePos, FigureConstants.FT_EMPTY);
@@ -277,13 +265,13 @@ public final class MoveImpl implements Move {
             return false;
         MoveImpl move = (MoveImpl) o;
         return figureType == move.figureType && fromIndex == move.fromIndex && toIndex == move.toIndex
-                && enPassantOption == move.enPassantOption && enPassantCapturePos == move.enPassantCapturePos
+                && enPassantCapturePos == move.enPassantCapturePos
                 && capturedFigure == move.capturedFigure && type == move.type && promotedFigure == move.promotedFigure;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(figureType, fromIndex, toIndex, enPassantOption, enPassantCapturePos, capturedFigure,
+        return Objects.hash(figureType, fromIndex, toIndex, enPassantCapturePos, capturedFigure,
                 promotedFigure, type);
     }
 
@@ -292,7 +280,6 @@ public final class MoveImpl implements Move {
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |
                 (long) toIndex << 24 |
-                (long) enPassantOption << 32 |
                 (long) enPassantCapturePos << 40 |
                 (long) capturedFigure << 48 |
                 (long) promotedFigure << 56;
@@ -301,13 +288,12 @@ public final class MoveImpl implements Move {
     }
 
     public static long longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
-            byte enPassantOption, byte enPassantCapturePos,
+             byte enPassantCapturePos,
             byte capturedFigure, byte promotedFigure) {
         return (long) type |
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |
                 (long) toIndex << 24 |
-                (long) enPassantOption << 32 |
                 (long) enPassantCapturePos << 40 |
                 (long) capturedFigure << 48 |
                 (long) promotedFigure << 56;
@@ -318,7 +304,6 @@ public final class MoveImpl implements Move {
         figureType = (byte) (l >>> 8 & 0b1111111);
         fromIndex = (byte) (l >>> 16 & 0b1111111);
         toIndex = (byte) (l >>> 24 & 0b1111111);
-        enPassantOption = (byte) (l >>> 32 & 0b1111111);
         enPassantCapturePos = (byte) (l >>> 40 & 0b1111111);
 
         capturedFigure = (byte) (l >>> 48 & 0b1111111);

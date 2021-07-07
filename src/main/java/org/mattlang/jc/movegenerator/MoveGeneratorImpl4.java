@@ -231,14 +231,13 @@ public class MoveGeneratorImpl4 implements MoveGenerator {
             byte target = board.getFigureCode(n);
             if (target == FigureConstants.FT_EMPTY) {
 
-                collector.genPawnMove(i, n, side, (byte) 0, -1);
-                int singlemove = n;
+                collector.genPawnMove(i, n, side, (byte) 0);
                 if (isOnBaseLine) {
                     // get double move from baseline:
                     n = mailbox[mailbox64[i] + 2 * pawnOffset];
                     target = board.getFigureCode(n);
                     if (target == FigureConstants.FT_EMPTY) {
-                        collector.genPawnMove(i, n, side, (byte) 0, singlemove);
+                        collector.genPawnMove(i, n, side, (byte) 0);
                     }
                 }
             }
@@ -256,7 +255,7 @@ public class MoveGeneratorImpl4 implements MoveGenerator {
             if (n != -1) {
                 byte target = board.getFigureCode(n);
                 if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
-                    collector.genPawnMove(i, n, side, target, -1);
+                    collector.genPawnMove(i, n, side, target);
                 } else if (board.isEnPassantCapturePossible(n)) {
                     collector.genEnPassant(i, n, side, board.getEnPassantCapturePos());
                 } else if (target == FigureConstants.FT_EMPTY) {

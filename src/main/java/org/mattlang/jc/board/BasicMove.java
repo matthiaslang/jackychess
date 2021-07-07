@@ -19,8 +19,6 @@ public class BasicMove implements Move {
 
     private byte toIndex;
 
-    private byte enPassantOption = -1;
-
     private byte capturedFigure;
 
     private int order = NOT_SORTED;
@@ -35,11 +33,6 @@ public class BasicMove implements Move {
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
-    }
-
-    public BasicMove(byte figureType, int from, int to, byte capturedFigure, int enPassantOption) {
-        this(figureType, from, to, capturedFigure);
-        this.enPassantOption = (byte) enPassantOption;
     }
 
     public int getFromIndex() {
@@ -87,9 +80,6 @@ public class BasicMove implements Move {
     @Override
     public void move(BoardRepresentation board) {
         board.move(getFromIndex(), getToIndex());
-        if (enPassantOption>=0) {
-           board.setEnPassantOption(enPassantOption);
-        }
     }
 
     @Override
@@ -123,12 +113,12 @@ public class BasicMove implements Move {
             return false;
         BasicMove basicMove = (BasicMove) o;
         return figureType == basicMove.figureType && fromIndex == basicMove.fromIndex && toIndex == basicMove.toIndex
-                && enPassantOption == basicMove.enPassantOption && capturedFigure == basicMove.capturedFigure;
+                 && capturedFigure == basicMove.capturedFigure;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(figureType, fromIndex, toIndex, enPassantOption, capturedFigure);
+        return Objects.hash(figureType, fromIndex, toIndex, capturedFigure);
     }
 
 }

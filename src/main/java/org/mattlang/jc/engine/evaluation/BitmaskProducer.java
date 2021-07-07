@@ -45,7 +45,7 @@ public class BitmaskProducer implements MoveCollector {
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
         countMove(from, to, capturedFigure);
     }
 

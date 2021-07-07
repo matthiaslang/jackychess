@@ -31,13 +31,11 @@ public class MoveListImpl implements MoveList {
     }
 
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
-        moves.add(createNormalMove(figureType, from, to, capturedFigure, NO_EN_PASSANT_OPTION));
+        moves.add(createNormalMove(figureType, from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
 
-        // todo backward compatibility. should be cleaned up, once we use only this impl
-        enPassantOption = enPassantOption == -1? NO_EN_PASSANT_OPTION : enPassantOption;
         boolean isOnLastLine = false;
         if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
@@ -50,7 +48,7 @@ public class MoveListImpl implements MoveList {
             moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
             moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure, enPassantOption));
+            moves.add(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
         }
     }
