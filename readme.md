@@ -140,12 +140,20 @@ Experimental history heuristic for move ordering
 
 ### Version 0.9.8
 
-- experimental rewrite of move class and movelist
+- slightly better move ordering
 
 
-# todo
-         
+### Version 0.9.8.1
 
+- experimental rewrite of move class and movelist (not used yet)
+- experimental aspiration window (not used yet)
+
+
+- there seems to be a problem with search not to deliver best move under som circumstands.
+  - seems to happen in endgames, maybe because when detecting draw by repetition or mate it does not set best move...
+  
+           
+## todo 
 
 - todo add pseudo rnd opening option to better measure turnaments          
      
@@ -156,6 +164,8 @@ Experimental history heuristic for move ordering
 
 - try out internal "compact move" representation with a single long (or int if it works..) for a move. may reduce mem consumption and object creation during
   move generation. 
+                
+- insertion sort for move ordering and "lazy" ordering (yet already used with compact move impl)
 
 # bugs
 

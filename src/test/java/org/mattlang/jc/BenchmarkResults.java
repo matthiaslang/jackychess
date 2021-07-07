@@ -15,6 +15,7 @@ import lombok.Getter;
 @Getter
 public class BenchmarkResults {
 
+    private final Boolean aspiration;
     String name;
     StopWatch watch;
     private final long duration;
@@ -53,6 +54,7 @@ public class BenchmarkResults {
         this.pvSearch = config.activatePvsSearch.getValue();
         this.maxQuiescence = config.maxQuiescence.getValue();
         this.searchAlgorithm = config.searchAlgorithm.getValue().name();
+        this.aspiration=config.aspiration.getValue();
         this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getSimpleName();
 
     }
@@ -61,7 +63,7 @@ public class BenchmarkResults {
             { "name", "fenposition", "depth", "maxQuiescence", "duration", "formattedDuration", "searchAlgorithm",
                     "evaluateFunction",
                     "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
-                    "pvSearch", "moveListImpl" };
+                    "pvSearch", "aspiration", "moveListImpl" };
 
     public static void writeCsvReport(ArrayList<BenchmarkResults> results, String filename) throws IOException {
         try (Writer writer = new FileWriter(new File(filename));

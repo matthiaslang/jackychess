@@ -37,6 +37,7 @@ public class EngineBenchmarksRunner {
     private ArrayList<BenchmarkResults> results = new ArrayList<>();
 
     public void benchmarkExecute(SearchParameter searchParameter) {
+        gameContext = new GameContext();
         Factory.setDefaults(searchParameter);
 
         for (String position : POSITIONS) {
