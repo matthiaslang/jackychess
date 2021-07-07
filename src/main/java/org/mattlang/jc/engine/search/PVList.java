@@ -15,7 +15,7 @@ public final class PVList {
 
     }
 
-    public PVList(ArrayList<Move> pvs) {
+    public PVList(List<Move> pvs) {
         getLazyList().addAll(pvs);
     }
 
