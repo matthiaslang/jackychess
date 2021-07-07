@@ -50,11 +50,9 @@ public class Board3 implements BoardRepresentation {
         }
     }
 
-    public Board3(byte[] board, CastlingRights castlingRights,
-                  int enPassantCapturePos, int enPassantMoveTargetPos) {
+    public Board3(byte[] board, CastlingRights castlingRights, int enPassantMoveTargetPos) {
         this.board = board;
         this.castlingRights = castlingRights;
-        this.enPassantCapturePos = enPassantCapturePos;
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
 
         initPeaceList();
@@ -268,21 +266,20 @@ public class Board3 implements BoardRepresentation {
         if (o == null || getClass() != o.getClass()) return false;
         Board3 board1 = (Board3) o;
         return enPassantMoveTargetPos == board1.enPassantMoveTargetPos &&
-                enPassantCapturePos == board1.enPassantCapturePos &&
                 Arrays.equals(board, board1.board) &&
                 castlingRights.equals(board1.castlingRights);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(castlingRights, enPassantMoveTargetPos, enPassantCapturePos);
+        int result = Objects.hash(castlingRights, enPassantMoveTargetPos);
         result = 31 * result + Arrays.hashCode(board);
         return result;
     }
 
     @Override
     public Board3 copy() {
-        return new Board3(board.clone(), castlingRights.copy(), enPassantCapturePos, enPassantMoveTargetPos);
+        return new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos);
     }
 
     @Override
@@ -297,11 +294,6 @@ public class Board3 implements BoardRepresentation {
      * -1 if no en passant is possible.
      */
     private int enPassantMoveTargetPos = -1;
-    /**
-     * the capture pos of an en passant move (if an en passant move would be possible as next move on the board).
-     * -1 if no en passant is possible.
-     */
-    private int enPassantCapturePos = -1;
 
     @Override
     public boolean isEnPassantCapturePossible(int n) {
@@ -310,7 +302,7 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public int getEnPassantCapturePos() {
-        return enPassantCapturePos;
+        return calcEnPassantCaptureFromEnPassantOption();
     }
 
     @Override
@@ -320,22 +312,24 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
         this.enPassantMoveTargetPos = enPassantOption;
-        if (enPassantMoveTargetPos >=16 && enPassantMoveTargetPos<=23) {
-            enPassantCapturePos = enPassantMoveTargetPos + 8;
-        } else {
-            enPassantCapturePos = enPassantMoveTargetPos - 8;
-        }
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
+
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
     }
 
+    private int calcEnPassantCaptureFromEnPassantOption(){
+        if (enPassantMoveTargetPos >=16 && enPassantMoveTargetPos<=23) {
+            return enPassantMoveTargetPos + 8;
+        } else {
+            return enPassantMoveTargetPos - 8;
+        }
+    }
 
     private void resetEnPassant() {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
         enPassantMoveTargetPos = -1;
-        enPassantCapturePos = -1;
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantCapturePos, enPassantMoveTargetPos);
+        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
     }
 
     public PieceList getBlackPieces() {
