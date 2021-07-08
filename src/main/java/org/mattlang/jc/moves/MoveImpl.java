@@ -25,11 +25,6 @@ public final class MoveImpl implements Move {
 
     private byte toIndex;
 
-    /**
-     * capture pos for an en passant move.
-     */
-    private byte enPassantCapturePos;
-
     private byte capturedFigure;
 
     /**
@@ -43,12 +38,12 @@ public final class MoveImpl implements Move {
     private byte type = NORMAL_MOVE;
 
     public static final byte NORMAL_MOVE = 1;
-    public static final byte ENPASSANT_MOVE = 2;
-    public static final byte PAWN_PROMOTION_MOVE = 4;
-    public static final byte CASTLING_WHITE_LONG = 8;
-    public static final byte CASTLING_WHITE_SHORT = 16;
-    public static final byte CASTLING_BLACK_SHORT = 32;
-    public static final byte CASTLING_BLACK_LONG = 64;
+    public static final byte PAWN_PROMOTION_MOVE = 2;
+    public static final byte CASTLING_WHITE_LONG = 3;
+    public static final byte CASTLING_WHITE_SHORT = 4;
+    public static final byte CASTLING_BLACK_SHORT = 5;
+    public static final byte CASTLING_BLACK_LONG = 6;
+    public static final byte ENPASSANT_MOVE = 7;
 
     private int order = NOT_SORTED;
 
@@ -86,8 +81,7 @@ public final class MoveImpl implements Move {
 
     private MoveImpl(int from, int to, byte capturedFigure, int enPassantCapturePos) {
         this(FigureConstants.FT_PAWN, from, to, capturedFigure);
-        this.enPassantCapturePos = (byte) enPassantCapturePos;
-        this.type = ENPASSANT_MOVE;
+        this.type = (byte) (ENPASSANT_MOVE + enPassantCapturePos);
     }
 
     private MoveImpl(CastlingMove castlingMove) {
@@ -114,25 +108,24 @@ public final class MoveImpl implements Move {
     }
 
     public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
-        return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, (byte) 0,
+        return longRepresentation(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex,
                 capturedFigure, (byte) 0);
     }
 
     public final static long createCastlingMove(CastlingMove castlingMove) {
         return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
-                castlingMove.getToIndex(), (byte) 0,
+                castlingMove.getToIndex(),
                 (byte) 0, (byte) 0);
     }
 
     public final static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
         return longRepresentation(PAWN_PROMOTION_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,
-                (byte) 0,
                 capturedFigure, promotedFigure.figureCode);
     }
 
     public final static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from, (byte) to,  
-                (byte) enPassantCapturePos,
+        return longRepresentation((byte) (ENPASSANT_MOVE + enPassantCapturePos), FigureConstants.FT_PAWN, (byte) from,
+                (byte) to,
                 capturedFigure, (byte) 0);
     }
 
@@ -150,12 +143,12 @@ public final class MoveImpl implements Move {
 
     @Override
     public boolean isEnPassant() {
-        return type == ENPASSANT_MOVE;
+        return type >= ENPASSANT_MOVE;
     }
 
     @Override
     public boolean isCastling() {
-        return type >= CASTLING_WHITE_LONG;
+        return type >= CASTLING_WHITE_LONG && type <=CASTLING_BLACK_LONG;
     }
 
     @Override
@@ -178,30 +171,35 @@ public final class MoveImpl implements Move {
         return toStr();
     }
 
+    private int decodeEnPassantCapturePos(){
+        return type - ENPASSANT_MOVE;
+    }
+
     @Override
     public void move(BoardRepresentation board) {
         board.move(getFromIndex(), getToIndex());
 
-        switch (type) {
-        case ENPASSANT_MOVE:
-            board.setPos(enPassantCapturePos, FigureConstants.FT_EMPTY);
-            break;
-        case PAWN_PROMOTION_MOVE:
-            board.setPos(getToIndex(), promotedFigure);
-            break;
+        if (type >= ENPASSANT_MOVE) {
+            board.setPos(decodeEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+        } else {
+            switch (type) {
+            case PAWN_PROMOTION_MOVE:
+                board.setPos(getToIndex(), promotedFigure);
+                break;
 
-        case CASTLING_WHITE_LONG:
-            CastlingMove.CASTLING_WHITE_LONG.moveSecond(board);
-            break;
-        case CASTLING_WHITE_SHORT:
-            CastlingMove.CASTLING_WHITE_SHORT.moveSecond(board);
-            break;
-        case CASTLING_BLACK_SHORT:
-            CastlingMove.CASTLING_BLACK_SHORT.moveSecond(board);
-            break;
-        case CASTLING_BLACK_LONG:
-            CastlingMove.CASTLING_BLACK_LONG.moveSecond(board);
-            break;
+            case CASTLING_WHITE_LONG:
+                CastlingMove.CASTLING_WHITE_LONG.moveSecond(board);
+                break;
+            case CASTLING_WHITE_SHORT:
+                CastlingMove.CASTLING_WHITE_SHORT.moveSecond(board);
+                break;
+            case CASTLING_BLACK_SHORT:
+                CastlingMove.CASTLING_BLACK_SHORT.moveSecond(board);
+                break;
+            case CASTLING_BLACK_LONG:
+                CastlingMove.CASTLING_BLACK_LONG.moveSecond(board);
+                break;
+            }
         }
     }
 
@@ -211,34 +209,35 @@ public final class MoveImpl implements Move {
         if (capturedFigure != 0) {
             board.setPos(getToIndex(), capturedFigure);
         }
-
-        switch (type) {
-        case ENPASSANT_MOVE:
+        if (type >= ENPASSANT_MOVE) {
             // override the "default" overrider field with empty..
             board.setPos(getToIndex(), FigureConstants.FT_EMPTY);
             // because we have the special en passant capture pos which we need to reset with the captured figure
-            board.setPos(enPassantCapturePos, getCapturedFigure());
-            break;
+            board.setPos(decodeEnPassantCapturePos(), getCapturedFigure());
 
-        case PAWN_PROMOTION_MOVE:
-            Figure promotedFigure = board.getFigure(getFromIndex());
-            Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
-            board.setPos(getFromIndex(), pawn);
+        } else {
+            switch (type) {
 
-            break;
+            case PAWN_PROMOTION_MOVE:
+                Figure promotedFigure = board.getFigure(getFromIndex());
+                Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
+                board.setPos(getFromIndex(), pawn);
 
-        case CASTLING_WHITE_LONG:
-            CastlingMove.CASTLING_WHITE_LONG.undoSecond(board);
-            break;
-        case CASTLING_WHITE_SHORT:
-            CastlingMove.CASTLING_WHITE_SHORT.undoSecond(board);
-            break;
-        case CASTLING_BLACK_SHORT:
-            CastlingMove.CASTLING_BLACK_SHORT.undoSecond(board);
-            break;
-        case CASTLING_BLACK_LONG:
-            CastlingMove.CASTLING_BLACK_LONG.undoSecond(board);
-            break;
+                break;
+
+            case CASTLING_WHITE_LONG:
+                CastlingMove.CASTLING_WHITE_LONG.undoSecond(board);
+                break;
+            case CASTLING_WHITE_SHORT:
+                CastlingMove.CASTLING_WHITE_SHORT.undoSecond(board);
+                break;
+            case CASTLING_BLACK_SHORT:
+                CastlingMove.CASTLING_BLACK_SHORT.undoSecond(board);
+                break;
+            case CASTLING_BLACK_LONG:
+                CastlingMove.CASTLING_BLACK_LONG.undoSecond(board);
+                break;
+            }
         }
     }
 
@@ -265,13 +264,12 @@ public final class MoveImpl implements Move {
             return false;
         MoveImpl move = (MoveImpl) o;
         return figureType == move.figureType && fromIndex == move.fromIndex && toIndex == move.toIndex
-                && enPassantCapturePos == move.enPassantCapturePos
                 && capturedFigure == move.capturedFigure && type == move.type && promotedFigure == move.promotedFigure;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(figureType, fromIndex, toIndex, enPassantCapturePos, capturedFigure,
+        return Objects.hash(figureType, fromIndex, toIndex, capturedFigure,
                 promotedFigure, type);
     }
 
@@ -280,34 +278,30 @@ public final class MoveImpl implements Move {
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |
                 (long) toIndex << 24 |
-                (long) enPassantCapturePos << 40 |
-                (long) capturedFigure << 48 |
-                (long) promotedFigure << 56;
+                (long) capturedFigure << 32 |
+                (long) promotedFigure << 40;
 
         return l;
     }
 
     public static long longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
-             byte enPassantCapturePos,
             byte capturedFigure, byte promotedFigure) {
         return (long) type |
                 (long) figureType << 8 |
                 (long) fromIndex << 16 |
                 (long) toIndex << 24 |
-                (long) enPassantCapturePos << 40 |
-                (long) capturedFigure << 48 |
-                (long) promotedFigure << 56;
+                (long) capturedFigure << 32 |
+                (long) promotedFigure << 40;
     }
 
     public void fromLongEncoded(long l) {
-        type = (byte) (l & 0b1111111);
+        type = (byte) (l & 0xFF);
         figureType = (byte) (l >>> 8 & 0b1111111);
         fromIndex = (byte) (l >>> 16 & 0b1111111);
         toIndex = (byte) (l >>> 24 & 0b1111111);
-        enPassantCapturePos = (byte) (l >>> 40 & 0b1111111);
 
-        capturedFigure = (byte) (l >>> 48 & 0b1111111);
-        promotedFigure = (byte) (l >>> 56 & 0b1111111);
+        capturedFigure = (byte) (l >>> 32 & 0b1111111);
+        promotedFigure = (byte) (l >>> 40 & 0b1111111);
     }
 
     // index == 12* 64 * 64 * 12 * 12 * 64
