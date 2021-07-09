@@ -16,7 +16,7 @@ import org.mattlang.jc.uci.UCI;
  */
 public class MoveListImplNegaMaxBenchmark {
 
-    public static final int MAX_DEPTH = 6;
+    public static final int MAX_DEPTH = 4;
     public static final int TIMEOUT = 60000;
 
     /**
@@ -57,14 +57,14 @@ public class MoveListImplNegaMaxBenchmark {
     private SearchParameter normalParams() {
         SearchParameter searchParameter = Factory.createIterativeDeepeningPVS()
                 .config(c -> c.timeout.setValue(TIMEOUT))
-                .config(c -> c.activatePvsSearch.setValue(true))
+                .config(c -> c.activatePvsSearch.setValue(false))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.useKillerMoves.setValue(true))
-                .config(c -> c.useHistoryHeuristic.setValue(true))
-                .config(c -> c.useMvvLvaSorting.setValue(true))
-                .config(c -> c.usePvSorting.setValue(true))
+                .config(c -> c.useTTCache.setValue(false))
+                .config(c -> c.useKillerMoves.setValue(false))
+                .config(c -> c.useHistoryHeuristic.setValue(false))
+                .config(c -> c.useMvvLvaSorting.setValue(false))
+                .config(c -> c.usePvSorting.setValue(false))
                 .boards.set(() -> new Board3());
 
         return searchParameter;
