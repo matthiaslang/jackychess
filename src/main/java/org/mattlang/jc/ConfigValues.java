@@ -11,7 +11,7 @@ public class ConfigValues {
 
     public final UCISpinOption timeout = new UCITimeoutOption(allOptions);
     public final UCISpinOption maxQuiescence = new UCISpinOption(allOptions, "quiescence", 0, 10, 10);
-    public final UCISpinOption maxDepth = new UCISpinOption(allOptions, "maxdepth", 3, 30, 15);
+    public final UCISpinOption maxDepth = new UCISpinOption(allOptions, "maxdepth", 3, 50, 20);
 
     public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, "activatePvsSearch", true);
     public final UCICheckOption useTTCache = new UCICheckOption(allOptions, "useTTCache", true);
@@ -23,6 +23,9 @@ public class ConfigValues {
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
             new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.DEFAULT);
+
+    public final UCIComboOption<MoveListImpls> moveListImpls =
+            new UCIComboOption(allOptions, "MoveListImpl", MoveListImpls.class, MoveListImpls.DEFAULT);
 
 
     public final UCICheckOption useHistoryHeuristic = new UCICheckOption(allOptions, "useHistoryHeuristic", true);
