@@ -1,16 +1,17 @@
 package org.mattlang.jc.engine.search;
 
+import static java.lang.String.format;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -22,6 +23,8 @@ import org.mattlang.jc.uci.UCI;
 import lombok.Getter;
 
 public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
+
+    private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
@@ -167,7 +170,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, OrderHints orderHints, int currdepth) {
 
-        UCILogger.log("aspiration start on depth %s %s", currdepth, aspWindow.descr());
+        LOGGER.info(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
 
         NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
                 currdepth,
@@ -176,13 +179,13 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
-            UCILogger.log("aspiration widened to %s", aspWindow.descr());
+            LOGGER.info(format("aspiration widened to %s", aspWindow.descr()));
             rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime, orderHints);
         }
-        UCILogger.log("aspiration stabilized: %s", aspWindow.descr());
+        LOGGER.info(format("aspiration stabilized: %s", aspWindow.descr()));
         return rslt;
     }
 
