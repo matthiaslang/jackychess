@@ -1,7 +1,10 @@
 package org.mattlang.jc.uci;
 
+import static java.util.logging.Level.SEVERE;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
@@ -10,6 +13,8 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 
 public class UciProcessor {
+
+    private static final Logger LOGGER = Logger.getLogger(UciProcessor.class.getSimpleName());
 
     public static final String CMD_UCI = "uci";
     public static final String CMD_QUIT = "quit";
@@ -31,11 +36,15 @@ public class UciProcessor {
     private AsyncEngine asyncEngine = new AsyncEngine();
 
     public void start() {
-        while (!finished) {
-            Optional<String> optCmd = UCI.instance.readCommand();
-            if (optCmd.isPresent()) {
-                processCmd(optCmd.get());
+        try {
+            while (!finished) {
+                Optional<String> optCmd = UCI.instance.readCommand();
+                if (optCmd.isPresent()) {
+                    processCmd(optCmd.get());
+                }
             }
+        } catch (Exception e) {
+            LOGGER.log(SEVERE, "Error in main uci processing loop!", e);
         }
     }
 
