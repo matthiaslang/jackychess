@@ -116,7 +116,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private int negaMaximize(BoardRepresentation currBoard, int depth, Color color,
-            int alpha, int beta /*, PVList pvList*/) {
+            int alpha, int beta) {
         nodesVisited++;
 
         int ply = targetDepth - depth + 1;
@@ -136,7 +136,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         if (depth == 0) {
-//            pvList.clear();
             return quiesce(currBoard, -1, color, alpha, beta);
         }
 
@@ -162,7 +161,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
             moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
-            //        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
             nodes += moves.size();
 
@@ -170,22 +168,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             depth = checkToExtend(currBoard, color, depth);
 
-            PVList myPvlist = new PVList();
-
             for (MoveCursor moveCursor : moves) {
                 moveCursor.move(currBoard);
                 repetitionChecker.push(currBoard);
 
                 int score;
                 if (firstChild) {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max /*, myPvlist*/);
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max);
                     if (doPVSSearch) {
                         firstChild = false;
                     }
                 } else {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max /*, myPvlist*/);
+                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max);
                     if (max < score && score < beta) {
-                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score /*, myPvlist*/);
+                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score);
                     }
                 }
 
@@ -199,8 +195,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     max = score;
 
                     Move currMove = moveCursor.getMove();
-//                    pvList.set(currMove);
-//                    pvList.add(myPvlist);
                     pvArray.set(currMove, ply);
                     if (depth == targetDepth) {
                         savedMove = currMove;
@@ -315,7 +309,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
             moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
-            //        moves = moveSorter.sort(moves, orderHints, color, depth, targetDepth);
 
             /* loop through the capture moves */
             for (MoveCursor moveCursor : moves) {
@@ -361,10 +354,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         initContext(context);
 
-//        PVList pvList = new PVList();
-        negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta /*, pvList*/);
+        negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta);
 
-        return new NegaMaxResult(savedMoveScore, moveScores, pvArray.getPvMoves(),targetDepth, selDepth);
+        return new NegaMaxResult(savedMoveScore, moveScores, pvArray.getPvMoves(), targetDepth, selDepth);
 
     }
 
