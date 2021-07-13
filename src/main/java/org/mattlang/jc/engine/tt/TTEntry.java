@@ -19,6 +19,9 @@ public class TTEntry<T> {
     @Getter
     int depth;
 
+    @Getter
+    byte aging;
+
     public TTEntry(long zobristHash, int value, byte type, int depth) {
         this.zobristHash = zobristHash;
         this.value = value;
@@ -42,10 +45,11 @@ public class TTEntry<T> {
         return type == EMPTY;
     }
 
-    void update(long zobristHash, int value, byte type, int depth) {
+    void update(long zobristHash, int value, byte type, int depth, byte aging) {
         this.zobristHash = zobristHash;
         this.value = value;
         this.type = type;
         this.depth = depth;
+        this.aging = aging;
     }
 }

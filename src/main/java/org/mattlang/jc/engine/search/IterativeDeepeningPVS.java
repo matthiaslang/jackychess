@@ -121,6 +121,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
         OrderHints orderHints = NO_HINTS;
 
+        gameContext.initNewMoveSearch(gameState);
+
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
 

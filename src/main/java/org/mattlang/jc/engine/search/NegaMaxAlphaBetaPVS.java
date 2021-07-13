@@ -41,7 +41,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
     private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
 
-    public TTCache ttCache = new TTCache();
+    public TTCache ttCache;
 
     private PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -98,6 +98,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private void initContext(GameContext context) {
           killerMoves = context.getKillerMoves();
           historyHeuristic = context.getHistoryHeuristic();
+          ttCache = context.getTtCache();
     }
 
     public void resetStatistics() {

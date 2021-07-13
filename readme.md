@@ -145,13 +145,22 @@ Experimental history heuristic for move ordering
 
 ### Version 0.9.8.1
 
-- experimental rewrite of move class and movelist (not used yet)
-- experimental aspiration window (not used yet)
+- experimental rewrite of move class and movelist (as uci option)
+- some opts for en passant moves saving some mem per move in general.
+- experimental aspiration window (as uci option)
+- reuse TT Cache for the complete game with aging             
 
 
 - there seems to be a problem with search not to deliver best move under som circumstands.
   - seems to happen in endgames, maybe because when detecting draw by repetition or mate it does not set best move...
-  
+       
+with the new move list impl and aspiration, it seem to be a bit better than before on turnaments with 15s time per move.
+On lower time turnaments 2s etc. there does not seem any benefit.
+
+
+
+    Jacky 0.9.7 vs 0.9.8.1         : Turnament 5min: jacky 0.9.8.1 wins 65%
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: wins 70%
            
 ## todo 
 
