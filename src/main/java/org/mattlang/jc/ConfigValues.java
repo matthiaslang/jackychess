@@ -16,7 +16,7 @@ public class ConfigValues {
     public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, "activatePvsSearch", true);
     public final UCICheckOption useTTCache = new UCICheckOption(allOptions, "useTTCache", true);
 
-    public final UCICheckOption aspiration = new UCICheckOption(allOptions, "aspiration", false);
+    public final UCICheckOption aspiration = new UCICheckOption(allOptions, "aspiration", true);
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
             new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
