@@ -146,7 +146,9 @@ public class UciProcessor {
     }
 
     private void identifyYourself() {
-        UCI.instance.putCommand("id name JackyChess " + Factory.getAppProps().getProperty("version"));
+        String version = Factory.getAppProps().getProperty("version");
+        String buildtime = Factory.getAppProps().getProperty("buildtime");
+        UCI.instance.putCommand("id name JackyChess " + version + " build at: " + buildtime);
         UCI.instance.putCommand("id author Matthias Lang");
 
         UCIOption.writeOptionsDescriptions(configValues.getAllOptions());
