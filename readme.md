@@ -163,6 +163,12 @@ On lower time turnaments 2s etc. there does not seem any benefit.
     Stockfisch Level 4 (Elo ~ 1560): 10s move: wins 85%
 
 
+### Version 0.9.8.1
+
+- fix: missing reset in board stats generator lead to evaluate to wrong patt situations
+
+
+
 ### Version 0.9.9
 
 - experiments with better tt caching...
