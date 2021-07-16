@@ -1,11 +1,13 @@
 package org.mattlang.jc.engine.search;
 
+import static java.lang.String.format;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
@@ -18,8 +20,11 @@ import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
+import lombok.Getter;
+
 public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
 
+    private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
@@ -28,6 +33,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
     private boolean useMvvLvaSorting = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
+
+    private boolean useAspirationWindow = Factory.getDefaults().getConfig().aspiration.getValue();
 
     public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
@@ -39,6 +46,66 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
         return iterativeSearch(gameState, gameContext, maxDepth).getSavedMove();
+    }
+
+    @Getter
+    static class Window {
+
+        int alpha;
+        int beta;
+
+        /**
+         * the last score where the window is build around.
+         */
+        int lastScore;
+
+        /**
+         * Widening phase: 0 means not widened, just limited.
+         * Each increment means another widening of the window happened.
+         */
+        int wideningPhase = 0;
+
+        public Window(int alpha, int beta) {
+            this.alpha = alpha;
+            this.beta = beta;
+        }
+
+        public void limitWindow(NegaMaxResult rslt) {
+            lastScore = rslt.max;
+            alpha = lastScore - 50;
+            beta = lastScore + 50;
+
+            wideningPhase = 0;
+        }
+
+        public boolean outsideWindow(NegaMaxResult rslt) {
+            int score = rslt.max;
+            return score <= alpha || score >= beta;
+        }
+
+        public void widenWindow(NegaMaxResult rslt) {
+            int delta = wideningPhase++ * 50 + 50;
+
+            int score = rslt.max;
+            lastScore = score;
+            if (score <= alpha) {
+                alpha =alpha -  delta - (alpha - score);
+            } else if (score >= beta) {
+                beta = beta + delta + (score - beta);
+            }
+
+            // after 3 phases, set the full window:
+
+            // todo test: after first limit set it to full window... may be this is better...
+            if (wideningPhase > 0) {
+                alpha = ALPHA_START;
+                beta = BETA_START;
+            }
+        }
+
+        public String descr() {
+            return "lastscore: " + lastScore + " window[" + alpha + ", " + beta + "]";
+        }
     }
 
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
@@ -54,15 +121,26 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
         OrderHints orderHints = NO_HINTS;
 
+        gameContext.initNewMoveSearch(gameState);
+
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
                 UCI.instance.putCommand("info depth " + currdepth);
 
-                rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
-                        currdepth,
-                        ALPHA_START, BETA_START,
-                        stopTime, orderHints);
+                Window aspWindow = new Window(ALPHA_START, BETA_START);
+
+                if (useAspirationWindow && currdepth >= 2) {
+                    aspWindow.limitWindow(rslt);
+                    rslt = searchWithAspirationWindow(aspWindow, gameState, gameContext, stopTime, orderHints,
+                            currdepth);
+
+                } else {
+                    rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                            currdepth,
+                            aspWindow.getAlpha(), aspWindow.getBeta(),
+                            stopTime, orderHints);
+                }
 
                 savedMove = negaMaxAlphaBeta.getSavedMove();
 
@@ -89,6 +167,28 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         }
 
         return new IterativeSearchResult(savedMove, rslt);
+    }
+
+    private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
+            long stopTime, OrderHints orderHints, int currdepth) {
+
+        LOGGER.info(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
+
+        NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                currdepth,
+                aspWindow.getAlpha(), aspWindow.getBeta(),
+                stopTime, orderHints);
+
+        while (aspWindow.outsideWindow(rslt)) {
+            aspWindow.widenWindow(rslt);
+            LOGGER.info(format("aspiration widened to %s", aspWindow.descr()));
+            rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                    currdepth,
+                    aspWindow.getAlpha(), aspWindow.getBeta(),
+                    stopTime, orderHints);
+        }
+        LOGGER.info(format("aspiration stabilized: %s", aspWindow.descr()));
+        return rslt;
     }
 
     public static void printRoundInfo(

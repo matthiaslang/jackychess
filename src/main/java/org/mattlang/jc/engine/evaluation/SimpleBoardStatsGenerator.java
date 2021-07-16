@@ -51,7 +51,7 @@ public class SimpleBoardStatsGenerator implements MoveCollector, BoardStatsGener
     }
 
     @Override
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
         countMove(from, to, capturedFigure);
     }
 

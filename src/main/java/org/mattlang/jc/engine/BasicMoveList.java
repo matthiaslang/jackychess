@@ -31,7 +31,7 @@ public class BasicMoveList implements MoveList {
         moves.add(new BasicMove(figureType, from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
         boolean isOnLastLine = false;
         if (side == WHITE) {
             isOnLastLine = to >= 56 && to <= 63;
@@ -44,7 +44,7 @@ public class BasicMoveList implements MoveList {
             moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
             moves.add(new PawnPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(new BasicMove(FigureConstants.FT_PAWN, from, to, capturedFigure, enPassantOption));
+            moves.add(new BasicMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
         }
     }

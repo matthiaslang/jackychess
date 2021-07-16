@@ -2,8 +2,10 @@ package org.mattlang.jc.uci;
 
 import java.util.HashMap;
 
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
+import org.mattlang.jc.engine.tt.TTCache;
 
 import lombok.Getter;
 
@@ -21,6 +23,9 @@ public class GameContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
+    @Getter
+    public TTCache ttCache = new TTCache();
+
     private HashMap<String, Object> context = new HashMap<>();
 
     public <T> T getContext(String name) {
@@ -29,5 +34,16 @@ public class GameContext {
 
     public <T> void setContext(String name, T ctx) {
         context.put(name, ctx);
+    }
+
+    /**
+     * To do any initialisations before the next ply the engine should do.
+     *
+     * @param gameState
+     */
+    public void initNewMoveSearch(GameState gameState) {
+
+        /** update aging of tt cache. */
+        ttCache.updateAging(gameState.getBoard());
     }
 }

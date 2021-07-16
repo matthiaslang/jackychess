@@ -7,13 +7,19 @@
     <packaging>jar</packaging>
     <groupId>org.mattlang</groupId>
     <artifactId>jackychess</artifactId>
-    <version>0.9.8</version>
+    <version>0.9.8.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

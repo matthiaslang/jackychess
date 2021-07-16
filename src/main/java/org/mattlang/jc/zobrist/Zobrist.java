@@ -1,12 +1,12 @@
 package org.mattlang.jc.zobrist;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.FigureConstants;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import java.util.Random;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.FigureConstants;
 
 public class Zobrist {
 
@@ -16,7 +16,6 @@ public class Zobrist {
     private static final int MAXFIG = 6 + 6 + 2;
     // castling rights are saved in the board by a nibble, so use 16 rnd values
     private static final int MAXCASTLING = 16;
-    private static final int ENPASSANT_CAP_POS_IDX = 12;
     private static final int ENPASSANT_MOVE_TARGET_POS_IDX = 13;
 
     private static long[][] rnd = new long[MAXPOS][MAXFIG];
@@ -47,7 +46,7 @@ public class Zobrist {
                 h = addFig(h, i, fig);
             }
         }
-        h = updateEnPassant(h, board.getEnPassantCapturePos(), board.getEnPassantMoveTargetPos());
+        h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
         h = updateCastling(h, board.getCastlingRights());
 
         return h;
@@ -67,8 +66,7 @@ public class Zobrist {
         return h;
     }
 
-    public static long updateEnPassant(long h, int enPassantCapturePos, int enPassantMoveTargetPos) {
-        h ^= rnd[enPassantCapturePos + 1][ENPASSANT_CAP_POS_IDX];
+    public static long updateEnPassant(long h,  int enPassantMoveTargetPos) {
         h ^= rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
         return h;
     }

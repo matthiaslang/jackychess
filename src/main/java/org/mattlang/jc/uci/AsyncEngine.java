@@ -9,12 +9,10 @@ import java.util.logging.Logger;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.taperedEval.TaperedEval;
 
 
 public class AsyncEngine {
@@ -41,6 +39,7 @@ public class AsyncEngine {
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options, GameContext gameContext) {
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
         searchParams.evaluateFunction.set(options.evluateFunctions.getValue().createSupplier());
+        searchParams.moveList.set(options.moveListImpls.getValue().createSupplier());
         searchParams.setConfig(options);
 
         // if we have special "go" parameters, then override thinktime:
@@ -68,11 +67,6 @@ public class AsyncEngine {
         }
         Factory.setDefaults(searchParams);
         Factory.getDefaults().log();
-        // log game phase
-        TaperedEval taperedEval = new TaperedEval();
-        int phase = taperedEval.calcPhase(gameState.getBoard());
-        UCILogger.log("Tapered Phase: " + phase);
-
 
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> future = executorService.submit(() -> {

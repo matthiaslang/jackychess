@@ -9,7 +9,7 @@ public interface MoveCollector {
 
     void genMove(byte figureType, int from, int to, byte capturedFigureCode);
 
-    void genPawnMove(int from, int to, Color color, byte capturedFigureCode, int enPassantOption);
+    void genPawnMove(int from, int to, Color color, byte capturedFigureCode);
 
     void addRochadeLongWhite();
 

@@ -10,16 +10,16 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTCache implements StatisticsCollector {
+public class TTBucketCache implements StatisticsCollector {
 
     public static final int bitSize = 23;
 
     public static final int CAPACITY = 1 << bitSize;
-    public static final int MAX_AGE = 2;
 
     private int cacheHit;
     private int cacheFail;
     private int colission;
+    private int fullBuckets;
     private int size;
 
     /**
@@ -31,67 +31,88 @@ public class TTCache implements StatisticsCollector {
      */
     private BoardRepresentation lastBoard;
 
-    private TTEntry[] whitemap = new TTEntry[CAPACITY];
-    private TTEntry[] blackmap = new TTEntry[CAPACITY];
+    private TTBucket[] whitemap = new TTBucket[CAPACITY];
+    private TTBucket[] blackmap = new TTBucket[CAPACITY];
+
+    public TTBucketCache() {
+
+    }
 
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
-        int hashEntry = h0(boardZobristHash);
+
         switch (side) {
         case WHITE:
-            return checkFoundEntry(whitemap[hashEntry], boardZobristHash);
+            return search(whitemap, boardZobristHash);
         case BLACK:
-            return checkFoundEntry(blackmap[hashEntry], boardZobristHash);
+            return search(blackmap, boardZobristHash);
         }
         throw new IllegalStateException("something is completely wrong here?!");
     }
 
-    private TTEntry checkFoundEntry(TTEntry entry, long boardZobristHash) {
+    /**
+     * Searches for a fee node which can be used to save a new entry.
+     *
+     * @param boardZobristHash
+     * @param side
+     * @return
+     */
+    private final TTEntry findFreeTTEntry(long boardZobristHash, int depth, Color side) {
+        switch (side) {
+        case WHITE:
+            return findFreeTTEntry(whitemap, boardZobristHash, depth);
+        case BLACK:
+            return findFreeTTEntry(blackmap, boardZobristHash, depth);
+        }
+        throw new IllegalStateException("something is completely wrong here?!");
+    }
+
+    /**
+     * Find a free entry to save information by checking the h0 and h1 index of the table.
+     * Either a empty node, or a aged node
+     * or a node with higher depth.
+     * null if no free node could be found.
+     *
+     * @param map
+     * @param boardZobristHash
+     * @param depth
+     * @return
+     */
+    private TTEntry findFreeTTEntry(TTBucket[] map, long boardZobristHash, int depth) {
+        int hash = h0(boardZobristHash);
+        TTBucket bucket = map[hash];
+        if (bucket == null) {
+            bucket = new TTBucket();
+            map[hash] = bucket;
+        }
+        TTEntry entry = bucket.findFreeEntry(depth, boardZobristHash, currAging);
+        return entry;
+    }
+
+    private TTEntry search(TTBucket[] map, long boardZobristHash) {
+        TTBucket bucket = map[h0(boardZobristHash)];
+        if (bucket == null) {
+            cacheFail++;
+            return null;
+        }
+        TTEntry entry = bucket.search(boardZobristHash, currAging);
         if (entry == null) {
             cacheFail++;
-            return null;
-        }
-        if (!entry.isEmpty() && entry.zobristHash == boardZobristHash && withinAge(entry)) {
-            cacheHit++;
-            return entry;
         } else {
-            colission++;
-            cacheFail++;
-            return null;
+            cacheHit++;
         }
+        return entry;
     }
 
-    private boolean withinAge(TTEntry entry) {
-        return currAging - entry.getAging() < MAX_AGE;
-    }
-
-    public final void storeTTEntry(BoardRepresentation board, Color side, int eval, byte tpe, int depth) {
+    private final void storeTTEntry(BoardRepresentation board, Color side, int eval, byte tpe, int depth) {
         long boardZobristHash = board.getZobristHash();
 
         // only store entries with lower depth:
-        TTEntry existing = getTTEntry(board, side);
-        if (existing == null) {
-            storeTT(boardZobristHash, side, new TTEntry(boardZobristHash, eval, tpe, depth));
-        } else if (existing.isEmpty() || existing.depth > depth || existing.getAging() != currAging) {
-            existing.update(boardZobristHash, eval, tpe, depth, currAging);
-        }
-    }
-
-    private void storeTT(long boardZobristHash, Color side, TTEntry ttEntry) {
-        int hashEntry = h0(boardZobristHash);
-        switch (side) {
-        case WHITE:
-            if (whitemap[hashEntry] == null) {
-                size++;
-            }
-            whitemap[hashEntry] = ttEntry;
-            break;
-        case BLACK:
-            if (blackmap[hashEntry] == null) {
-                size++;
-            }
-            blackmap[hashEntry] = ttEntry;
-            break;
+        TTEntry freeOne = findFreeTTEntry(boardZobristHash, depth, side);
+        if (freeOne != null) {
+            freeOne.update(boardZobristHash, eval, tpe, depth, currAging);
+        } else {
+            fullBuckets++;
         }
     }
 
@@ -111,6 +132,7 @@ public class TTCache implements StatisticsCollector {
         cacheHit = 0;
         cacheFail = 0;
         colission = 0;
+        fullBuckets = 0;
     }
 
     @Override
@@ -119,6 +141,7 @@ public class TTCache implements StatisticsCollector {
         stats.put("cacheHit", cacheHit);
         stats.put("cacheFail", cacheFail);
         stats.put("colissions", colission);
+        stats.put("fullBuckets", fullBuckets);
         if (cacheHit + cacheFail != 0) {
             stats.put("hit/all", cacheHit * 100 / (cacheHit + cacheFail) + "%");
         }
@@ -126,10 +149,6 @@ public class TTCache implements StatisticsCollector {
 
     private final int h0(long key) {
         return (int) (key & (CAPACITY - 1));
-    }
-
-    private final int h1(long key) {
-        return (int) ((key >> 32) & (CAPACITY - 1));
     }
 
     public void updateAging(BoardRepresentation board) {
@@ -152,8 +171,8 @@ public class TTCache implements StatisticsCollector {
         if (cacheHit + cacheFail != 0) {
             hitPercent = cacheHit * 100 / (cacheHit + cacheFail);
         }
-        UCILogger.log(format("TTCache: size: %s hits: %s fails: %s %s pct collisions: %s",
-                size, cacheHit, cacheFail, hitPercent, colission));
+        UCILogger.log(format("TTCache: size: %s hits: %s fails: %s %s pct collisions: %s write fail: %s",
+                size, cacheHit, cacheFail, hitPercent, colission, fullBuckets));
 
     }
 

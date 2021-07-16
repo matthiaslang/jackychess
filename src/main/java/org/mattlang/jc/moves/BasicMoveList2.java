@@ -4,7 +4,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
-import static org.mattlang.jc.moves.MoveImpl.NO_EN_PASSANT_OPTION;
 import static org.mattlang.jc.moves.MoveImpl.createCastling;
 
 import java.util.ArrayList;
@@ -32,13 +31,10 @@ public class BasicMoveList2 implements MoveList {
  
 
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
-        moves.add(MoveImpl.createNormal(figureType, from, to, capturedFigure, NO_EN_PASSANT_OPTION));
+        moves.add(MoveImpl.createNormal(figureType, from, to, capturedFigure));
     }
 
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure, int enPassantOption) {
-
-        // todo backward compatibility. should be cleaned up, once we use only this impl
-        enPassantOption = enPassantOption == -1? NO_EN_PASSANT_OPTION : enPassantOption;
+    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
 
         boolean isOnLastLine = false;
         if (side == WHITE) {
@@ -52,7 +48,7 @@ public class BasicMoveList2 implements MoveList {
             moves.add(MoveImpl.createPromotion(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
             moves.add(MoveImpl.createPromotion(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(MoveImpl.createNormal(FigureConstants.FT_PAWN, from, to, capturedFigure, enPassantOption));
+            moves.add(MoveImpl.createNormal(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
         }
     }
