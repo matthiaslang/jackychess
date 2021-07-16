@@ -30,6 +30,7 @@ public class SimpleBoardStatsGenerator implements MoveCollector, BoardStatsGener
         mobility = 0L;
         captures = 0L;
         kingMobility = 0L;
+        hypotheticalPawnCaptures = 0L;
         moveGenerator.generate(board, color, this);
         return new BoardStats(mobility, captures, kingMobility, hypotheticalPawnCaptures);
     }
