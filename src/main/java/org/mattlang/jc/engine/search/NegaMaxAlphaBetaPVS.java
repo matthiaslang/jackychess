@@ -122,6 +122,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int ply = targetDepth - depth + 1;
 
+        if (repetitionChecker.isRepetition()) {
+            return Weights.REPETITION_WEIGHT;
+        }
+
         if (doCaching) {
             TTEntry tte = ttCache.getTTEntry(currBoard, color);
             if (tte != null && tte.getDepth() >= depth) {
@@ -140,11 +144,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return quiesce(currBoard, -1, color, alpha, beta);
         }
 
-        int pattCheckEval = stalemateChecker.eval(currBoard, color);
-        // patt node:
-        if (pattCheckEval == -PATT_WEIGHT || pattCheckEval == PATT_WEIGHT) {
-            return pattCheckEval;
-        }
+        boolean areWeInCheck= checkChecker.isInChess(currBoard, color);
 
         checkTimeout();
 
@@ -152,13 +152,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         try (MoveList moves = generator.generate(currBoard, color)) {
             if (moves.isCheckMate()) {
-                // no more legal moves, that means we have checkmate:
-                // in negamax "our" score is highest, so we need to return the negative king weight adjusted by ply:
-                return -KING_WEIGHT + ply;
-            }
-
-            if (repetitionChecker.isRepetition()) {
-                return Weights.REPETITION_WEIGHT;
+                if (areWeInCheck) {
+                    // no more legal moves, that means we have checkmate:
+                    // in negamax "our" score is highest, so we need to return the negative king weight adjusted by ply:
+                    return -KING_WEIGHT + ply;
+                } else {
+                    return -PATT_WEIGHT;
+                }
             }
 
             moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
@@ -270,11 +270,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int ply = targetDepth - depth +1;
 
-        int eval = evaluate.eval(currBoard, color);
-        // patt node:
-        if (eval == -PATT_WEIGHT || eval == PATT_WEIGHT) {
-            return eval;
+        if (repetitionChecker.isRepetition()) {
+            return Weights.REPETITION_WEIGHT;
         }
+
+        boolean areWeInCheck= checkChecker.isInChess(currBoard, color);
+
+        int eval = evaluate.eval(currBoard, color);
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
@@ -293,12 +295,14 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         try (MoveList moves = generator.generateNonQuietMoves(currBoard, color)) {
             if (moves.isCheckMate()) {
-                // no more legal moves, that means we have checkmate:
-                return -KING_WEIGHT + ply;
+                if (areWeInCheck) {
+                    // no more legal moves, that means we have checkmate:
+                    return -KING_WEIGHT + ply;
+                } else {
+                    return -PATT_WEIGHT;
+                }
             }
-            if (repetitionChecker.isRepetition()) {
-                return Weights.REPETITION_WEIGHT;
-            }
+
 
             nodes += moves.size();
             quiescenceNodesVisited++;

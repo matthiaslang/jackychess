@@ -163,7 +163,7 @@ On lower time turnaments 2s etc. there does not seem any benefit.
     Stockfisch Level 4 (Elo ~ 1560): 10s move: wins 85%
 
 
-### Version 0.9.8.1
+### Version 0.9.8.2
 
 - fix: missing reset in board stats generator lead to evaluate to wrong patt situations
 
@@ -171,22 +171,25 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 ### Version 0.9.9
 
-- experiments with better tt caching...
+- reworked patt checks
+  - is now independant of evaluation function
+  - fix: did not work in quiescence for the new evaluation function
+  
+
+
+    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins 70%   
+    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 90%   
+
+
 
 
 ## todo 
 
+- todo: experiments/perfts with better tt caching...
+- todo: combine pst evaluation with some non-static-evaluations like pawn, king safety, etc, endgame (king distance)...
+
 - todo add pseudo rnd opening option to better measure turnaments          
-     
-- "check mate - distance" metric to prefer early check mates
-      
 
-- move gen/sorting: sorting field should not be part of move class; e.g. rochade moves are static....
-
-- try out internal "compact move" representation with a single long (or int if it works..) for a move. may reduce mem consumption and object creation during
-  move generation. 
-                
-- insertion sort for move ordering and "lazy" ordering (yet already used with compact move impl)
 
 # bugs
 
