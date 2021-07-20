@@ -27,20 +27,32 @@ public class OrderCalculator {
     /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
     private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
 
-    private final Move pvMove;
+    private  Move pvMove;
     private final HistoryHeuristic historyHeuristic;
     private final KillerMoves killerMoves;
-    private final Color color;
+    private  Color color;
 
-    private final int depth;
-    private final int ply;
+    private  int depth;
+    private  int ply;
     private final boolean useMvvLva;
     private final Boolean usePvSorting;
 
-    private final HashMap<Move, Integer> scores;
+    private  HashMap<Move, Integer> scores;
+    private final int targetDepth;
+    private final OrderHints orderHints;
 
-    public OrderCalculator(final OrderHints orderHints, Color color,
-            final int depth, int targetDepth) {
+
+    public OrderCalculator(OrderHints orderHints, int targetDepth) {
+        this.orderHints=orderHints;
+        this.targetDepth=targetDepth;
+        this.historyHeuristic = orderHints.historyHeuristic;
+        this.killerMoves = orderHints.killerMoves;
+        this.useMvvLva = orderHints.useMvvLvaSorting;
+        this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
+    }
+
+
+    public void prepareOrder(Color color, final int depth) {
 
         int index = targetDepth - depth;
         // if we are at the root and have scores from a previous run, lets take them:
@@ -57,13 +69,8 @@ public class OrderCalculator {
 
         this.ply = targetDepth - depth;
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.get(ply) : null;
-        this.historyHeuristic = orderHints.historyHeuristic;
-        this.killerMoves = orderHints.killerMoves;
         this.color = color;
         this.depth = depth;
-        this.useMvvLva = orderHints.useMvvLvaSorting;
-
-        this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
 
     /**

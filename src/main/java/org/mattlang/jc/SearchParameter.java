@@ -15,8 +15,6 @@ import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.StalemateCheckerImpl;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.engine.sorting.BasicMoveSorter;
-import org.mattlang.jc.engine.sorting.MoveSorter;
 import org.mattlang.jc.movegenerator.*;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -45,8 +43,6 @@ public class SearchParameter {
     public final Impl<StalemateChecker> stalemateChecker = new Impl<>(this, StalemateCheckerImpl::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
-
-    public final Impl<MoveSorter> moveSorter = new Impl<>(this, BasicMoveSorter::new);
 
 
     public void log() {

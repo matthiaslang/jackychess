@@ -60,6 +60,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private OrderHints orderHints;
 
+    private OrderCalculator orderCalculator;
+
     private int cutOff;
 
     private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
@@ -161,7 +163,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
             }
 
-            moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+            orderCalculator.prepareOrder(color, depth);
+            moves.sort(orderCalculator);
 
             nodes += moves.size();
 
@@ -303,7 +306,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
             }
 
-
             nodes += moves.size();
             quiescenceNodesVisited++;
             // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
@@ -313,7 +315,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-            moves.sort(new OrderCalculator(orderHints, color, depth, targetDepth));
+            orderCalculator.prepareOrder(color, depth);
+            moves.sort(orderCalculator);
 
             /* loop through the capture moves */
             for (MoveCursor moveCursor : moves) {
@@ -352,6 +355,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         targetDepth = depth;
         selDepth = depth;
         this.orderHints = orderHints;
+        this.orderCalculator = new OrderCalculator(orderHints, targetDepth);
         this.stopTime = stopTime;
         repetitionChecker = gameState.getRepetitionChecker();
         moveScores = new ArrayList<>();
