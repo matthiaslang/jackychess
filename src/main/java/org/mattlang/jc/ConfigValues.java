@@ -22,10 +22,10 @@ public class ConfigValues {
             new UCIComboOption(allOptions, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
-            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.DEFAULT);
+            new UCIComboOption(allOptions, "evaluateFunction", EvalFunctions.class, EvalFunctions.MINIMAL_PST);
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
-            new UCIComboOption(allOptions, "MoveListImpl", MoveListImpls.class, MoveListImpls.DEFAULT);
+            new UCIComboOption(allOptions, "MoveListImpl", MoveListImpls.class, MoveListImpls.OPTIMIZED);
 
 
     public final UCICheckOption useHistoryHeuristic = new UCICheckOption(allOptions, "useHistoryHeuristic", true);
