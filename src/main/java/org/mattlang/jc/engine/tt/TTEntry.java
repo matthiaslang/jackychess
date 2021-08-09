@@ -52,4 +52,15 @@ public class TTEntry<T> {
         this.depth = depth;
         this.aging = aging;
     }
+
+    @Override
+    public String toString() {
+        return "TTEntry{" +
+                "zobristHash=" + zobristHash +
+                ", value=" + value +
+                ", type=" + type +
+                ", depth=" + depth +
+                ", aging=" + aging +
+                '}';
+    }
 }
