@@ -10,8 +10,8 @@ algorithms.
 
 ## Goals of the engine
 
-- educational purpose: main focus is for me to learn about chess programming
-- the code is very simple and clear since the main purpose is to understand the algorithms.
+- educational purpose: main focus is to learn about chess programming
+- the code is simple and clear since the main purpose is to understand the algorithms.
 - the code should be exchangeable: the different implementations for search algorithms and
   related implementations are implemented by interfaces and exchangeable. This is needed to compare the algorithms, too.
 - the engine should be at least so good that it can defeat me (a mediocre amateur chess player, I hope.. :)
@@ -19,48 +19,57 @@ algorithms.
 
 ## Requirements
 
+Java 8 to compile the engine.
+
 The chess engine should work under any UCI chess client.
 It was mainly tested with Arena http://www.playwitharena.de/ 
-and works find with this client. It was also tested with pyChess.
+and works fine with this client. It was also tested with pyChess. However - any UCI complient UI should work.
+
+Simply add the engine to your prefered UCI Gui Client and then you should be ready to use it.
+You should have several UCI options able to set in the UI then.
+
+
+
+## License
+
+    Jacky Chess 
+    Copyright (C) 2021  Matthias Lang
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see https://www.gnu.org/licenses/.
 
 ## Implementation
 
-The chess engine uses 
+The chess engine uses following technics/algorithms 
 
 - a simple Board using 64 bytes for coding the figures.
 - Move Generator using a "mailbox" 10x12 Board  
 - a simple Evaluation function which mainly checks material
 and basic positional things like mobility and captures
-- Search Algorithm is Mtdf with an iterative deepening algorithm with Alpha Beta Negamax.
-- Caching of generated moves
+- an alternative PST only evaluation function
+- Search Algorithm is PVS with an iterative deepening algorithm using Alpha Beta Negamax.
+- Aspiration windowing
+- Move sorting by PV Moves, killer moves, history heuristic
+- Transposition Table using zobrist hashing to cache Scores
+- Quiescence Search
 
 
 
 Still a lot is missing to have a really good, competing engine and the engine
 will probable never reach game strength of its competitors.
-Currently missing is
-
-- no opening books. so opening game may be "boring" since the engine will produce
-always the same moves for a given board. I am not planning to add opening books since
-  I don´t feel it interesting to implemented this. I am more interested to add here
-  some "human" behaviour with maybe some random chossing.
-  
-- special end game handling: the engine currently does not play well in endgame situations. This
-is something I will try to investigate and to tackle with special evaluation functions...
-
-- not all chess rules are implemented: the 50 move rule is not implemented.
-
-- no quescence handling: so the engine can choose "bad moves" due to horizon effects. This is something I will try to implement but I think this will take care and time. Maybe I start with a first simple approach.
-
+Nevertheless the goal is to make it stronger with each version.
               
 ## Experimental Implementations
-   
-### Zobrist
-Zobrist Hashing is implenmented by the Board3.
-Its not clear if it is beneficial, looks like it could getting beneficial on depths >=8 compared to no caching.
-
-It is at least much better than the simple java hash based cache implementation (Board2)
-
 
 ### table based move generation
 
@@ -71,8 +80,7 @@ First simple tests show that it is slightly slower than the current move generat
 
 ### mtdf
 
-The mtdf implementation currently is slower than the normal alpha/beta pruning, probably because it does not use
-zobrist hashing. It should be retested with the NegaMaxAlphaBetaTT implementation if it then works better.
+The mtdf implementation is currently not working properly and therefore does not give beneficial results.
 
 
 # Versions
@@ -168,7 +176,6 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 - fix: missing reset in board stats generator lead to evaluate to wrong patt situations
 
 
-
 ### Version 0.9.9
 
 - reworked patt checks
@@ -191,13 +198,5 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 - todo add pseudo rnd opening option to better measure turnaments          
 
 
-# bugs
 
-- draw (stellungswiederholung): the engine seems to run into this situation due to the current eval wheight. need unit tests
-  and analysis how to better handle this
-
-- simple winning end game positions like QK vs pk leads to sacrifice the queen during game after some moves (caused by the existing pawn); (why?)
-- more simple end game winning positions like QK vs k: sometimes the engine finds the check mate, but seems to be more by accident...
-
-  
       
