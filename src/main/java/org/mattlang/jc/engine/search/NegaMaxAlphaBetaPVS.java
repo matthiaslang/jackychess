@@ -32,8 +32,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
-    private StalemateChecker stalemateChecker = Factory.getDefaults().stalemateChecker.instance();
-
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
@@ -130,7 +128,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (doCaching) {
             TTEntry tte = ttCache.getTTEntry(currBoard, color);
-            if (tte != null && tte.getDepth() >= depth) {
+            if (tte != null && tte.getDepth() >= depth && ply != 1) {
                 if (tte.isExact()) // stored value is exact
                     return adjustScore(tte.getValue(), ply);
                 if (tte.isLowerBound() && tte.getValue() > alpha)
@@ -359,19 +357,18 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         this.stopTime = stopTime;
         repetitionChecker = gameState.getRepetitionChecker();
         moveScores = new ArrayList<>();
+        savedMoveScore = alpha;
+        savedMove = null;
+
         pvArray.reset();
 
         initContext(context);
 
-        negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta);
+        int directScore = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta);
 
-        return new NegaMaxResult(savedMoveScore, moveScores, pvArray.getPvMoves(), targetDepth, selDepth);
+        return new NegaMaxResult(directScore, savedMoveScore, savedMove, moveScores, pvArray.getPvMoves(), targetDepth,
+                selDepth);
 
-    }
-
-
-    public Move getSavedMove() {
-        return savedMove;
     }
 
     public int getNodesVisited() {
@@ -384,10 +381,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public int getCutOff() {
         return cutOff;
-    }
-
-    public int getSavedMoveScore() {
-        return savedMoveScore;
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -130,7 +131,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
                 Window aspWindow = new Window(ALPHA_START, BETA_START);
 
-                if (useAspirationWindow && currdepth >= 2) {
+                if (useAspirationWindow && currdepth >= 3) {
                     aspWindow.limitWindow(rslt);
                     rslt = searchWithAspirationWindow(aspWindow, gameState, gameContext, stopTime, orderHints,
                             currdepth);
@@ -142,10 +143,24 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                             stopTime, orderHints);
                 }
 
-                savedMove = negaMaxAlphaBeta.getSavedMove();
-
-                if (savedMove != null) {
+                if (rslt.savedMove != null) {
+                    savedMove = rslt.savedMove;
+                }
+                if (rslt.savedMove != null) {
                     printRoundInfo(rslt, watch, negaMaxAlphaBeta);
+                } else {
+                    // todo why does this happen that no best move gets returned from nega max search...
+                    // we need to further analyze this situation.
+                    UCILogger.log("no result from negamax for window: " + aspWindow.descr());
+                    LOGGER.info("no result from negamax on iteration depth:" + currdepth);
+                    LOGGER.info("negamax result: " + rslt);
+                    Map statOfDepth = new LinkedHashMap();
+                    negaMaxAlphaBeta.collectStatistics(statOfDepth);
+
+                    LOGGER.info("statistics: " + statOfDepth);
+                    if (savedMove != null) {
+                        UCILogger.log("best move so far: " + savedMove.toStr());
+                    }
                 }
 
                 orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
@@ -200,9 +215,9 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         long nps = duration == 0 ? nodes : nodes * 1000 / duration;
         UCI.instance.putCommand("info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
-                " score cp " + negaMaxAlphaBeta.getSavedMoveScore() + " nodes " + nodes
+                " score cp " + rslt.max + " nodes " + nodes
                 + " nps " + nps + " pv " + rslt.pvList.toPvStr());
-        UCI.instance.putCommand("info currmove " + negaMaxAlphaBeta.getSavedMove().toStr());
+        UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
     }
 
     private Map stats = new LinkedHashMap();

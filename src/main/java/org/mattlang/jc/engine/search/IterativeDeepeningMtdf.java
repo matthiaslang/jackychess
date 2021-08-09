@@ -50,7 +50,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 NegaMaxResult rslt =
                         mtdf(gameState, context, currdepth, stopTime, firstguess, orderHints);
 
-                savedMove = negaMaxAlphaBeta.getSavedMove();
+                savedMove = rslt.savedMove;
                 firstguess = rslt.max;
 
                 if (savedMove != null) {
