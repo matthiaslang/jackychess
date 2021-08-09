@@ -33,8 +33,8 @@ public class EngineTest {
         Move move = engine.go();
 
         System.out.println(move.toStr());
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e6");
+        // with the evaluation function it should yield e7e5:
+        assertThat(move.toStr()).isEqualTo("e7e5");
     }
 
     @Test
