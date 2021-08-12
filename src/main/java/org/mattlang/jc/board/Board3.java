@@ -34,6 +34,7 @@ public class Board3 implements BoardRepresentation {
             "PPPPPPPP",
             "RNBQKBNR"
     };
+    public static final int NO_EN_PASSANT_OPTION = -1;
 
     private byte[] board = new byte[64];
 
@@ -43,6 +44,12 @@ public class Board3 implements BoardRepresentation {
     private PieceList whitePieces = new PieceList();
 
     private long zobristHash=0L;
+
+    /**
+     * the target pos of the en passant move that could be taken as next move on the board.
+     * -1 if no en passant is possible.
+     */
+    private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
     public Board3() {
         for(int i=0; i<64; i++) {
@@ -289,12 +296,6 @@ public class Board3 implements BoardRepresentation {
         return pieceList.getKing();
     }
 
-    /**
-     * the target pos of the en passant move that could be taken as next move on the board.
-     * -1 if no en passant is possible.
-     */
-    private int enPassantMoveTargetPos = -1;
-
     @Override
     public boolean isEnPassantCapturePossible(int n) {
         return enPassantMoveTargetPos == n;
@@ -328,7 +329,7 @@ public class Board3 implements BoardRepresentation {
 
     private void resetEnPassant() {
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-        enPassantMoveTargetPos = -1;
+        enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
     }
 
