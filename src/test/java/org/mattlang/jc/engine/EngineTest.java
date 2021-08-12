@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.MoveListImpls;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
@@ -43,6 +44,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
         .config(c->c.timeout.setValue(60000))
         .config(c->c.maxDepth.setValue(7)));
         // now starting engine:

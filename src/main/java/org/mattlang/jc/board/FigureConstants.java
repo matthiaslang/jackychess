@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 public class FigureConstants {
 
-    public static final byte FT_EMPTY = 16;
+    public static final byte FT_EMPTY = 7;
     public static final byte FT_PAWN = 0;
     public static final byte FT_KNIGHT = 1;
     public static final byte FT_BISHOP = 2;

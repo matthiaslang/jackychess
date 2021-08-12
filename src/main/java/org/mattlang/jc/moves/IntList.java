@@ -1,26 +1,26 @@
 package org.mattlang.jc.moves;
 
-public final class LongList {
+public final class IntList {
 
-    private long[] data;
+    private int[] data;
 
     private int size = 0;
 
-    public LongList() {
+    public IntList() {
         this(40);
     }
 
-    public LongList(int maxSize) {
-        data = new long[maxSize];
+    public IntList(int maxSize) {
+        data = new int[maxSize];
     }
 
-    public final void add(long move) {
+    public final void add(int move) {
         if (size < data.length) {
             data[size] = move;
             size++;
         } else {
             int newSize = data.length + data.length;
-            long[] newmoves = new long[newSize];
+            int[] newmoves = new int[newSize];
             System.arraycopy(data, 0, newmoves, 0, data.length);
             data = newmoves;
 
@@ -33,7 +33,7 @@ public final class LongList {
         return size;
     }
 
-    public final long get(int i) {
+    public final int get(int i) {
         return data[i];
     }
 
@@ -45,7 +45,7 @@ public final class LongList {
         size--;
     }
 
-    long[] getRaw() {
+    int[] getRaw() {
         return data;
     }
 

@@ -7,7 +7,7 @@ package org.mattlang.jc.engine.sorting;
  */
 public class LongSorter {
 
-    private long[] objects;
+    private int[] objects;
     private int[] orders;
 
     private int size = 0;
@@ -17,13 +17,13 @@ public class LongSorter {
     private int swapCounter = 0;
     private boolean alreadyFullySorted = false;
 
-    public LongSorter(long[] objects, int size, int[] orders) {
+    public LongSorter(int[] objects, int size, int[] orders) {
         this.objects = objects;
         this.orders = orders;
         this.size = size;
     }
 
-    public static void sort(long[] data, int size, int[] order) {
+    public static void sort(int[] data, int size, int[] order) {
         new LongSorter(data, size, order).sortData();
     }
 
@@ -37,7 +37,7 @@ public class LongSorter {
         return size > 0;
     }
 
-    public long next() {
+    public int next() {
         if (!alreadyFullySorted) {
             sortRound();
         }
@@ -78,7 +78,7 @@ public class LongSorter {
         orders[i] = orders[j];
         orders[j] = tmp;
 
-        long ttmp = objects[i];
+        int ttmp = objects[i];
         objects[i] = objects[j];
         objects[j] = ttmp;
     }

@@ -1,8 +1,8 @@
 package org.mattlang.jc.board;
 
 public enum Color {
-    WHITE((byte) 32),
-    BLACK((byte) 64);
+    WHITE((byte) 8),
+    BLACK((byte) 16);
 
     public final byte code;
 

@@ -17,6 +17,10 @@ import lombok.Getter;
 @Getter
 public final class MoveImpl implements Move {
 
+    public static final byte MASK_4 = 0b1111;
+    public static final byte MASK_5 = 0b11111;
+    public static final byte MASK_7 = 0b1111111;
+
     public static final int NOT_SORTED = Integer.MAX_VALUE;
 
     private byte figureType;
@@ -83,7 +87,7 @@ public final class MoveImpl implements Move {
         promotedFigureToType[Figure.B_Queen.figureCode] = PAWN_PROMOTION_B_QUEEN;
     }
 
-    public MoveImpl(long l) {
+    public MoveImpl(int l) {
         fromLongEncoded(l);
     }
 
@@ -142,24 +146,24 @@ public final class MoveImpl implements Move {
         return new MoveImpl(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, capturedFigure);
     }
 
-    public final static long createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
+    public final static int createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
         return longRepresentation(NORMAL_MOVE, figureType, (byte) fromIndex, (byte) toIndex,
                 capturedFigure);
     }
 
-    public final static long createCastlingMove(CastlingMove castlingMove) {
+    public final static int createCastlingMove(CastlingMove castlingMove) {
         return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
                 castlingMove.getToIndex(),
                 (byte) 0);
     }
 
-    public final static long createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
+    public final static int createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
         return longRepresentation(promotedFigureToType[promotedFigure.figureCode],
                 FigureConstants.FT_PAWN, (byte) from, (byte) to,
                 capturedFigure);
     }
 
-    public final static long createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
+    public final static int createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
         return longRepresentation((byte) (ENPASSANT_MOVE + enPassantCapturePos), FigureConstants.FT_PAWN, (byte) from,
                 (byte) to,
                 capturedFigure);
@@ -301,32 +305,43 @@ public final class MoveImpl implements Move {
         return Objects.hash(figureType, fromIndex, toIndex, capturedFigure, type);
     }
 
-    public long toLongEncoded() {
-        long l = (long) type |
-                (long) figureType << 8 |
-                (long) fromIndex << 16 |
-                (long) toIndex << 24 |
-                (long) capturedFigure << 32;
+    public int toLongEncoded() {
+        int l = (int) type & MASK_7 |
+                (int) figureType << 7 |
+                (int) fromIndex << 12 |
+                (int) toIndex << 19 |
+                (int) capturedFigure << 26;
 
         return l;
     }
 
-    public static long longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
+    public static int longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
             byte capturedFigure) {
-        return (long) type |
-                (long) figureType << 8 |
-                (long) fromIndex << 16 |
-                (long) toIndex << 24 |
-                (long) capturedFigure << 32;
+        return (int) type & MASK_7 |
+                (int) figureType << 7 |
+                (int) fromIndex << 12 |
+                (int) toIndex << 19 |
+                (int) capturedFigure << 26;
     }
 
-    public void fromLongEncoded(long l) {
-        type = (byte) (l & 0xFF);
-        figureType = (byte) (l >>> 8 & 0b1111111);
-        fromIndex = (byte) (l >>> 16 & 0b1111111);
-        toIndex = (byte) (l >>> 24 & 0b1111111);
+    public void fromLongEncoded(int l) {
+        type = (byte) (l & MASK_7);
+        figureType = (byte) (l >>> 7 & MASK_5);
+        fromIndex = (byte) (l >>> 12 & MASK_7);
+        toIndex = (byte) (l >>> 19 & MASK_7);
 
-        capturedFigure = (byte) (l >>> 32 & 0b1111111);
+        capturedFigure = (byte) (l >>> 26 & MASK_5);
     }
 
+
+    /**
+     * Encoding:
+     *
+     * type: 0-14: 4 bits
+     * figureType: 5 bits
+     * fromINdex: 7 bits
+     * toIndex: 7 bits
+     * capturedFigure: 5 bits
+     *
+     */
 }

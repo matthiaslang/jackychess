@@ -11,7 +11,7 @@ public class MoveImplTest {
     public void testLongConversion() {
         MoveImpl m = new MoveImpl(Figure.W_Pawn.figureCode, 10, 20, Figure.B_Bishop.figureCode);
 
-        long l = m.toLongEncoded();
+        int l = m.toLongEncoded();
 
         MoveImpl m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);

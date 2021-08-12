@@ -19,7 +19,7 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 public class MoveListImpl implements MoveList {
 
-    private LongList moves = new LongList();
+    private IntList moves = new IntList();
     private int[] order = new int[200];
 
     private boolean subset = false;
@@ -138,7 +138,7 @@ public class MoveListImpl implements MoveList {
         }
     }
 
-    public final long get(int i) {
+    public final int get(int i) {
         return moves.get(i);
     }
 

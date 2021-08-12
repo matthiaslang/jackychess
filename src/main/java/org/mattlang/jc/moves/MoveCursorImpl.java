@@ -11,7 +11,7 @@ public final class MoveCursorImpl implements MoveCursor {
     private int iterCurser = 0;
     private MoveListImpl movelist;
 
-    private long currMove;
+    private int currMove;
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 

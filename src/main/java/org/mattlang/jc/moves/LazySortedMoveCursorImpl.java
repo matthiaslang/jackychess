@@ -11,7 +11,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
 
     private LongSorter longSorter;
 
-    private long currMove;
+    private int currMove;
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 
