@@ -1,12 +1,10 @@
 package org.mattlang.jc.engine.evaluation.minimalpst;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.PieceList;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
 /**
@@ -151,12 +149,6 @@ public class MinimalPstEvaluation implements EvaluateFunction {
             -56,   -39,   -25,   -11,   -28,   -14,   -29,   -51,
     });
 
-    private static final int Midgame = 5255;
-    private static final int Endgame = 435;
-
-    private static final int[] PhaseValues = new int[] { 0, 155, 305, 405, 1050, 0 };
-
-
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 
@@ -164,38 +156,21 @@ public class MinimalPstEvaluation implements EvaluateFunction {
         PieceList wp = currBoard.getWhitePieces();
         PieceList bp = currBoard.getBlackPieces();
 
-
         int midGame = PAWN_MG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
                 KNIGHT_MG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
                 BISHOP_MG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
                 ROOK_MG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
                 QUEEN_MG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
                 KING_MG.calcScore(wp.getKing(), bp.getKing(), who2mov);
-        int endGame =  PAWN_EG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
+        int endGame = PAWN_EG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
                 KNIGHT_EG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
                 BISHOP_EG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
                 ROOK_EG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
                 QUEEN_EG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
                 KING_EG.calcScore(wp.getKing(), bp.getKing(), who2mov);
-        int phase = 0;
 
-        for (int i = 0; i < 64; ++i) {
-            byte figure = currBoard.getFigureCode(i);
-            if (figure != FigureConstants.FT_EMPTY) {
-
-                byte pieceIndex = (byte) (figure & MASK_OUT_COLOR);
-                phase += PhaseValues[pieceIndex];
-            }
-        }
-
-        double factor = Linstep(Endgame, Midgame, phase);
-        double score = factor * midGame + (1 - factor) * endGame;
-        return (int)score;
+        double score = PhaseCalculator.scaleByPhase(currBoard, midGame, endGame);
+        return (int) score;
     }
 
-
-    public static double Linstep(double edge0, double edge1, double v)
-    {
-        return Math.min(1, Math.max(0, (v - edge0) / (edge1 - edge0)));
-    }
 }
