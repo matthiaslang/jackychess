@@ -24,6 +24,8 @@ public interface Move {
 
     boolean isPromotion();
 
+    Figure getPromotedFigure();
+
     void setOrder(int order);
 
     int getOrder();

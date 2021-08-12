@@ -1,19 +1,9 @@
 package org.mattlang.jc.engine;
 
-import java.util.Comparator;
-
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
 
 public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoCloseable {
-
-    /**
-     * Sort move list by a comparator.
-     * @param moveComparator
-     */
-    @Deprecated
-    void sortMoves(Comparator<Move> moveComparator);
 
     /**
      * sort the list with usage of a order calculator.

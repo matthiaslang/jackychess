@@ -10,11 +10,11 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.engine.BasicMoveList;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.moves.MoveListImpl;
 
 //@Ignore
 public class LegalMoveCacheTest {
@@ -34,7 +34,7 @@ public class LegalMoveCacheTest {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
+        Factory.getDefaults().moveList.set(() -> new MoveListImpl());
 
         stopwatch.start();
         int num = 10000000;
@@ -86,7 +86,7 @@ public class LegalMoveCacheTest {
 
         StopWatch stopwatch = new StopWatch();
 
-        Factory.getDefaults().moveList.set(() -> new BasicMoveList());
+        Factory.getDefaults().moveList.set(() -> new MoveListImpl());
 
         DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
 

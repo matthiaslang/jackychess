@@ -9,6 +9,8 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
 
@@ -55,16 +57,16 @@ public class FenParser {
         return new GameState(board, who2Move, repetitionChecker);
     }
 
-    public BasicMove parseMove(BoardRepresentation board, String moveStr) {
+    public Move parseMove(BoardRepresentation board, String moveStr) {
         // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
-            return RochadeMove.CASTLING_WHITE_SHORT;
+            return MoveImpl.createCastling(CastlingMove.CASTLING_WHITE_SHORT);
         } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
-            return RochadeMove.CASTLING_WHITE_LONG;
+            return MoveImpl.createCastling(CastlingMove.CASTLING_WHITE_LONG);
         } else if ("e8g8".equals(moveStr) && board.isCastlingAllowed(BLACK, SHORT)) {
-            return RochadeMove.CASTLING_BLACK_SHORT;
+            return MoveImpl.createCastling(CastlingMove.CASTLING_BLACK_SHORT);
         } else if ("e8c8".equals(moveStr) && board.isCastlingAllowed(BLACK, LONG)) {
-            return RochadeMove.CASTLING_BLACK_LONG;
+            return MoveImpl.createCastling(CastlingMove.CASTLING_BLACK_LONG);
         }
 
         if (moveStr.endsWith("q")) {
@@ -78,21 +80,21 @@ public class FenParser {
         }
 
         // en passant:
-        BasicMove tmp = new BasicMove(moveStr);
+        Move tmp = new MoveImpl(moveStr);
         if (board.isEnPassantCapturePossible(tmp.getToIndex())) {
             Color side = board.getFigure(tmp.getFromIndex()).color;
             byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
-            return new EnPassantMove(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn, board.getEnPassantCapturePos());
+            return  MoveImpl.createEnPassant(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn, board.getEnPassantCapturePos());
         }
 
         // normal move:
-        return new BasicMove(moveStr);
+        return new MoveImpl(moveStr);
     }
 
-    private BasicMove createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
-        BasicMove parsed = new BasicMove(moveStr);
+    private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
+        Move parsed = new MoveImpl(moveStr);
         Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? wProm : bProm;
-        return new PawnPromotionMove(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
+        return MoveImpl.createPromotion(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
     }
 
     private Color setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,

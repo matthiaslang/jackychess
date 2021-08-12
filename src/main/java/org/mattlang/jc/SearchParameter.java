@@ -26,7 +26,7 @@ public class SearchParameter {
 
     private ConfigValues config = new ConfigValues();
 
-    public final Impl<MoveList> moveList = new Impl<>(this, BasicMoveList::new);
+    public final Impl<MoveList> moveList = new Impl<>(this, MoveListImpls.OPTIMIZED.createSupplier());
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, Board3::new);
 

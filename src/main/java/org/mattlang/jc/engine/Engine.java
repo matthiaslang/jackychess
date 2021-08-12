@@ -42,7 +42,7 @@ public class Engine {
         return searchMethod.search(gameState, gameContext, depth);
     }
 
-    public void move(BasicMove move) {
+    public void move(Move move) {
         board.move(move);
     }
 

@@ -2,6 +2,7 @@ package org.mattlang.jc.board;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class BoardTest {
 
@@ -17,9 +18,9 @@ public class BoardTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        board.move(new BasicMove("e2e4"));
-        board.move(new BasicMove("e7e5"));
-        board.move(new BasicMove("g1f3"));
+        board.move(new MoveImpl("e2e4"));
+        board.move(new MoveImpl("e7e5"));
+        board.move(new MoveImpl("g1f3"));
         System.out.println(board.toUniCodeStr());
     }
 
@@ -29,11 +30,11 @@ public class BoardTest {
         board.setStartPosition();
 
         System.out.println("doing moves...");
-        BasicMove m1 = new BasicMove("e2e4");
+        Move m1 = new MoveImpl("e2e4");
         board.move(m1);
-        BasicMove m2 = new BasicMove("e7e5");
+        Move m2 = new MoveImpl("e7e5");
         board.move(m2);
-        BasicMove m3 = new BasicMove("g1f3");
+        Move m3 = new MoveImpl("g1f3");
         board.move(m3);
         System.out.println(board.toUniCodeStr());
 

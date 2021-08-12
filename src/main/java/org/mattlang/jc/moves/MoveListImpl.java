@@ -6,12 +6,10 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.LongSorter;
@@ -81,11 +79,6 @@ public class MoveListImpl implements MoveList {
     @Override
     public void addRochadeLongBlack() {
         moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_LONG));
-    }
-
-    @Override
-    public void sortMoves(Comparator<Move> moveComparator) {
-        throw new IllegalArgumentException("not supported any more... use embedded ordering!");
     }
 
     public void sort(OrderCalculator orderCalculator) {

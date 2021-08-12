@@ -12,7 +12,10 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.Board3;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
 
@@ -38,8 +41,8 @@ public class MoveGeneratorTest {
         List<Move> bMoves = createMoveList(blackMoves);
         assertThat(bMoves.size()).isEqualTo(4);
 
-        Move wQPromotion = wMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.W_Queen).findFirst().get();
-        Move bQPromotion = bMoves.stream().filter(m -> ((PawnPromotionMove) m).getPromotedFigure() == Figure.B_Queen).findFirst().get();
+        Move wQPromotion = wMoves.stream().filter(m -> m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
+        Move bQPromotion = bMoves.stream().filter(m -> m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
 
         board.move(wQPromotion);
         board.move(bQPromotion);
