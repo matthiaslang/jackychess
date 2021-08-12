@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.engine.evaluation.PhaseCalculator.isOpeningOrMiddleGame;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 
@@ -56,6 +57,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int targetDepth;
     private int selDepth;
 
+    private int nullMoveCounter;
+    private int enPassantBeforeNullMove;
+    private RepetitionChecker repetitionCheckerBeforeNullMove;
+
     private OrderHints orderHints;
 
     private OrderCalculator orderCalculator;
@@ -64,6 +69,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
+    private boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
 
     private boolean doExtend = false;
 
@@ -108,6 +114,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         cutOff = 0;
         savedMove = null;
         savedMoveScore = 0;
+        nullMoveCounter = 0;
     }
 
     public void reset() {
@@ -144,9 +151,37 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return quiesce(currBoard, -1, color, alpha, beta);
         }
 
-        boolean areWeInCheck= checkChecker.isInChess(currBoard, color);
+        boolean areWeInCheck = checkChecker.isInChess(currBoard, color);
 
         checkTimeout();
+
+        /**
+         * null move reduction:
+         * only, for non pv nodes,
+         * and no null move has already been chosen in this row
+         * and we are not in end game (because of zugzwang issues)
+         * and we are not in check (also for zugzwang)
+         */
+        if (useNullMoves &&
+                beta - alpha <= 1 &&
+                nullMoveCounter == 0 &&
+                !areWeInCheck &&
+                depth > 1 &&
+                isOpeningOrMiddleGame(currBoard)
+        ) {
+            int R = (depth > 6) ? 3 : 2;
+            if (R > depth) {
+                R = depth;
+            }
+
+            doPrepareNullMove(currBoard);
+            int eval = -negaMaximize(currBoard, depth - R, color.invert(), -beta, -beta + 1);
+            undoNullMove(currBoard);
+
+            if (eval >= beta) {
+                return eval;
+            }
+        }
 
         int max = alpha;
 
@@ -220,6 +255,21 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         storeTT(currBoard, color, max, max, beta, depth);
 
         return max;
+    }
+
+    private void undoNullMove(BoardRepresentation currBoard) {
+        nullMoveCounter--;
+        currBoard.setEnPassantOption(enPassantBeforeNullMove);
+        repetitionChecker = repetitionCheckerBeforeNullMove;
+    }
+
+    private void doPrepareNullMove(BoardRepresentation currBoard) {
+        nullMoveCounter++;
+        enPassantBeforeNullMove = currBoard.getEnPassantMoveTargetPos();
+        currBoard.setEnPassantOption(Board3.NO_EN_PASSANT_OPTION);
+
+        repetitionCheckerBeforeNullMove = repetitionChecker;
+        repetitionChecker = new SimpleRepetitionChecker();
     }
 
     /**

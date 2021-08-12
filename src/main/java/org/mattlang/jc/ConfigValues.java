@@ -33,6 +33,8 @@ public class ConfigValues {
     public final UCICheckOption useMvvLvaSorting = new UCICheckOption(allOptions, "useMvvLvaSorting", true);
     public final UCICheckOption usePvSorting = new UCICheckOption(allOptions, "usePvSorting", true);
 
+    public final UCICheckOption useNullMoves = new UCICheckOption(allOptions, "useNullMoves", false);
+
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;
     }

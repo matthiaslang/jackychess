@@ -185,8 +185,15 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 
     Stockfisch Level 5 (Elo ~ 1630): 10s move: wins 70%   
-    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 90%   
+    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 70%   
 
+
+### Version 0.9.10
+
+  - null move pruning. not sure if it brings something or make it worse...
+
+    Stockfisch Level 5 (Elo ~ 1630): 5s move:   
+    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
 
 
 
