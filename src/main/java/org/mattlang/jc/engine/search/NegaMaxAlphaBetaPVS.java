@@ -60,6 +60,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int nullMoveCounter;
     private int enPassantBeforeNullMove;
     private RepetitionChecker repetitionCheckerBeforeNullMove;
+    private boolean isOpeningOrMiddleGame;
 
     private OrderHints orderHints;
 
@@ -167,9 +168,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 nullMoveCounter == 0 &&
                 !areWeInCheck &&
                 depth > 1 &&
-                isOpeningOrMiddleGame(currBoard)
+                isOpeningOrMiddleGame
         ) {
-            int R = (depth > 6) ? 3 : 2;
+            int R = /*(depth > 6) ? 3 :*/ 2;
             if (R > depth) {
                 R = depth;
             }
@@ -409,6 +410,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         moveScores = new ArrayList<>();
         savedMoveScore = alpha;
         savedMove = null;
+        isOpeningOrMiddleGame= isOpeningOrMiddleGame(gameState.getBoard());
 
         pvArray.reset();
 
