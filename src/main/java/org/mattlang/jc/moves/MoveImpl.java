@@ -13,6 +13,16 @@ import lombok.Getter;
  * Represents a move on the board.
  * <p>
  * Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
+ *
+ * A move can be encoded in an int value:
+ *
+ * type: 0-14: 7 bits
+ * figureType: 5 bits
+ * fromINdex: 7 bits
+ * toIndex: 7 bits
+ * capturedFigure: 5 bits
+ * == 31 bits
+ * 
  */
 @Getter
 public final class MoveImpl implements Move {
@@ -336,16 +346,5 @@ public final class MoveImpl implements Move {
 
         capturedFigure = (byte) (l >>> 26 & MASK_5);
     }
-
-
-    /**
-     * Encoding:
-     *
-     * type: 0-14: 4 bits
-     * figureType: 5 bits
-     * fromINdex: 7 bits
-     * toIndex: 7 bits
-     * capturedFigure: 5 bits
-     *
-     */
+    
 }
