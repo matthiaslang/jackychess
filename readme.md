@@ -189,10 +189,11 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 
 ### Version 0.9.10
-
+                     
+  - cleaned up unused code (old Move classes, etc)
   - null move pruning. not sure if it brings something or make it worse...
 
-    Stockfisch Level 5 (Elo ~ 1630): 5s move:   
+    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
     Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
 
 
@@ -206,4 +207,6 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 
 
-      
+## bugs
+
+see [Current known bugs](docs/bugs.md)
