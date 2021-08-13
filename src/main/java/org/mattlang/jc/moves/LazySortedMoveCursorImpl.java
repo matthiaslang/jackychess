@@ -12,6 +12,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     private LongSorter longSorter;
 
     private int currMove;
+    private int orderOfCurrentMove;
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 
@@ -29,6 +30,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     public Move getMove() {
         // todo we should remove this method completely if possible and only deliver the long value ...
         return new MoveImpl(currMove);
+    }
+
+    @Override
+    public int getOrder() {
+        return orderOfCurrentMove;
     }
 
     @Override
@@ -86,6 +92,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
 
     public void next() {
         currMove = longSorter.next();
+        orderOfCurrentMove = longSorter.getOrder();
         currMoveObj.fromLongEncoded(currMove);
     }
 

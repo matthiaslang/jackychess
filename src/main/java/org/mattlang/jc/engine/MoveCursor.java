@@ -12,6 +12,8 @@ public interface MoveCursor {
 
     Move getMove();
 
+    int getOrder();
+
     void undoMove(BoardRepresentation board);
 
     boolean isCapture();

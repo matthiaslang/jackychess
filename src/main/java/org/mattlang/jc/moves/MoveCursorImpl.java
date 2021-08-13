@@ -12,6 +12,7 @@ public final class MoveCursorImpl implements MoveCursor {
     private MoveListImpl movelist;
 
     private int currMove;
+    private int orderOfCurrentMove;
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 
@@ -32,6 +33,11 @@ public final class MoveCursorImpl implements MoveCursor {
     public Move getMove() {
         // todo we should remove this method completely if possible and only deliver the long value ...
         return new MoveImpl(currMove);
+    }
+
+    @Override
+    public int getOrder() {
+        return orderOfCurrentMove;
     }
 
     @Override
@@ -93,6 +99,7 @@ public final class MoveCursorImpl implements MoveCursor {
 
         iterCurser++;
         currMove = movelist.get(iterCurser);
+        orderOfCurrentMove= movelist.getOrder(iterCurser);
         currMoveObj.fromLongEncoded(currMove);
     }
 

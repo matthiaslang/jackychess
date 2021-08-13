@@ -71,6 +71,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
     private boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
+    private boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
 
     private boolean doExtend = false;
 
@@ -206,18 +207,44 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             depth = checkToExtend(currBoard, color, depth);
 
+            int searchedMoves = 0;
             for (MoveCursor moveCursor : moves) {
                 moveCursor.move(currBoard);
                 repetitionChecker.push(currBoard);
 
+                searchedMoves++;
+
                 int score;
                 if (firstChild) {
+                    /**
+                     * do full search (for pvs search on the first move, or if pvs search is deactivated)
+                     */
                     score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max);
                     if (doPVSSearch) {
                         firstChild = false;
                     }
                 } else {
-                    score = -negaMaximize(currBoard, depth - 1, color.invert(), -max - 1, -max);
+                    /**
+                     * in pvs search try to do a 0 window search on all other than the first move:
+                     * we combine this with late move reductions if possible
+                     */
+                    int R = 0;
+                    /**
+                     * combine it with late move reductions if possible and activated
+                     */
+                    boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor.getOrder(), areWeInCheck);
+                    if (doLMR) {
+                        R = 1;
+                        if (searchedMoves > 3 + 6 && depth > 4) {
+                            R = depth / 3;
+                        }
+                    }
+                    // pvs try 0 window with or without late move reduction
+                    score = -negaMaximize(currBoard, depth - 1 - R, color.invert(), -max - 1, -max);
+
+                    /**
+                     * do a full window search in pvs search if score is out of our max, beta window:
+                     */
                     if (max < score && score < beta) {
                         score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score);
                     }
@@ -256,6 +283,24 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         storeTT(currBoard, color, max, max, beta, depth);
 
         return max;
+    }
+
+    /**
+     * Determines if we should try a late move reduction.
+     * We do it for later moves (after the 3 best moves in the ordered 
+     * @param searchedMoves
+     * @param depth
+     * @param orderOfMove
+     * @param areWeInCheck
+     * @return
+     */
+    private boolean canWeDoLateMoveReduction(int searchedMoves, int depth, int orderOfMove, boolean areWeInCheck) {
+        return useLateMoveReductions &&
+                searchedMoves > 3 &&
+                depth > 3 &&
+                orderOfMove >= OrderCalculator.LATE_MOVE_REDUCTION_BORDER
+                && /* only reduce for "bad" moves (unspecific non-captures and castlrings)*/
+                !areWeInCheck;
     }
 
     private void undoNullMove(BoardRepresentation currBoard) {

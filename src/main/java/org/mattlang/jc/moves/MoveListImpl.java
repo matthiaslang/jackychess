@@ -135,6 +135,10 @@ public class MoveListImpl implements MoveList {
         return moves.get(i);
     }
 
+    public final int getOrder(int i) {
+        return order[i];
+    }
+
     public void remove(int index) {
         moves.remove(index);
     }

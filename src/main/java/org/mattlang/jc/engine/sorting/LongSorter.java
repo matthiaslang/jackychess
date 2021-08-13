@@ -45,6 +45,14 @@ public class LongSorter {
         return objects[start++];
     }
 
+    /**
+     * returns the order of the current move.
+     * @return
+     */
+    public int getOrder() {
+        return orders[start];
+    }
+
     private void sortRound() {
         if (start >= size - 1) {
             return;

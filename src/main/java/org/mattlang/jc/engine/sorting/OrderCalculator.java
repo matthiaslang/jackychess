@@ -14,15 +14,17 @@ import org.mattlang.jc.engine.search.MoveScore;
 
 public class OrderCalculator {
 
-    private static final int PV_SCORE = -1000_000_000;
-    private static final int GOOD_CAPTURES_SCORE = -100_000_000;
-    private static final int GOOD_PROMOTIONS = -90_000_000;
+    public static final int PV_SCORE = -1000_000_000;
+    public static final int GOOD_CAPTURES_SCORE = -100_000_000;
+    public static final int GOOD_PROMOTIONS = -90_000_000;
 
-    private static final int KILLER_SCORE = -10_000_000;
-    private static final int HISTORY_SCORE = -1_000_000;
-    private static final int BAD_CAPTURES_SCORE = -100_000;
-    private static final int CASTLING_SCORE = -20_000;
-    private static final int QUIET_MOVE_SCORE = -10_000;
+    public static final int KILLER_SCORE = -10_000_000;
+    public static final int HISTORY_SCORE = -1_000_000;
+    public static final int BAD_CAPTURES_SCORE = -100_000;
+    public static final int CASTLING_SCORE = -20_000;
+    public static final int QUIET_MOVE_SCORE = -10_000;
+
+    public static final int LATE_MOVE_REDUCTION_BORDER= CASTLING_SCORE;
 
     /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
     private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
