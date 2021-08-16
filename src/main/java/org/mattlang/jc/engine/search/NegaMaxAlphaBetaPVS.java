@@ -29,6 +29,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
+    /** number of searched moves to start LMR if activated.*/
+    private static final int LMR_AFTER_N_SEARCHED_MOVES = 3;
+    /** number of additional searched moves to do a higher reduction for LMR. */
+    private static final int LMR_N_MOVES_REDUCE_MORE = 6;
+
     private EvaluateFunction evaluate;
 
     private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
@@ -61,6 +66,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int enPassantBeforeNullMove;
     private RepetitionChecker repetitionCheckerBeforeNullMove;
     private boolean isOpeningOrMiddleGame;
+
+    private int extensionCounter=0;
 
     private OrderHints orderHints;
 
@@ -232,10 +239,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     /**
                      * combine it with late move reductions if possible and activated
                      */
-                    boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor.getOrder(), areWeInCheck);
+                    boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
                     if (doLMR) {
                         R = 1;
-                        if (searchedMoves > 3 + 6 && depth > 4) {
+                        if (searchedMoves > LMR_AFTER_N_SEARCHED_MOVES + LMR_N_MOVES_REDUCE_MORE && depth > 4) {
                             R = depth / 3;
                         }
                     }
@@ -246,7 +253,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                      * do a full window search in pvs search if score is out of our max, beta window:
                      */
                     if (max < score && score < beta) {
-                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -score);
+                        score = -negaMaximize(currBoard, depth - 1, color.invert(), -beta, -max);
                     }
                 }
 
@@ -287,19 +294,21 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     /**
      * Determines if we should try a late move reduction.
-     * We do it for later moves (after the 3 best moves in the ordered 
+     * We do it for later moves (after the 3 best moves in the ordered
+     *
      * @param searchedMoves
      * @param depth
-     * @param orderOfMove
      * @param areWeInCheck
      * @return
      */
-    private boolean canWeDoLateMoveReduction(int searchedMoves, int depth, int orderOfMove, boolean areWeInCheck) {
+    private boolean canWeDoLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
+            boolean areWeInCheck) {
         return useLateMoveReductions &&
-                searchedMoves > 3 &&
+                searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
                 depth > 3 &&
-                orderOfMove >= OrderCalculator.LATE_MOVE_REDUCTION_BORDER
-                && /* only reduce for "bad" moves (unspecific non-captures and castlrings)*/
+                !moveCursor.isCapture() &&
+                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
+                moveCursor.getOrder() >= OrderCalculator.LATE_MOVE_REDUCTION_BORDER &&
                 !areWeInCheck;
     }
 
@@ -370,9 +379,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (repetitionChecker.isRepetition()) {
             return Weights.REPETITION_WEIGHT;
         }
-
-        boolean areWeInCheck= checkChecker.isInChess(currBoard, color);
-
+        
         int eval = evaluate.eval(currBoard, color);
 
         /* are we too deep? */
@@ -389,6 +396,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return beta;
         if (x > alpha)
             alpha = x;
+
+        boolean areWeInCheck= checkChecker.isInChess(currBoard, color);
 
         try (MoveList moves = generator.generateNonQuietMoves(currBoard, color)) {
             if (moves.isCheckMate()) {
@@ -456,6 +465,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         savedMoveScore = alpha;
         savedMove = null;
         isOpeningOrMiddleGame= isOpeningOrMiddleGame(gameState.getBoard());
+
+        extensionCounter=0;
 
         pvArray.reset();
 
