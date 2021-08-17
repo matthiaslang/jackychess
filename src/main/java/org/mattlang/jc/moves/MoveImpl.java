@@ -221,11 +221,16 @@ public final class MoveImpl implements Move {
     }
 
     @Override
+    public int toInt() {
+        return toLongEncoded();
+    }
+
+    @Override
     public String toString() {
         return toStr();
     }
 
-    private int decodeEnPassantCapturePos(){
+    private int decodeEnPassantCapturePos() {
         return type - ENPASSANT_MOVE;
     }
 

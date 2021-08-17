@@ -30,4 +30,7 @@ public interface Move {
 
     int getOrder();
 
+
+    /** Representation of the move as int value. */
+    int toInt();
 }
