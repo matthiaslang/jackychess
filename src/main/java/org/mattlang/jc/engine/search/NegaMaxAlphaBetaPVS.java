@@ -194,6 +194,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int max = alpha;
 
+        int bestMove = 0;
+
         try (MoveList moves = generator.generate(currBoard, color)) {
             if (moves.isCheckMate()) {
                 if (areWeInCheck) {
@@ -205,7 +207,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
             }
 
-            orderCalculator.prepareOrder(color, depth);
+            int hashMove = probeTTHashMove(currBoard, color, depth);
+            orderCalculator.prepareOrder(color, hashMove, depth);
             moves.sort(orderCalculator);
 
             nodes += moves.size();
@@ -267,6 +270,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     max = score;
 
                     Move currMove = moveCursor.getMove();
+                    bestMove = currMove.toInt();
+
                     pvArray.set(currMove, ply);
                     if (depth == targetDepth) {
                         savedMove = currMove;
@@ -287,7 +292,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
         }
 
-        storeTT(currBoard, color, max, max, beta, depth);
+        // save score and best move info in tt:
+        storeTT(currBoard, color, max, max, beta, depth, bestMove);
 
         return max;
     }
@@ -354,10 +360,24 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         killerMoves.addKiller(color, move, ply);
     }
 
-    private void storeTT(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth) {
+    private void storeTT(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
+            int move) {
         if (doCaching) {
-            ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth);
+            ttCache.storeTTEntry(currBoard, color, max, alpha, beta, depth, move);
         }
+    }
+
+    private int probeTTHashMove(BoardRepresentation currBoard, Color color, int depth) {
+        if (doCaching) {
+            TTEntry entry = ttCache.getTTEntry(currBoard, color);
+            // todo should the depth influence the search of the hash move?
+            // any hash move may be better than no hash move...?
+            if (entry != null) {
+                return entry.getMove();
+            }
+        }
+        return 0;
+
     }
 
     private void checkTimeout() {
@@ -384,7 +404,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
-            storeTT(currBoard, color, eval, alpha, beta, depth);
+            storeTT(currBoard, color, eval, alpha, beta, depth, 0);
             return eval;
         }
 
@@ -418,7 +438,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-            orderCalculator.prepareOrder(color, depth);
+            int hashMove = probeTTHashMove(currBoard, color, depth);
+            orderCalculator.prepareOrder(color, hashMove, depth);
             moves.sort(orderCalculator);
 
             /* loop through the capture moves */
@@ -436,7 +457,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
         }
 
-        storeTT(currBoard, color, x, alpha, beta, depth);
+        storeTT(currBoard, color, x, alpha, beta, depth, 0);
 
         return alpha;
     }

@@ -25,7 +25,51 @@ import org.mattlang.jc.zobrist.Zobrist;
 public class ZobristPerfTests {
 
     @Test
+    public void sillyComparePureHash() {
+
+        final int[] i = new int[1];
+        final long[] l = new long[1];
+
+        StopWatch hashMeasure = benchmark(
+                "board2 normal hash",
+                () -> {
+                    Board3 board = new Board3();
+                    board.setStartPosition();
+                    perftReset();
+
+                    for(int j=0; j<100000000; j++)  {
+                        int hash = board.hashCode();
+                        i[0] = hash;
+                    }
+                });
+
+
+        StopWatch zobristMeasure = benchmark(
+                "board3 zobrist hash",
+                () -> {
+                    Board3 board = new Board3();
+                    board.setStartPosition();
+                    perftReset();
+                    for(int j=0; j<100000000; j++)  {
+                        long zobristHash = board.getZobristHash();
+                        l[0] = zobristHash;
+                    }
+                });
+
+        System.out.println("zobrist time: " + zobristMeasure.toString());
+        System.out.println("hash    time: " + hashMeasure.toString());
+
+        Assertions.assertThat(zobristMeasure.getDuration()).isLessThan(hashMeasure.getDuration());
+
+    }
+
+
+
+    @Test
     public void compareSpeed() {
+
+        final int[] i = new int[1];
+        final long[] l = new long[1];
 
         StopWatch hashMeasure = benchmark(
                 "board2 normal hash",
@@ -33,10 +77,13 @@ public class ZobristPerfTests {
             Board3 board = new Board3();
             board.setStartPosition();
             perftReset();
-            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, visitedBoard -> {
+
+            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, (visitedBoard,c,d) -> {
                 int hash = visitedBoard.hashCode();
+                i[0] = hash;
             });
         });
+
 
         StopWatch zobristMeasure = benchmark(
                 "board3 zobrist hash",
@@ -44,8 +91,9 @@ public class ZobristPerfTests {
             Board3 board = new Board3();
             board.setStartPosition();
             perftReset();
-            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, visitedBoard -> {
+            perft(new LegalMoveGeneratorImpl3(), board, WHITE, 5, (visitedBoard,c,d) -> {
                 long zobristHash = visitedBoard.getZobristHash();
+                l[0] = zobristHash;
             });
         });
 
@@ -80,7 +128,7 @@ public class ZobristPerfTests {
     private void assertNoCollisions(Board3 board, int depth) {
         HashMap<Long, Set<Board3>> collisionMap = new HashMap<>();
         perftReset();
-        perft(new LegalMoveGeneratorImpl3(), board, WHITE, depth, visitedBoard -> {
+        perft(new LegalMoveGeneratorImpl3(), board, WHITE, depth, (visitedBoard,c,d) -> {
             Board3 visitedBoard1 = (Board3) visitedBoard;
             long zobristHash = visitedBoard1.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);

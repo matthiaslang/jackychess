@@ -2,7 +2,12 @@ package org.mattlang.jc.engine.tt;
 
 import lombok.Getter;
 
-public class TTEntry<T> {
+/**
+ * TT Entry.
+ *
+ * Saving score, type and maybe hash move of a position.
+ */
+public final class TTEntry {
 
     public static final byte EMPTY = 0;
     public static final byte EXACT_VALUE = 1;
@@ -22,11 +27,16 @@ public class TTEntry<T> {
     @Getter
     byte aging;
 
-    public TTEntry(long zobristHash, int value, byte type, int depth) {
+    @Getter
+    int move;
+
+    public TTEntry(long zobristHash, int value, byte type, int depth, byte aging, int move) {
         this.zobristHash = zobristHash;
         this.value = value;
         this.type = type;
         this.depth = depth;
+        this.aging = aging;
+        this.move = move;
     }
 
     public boolean isExact() {
@@ -45,12 +55,15 @@ public class TTEntry<T> {
         return type == EMPTY;
     }
 
-    void update(long zobristHash, int value, byte type, int depth, byte aging) {
+    void update(long zobristHash, int value, byte type, int depth, byte aging, int move) {
         this.zobristHash = zobristHash;
         this.value = value;
         this.type = type;
         this.depth = depth;
         this.aging = aging;
+        if (this.move == 0 || move != 0) {
+            this.move = move;
+        }
     }
 
     @Override
@@ -61,6 +74,7 @@ public class TTEntry<T> {
                 ", type=" + type +
                 ", depth=" + depth +
                 ", aging=" + aging +
+                ", move=" + move +
                 '}';
     }
 }

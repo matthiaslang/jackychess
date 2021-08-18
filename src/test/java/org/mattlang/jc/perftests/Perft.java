@@ -1,7 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import java.util.function.Consumer;
-
 import org.assertj.core.api.SoftAssertions;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -40,7 +38,7 @@ public class Perft {
     public static void assertPerft(PositionBasedGenerator<MoveList> generator, BoardRepresentation board, Color color, int depth,
                             int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions) {
         perftReset();
-        perft(generator, board, color, depth, visitedBoard -> {
+        perft(generator, board, color, depth, (visitedBoard, color1, depth1) -> {
         });
 
         SoftAssertions softly = new SoftAssertions();
@@ -56,7 +54,7 @@ public class Perft {
                       BoardRepresentation board,
                       Color color,
                       int depth,
-                      Consumer<BoardRepresentation> nodeConsumer) {
+                      PerftConsumer nodeConsumer) {
 
         if (depth == 0) {
             nodes++;
@@ -90,7 +88,7 @@ public class Perft {
             }
             moveCursor.move(board);
 
-            nodeConsumer.accept(board);
+            nodeConsumer.accept(board, color, depth);
 
             perft(generator, board, color.invert(), depth - 1, nodeConsumer);
             moveCursor.undoMove(board);

@@ -16,7 +16,7 @@ public class TTCacheTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7);
+        cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
 
         TTEntry entry = cache.getTTEntry(board, Color.WHITE);
         assertThat(entry).isNotNull();

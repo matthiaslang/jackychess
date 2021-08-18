@@ -39,7 +39,7 @@ public class MoveGeneratorBenchmark {
 
                     engine.getBoard().setStartPosition();
 
-                    Perft.perft(new MoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, visitedBoard -> {
+                    Perft.perft(new MoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
                     });
                 });
 
@@ -51,7 +51,7 @@ public class MoveGeneratorBenchmark {
                     Engine engine = new Engine();
 
                     engine.getBoard().setStartPosition();
-                    Perft.perft(new LegalMoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, visitedBoard -> {
+                    Perft.perft(new LegalMoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
                     });
                 });
         Map itNormal = Factory.getDefaults().collectStatistics();

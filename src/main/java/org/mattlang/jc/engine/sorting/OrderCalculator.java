@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.search.MoveScore;
 public class OrderCalculator {
 
     public static final int PV_SCORE = -1000_000_000;
+    public static final int HASHMOVE_SCORE = -500_000_000;
     public static final int GOOD_CAPTURES_SCORE = -100_000_000;
     public static final int GOOD_PROMOTIONS = -90_000_000;
 
@@ -43,6 +44,7 @@ public class OrderCalculator {
     private final int targetDepth;
     private final OrderHints orderHints;
 
+    private int hashMove;
 
     public OrderCalculator(OrderHints orderHints, int targetDepth) {
         this.orderHints=orderHints;
@@ -54,8 +56,9 @@ public class OrderCalculator {
     }
 
 
-    public void prepareOrder(Color color, final int depth) {
+    public void prepareOrder(Color color, final int hashMove, final int depth) {
 
+        this.hashMove = hashMove;
         int index = targetDepth - depth;
         // if we are at the root and have scores from a previous run, lets take them:
         if (index == 0 && orderHints.moveScores != null) {
@@ -103,6 +106,8 @@ public class OrderCalculator {
 
         if (usePvSorting && pvMove != null && pvMove.equals(m)) {
             return PV_SCORE;
+        } else if (hashMove == m.toInt()) {
+            return HASHMOVE_SCORE;
         } else {
             int mvvLva = MvvLva.calcMMVLVA(m);
             // for now do not distinguish different promotions, but captures:

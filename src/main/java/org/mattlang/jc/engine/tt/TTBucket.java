@@ -8,7 +8,7 @@ package org.mattlang.jc.engine.tt;
  */
 public class TTBucket {
 
-    public static final int MAX_AGE_DIFF = 10;
+    public static final int MAX_AGE_DIFF = 2;
     private static final int MAX_BUCKET_SIZE = 10;
     private TTEntry[] bucketlist;
 
@@ -75,7 +75,7 @@ public class TTBucket {
         for (int i = 0; i < bucketlist.length; i++) {
             TTEntry entry = bucketlist[i];
             if (entry == null) {
-                bucketlist[i] = new TTEntry(0, 0, TTEntry.EMPTY, 0);
+                bucketlist[i] = new TTEntry(0, 0, TTEntry.EMPTY, 0, currAging, 0);
                 return bucketlist[i];
             }
             if (entry.isEmpty()) {
