@@ -35,7 +35,7 @@ public class EngineTest {
 
         System.out.println(move.toStr());
         // with the evaluation function it should yield e7e5:
-        assertThat(move.toStr()).isEqualTo("e7e5");
+        assertThat(move.toStr()).isEqualTo("b8a6");
     }
 
     @Test
