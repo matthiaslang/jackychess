@@ -192,6 +192,8 @@ On lower time turnaments 2s etc. there does not seem any benefit.
                      
   - cleaned up unused code (old Move classes, etc)
   - null move pruning. not sure if it brings something or make it worse...
+  - late move reductions. does not bring any benefits so far...
+  - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
 
     Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
     Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
