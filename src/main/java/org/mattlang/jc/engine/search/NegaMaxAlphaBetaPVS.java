@@ -381,10 +381,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private void checkTimeout() {
-        if (stopTime != 0 && nodesVisited % 100000 == 0) {
+        if (stopTime != 0) {
             if (System.currentTimeMillis() > stopTime) {
                 throw new TimeoutException();
             }
+        }
+        if (nodesVisited % 10000 == 0) {
             if (Thread.interrupted()) {
                 throw new TimeoutException();
             }
