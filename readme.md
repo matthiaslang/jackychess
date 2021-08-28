@@ -212,6 +212,11 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 - fixed UCI time control options: wtime, btime, winc, binc have been ignored if movestogo has not been set
 
 
+### Version 0.9.12
+
+- fixed missing promotion letter on best move
+
+
 ## todo 
 
 - todo: experiments/perfts with better tt caching...
