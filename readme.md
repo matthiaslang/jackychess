@@ -215,6 +215,7 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 ### Version 0.9.12
 
 - fixed missing promotion letter on best move
+- reworked time control calucation for blitz chess a bit
 
 
 ## todo 
