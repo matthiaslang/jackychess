@@ -191,13 +191,24 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 ### Version 0.9.10
                      
   - cleaned up unused code (old Move classes, etc)
-  - null move pruning. not sure if it brings something or make it worse...
-  - late move reductions. does not bring any benefits so far...
-  - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
+  - optimized move lists and move classes
+  - experimental code available as options:
+    - null move pruning. not activated by default, as it doesnt seem any benefit so far.
+    - late move reductions. not activated by default as it doesnt bring any benefit so far.
+    - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
 
     Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
     Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
 
+
+### Version 0.9.11
+
+- experimental code available as options:
+    - null move pruning. not activated by default, as it doesnt seem any benefit so far.
+    - late move reductions. not activated by default as it doesnt bring any benefit so far.
+    - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
+
+- fixed UCI time control options: wtime, btime, winc, binc have been ignored if movestogo has not been set
 
 
 ## todo 
