@@ -17,6 +17,8 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
 public class AsyncEngine {
 
+    public static final int DELAY_BUFFER_MS = 200;
+    public static final int ONE_SECOND_MS = 1000;
     Logger logger = Logger.getLogger("ASYNC");
     /**
      * "outer" completable future. CompletableFutures unfortunately dont support cancel of asynchronous
@@ -132,13 +134,13 @@ public class AsyncEngine {
         }
 
         // subtract a bit to not overceed the time by engine stop delays:
-        if (time > 1000) {
-            time -= 200;
+        if (time > ONE_SECOND_MS) {
+            time -= DELAY_BUFFER_MS;
         }
 
         // fallback:
         if (time <= 0) {
-            time = 1000;
+            time = ONE_SECOND_MS;
         }
 
         // double check chosen time:
@@ -150,9 +152,14 @@ public class AsyncEngine {
         }
 
         if (time > restTime) {
-            time = restTime;
-            if (time > 800) {
-                time -= 200;
+            if (incTime > 0) {
+                time = incTime;
+            }
+            if (time > restTime) {
+                time = restTime;
+            }
+            if (time >= ONE_SECOND_MS) {
+                time -= DELAY_BUFFER_MS;
             }
         }
         return time;
