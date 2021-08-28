@@ -79,7 +79,29 @@ public class EngineTest {
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
-    
+
+    @Test
+    public void testPromotionBestMovePieceLetter() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                .config(c -> c.timeout.setValue(60000))
+                .config(c -> c.maxDepth.setValue(7)));
+        // now starting engine:
+        Engine engine = new Engine();
+
+        GameState gameState = engine.getBoard().setFenPosition("position fen 7k/P7/8/8/8/8/K7/8 w k - 2 17 ");
+
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go(gameState, new GameContext());
+
+        System.out.println(move.toStr());
+
+        // check that the promotion letter is correctly returned in the bestmove:
+        assertThat(move.toStr()).isEqualTo("a7a8q");
+    }
+
     @Test
     @Ignore
     public void testIterativeDeepeningMtdf() throws IOException {

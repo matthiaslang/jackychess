@@ -188,7 +188,12 @@ public final class MoveImpl implements Move {
     }
 
     public String toStr() {
-        return convert(fromIndex) + convert(toIndex);
+        String coords = convert(fromIndex) + convert(toIndex);
+        if (isPromotion()) {
+            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
+            coords += figureChar;
+        }
+        return coords;
     }
 
     @Override
