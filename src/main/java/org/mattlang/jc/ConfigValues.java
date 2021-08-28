@@ -34,7 +34,7 @@ public class ConfigValues {
     public final UCICheckOption usePvSorting = new UCICheckOption(allOptions, "usePvSorting", true);
 
     public final UCICheckOption useNullMoves = new UCICheckOption(allOptions, "useNullMoves", false);
-    public final UCICheckOption useLateMoveReductions = new UCICheckOption(allOptions, "useLateMoveReductions", true);
+    public final UCICheckOption useLateMoveReductions = new UCICheckOption(allOptions, "useLateMoveReductions", false);
 
     public Map<String, UCIOption> getAllOptions() {
         return allOptions;
