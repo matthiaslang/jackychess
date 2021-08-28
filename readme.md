@@ -196,6 +196,7 @@ On lower time turnaments 2s etc. there does not seem any benefit.
     - null move pruning. not activated by default, as it doesnt seem any benefit so far.
     - late move reductions. not activated by default as it doesnt bring any benefit so far.
     - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
+                              
 
     Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
     Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
