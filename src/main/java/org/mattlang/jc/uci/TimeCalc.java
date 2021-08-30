@@ -6,7 +6,7 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
 public class TimeCalc {
 
-    public static final int DELAY_BUFFER_MS = 200;
+    public static final int DELAY_BUFFER_MS = 100;
     public static final int ONE_SECOND_MS = 1000;
 
     public static long determineCalculationTime(GameState gameState, GoParameter goParams) {
@@ -31,49 +31,100 @@ public class TimeCalc {
                 opponentIncTime = goParams.winc;
             }
             restMoves = goParams.movestogo;
-            return determineTime(gameState, restTime, opponentRestTime, incTime, opponentIncTime, restMoves);
+            double phase = PhaseCalculator.calcPhaseFactor(gameState.getBoard());
+
+            return determineTime(restTime, opponentRestTime, incTime, opponentIncTime, restMoves, phase);
         }
     }
 
-    private static long determineTime(GameState gameState, long restTime, long opponentRestTime, long incTime,
+    public static long determineTime(long restTime, long opponentRestTime, long incTime,
             long opponentIncTime,
-            long restMoves) {
+            long restMoves,
+            double phase) {
 
+        // preset with halve the inc time (if we have one):
         long time = incTime / 2;
 
+        // be a bit more generours, if we have more time than the opponent; in that case add a port of the diff
+        // if we are behind subtract a bit:
+        time += calcBonusOrMalus(restTime, opponentRestTime);
+
+        // if we have restmoves given, scale by the rest moves:
+        time += splitRestTime(restMoves, restTime, phase);
+
+        time = doubleCheckLimits(time, restTime, incTime);
+
+        return time;
+    }
+
+    private static int AVERAGE_MOVES_PER_GAME = 40;
+    private static int AVERAGE_MOVES_IN_ENDGAME = 20;
+
+    /**
+     * Silly forecase of future moves depending on game phase.
+     *
+     * @param phase game phase
+     * @return
+     */
+    private static int forecastFutureMoveCount(double phase) {
+
+        // lets say we have 40 moves in general for opening/middle and 20 for end game:
+        // weight by phase where we are; endgame weights always full:
+        return (int) (AVERAGE_MOVES_PER_GAME * phase + AVERAGE_MOVES_IN_ENDGAME);
+
+        // todo maybe include current score to scale better here?
+    }
+
+    /**
+     * Calculate a bonus or malus time based if we have more time than the opponen or vice versa.
+     *
+     * @param restTime
+     * @param opponentRestTime
+     * @return
+     */
+    private static long calcBonusOrMalus(long restTime, long opponentRestTime) {
         long diff = restTime - opponentRestTime;
         if (diff > 0) {
-            time += diff / 3;
+            return diff / 3;
+        } else if (diff < 0) {
+            return -diff / 3;
         } else {
-            time -= diff / 3;
+            return 0;
         }
+    }
 
+    /**
+     * Split the rest of our time by the given rest moves or estimated moves to add to our calculation time.
+     *
+     * @param restMoves
+     * @param restTime
+     * @param phase
+     * @return
+     */
+    private static long splitRestTime(long restMoves, long restTime, double phase) {
+        // if we have restmoves given, scale by the rest moves:
         if (restMoves != 0 && restTime > 0) {
             long averageTimeForThisMove = restTime / restMoves;
-
-            time += averageTimeForThisMove;
+            return averageTimeForThisMove;
         } else {
-            // determine by gamephase
-            double phase = PhaseCalculator.calcPhaseFactor(gameState.getBoard());
-            boolean isOpening = phase > 0.6;
-            if (isOpening) {
-                // estimate moves by phase:
-                // lets say a game has 60 moves in average:
-                int averageMovesPerGame = 60;
-                // weight by phase where we are
-                averageMovesPerGame = (int) (averageMovesPerGame * phase + 5);
-
-                long averageTime = restTime / averageMovesPerGame;
-
-                time += averageTime;
-            } else {
-                // average end game moves..
-                int averageMovesEndGame = 20;
-                long averageTime = restTime / averageMovesEndGame;
-                time += averageTime;
-            }
+            // otherwise try a silly forecase of future move count based on the board material:
+            int estimatedMoves = forecastFutureMoveCount(phase);
+            long averageTime = restTime / estimatedMoves;
+            return averageTime;
         }
+    }
 
+    /**
+     * Double check the calculated time, that we do not exceed our rest time, especially when we have nearly no time
+     * left.
+     * Choose a value based on inctime if available as fallback.
+     *
+     * @param time
+     * @param restTime
+     * @param incTime
+     * @return
+     */
+    private static long doubleCheckLimits(long time, long restTime, long incTime) {
         // subtract a bit to not overceed the time by engine stop delays:
         if (time > ONE_SECOND_MS) {
             time -= DELAY_BUFFER_MS;
@@ -84,20 +135,19 @@ public class TimeCalc {
             time = ONE_SECOND_MS;
         }
 
-        // double check chosen time:
-        int approxamatelyFutureMoves = (int) (restTime / time);
-        if (approxamatelyFutureMoves < 5) {
-            time = restTime / 10;
-        } else if (approxamatelyFutureMoves < 10) {
-            time /= 2;
+        // but we should spend at least halve the inc time if we have inc time available
+        if (incTime > 0 && time < incTime / 2) {
+            time = incTime / 2;
+
         }
 
+        // if we estime still more than the resttime, go back to half the inc time if possible.
         if (time > restTime) {
             if (incTime > 0) {
-                time = incTime;
-            }
-            if (time > restTime) {
-                time = restTime;
+                time = incTime / 2;
+            } else {
+                // we are nearly out of time... no rescue: at least only use half of the time:
+                time = restTime / 2;
             }
             if (time >= ONE_SECOND_MS) {
                 time -= DELAY_BUFFER_MS;
