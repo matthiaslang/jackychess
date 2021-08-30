@@ -9,7 +9,7 @@ public class UciProcessorTest {
     @Test
     public void optionsParsing() {
         UciProcessor ucip = new UciProcessor();
-        ucip.parseOption("setoption name thinktime value 16");
+        ucip.parseOption("setoption name thinktime value 16000");
         assertThat(ucip.getConfigValues().timeout.getValue()).isEqualTo( 16000);
     }
 
@@ -23,6 +23,19 @@ public class UciProcessorTest {
         assertThat(goParams.winc).isEqualTo(0L);
         assertThat(goParams.binc).isEqualTo(0L);
         assertThat(goParams.movestogo).isEqualTo(39L);
+    }
+
+
+    @Test
+    public void goParameterParsin2() {
+        UciProcessor ucip = new UciProcessor();
+        GoParameter goParams = ucip.parseGoParams("go wtime 19527 btime 21579 winc 1000 binc 1000");
+        assertThat(goParams.infinite).isFalse();
+        assertThat(goParams.wtime).isEqualTo(19527L);
+        assertThat(goParams.btime).isEqualTo(21579L);
+        assertThat(goParams.winc).isEqualTo(1000L);
+        assertThat(goParams.binc).isEqualTo(1000L);
+        assertThat(goParams.movestogo).isEqualTo(0L);
     }
 
     @Test
