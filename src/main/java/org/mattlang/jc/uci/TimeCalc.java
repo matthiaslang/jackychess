@@ -52,6 +52,16 @@ public class TimeCalc {
         // if we have restmoves given, scale by the rest moves:
         time += splitRestTime(restMoves, restTime, phase);
 
+        // double check and ajust chosen time if we have approximatly only time left for 5 or 10 moves:
+        if (time != 0) {
+            int approxamatelyFutureMoves = (int) (restTime / time);
+            if (approxamatelyFutureMoves < 5) {
+                time -= restTime / 10;
+            } else if (approxamatelyFutureMoves < 10) {
+                time -= restTime / 20;
+            }
+        }
+
         time = doubleCheckLimits(time, restTime, incTime);
 
         return time;

@@ -65,7 +65,7 @@ public class TimeCalcTest {
         goparams.binc = 1000;
         long result = TimeCalc.determineCalculationTime(gameState, goparams);
 
-        assertThat(result).isEqualTo(11400);
+        assertThat(result).isEqualTo(8400);
 
     }
 
@@ -82,7 +82,7 @@ public class TimeCalcTest {
         goparams.binc = 1000;
         long result = TimeCalc.determineCalculationTime(gameState, goparams);
 
-        assertThat(result).isEqualTo(548);
+        assertThat(result).isEqualTo(500);
 
     }
 
@@ -99,7 +99,7 @@ public class TimeCalcTest {
         goparams.binc = 1000;
         long result = TimeCalc.determineCalculationTime(gameState, goparams);
 
-        assertThat(result).isEqualTo(781);
+        assertThat(result).isEqualTo(691);
 
     }
 
@@ -118,7 +118,7 @@ public class TimeCalcTest {
         // in endgame we get in relation a bit more time, since we expect to have fewer moves till game end:
         assertThat(determineTime(60000, 60000, 1000, 1000, 0, 0)).isEqualTo(3400);
         // and also if we have more time than opponent we again get a bit more extra time:
-        assertThat(determineTime(60000, 50000, 1000, 1000, 0, 0)).isEqualTo(6733);
+        assertThat(determineTime(60000, 50000, 1000, 1000, 0, 0)).isEqualTo(3733);
     }
 
     @Test
@@ -136,6 +136,6 @@ public class TimeCalcTest {
         // in endgame we get in relation a bit more time, since we expect to have fewer moves till game end:
         assertThat(determineTime(60000, 60000, 0, 0, 0, 0)).isEqualTo(2900);
         // and also if we have more time than opponent we again get a bit more extra time:
-        assertThat(determineTime(60000, 50000, 0, 0, 0, 0)).isEqualTo(6233);
+        assertThat(determineTime(60000, 50000, 0, 0, 0, 0)).isEqualTo(3233);
     }
 }
