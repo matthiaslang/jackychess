@@ -1,7 +1,5 @@
 package org.mattlang.jc.uci;
 
-import java.util.Map;
-
 /**
  * Defines an uci combo option for this engine.
  *
@@ -13,8 +11,8 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
     private E defaultValue;
     private E value;
 
-    public UCIComboOption(Map<String, UCIOption> optionBundle, String name, Class<E> eclass, E defaultValue) {
-        super(optionBundle, name);
+    public UCIComboOption(UCIOptions optionBundle, UCIGroup group, String name, Class<E> eclass, E defaultValue) {
+        super(optionBundle, group, name);
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.eclass = eclass;

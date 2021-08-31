@@ -1,7 +1,5 @@
 package org.mattlang.jc.uci;
 
-import java.util.Map;
-
 /**
  * Defines an uci check option for this engine.
  *
@@ -12,8 +10,8 @@ public class UCICheckOption extends UCIOption<Boolean> {
     private boolean defaultValue;
     private boolean value;
 
-    public UCICheckOption(Map<String, UCIOption> optionBundle, String name, boolean defaultValue) {
-        super(optionBundle, name);
+    public UCICheckOption(UCIOptions optionBundle, UCIGroup group, String name, boolean defaultValue) {
+        super(optionBundle, group, name);
         this.defaultValue = defaultValue;
         this.value = defaultValue;
     }
