@@ -2,6 +2,8 @@ package org.mattlang.jc.uci;
 
 import java.util.Map;
 
+import org.mattlang.jc.UCILogger;
+
 /**
  * Defines an uci spin option for this engine.
  *
@@ -32,9 +34,16 @@ public class UCISpinOption extends UCIOption<Integer> {
     public void parseAndSetParameter(String newValue) {
         int val = Integer.parseInt(newValue);
         if (val < min || val > max) {
-            throw new IllegalArgumentException("value not within [min,max] !");
+            UCILogger.log(getName() + ": value not within [min,max] !");
+            if (value < min){
+                value = min;
+            } else if (value > max){
+                value = max;
+            }
+
+        } else {
+            this.value = val;
         }
-        this.value = val;
     }
 
     @Override
