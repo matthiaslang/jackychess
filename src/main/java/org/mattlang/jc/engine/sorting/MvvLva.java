@@ -44,7 +44,7 @@ public class MvvLva {
         weights[Figure.B_Queen.figureCode] = Weights.QUEEN_WEIGHT;
         weights[Figure.W_Queen.figureCode] = Weights.QUEEN_WEIGHT;
 
-        weights[Figure.B_King.figureCode] = Weights.QUEEN_WEIGHT + Weights.PAWN_WEIGHT;
+        weights[Figure.B_King.figureCode] = Weights.KING_WEIGHT + Weights.PAWN_WEIGHT;
         weights[Figure.W_King.figureCode] = Weights.KING_WEIGHT + Weights.PAWN_WEIGHT;
     }
 
