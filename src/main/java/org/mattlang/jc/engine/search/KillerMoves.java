@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.MoveCursor;
 
 /**
  * Holds the found killer moves used for move sorting.
@@ -15,12 +15,13 @@ public class KillerMoves {
 
     int MAX_PLY = 100;
 
-    private List<Move>[] killerMovesWhite = new ArrayList[MAX_PLY];
-    private List<Move>[] killerMovesBlack = new ArrayList[MAX_PLY];
+    private List<Integer>[] killerMovesWhite = new ArrayList[MAX_PLY];
+    private List<Integer>[] killerMovesBlack = new ArrayList[MAX_PLY];
 
-    public void addKiller(Color color, Move move, int ply) {
+    public void addKiller(Color color, MoveCursor moveCursor, int ply) {
         if (ply < MAX_PLY) {
-            List<Move> kmovesList = getOrCreateKillerList(color, ply);
+            int move = moveCursor.getMoveInt();
+            List<Integer> kmovesList = getOrCreateKillerList(color, ply);
             if (!kmovesList.contains(move)) {
                 kmovesList.add(0, move);
                 if (kmovesList.size() > MAX_KILLERS) {
@@ -30,22 +31,22 @@ public class KillerMoves {
         }
     }
 
-    public boolean isKiller(Color color, Move move, int ply) {
+    public boolean isKiller(Color color, int moveInt, int ply) {
         if (ply > MAX_PLY) {
             return false;
         }
-        List<Move> kmovesList = getOrCreateKillerList(color, ply);
+        List<Integer> kmovesList = getOrCreateKillerList(color, ply);
         for (int i = 0; i < kmovesList.size(); i++) {
-            if (kmovesList.get(i).equals(move)) {
+            if (kmovesList.get(i) == moveInt) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Move> getOrCreateKillerList(Color color, int ply) {
-        List<Move>[] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
-        List<Move> kmovesList = killerMoves[ply];
+    private List<Integer> getOrCreateKillerList(Color color, int ply) {
+        List<Integer>[] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
+        List<Integer> kmovesList = killerMoves[ply];
         if (kmovesList == null) {
             kmovesList = new ArrayList<>();
             killerMoves[ply] = kmovesList;

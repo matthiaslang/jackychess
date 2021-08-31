@@ -11,20 +11,25 @@ public class ConfigValues {
 
     public final UCIGroup common = new UCIGroup("Common");
 
-    public final UCISpinOption timeout = new UCITimeoutOption(allOptions, common);
-    public final UCISpinOption maxQuiescence = new UCISpinOption(allOptions, common, "quiescence", 0, 10, 10);
-    public final UCISpinOption maxDepth = new UCISpinOption(allOptions, common, "maxdepth", 3, 50, 20);
+    public final UCIGroup limits = new UCIGroup("Limits");
 
-    public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, common, "activatePvsSearch", true);
-    public final UCICheckOption useTTCache = new UCICheckOption(allOptions, common, "useTTCache", true);
+    public final UCISpinOption timeout = new UCITimeoutOption(allOptions, limits);
+    public final UCISpinOption maxDepth = new UCISpinOption(allOptions, limits, "maxdepth", 3, 50, 20);
+    public final UCISpinOption maxQuiescence = new UCISpinOption(allOptions, limits, "quiescence", 0, 10, 10);
 
-    public final UCICheckOption aspiration = new UCICheckOption(allOptions, common, "aspiration", true);
+
+    public final UCIGroup caching = new UCIGroup("Caching");
+    public final UCICheckOption useTTCache = new UCICheckOption(allOptions, caching, "useTTCache", true);
+
+    public final UCIGroup search = new UCIGroup("Search");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            new UCIComboOption(allOptions, common, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
+            new UCIComboOption(allOptions, search, "searchalg", SearchAlgorithms.class, SearchAlgorithms.STABLE);
+    public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, search, "activatePvsSearch", true);
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
-            new UCIComboOption(allOptions, common, "evaluateFunction", EvalFunctions.class, EvalFunctions.MINIMAL_PST);
+            new UCIComboOption(allOptions, search, "evaluateFunction", EvalFunctions.class, EvalFunctions.MINIMAL_PST);
+
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
             new UCIComboOption(allOptions, common, "MoveListImpl", MoveListImpls.class, MoveListImpls.OPTIMIZED);
@@ -37,8 +42,12 @@ public class ConfigValues {
     public final UCICheckOption useMvvLvaSorting = new UCICheckOption(allOptions, moveOrder, "useMvvLvaSorting", true);
     public final UCICheckOption usePvSorting = new UCICheckOption(allOptions, moveOrder, "usePvSorting", true);
 
-    public final UCICheckOption useNullMoves = new UCICheckOption(allOptions, common, "useNullMoves", false);
+
+    public final UCIGroup pruning = new UCIGroup("Pruning");
+
+    public final UCICheckOption aspiration = new UCICheckOption(allOptions, pruning, "aspiration", true);
+    public final UCICheckOption useNullMoves = new UCICheckOption(allOptions, pruning, "useNullMoves", false);
     public final UCICheckOption useLateMoveReductions =
-            new UCICheckOption(allOptions, common, "useLateMoveReductions", false);
+            new UCICheckOption(allOptions, pruning, "useLateMoveReductions", false);
 
 }

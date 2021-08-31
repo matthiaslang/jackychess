@@ -33,7 +33,7 @@ public class NegaMaxResult {
     /** selected depth due to quiescence search. */
     public final int selDepth;
 
-    public NegaMaxResult(int directScore, int max, Move savedMove, List<MoveScore> moveScores, List<Move> pvMoves,
+    public NegaMaxResult(int directScore, int max, Move savedMove, List<MoveScore> moveScores, List<Integer> pvMoves,
             int targetDepth,
             int selDepth) {
         this.directScore = directScore;

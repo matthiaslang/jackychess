@@ -15,7 +15,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
-import org.mattlang.jc.engine.search.NegaMax;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
@@ -176,7 +175,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        NegaMax negaMax = new NegaMax(eval);
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS(eval);
         Move move = negaMax.search(gameState, new GameContext(),2);
 
         System.out.println(board.toUniCodeStr());

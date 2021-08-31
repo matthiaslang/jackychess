@@ -59,6 +59,7 @@ public class SearchParameter {
                 b.append(opts.stream()
                         .map(o -> o.getName() + ": " + o.getValue())
                         .collect(Collectors.joining("; ")));
+                UCILogger.log(b.toString());
 
             } else {
                 for (UCIOption option : opts) {

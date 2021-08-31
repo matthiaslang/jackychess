@@ -33,6 +33,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
+    public int getMoveInt() {
+        return currMove;
+    }
+
+    @Override
     public int getOrder() {
         return orderOfCurrentMove;
     }

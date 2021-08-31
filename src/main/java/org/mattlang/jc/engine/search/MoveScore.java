@@ -1,13 +1,13 @@
 package org.mattlang.jc.engine.search;
 
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class MoveScore {
 
-    public final Move move;
+    public final int move;
     public final int score;
 
-    public MoveScore(Move move, int score) {
+    public MoveScore(int move, int score) {
         this.move = move;
         this.score = score;
     }
@@ -15,7 +15,7 @@ public class MoveScore {
     @Override
     public String toString() {
         return "MoveScore{" +
-                move.toStr() +
+                new MoveImpl(move).toStr() +
                 ", " + score +
                 '}';
     }

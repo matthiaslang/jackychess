@@ -16,7 +16,7 @@ import lombok.Getter;
  *
  * A move can be encoded in an int value:
  *
- * type: 0-14: 7 bits
+ * type: 0-14: 7 bits : contains type, but also promotion figure, en passant capture pos
  * figureType: 5 bits
  * fromINdex: 7 bits
  * toIndex: 7 bits
@@ -356,5 +356,12 @@ public final class MoveImpl implements Move {
 
         capturedFigure = (byte) (l >>> 26 & MASK_5);
     }
-    
+
+    public static byte getCapturedFigure(int move) {
+        return (byte) (move >>> 26 & MASK_5);
+    }
+
+    public static boolean isCapture(int move) {
+        return getCapturedFigure(move) != 0;
+    }
 }
