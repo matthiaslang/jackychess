@@ -105,7 +105,7 @@ public class OrderCalculator {
             return -rslt;
         }
 
-        if (usePvSorting && pvMove != 0 && pvMove == moveInt) {
+        if (usePvSorting && pvMove == moveInt) {
             return PV_SCORE;
         } else if (hashMove == moveInt) {
             return HASHMOVE_SCORE;

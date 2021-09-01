@@ -32,6 +32,10 @@ public final class MoveImpl implements Move {
     public static final byte MASK_7 = 0b1111111;
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
+    public static final int OFFSET_FIGURETYPE = 7;
+    public static final int OFFSET_CAPTUREDFIGURE = 26;
+    public static final int OFFSET_TOINDEX = 19;
+    public static final int OFFSET_FROMINDEX = 12;
 
     private byte figureType;
 
@@ -331,10 +335,10 @@ public final class MoveImpl implements Move {
 
     public int toLongEncoded() {
         int l = (int) type & MASK_7 |
-                (int) figureType << 7 |
-                (int) fromIndex << 12 |
-                (int) toIndex << 19 |
-                (int) capturedFigure << 26;
+                (int) figureType << OFFSET_FIGURETYPE |
+                (int) fromIndex << OFFSET_FROMINDEX |
+                (int) toIndex << OFFSET_TOINDEX |
+                (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
 
         return l;
     }
@@ -342,23 +346,27 @@ public final class MoveImpl implements Move {
     public static int longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
             byte capturedFigure) {
         return (int) type & MASK_7 |
-                (int) figureType << 7 |
-                (int) fromIndex << 12 |
-                (int) toIndex << 19 |
-                (int) capturedFigure << 26;
+                (int) figureType << OFFSET_FIGURETYPE |
+                (int) fromIndex << OFFSET_FROMINDEX |
+                (int) toIndex << OFFSET_TOINDEX |
+                (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
     }
 
     public void fromLongEncoded(int l) {
         type = (byte) (l & MASK_7);
-        figureType = (byte) (l >>> 7 & MASK_5);
-        fromIndex = (byte) (l >>> 12 & MASK_7);
-        toIndex = (byte) (l >>> 19 & MASK_7);
+        figureType = (byte) (l >>> OFFSET_FIGURETYPE & MASK_5);
+        fromIndex = (byte) (l >>> OFFSET_FROMINDEX & MASK_7);
+        toIndex = (byte) (l >>> OFFSET_TOINDEX & MASK_7);
 
-        capturedFigure = (byte) (l >>> 26 & MASK_5);
+        capturedFigure = (byte) (l >>> OFFSET_CAPTUREDFIGURE & MASK_5);
     }
 
     public static byte getCapturedFigure(int move) {
         return (byte) (move >>> 26 & MASK_5);
+    }
+
+    public static byte getFigureType(int move){
+        return (byte) (move >>> OFFSET_FIGURETYPE & MASK_5);
     }
 
     public static boolean isCapture(int move) {

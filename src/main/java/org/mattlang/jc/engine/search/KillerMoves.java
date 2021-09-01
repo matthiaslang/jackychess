@@ -1,8 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
 
@@ -15,18 +12,16 @@ public class KillerMoves {
 
     int MAX_PLY = 100;
 
-    private List<Integer>[] killerMovesWhite = new ArrayList[MAX_PLY];
-    private List<Integer>[] killerMovesBlack = new ArrayList[MAX_PLY];
+    private int[][] killerMovesWhite = new int[MAX_PLY][2];
+    private int[][] killerMovesBlack = new int[MAX_PLY][2];
 
     public void addKiller(Color color, MoveCursor moveCursor, int ply) {
         if (ply < MAX_PLY) {
             int move = moveCursor.getMoveInt();
-            List<Integer> kmovesList = getOrCreateKillerList(color, ply);
-            if (!kmovesList.contains(move)) {
-                kmovesList.add(0, move);
-                if (kmovesList.size() > MAX_KILLERS) {
-                    kmovesList.remove(MAX_KILLERS - 1);
-                }
+            int[] kmovesList = getOrCreateKillerList(color, ply);
+            if (kmovesList[0] != move && kmovesList[1] != move) {
+                kmovesList[1] = kmovesList[0];
+                kmovesList[0] = move;
             }
         }
     }
@@ -35,22 +30,22 @@ public class KillerMoves {
         if (ply > MAX_PLY) {
             return false;
         }
-        List<Integer> kmovesList = getOrCreateKillerList(color, ply);
-        for (int i = 0; i < kmovesList.size(); i++) {
-            if (kmovesList.get(i) == moveInt) {
+        int[] kmovesList = getOrCreateKillerList(color, ply);
+        for (int i = 0; i < kmovesList.length; i++) {
+            if (kmovesList[i] == moveInt) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Integer> getOrCreateKillerList(Color color, int ply) {
-        List<Integer>[] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
-        List<Integer> kmovesList = killerMoves[ply];
-        if (kmovesList == null) {
-            kmovesList = new ArrayList<>();
-            killerMoves[ply] = kmovesList;
-        }
+    private int[] getOrCreateKillerList(Color color, int ply) {
+        int[][] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
+        int[] kmovesList = killerMoves[ply];
+        //        if (kmovesList == null) {
+        //            kmovesList = new ArrayList<>();
+        //            killerMoves[ply] = kmovesList;
+        //        }
         return kmovesList;
     }
 }
