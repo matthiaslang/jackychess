@@ -217,6 +217,10 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 - fixed missing promotion letter on best move
 - reworked time control calucation for blitz chess a bit
 
+### Version 0.9.13
+
+- fixed stupid bug in time calculation which produced much too high values which exceeded the complete rest time. 
+
 
 ## todo 
 
