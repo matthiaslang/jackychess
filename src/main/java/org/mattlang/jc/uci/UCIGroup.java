@@ -13,8 +13,12 @@ public class UCIGroup {
     @Getter
     private String name;
 
-    public UCIGroup(String name) {
+    @Getter
+    private String description;
+
+    public UCIGroup(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     @Override

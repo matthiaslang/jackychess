@@ -10,8 +10,9 @@ public class UCICheckOption extends UCIOption<Boolean> {
     private boolean defaultValue;
     private boolean value;
 
-    public UCICheckOption(UCIOptions optionBundle, UCIGroup group, String name, boolean defaultValue) {
-        super(optionBundle, group, name);
+    public UCICheckOption(UCIOptions optionBundle, UCIGroup group, String name, String description,
+            boolean defaultValue) {
+        super(optionBundle, group, name, description);
         this.defaultValue = defaultValue;
         this.value = defaultValue;
     }
@@ -22,9 +23,8 @@ public class UCICheckOption extends UCIOption<Boolean> {
     }
 
     @Override
-    public void writeOptionDeclaration() {
-        UCI.instance.putCommand(
-                "option name " + getName() + " type check default " + defaultValue);
+    public String createOptionDeclaration() {
+        return "option name " + getName() + " type check default " + defaultValue;
     }
 
     @Override

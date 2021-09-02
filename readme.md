@@ -68,7 +68,12 @@ and basic positional things like mobility and captures
 Still a lot is missing to have a really good, competing engine and the engine
 will probable never reach game strength of its competitors.
 Nevertheless the goal is to make it stronger with each version.
-              
+
+## UCI Parameter
+
+The engine has several UCI parameter. Find more information under [UCI Parameter](docs/uciparameter.md)
+
+           
 ## Experimental Implementations
 
 ### table based move generation

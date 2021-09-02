@@ -15,9 +15,13 @@ public abstract class UCIOption<T> {
     @Getter
     private String name;
 
-    public UCIOption(UCIOptions optionBundle, UCIGroup group, String name) {
+    @Getter
+    private String description;
+
+    public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description) {
         this.group = requireNonNull(group);
         this.name = requireNonNull(name);
+        this.description = requireNonNull(description);
         optionBundle.put(name, this);
     }
 
@@ -37,7 +41,11 @@ public abstract class UCIOption<T> {
 
     public abstract void parseAndSetParameter(String newValue);
 
-    public abstract void writeOptionDeclaration();
+    public void writeOptionDeclaration() {
+        UCI.instance.putCommand(createOptionDeclaration());
+    }
+
+    public abstract String createOptionDeclaration();
 
     public abstract T getValue();
 
