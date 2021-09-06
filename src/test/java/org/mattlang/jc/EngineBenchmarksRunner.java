@@ -65,7 +65,7 @@ public class EngineBenchmarksRunner {
 
     private String generateNameFromOptions() {
         StringBuilder b = new StringBuilder();
-        for (UCIOption option : Factory.getDefaults().getConfig().getAllOptions().values()) {
+        for (UCIOption option : Factory.getDefaults().getConfig().getAllOptions().getAllOptions()) {
             if (option instanceof UCICheckOption) {
                 if (((UCICheckOption) option).getValue()) {
                     b.append(option.getName());

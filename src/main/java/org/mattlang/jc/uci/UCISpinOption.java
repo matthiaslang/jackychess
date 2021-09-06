@@ -1,7 +1,5 @@
 package org.mattlang.jc.uci;
 
-import java.util.Map;
-
 import org.mattlang.jc.UCILogger;
 
 /**
@@ -16,8 +14,9 @@ public class UCISpinOption extends UCIOption<Integer> {
     private int defaultValue;
     private int value;
 
-    public UCISpinOption(Map<String, UCIOption> optionBundle, String name, int min, int max, int defaultValue) {
-        super(optionBundle, name);
+    public UCISpinOption(UCIOptions optionBundle, UCIGroup group, String name, String description, int min, int max,
+            int defaultValue) {
+        super(optionBundle, group, name, description);
         this.min = min;
         this.max = max;
         this.defaultValue = defaultValue;
@@ -47,9 +46,8 @@ public class UCISpinOption extends UCIOption<Integer> {
     }
 
     @Override
-    public void writeOptionDeclaration() {
-        UCI.instance.putCommand(
-                "option name " + getName() + " type spin default " + defaultValue + " min " + min + " max " + max);
+    public String createOptionDeclaration() {
+        return "option name " + getName() + " type spin default " + defaultValue + " min " + min + " max " + max;
     }
 
     @Override

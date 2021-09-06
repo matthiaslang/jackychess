@@ -18,6 +18,7 @@ import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTEntry;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 
 /**
@@ -56,7 +57,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int quiescenceNodesVisited = 0;
 
     private int nodes;
-    private Move savedMove;
+    private int savedMove;
     private int savedMoveScore;
 
     private int targetDepth;
@@ -107,7 +108,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         searchWithScore(gameState, context, depth,
                         ALPHA_START, BETA_START,
                         stopTime, OrderHints.NO_HINTS);
-        return savedMove;
+        return new MoveImpl(savedMove);
     }
 
     private void initContext(GameContext context) {
@@ -121,7 +122,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         quiescenceNodesVisited = 0;
         nodes = 0;
         cutOff = 0;
-        savedMove = null;
+        savedMove = 0;
         savedMoveScore = 0;
         nullMoveCounter = 0;
     }
@@ -261,7 +262,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
 
                 if (depth == targetDepth) {
-                    moveScores.add(new MoveScore(moveCursor.getMove(), score));
+                    moveScores.add(new MoveScore(moveCursor.getMoveInt(), score));
                 }
 
                 moveCursor.undoMove(currBoard);
@@ -269,20 +270,19 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 if (score > max) {
                     max = score;
 
-                    Move currMove = moveCursor.getMove();
-                    bestMove = currMove.toInt();
+                    bestMove = moveCursor.getMoveInt();
 
-                    pvArray.set(currMove, ply);
+                    pvArray.set(moveCursor, ply);
                     if (depth == targetDepth) {
-                        savedMove = currMove;
+                        savedMove = bestMove;
                         savedMoveScore = score;
                     }
                     if (max >= beta) {
                         if (useHistoryHeuristic && !moveCursor.isCapture()) {
-                            updateHistoryHeuristic(color, currMove, depth);
+                            updateHistoryHeuristic(color, moveCursor, depth);
                         }
                         if (useKillerMoves && !moveCursor.isCapture()) {
-                            updateKillerMoves(color, currMove, targetDepth - depth);
+                            updateKillerMoves(color, moveCursor, targetDepth - depth);
                         }
                         cutOff++;
                         break;
@@ -352,11 +352,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return sc;
     }
 
-    private void updateHistoryHeuristic(Color color, Move move, int depth) {
+    private void updateHistoryHeuristic(Color color, MoveCursor move, int depth) {
         historyHeuristic.update(color, move, depth);
     }
 
-    private void updateKillerMoves(Color color, Move move, int ply) {
+    private void updateKillerMoves(Color color, MoveCursor move, int ply) {
         killerMoves.addKiller(color, move, ply);
     }
 
@@ -486,7 +486,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         repetitionChecker = gameState.getRepetitionChecker();
         moveScores = new ArrayList<>();
         savedMoveScore = alpha;
-        savedMove = null;
+        savedMove = 0;
         isOpeningOrMiddleGame= isOpeningOrMiddleGame(gameState.getBoard());
 
         extensionCounter=0;
@@ -497,7 +497,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int directScore = negaMaximize(gameState.getBoard(), depth, gameState.getWho2Move(), alpha, beta);
 
-        return new NegaMaxResult(directScore, savedMoveScore, savedMove, moveScores, pvArray.getPvMoves(), targetDepth,
+        return new NegaMaxResult(directScore, savedMoveScore, new MoveImpl(savedMove), moveScores, pvArray.getPvMoves(), targetDepth,
                 selDepth);
 
     }

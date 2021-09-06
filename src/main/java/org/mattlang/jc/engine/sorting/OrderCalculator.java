@@ -30,7 +30,7 @@ public class OrderCalculator {
     /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
     private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
 
-    private  Move pvMove;
+    private  int pvMove;
     private final HistoryHeuristic historyHeuristic;
     private final KillerMoves killerMoves;
     private  Color color;
@@ -40,7 +40,7 @@ public class OrderCalculator {
     private final boolean useMvvLva;
     private final Boolean usePvSorting;
 
-    private  HashMap<Move, Integer> scores;
+    private  HashMap<Integer, Integer> scores;
     private final int targetDepth;
     private final OrderHints orderHints;
 
@@ -73,7 +73,7 @@ public class OrderCalculator {
         }
 
         this.ply = targetDepth - depth;
-        this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.get(ply) : null;
+        this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(ply) : 0;
         this.color = color;
         this.depth = depth;
     }
@@ -95,8 +95,9 @@ public class OrderCalculator {
      * @return
      */
     public int calcOrder(Move m) {
+        int moveInt = m.toInt();
         if (scores != null) {
-            Integer rslt = scores.get(m);
+            Integer rslt = scores.get(moveInt);
             if (rslt == null){
                 UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
                 return 0;
@@ -104,9 +105,9 @@ public class OrderCalculator {
             return -rslt;
         }
 
-        if (usePvSorting && pvMove != null && pvMove.equals(m)) {
+        if (usePvSorting && pvMove == moveInt) {
             return PV_SCORE;
-        } else if (hashMove == m.toInt()) {
+        } else if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
         } else {
             int mvvLva = MvvLva.calcMMVLVA(m);
@@ -127,7 +128,7 @@ public class OrderCalculator {
                 } else {
                     return 0;
                 }
-            } else if (killerMoves != null && killerMoves.isKiller(color, m, ply)) {
+            } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
                 return KILLER_SCORE;
             } else if (historyHeuristic != null) {
                 // history heuristic

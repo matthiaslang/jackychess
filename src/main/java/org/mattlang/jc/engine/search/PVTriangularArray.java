@@ -3,16 +3,19 @@ package org.mattlang.jc.engine.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.MoveCursor;
 
 /**
  * Triangular Array to store the PVs during recursive search.
  */
 public class PVTriangularArray {
 
-    private static final int MAX=100;
+    private static final int MAX = 100;
 
-    private Move[][] array = new Move[MAX][MAX];
+    /**
+     * Moves of the triangular array.
+     */
+    private int[][] array = new int[MAX][MAX];
 
     /**
      * Sets a PV found in ply ply.
@@ -21,14 +24,14 @@ public class PVTriangularArray {
      * @param move
      * @param ply
      */
-    public void set(Move move, int ply) {
+    public void set(MoveCursor move, int ply) {
         int index = ply - 1;
-        Move[] rowForPly = array[index];
-        Move[] rowForUnderPly = array[index + 1];
+        int[] rowForPly = array[index];
+        int[] rowForUnderPly = array[index + 1];
 
-        rowForPly[0] = move;
-        for (int i = 0; i < MAX-1; i++) {
-            if (rowForUnderPly[i] != null) {
+        rowForPly[0] = move.getMoveInt();
+        for (int i = 0; i < MAX - 1; i++) {
+            if (rowForUnderPly[i] != 0) {
                 rowForPly[i + 1] = rowForUnderPly[i];
             } else {
                 break;
@@ -36,11 +39,11 @@ public class PVTriangularArray {
         }
     }
 
-    public List<Move> getPvMoves() {
-        ArrayList<Move> result = new ArrayList();
+    public List<Integer> getPvMoves() {
+        ArrayList<Integer> result = new ArrayList();
         for (int i = 0; i < MAX; i++) {
-            Move pv = array[0][i];
-            if (pv != null) {
+            int pv = array[0][i];
+            if (pv != 0) {
                 result.add(pv);
             } else {
                 break;
@@ -52,7 +55,7 @@ public class PVTriangularArray {
     public void reset() {
         for (int i = 0; i < MAX; i++) {
             for (int j = 0; j < MAX; j++) {
-                array[i][j] = null;
+                array[i][j] = 0;
             }
         }
     }

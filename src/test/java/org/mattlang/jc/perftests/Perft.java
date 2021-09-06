@@ -26,12 +26,15 @@ public class Perft {
     static int castles = 0;
     static int promotion = 0;
 
+    static long start;
+
     public static void perftReset() {
         nodes = 0;
         captures = 0;
         ep = 0;
         castles = 0;
         promotion = 0;
+        start = System.currentTimeMillis();
     }
 
 
@@ -40,7 +43,12 @@ public class Perft {
         perftReset();
         perft(generator, board, color, depth, (visitedBoard, color1, depth1) -> {
         });
-
+        long stop = System.currentTimeMillis();
+        long duration = stop-start;
+        if (duration!=0) {
+            long nodesPerSecond = nodes * 1000 / duration;
+            System.out.println("Nodes/s = " + nodesPerSecond);
+        }
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(nodes).as("Leave Nodes").isEqualTo(expectedNodes);
         softly.assertThat(captures).as("Captures").isEqualTo(expectedCaptures);

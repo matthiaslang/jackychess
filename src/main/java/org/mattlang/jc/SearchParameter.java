@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -16,6 +17,7 @@ import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.StalemateCheckerImpl;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
 public class SearchParameter {
@@ -48,13 +50,27 @@ public class SearchParameter {
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         UCILogger.log("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        for (UCIOption option : config.getAllOptions().values()) {
-            UCILogger.log(option.getName() + ": " + option.getValue());
+        for (Map.Entry<UCIGroup, List<UCIOption>> entry : config.getAllOptions().getOptionsByGroup().entrySet()) {
+            UCIGroup group = entry.getKey();
+            List<UCIOption> opts = entry.getValue();
+            if (group != config.common) {
+                StringBuilder b = new StringBuilder();
+                b.append(group.getName()).append(": ");
+                b.append(opts.stream()
+                        .map(o -> o.getName() + ": " + o.getValue())
+                        .collect(Collectors.joining("; ")));
+                UCILogger.log(b.toString());
+
+            } else {
+                for (UCIOption option : opts) {
+                    UCILogger.log(option.getName() + ": " + option.getValue());
+                }
+            }
         }
 
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        for (UCIOption option : config.getAllOptions().values()) {
+        for (UCIOption option : config.getAllOptions().getAllOptions()) {
             LOGGER.info(option.getName() + ": " + option.getValue());
         }
 
