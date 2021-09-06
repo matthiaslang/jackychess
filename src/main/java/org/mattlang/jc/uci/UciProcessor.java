@@ -77,7 +77,7 @@ public class UciProcessor {
     private void quit() {
         UCI.instance.quit();
         finished = true;
-
+        System.exit(0);
     }
 
     public void parseOption(String cmdStr) {
