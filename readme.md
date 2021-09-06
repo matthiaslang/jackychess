@@ -226,6 +226,11 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 - fixed stupid bug in time calculation which produced much too high values which exceeded the complete rest time. 
 
+### Version 0.9.14
+
+- fixed issue when running engine within a batch file: uci quit has not exit process (because of other threads still running)
+- log files are by default not written, but only if java property jacky.logging.activate is set to true.
+- minor internal code refactorings 
 
 ## todo 
 
