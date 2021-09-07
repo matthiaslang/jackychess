@@ -18,7 +18,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -33,7 +33,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -48,7 +48,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -63,7 +63,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -77,7 +77,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isFalse();
 
@@ -91,7 +91,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl2 generator = new MoveGeneratorImpl2();
+        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 

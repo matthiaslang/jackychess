@@ -13,7 +13,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.moves.MoveListImpl;
 
 //@Ignore
@@ -39,10 +39,10 @@ public class LegalMoveCacheTest {
         stopwatch.start();
         int num = 10000000;
         for (int i = 0; i < num; i++) {
-            MoveGenerator generator = new MoveGeneratorImpl2();
+            MoveGenerator generator = new MoveGeneratorImpl3();
             MoveList whiteMoves = generator.generate(board, WHITE);
 
-            MoveGenerator generator2 = new MoveGeneratorImpl2();
+            MoveGenerator generator2 = new MoveGeneratorImpl3();
             MoveList blackMoves = generator2.generate(board, BLACK);
         }
         stopwatch.stop();
@@ -52,10 +52,10 @@ public class LegalMoveCacheTest {
 
         HashMap<BoardRepresentation, MoveList> whitemap = new HashMap<>();
         HashMap<BoardRepresentation, MoveList> blackmap = new HashMap<>();
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
         whitemap.put(board, whiteMoves);
-        MoveGenerator generator2 = new MoveGeneratorImpl2();
+        MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
         blackmap.put(board, blackMoves);
 

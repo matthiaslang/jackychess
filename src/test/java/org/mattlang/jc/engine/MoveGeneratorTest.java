@@ -17,7 +17,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 
 
 public class MoveGeneratorTest {
@@ -25,21 +25,23 @@ public class MoveGeneratorTest {
     @Test
     public void testPawnPromotionAndUndoing1() {
         BoardRepresentation board = new Board3();
-        String fen = "position fen 8/P7/8/8/8/8/p7/8 b k - 2 17 ";
+        String fen = "position fen 8/P7/8/2K5/5k2/8/p7/8 b k - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        MoveGenerator generator2 = new MoveGeneratorImpl2();
+        MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<Move> wMoves = createMoveList(whiteMoves);
-        assertThat(wMoves.size()).isEqualTo(4);
+        // 8 king moves + 4 promotion moves
+        assertThat(wMoves.size()).isEqualTo(12);
         List<Move> bMoves = createMoveList(blackMoves);
-        assertThat(bMoves.size()).isEqualTo(4);
+        // 8 king moves + 4 promotion moves
+        assertThat(bMoves.size()).isEqualTo(12);
 
         Move wQPromotion = wMoves.stream().filter(m -> m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
         Move bQPromotion = bMoves.stream().filter(m -> m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
@@ -73,7 +75,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = createMoveList(whiteMoves).stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
@@ -88,7 +90,7 @@ public class MoveGeneratorTest {
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new MoveGeneratorImpl2();
+        MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
         Move a2PawnMove = createMoveList(blackMoves).stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
@@ -107,7 +109,7 @@ public class MoveGeneratorTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl2();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl3();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
         List<Move> mmoves = createMoveList(moves);
@@ -164,7 +166,7 @@ public class MoveGeneratorTest {
         BoardRepresentation cmpboard = new Board3();
         cmpboard.setFenPosition(fen);
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl2();
+        MoveGenerator moveGenerator = new MoveGeneratorImpl3();
         MoveList moves = moveGenerator.generate(board, WHITE);
         // find white rochade moves:
         List<Move> rochMoves = createMoveList(moves).stream()
@@ -187,18 +189,19 @@ public class MoveGeneratorTest {
     @Test
     public void enPassant() {
         BoardRepresentation board = new Board3();
-        String fen = "position fen 8/3p4/8/2P1P3/2p1p3/8/3P4/8 b k - 2 17 ";
+        String fen = "position fen k7/3p4/8/2P1P3/2p1p3/8/3P4/K7 b k - 2 17 ";
         board.setFenPosition(fen);
 
         BoardRepresentation copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
         List<Move> wMoves = createMoveList(whiteMoves);
-        assertThat(wMoves.size()).isEqualTo(4);
+        // 4 moves + 3 king moves
+        assertThat(wMoves.size()).isEqualTo(7);
         Optional<Move> wPawnDoubleMove = wMoves.stream().filter(m -> m.toStr().equals("d2d4")).findFirst();
         assertThat(wPawnDoubleMove).isNotEmpty();
 
@@ -208,7 +211,8 @@ public class MoveGeneratorTest {
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);
 
-        assertThat(blackMoves.size()).isEqualTo(6);
+        // 6 moves + 3 king moves
+        assertThat(blackMoves.size()).isEqualTo(9);
 
         Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
 
@@ -226,18 +230,19 @@ public class MoveGeneratorTest {
     @Test
     public void enPassantFromFEN() {
         BoardRepresentation board = new Board3();
-        String fen = "position fen 8/3p4/8/2P1P3/2pPp3/8/8/8 b k d3 2 17 ";
+        String fen = "position fen k7/3p4/8/2P1P3/2pPp3/8/8/K7 b k d3 2 17 ";
         board.setFenPosition(fen);
 
         BoardRepresentation copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new MoveGeneratorImpl2();
+        MoveGenerator generator = new MoveGeneratorImpl3();
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);
 
-        assertThat(blackMoves.size()).isEqualTo(6);
+        // 6 moves + 3 king moves
+        assertThat(blackMoves.size()).isEqualTo(9);
 
         Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
 

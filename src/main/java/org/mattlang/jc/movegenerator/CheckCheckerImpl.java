@@ -7,7 +7,7 @@ import org.mattlang.jc.engine.CheckChecker;
 
 public class CheckCheckerImpl implements CheckChecker {
 
-    MoveGeneratorImpl2 moveGeneratorImpl2 = new MoveGeneratorImpl2();
+    MoveGeneratorImpl3 moveGeneratorImpl2 = new MoveGeneratorImpl3();
     
     @Override
     public boolean isInChess(BoardRepresentation board, Color otherColor) {
