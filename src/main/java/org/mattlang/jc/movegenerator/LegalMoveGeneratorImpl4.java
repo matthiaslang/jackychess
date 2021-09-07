@@ -6,11 +6,11 @@ import static org.mattlang.jc.board.FigureConstants.FT_QUEEN;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BitmaskProducer;
+import org.mattlang.jc.moves.MoveImpl;
 
 /**
  * Experimental legal move generator with some optimizations.
@@ -54,8 +54,10 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
              * for king moves, do the full check;
              * do also full check if the moving figure starts from a king ray:
              */
-            Move move = moveCursor.getMove();
-            if (move.getFigureType() == FT_KING || (kingRayMask & 1L << move.getFromIndex()) > 0) {
+            int move = moveCursor.getMoveInt();
+            byte figureType = MoveImpl.getFigureType(move);
+            byte from = MoveImpl.getFromIndex(move);
+            if (figureType == FT_KING || (kingRayMask & 1L << from) > 0) {
                 moveCursor.move(currBoard);
                 if (checkChecker.isInChess(currBoard, side)) {
                     moveCursor.remove();

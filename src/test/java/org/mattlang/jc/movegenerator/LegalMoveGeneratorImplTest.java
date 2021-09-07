@@ -8,6 +8,7 @@ import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class LegalMoveGeneratorImplTest {
 
@@ -26,14 +27,14 @@ public class LegalMoveGeneratorImplTest {
          */
 
         assertThat(rslt.size()).isEqualTo(1);
-        assertThat(rslt.iterator().next().getMove().toStr()).isEqualTo("e5e4");
+        assertThat(new MoveImpl(rslt.iterator().next().getMoveInt()).toStr()).isEqualTo("e5e4");
 
         // try the same with scnd impl:
         legalMoveGenerator = new LegalMoveGeneratorImpl3();
         rslt = legalMoveGenerator.generate(board, Color.WHITE);
 
         assertThat(rslt.size()).isEqualTo(1);
-        assertThat(rslt.iterator().next().getMove().toStr()).isEqualTo("e5e4");
+        assertThat(new MoveImpl(rslt.iterator().next().getMoveInt()).toStr()).isEqualTo("e5e4");
 
     }
 }

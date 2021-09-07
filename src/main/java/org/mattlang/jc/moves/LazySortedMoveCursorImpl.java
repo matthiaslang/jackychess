@@ -1,7 +1,6 @@
 package org.mattlang.jc.moves;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.LongSorter;
 
@@ -24,12 +23,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     public void move(BoardRepresentation board) {
         castlingrightsBefore = board.getCastlingRights();
         currMoveObj.move(board);
-    }
-
-    @Override
-    public Move getMove() {
-        // todo we should remove this method completely if possible and only deliver the long value ...
-        return new MoveImpl(currMove);
     }
 
     @Override
