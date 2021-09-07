@@ -77,6 +77,7 @@ public class UciProcessor {
     private void quit() {
         UCI.instance.quit();
         finished = true;
+        AsyncEngine.executorService.shutdownNow();
         System.exit(0);
     }
 
