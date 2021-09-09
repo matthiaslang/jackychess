@@ -1,11 +1,8 @@
 package org.mattlang.jc.engine.sorting;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.evaluation.Weights;
-import org.mattlang.jc.moves.MoveImpl;
 
 /**
  * Calcs the MMV-LVA   (Most Valuable Victim - Least Valuable Aggressor) simple order heuristic,
@@ -14,16 +11,16 @@ import org.mattlang.jc.moves.MoveImpl;
  * Higher Value, the more in front of move ordering.
  *
  * Captures:
- * best value: Pawn x Queen == (900-100) + 5000 == 5800
+ * best value: Pawn x Queen == (5*6-1)  == 29
  * middle value:
- *              Knight x Knight = (300-300) +5000== 5000;
- *              Knight X Rook   = (500-300) +5000== 5200
- * worst value: Queen x Pawn = (100-900) +5000= 4200
+ * Knight x Knight = (2*6-2) == 10;
+ * Knight X Rook   = (4*6-4) == 20
+ * worst value: Queen x Pawn = (1*6-5) = 1
  *
- * no Captures:
+ * no Captures give negativ numbers:
  *
- * best value: Pawn  == 100/10 == -10
- * worst value: Queen  = 900/10 = -90
+ * best value: Pawn  == -1
+ * worst value: Queen  = -5
  */
 public class MvvLva {
 
@@ -37,47 +34,37 @@ public class MvvLva {
      */
     private static int[] mvvLvaMatrix = new int[2 << 10];
 
+    public static final int MVVLVA_PAWN = 1;
+    public static final int MVVLVA_KNIGHT = 2;
+    public static final int MVVLVA_BISHOP = 3;
+    public static final int MVVLVA_ROOK = 4;
+    public static final int MVVLVA_QUEEN = 5;
+    public static final int MVVLVA_KING = 6;
+
     static {
-        weights[Figure.B_Pawn.figureCode] = Weights.PAWN_WEIGHT;
-        weights[Figure.W_Pawn.figureCode] = Weights.PAWN_WEIGHT;
+        weights[FigureType.Pawn.figureCode] = MVVLVA_PAWN;
+        weights[Figure.B_Pawn.figureCode] = MVVLVA_PAWN;
+        weights[Figure.W_Pawn.figureCode] = MVVLVA_PAWN;
 
-        weights[Figure.B_Knight.figureCode] = Weights.KNIGHT_WEIGHT;
-        weights[Figure.W_Knight.figureCode] = Weights.KNIGHT_WEIGHT;
+        weights[FigureType.Knight.figureCode] = MVVLVA_KNIGHT;
+        weights[Figure.B_Knight.figureCode] = MVVLVA_KNIGHT;
+        weights[Figure.W_Knight.figureCode] = MVVLVA_KNIGHT;
 
-        weights[Figure.B_Bishop.figureCode] = Weights.BISHOP_WEIGHT;
-        weights[Figure.W_Bishop.figureCode] = Weights.BISHOP_WEIGHT;
+        weights[FigureType.Bishop.figureCode] = MVVLVA_BISHOP;
+        weights[Figure.B_Bishop.figureCode] = MVVLVA_BISHOP;
+        weights[Figure.W_Bishop.figureCode] = MVVLVA_BISHOP;
 
-        weights[Figure.B_Rook.figureCode] = Weights.ROOK_WEIGHT;
-        weights[Figure.W_Rook.figureCode] = Weights.ROOK_WEIGHT;
+        weights[FigureType.Rook.figureCode] = MVVLVA_ROOK;
+        weights[Figure.B_Rook.figureCode] = MVVLVA_ROOK;
+        weights[Figure.W_Rook.figureCode] = MVVLVA_ROOK;
 
-        weights[Figure.B_Queen.figureCode] = Weights.QUEEN_WEIGHT;
-        weights[Figure.W_Queen.figureCode] = Weights.QUEEN_WEIGHT;
+        weights[FigureType.Queen.figureCode] = MVVLVA_QUEEN;
+        weights[Figure.B_Queen.figureCode] = MVVLVA_QUEEN;
+        weights[Figure.W_Queen.figureCode] = MVVLVA_QUEEN;
 
-        weights[Figure.B_King.figureCode] = Weights.KING_WEIGHT + Weights.PAWN_WEIGHT;
-        weights[Figure.W_King.figureCode] = Weights.KING_WEIGHT + Weights.PAWN_WEIGHT;
-
-        /**
-         * prefill calculated mmvla values:
-         */
-        for (Figure f1 : Figure.values()) {
-            if (f1 != Figure.EMPTY) {
-                for (Figure f2 : Figure.values()) {
-                    if (f2 != Figure.EMPTY && f1 != f2) {
-                        byte capturedFigure = f2.figureCode;
-                        byte figureType = f1.figureCode;
-                        byte figureTypeUMask =     (byte) (f1.figureCode & MASK_OUT_COLOR);
-
-                        // add two values, one for captures, one for quiet move:
-                        mvvLvaMatrix[figureType | capturedFigure << 5] = calcMMVLVA(figureType, capturedFigure);
-                        mvvLvaMatrix[figureType | 0 << 5] = calcMMVLVA(figureType, (byte) 0);
-                        // add it also for the figure code without mask (makes some duplicates but does not matter):
-                        // but this is the index, that is usually used during game
-                        mvvLvaMatrix[figureTypeUMask | capturedFigure << 5] = calcMMVLVA(figureType, capturedFigure);
-                        mvvLvaMatrix[figureTypeUMask | 0 << 5] = calcMMVLVA(figureType, (byte) 0);
-                    }
-                }
-            }
-        }
+        weights[FigureType.King.figureCode] = MVVLVA_KING;
+        weights[Figure.B_King.figureCode] = MVVLVA_KING;
+        weights[Figure.W_King.figureCode] = MVVLVA_KING;
 
     }
 
@@ -86,30 +73,20 @@ public class MvvLva {
      */
 
     public static int calcMMVLVA(Move move) {
+        int weight = 0;
         if (move.isCapture()) {
             // for a capture build the difference to order for good and bad captures:
-            return weights[move.getCapturedFigure()] - weights[move.getFigureType()];
+            weight = weights[move.getCapturedFigure()] * 6 - weights[move.getFigureType()];
         } else {
             // non captures are the figure wheight div 10 to distinguish the value from "bad" captures by factor 10:
-            return -weights[move.getFigureType()];
+            weight = -weights[move.getFigureType()];
         }
-    }
-
-    public static int calcMMVLVA(byte figureType, byte capturedFigure) {
-        if (capturedFigure != 0) {
-            // for a capture build the difference to order for good and bad captures:
-            return weights[capturedFigure] - weights[figureType];
-        } else {
-            // non captures are the negative figure weight
-            return -weights[figureType];
+        // weight "high" promotions (queen promotion);
+        // all other promotions are mostly not of interest(bishop & rook are redundant to queen; Knight is mostly not desirable)
+        if (move.isPromotion() && move.getPromotedFigure().figureType == FigureType.Queen) {
+            weight += (FigureType.Queen.figureCode + 1) * 6;
         }
-    }
-
-    public static int calcMMVLVA(int moveInt) {
-        byte capturedFigure = MoveImpl.getCapturedFigure(moveInt);
-        byte figureType = MoveImpl.getFigureType(moveInt);
-        int index = figureType | capturedFigure << 5;
-        return mvvLvaMatrix[index];
+        return weight;
     }
 
 }

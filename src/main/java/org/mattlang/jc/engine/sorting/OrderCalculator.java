@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.sorting;
 
-import static org.mattlang.jc.engine.evaluation.Weights.PAWN_WEIGHT;
-
 import java.util.HashMap;
 
 import org.mattlang.jc.Factory;
@@ -17,26 +15,24 @@ public class OrderCalculator {
     public static final int PV_SCORE = -1000_000_000;
     public static final int HASHMOVE_SCORE = -500_000_000;
     public static final int GOOD_CAPTURES_SCORE = -100_000_000;
-    public static final int GOOD_PROMOTIONS = -90_000_000;
 
     public static final int KILLER_SCORE = -10_000_000;
     public static final int HISTORY_SCORE = -1_000_000;
-    public static final int BAD_CAPTURES_SCORE = -100_000;
-    public static final int CASTLING_SCORE = -20_000;
-    public static final int QUIET_MOVE_SCORE = -10_000;
 
-    public static final int LATE_MOVE_REDUCTION_BORDER= CASTLING_SCORE;
+    public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
-    /** a good capture is where I earn (statically viewed) at least 2 pawn weight. */
-    private static final int GOOD_CAPTURE_WEIGHT = PAWN_WEIGHT * 2;
+    /**
+     * a good capture is where I earn (statically viewed) at least a lower figure or more.
+     */
+    private static final int GOOD_CAPTURE_WEIGHT = 15;
 
-    private  int pvMove;
+    private int pvMove;
     private final HistoryHeuristic historyHeuristic;
     private final KillerMoves killerMoves;
-    private  Color color;
+    private Color color;
 
-    private  int depth;
-    private  int ply;
+    private int depth;
+    private int ply;
     private final boolean useMvvLva;
     private final Boolean usePvSorting;
 
@@ -110,24 +106,16 @@ public class OrderCalculator {
         } else if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
         } else {
-            int mvvLva = MvvLva.calcMMVLVA(m);
-            // for now do not distinguish different promotions, but captures:
-            if (m.isPromotion()) {
-                return -mvvLva + GOOD_PROMOTIONS;
-            } else if (m.isCapture()) {
-                // mvvLva = 500 best - -500 worst
-                if (useMvvLva) {
-                    // good captures. we should more fine grain distinguish "good"
-                    if (mvvLva >= GOOD_CAPTURE_WEIGHT) {
-                        // good capture [100000-800000]
-                        return -mvvLva + GOOD_CAPTURES_SCORE;
-                    } else {
-                        // bad capture [0-500]
-                        return -mvvLva + BAD_CAPTURES_SCORE;
-                    }
+            int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
+
+            if (m.isCapture()) {
+                // good captures. we should more fine grain distinguish "good"
+                if (mvvLva >= GOOD_CAPTURE_WEIGHT) {
+                    return -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
-                    return 0;
+                    return -mvvLva;
                 }
+
             } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
                 return KILLER_SCORE;
             } else if (historyHeuristic != null) {
@@ -138,12 +126,7 @@ public class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-
-            if (m.isCastling()){
-                return CASTLING_SCORE;
-            }
-            // otherwise a quiet move:
-            return useMvvLva ? -mvvLva + QUIET_MOVE_SCORE : 0;
+            return -mvvLva;
         }
 
     }

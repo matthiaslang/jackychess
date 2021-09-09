@@ -232,6 +232,12 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 - log files are by default not written, but only if java property jacky.logging.activate is set to true.
 - minor internal code refactorings 
 
+
+### Version 0.9.15
+
+- cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
+- 
+
 ## todo 
 
 - todo: experiments/perfts with better tt caching...
