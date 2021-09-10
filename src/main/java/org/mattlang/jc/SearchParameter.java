@@ -48,8 +48,8 @@ public class SearchParameter {
 
 
     public void log() {
-        UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName());
-        UCILogger.log("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
+                + " Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
         for (Map.Entry<UCIGroup, List<UCIOption>> entry : config.getAllOptions().getOptionsByGroup().entrySet()) {
             UCIGroup group = entry.getKey();
             List<UCIOption> opts = entry.getValue();
