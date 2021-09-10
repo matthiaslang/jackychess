@@ -54,7 +54,7 @@ public class IterativeDeepeningMtdf implements SearchMethod {
                 firstguess = rslt.max;
 
                 if (savedMove != null) {
-                    IterativeDeepeningPVS.printRoundInfo(rslt, watch, negaMaxAlphaBeta);
+                    IterativeDeepeningPVS.printRoundInfo(context, rslt, watch, negaMaxAlphaBeta);
 
                 }
                 //moves = reOrderMoves(rslt.moveScores);

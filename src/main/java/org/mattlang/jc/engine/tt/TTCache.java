@@ -144,4 +144,12 @@ public class TTCache implements StatisticsCollector {
 
     }
 
+    /**
+     * calc hashfull permill
+     *
+     * @return
+     */
+    public long calcHashFull() {
+        return (long)size *1000 / (CAPACITY * 2);
+    }
 }

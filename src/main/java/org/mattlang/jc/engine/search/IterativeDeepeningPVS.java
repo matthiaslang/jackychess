@@ -147,7 +147,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                     savedMove = rslt.savedMove;
                 }
                 if (rslt.savedMove != null) {
-                    printRoundInfo(rslt, watch, negaMaxAlphaBeta);
+                    printRoundInfo(gameContext, rslt, watch, negaMaxAlphaBeta);
                 } else {
                     // todo why does this happen that no best move gets returned from nega max search...
                     // we need to further analyze this situation.
@@ -207,15 +207,19 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
     }
 
     public static void printRoundInfo(
+            GameContext gameContext,
             NegaMaxResult rslt,
             StopWatch watch,
             AlphaBetaSearchMethod negaMaxAlphaBeta) {
         long nodes = negaMaxAlphaBeta.getNodesVisited();
         long duration = watch.getCurrDuration();
         long nps = duration == 0 ? nodes : nodes * 1000 / duration;
+
+        long hashfull = gameContext.ttCache.calcHashFull();
         UCI.instance.putCommand("info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
                 " score cp " + rslt.max + " nodes " + nodes
+                + " hashfull " + hashfull
                 + " nps " + nps + " pv " + rslt.pvList.toPvStr());
         UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
     }
