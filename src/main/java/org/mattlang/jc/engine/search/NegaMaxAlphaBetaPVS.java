@@ -199,18 +199,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         try (MoveList moves = generator.generate(currBoard, color)) {
             if (moves.isCheckMate()) {
-                if (areWeInCheck) {
-                    // no more legal moves, that means we have checkmate:
-                    // in negamax "our" score is highest, so we need to return the negative king weight adjusted by ply:
-                    return -KING_WEIGHT + ply;
-                } else {
-                    return -PATT_WEIGHT;
-                }
+                return determineCheckMateOrPatt(ply, areWeInCheck);
             }
 
-            int hashMove = probeTTHashMove(currBoard, color, depth);
-            orderCalculator.prepareOrder(color, hashMove, depth);
-            moves.sort(orderCalculator);
+            sortMoves(currBoard, depth, color, moves);
 
             nodes += moves.size();
 
@@ -282,7 +274,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                             updateHistoryHeuristic(color, moveCursor, depth);
                         }
                         if (useKillerMoves && !moveCursor.isCapture()) {
-                            updateKillerMoves(color, moveCursor, targetDepth - depth);
+                            updateKillerMoves(color, bestMove, targetDepth - depth);
                         }
                         cutOff++;
                         break;
@@ -296,6 +288,22 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         storeTT(currBoard, color, max, max, beta, depth, bestMove);
 
         return max;
+    }
+
+    /**
+     * No more legal moves means either we are check mate or we have a stale mate.
+     * @param ply
+     * @param areWeInCheck
+     * @return
+     */
+    private int determineCheckMateOrPatt(int ply, boolean areWeInCheck) {
+        if (areWeInCheck) {
+            // no more legal moves, that means we have checkmate:
+            // in negamax "our" score is highest, so we need to return the negative king weight adjusted by ply:
+            return -KING_WEIGHT + ply;
+        } else {
+            return -PATT_WEIGHT;
+        }
     }
 
     /**
@@ -356,7 +364,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         historyHeuristic.update(color, move, depth);
     }
 
-    private void updateKillerMoves(Color color, MoveCursor move, int ply) {
+    private void updateKillerMoves(Color color, int move, int ply) {
         killerMoves.addKiller(color, move, ply);
     }
 
@@ -423,12 +431,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         try (MoveList moves = generator.generateNonQuietMoves(currBoard, color)) {
             if (moves.isCheckMate()) {
-                if (areWeInCheck) {
-                    // no more legal moves, that means we have checkmate:
-                    return -KING_WEIGHT + ply;
-                } else {
-                    return -PATT_WEIGHT;
-                }
+                return determineCheckMateOrPatt(ply, areWeInCheck);
             }
 
             nodes += moves.size();
@@ -440,9 +443,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
 
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-            int hashMove = probeTTHashMove(currBoard, color, depth);
-            orderCalculator.prepareOrder(color, hashMove, depth);
-            moves.sort(orderCalculator);
+            sortMoves(currBoard, depth, color, moves);
 
             /* loop through the capture moves */
             for (MoveCursor moveCursor : moves) {
@@ -462,6 +463,19 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         storeTT(currBoard, color, x, alpha, beta, depth, 0);
 
         return alpha;
+    }
+
+    /**
+     * Sorts the move list by calculating the move order first.
+     * @param currBoard
+     * @param depth
+     * @param color
+     * @param moves
+     */
+    private void sortMoves(BoardRepresentation currBoard, int depth, Color color, MoveList moves) {
+        int hashMove = probeTTHashMove(currBoard, color, depth);
+        orderCalculator.prepareOrder(color, hashMove, depth);
+        moves.sort(orderCalculator);
     }
 
     private int checkToExtend(BoardRepresentation currBoard, Color color, int currDepth) {

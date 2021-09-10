@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.MoveCursor;
 
 /**
  * Holds the found killer moves used for move sorting.
@@ -15,9 +14,8 @@ public class KillerMoves {
     private int[][] killerMovesWhite = new int[MAX_PLY][2];
     private int[][] killerMovesBlack = new int[MAX_PLY][2];
 
-    public void addKiller(Color color, MoveCursor moveCursor, int ply) {
+    public void addKiller(Color color, int move, int ply) {
         if (ply < MAX_PLY) {
-            int move = moveCursor.getMoveInt();
             int[] kmovesList = getOrCreateKillerList(color, ply);
             if (kmovesList[0] != move && kmovesList[1] != move) {
                 kmovesList[1] = kmovesList[0];
