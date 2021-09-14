@@ -5,12 +5,11 @@ import static org.mattlang.jc.engine.tt.TTEntry.*;
 
 import java.util.Map;
 
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTBucketCache implements StatisticsCollector {
+public class TTBucketCache implements TTCacheInterface {
 
     public static final int bitSize = 23;
 

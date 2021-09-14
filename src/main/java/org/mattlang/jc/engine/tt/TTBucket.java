@@ -75,7 +75,7 @@ public class TTBucket {
         for (int i = 0; i < bucketlist.length; i++) {
             TTEntry entry = bucketlist[i];
             if (entry == null) {
-                bucketlist[i] = new TTEntry(0, 0, TTEntry.EMPTY, 0, currAging, 0);
+                bucketlist[i] = new TTEntry(0, 0, TTEntry.EXACT_VALUE, 0, currAging, 0);
                 return bucketlist[i];
             }
             if (entry.isEmpty()) {

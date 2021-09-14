@@ -9,11 +9,13 @@ import lombok.Getter;
  */
 public final class TTEntry {
 
-    public static final byte EMPTY = 0;
     public static final byte EXACT_VALUE = 1;
     public static final byte LOWERBOUND = 2;
     public static final byte UPPERBOUND = 3;
 
+    /**
+     * zobrist hash. 0 means empty entry.
+     */
     long zobristHash;
 
     @Getter
@@ -52,7 +54,7 @@ public final class TTEntry {
     }
 
     public boolean isEmpty() {
-        return type == EMPTY;
+        return zobristHash ==0L;
     }
 
     void update(long zobristHash, int value, byte type, int depth, byte aging, int move) {
@@ -76,5 +78,16 @@ public final class TTEntry {
                 ", aging=" + aging +
                 ", move=" + move +
                 '}';
+    }
+
+    /**
+     * Does this entry has a lower type than the given?
+     * Exact values have highest value, all other are not so relevant.
+     *
+     * @param tpe
+     * @return
+     */
+    public boolean isLower(byte tpe) {
+        return tpe == EXACT_VALUE && this.type != EXACT_VALUE;
     }
 }

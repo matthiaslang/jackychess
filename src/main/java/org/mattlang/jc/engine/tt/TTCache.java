@@ -5,12 +5,11 @@ import static org.mattlang.jc.engine.tt.TTEntry.*;
 
 import java.util.Map;
 
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTCache implements StatisticsCollector {
+public class TTCache implements TTCacheInterface {
 
     public static final int bitSize = 23;
 
@@ -32,6 +31,7 @@ public class TTCache implements StatisticsCollector {
     private TTEntry[] whitemap = new TTEntry[CAPACITY];
     private TTEntry[] blackmap = new TTEntry[CAPACITY];
 
+    @Override
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
         int hashEntry = h0(boardZobristHash);
@@ -63,7 +63,7 @@ public class TTCache implements StatisticsCollector {
         return currAging - entry.getAging() < MAX_AGE;
     }
 
-    public final void storeTTEntry(BoardRepresentation board, Color side, int eval, byte tpe, int depth, int move) {
+    private final void storeTTEntry(BoardRepresentation board, Color side, int eval, byte tpe, int depth, int move) {
         long boardZobristHash = board.getZobristHash();
 
         // only store entries with lower depth:
@@ -94,6 +94,7 @@ public class TTCache implements StatisticsCollector {
         }
     }
 
+    @Override
     public final void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
             int depth, int move) {
         if (max <= alpha) // a lowerbound value
@@ -120,7 +121,7 @@ public class TTCache implements StatisticsCollector {
         stats.put("cacheFail", cacheFail);
         stats.put("colissions", colission);
         if (cacheHit + cacheFail != 0) {
-            stats.put("hit/all", cacheHit * 100 / (cacheHit + cacheFail) + "%");
+            stats.put("hit/all", (long)(cacheHit) * 100 / (cacheHit + cacheFail) + "%");
         }
     }
 

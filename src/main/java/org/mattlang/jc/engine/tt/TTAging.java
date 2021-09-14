@@ -12,7 +12,7 @@ public class TTAging {
     /**
      * the current aging value.
      */
-    private byte currAging = 0;
+    private byte currAging = 1;
     /**
      * the last board representation to check for aging.
      */
@@ -20,14 +20,14 @@ public class TTAging {
 
     public byte updateAging(BoardRepresentation board) {
         if (lastBoard == null) {
-            currAging = 0;
+            currAging = 1;
         } else {
             if (lastBoard.getCastlingRights() != board.getCastlingRights()
                     || figureCount(lastBoard) != figureCount(board)
                     || differentPawnStructure(lastBoard, board)) {
                 currAging++;
                 if (currAging > 120) {
-                    currAging = 0;
+                    currAging = 1;
                 }
                 UCILogger.log("TTCache: updated aging");
             }

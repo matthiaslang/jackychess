@@ -5,12 +5,11 @@ import static org.mattlang.jc.engine.tt.TTEntry.*;
 
 import java.util.Map;
 
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTDoubleHashingCache implements StatisticsCollector {
+public class TTDoubleHashingCache implements TTCacheInterface {
 
 
     public static final int bitSize = 23;
@@ -36,8 +35,8 @@ public class TTDoubleHashingCache implements StatisticsCollector {
 
     public TTDoubleHashingCache() {
         for (int i = 0; i < CAPACITY; i++) {
-            whitemap[i] = new TTEntry(0, 0, EMPTY, 0, (byte)0, 0);
-            blackmap[i] = new TTEntry(0, 0, EMPTY, 0, (byte)0, 0);
+            whitemap[i] = new TTEntry(0, 0, EXACT_VALUE, 0, (byte)0, 0);
+            blackmap[i] = new TTEntry(0, 0, EXACT_VALUE, 0, (byte)0, 0);
         }
     }
 
