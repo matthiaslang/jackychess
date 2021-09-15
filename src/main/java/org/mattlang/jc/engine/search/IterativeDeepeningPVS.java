@@ -37,6 +37,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
     private boolean useAspirationWindow = Factory.getDefaults().getConfig().aspiration.getValue();
 
+    private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
+
     public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
     }
@@ -123,12 +125,15 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         OrderHints orderHints = NO_HINTS;
 
         gameContext.initNewMoveSearch(gameState);
+        ebf.clear();
 
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
+                StopWatch roundWatch = new StopWatch();
 
                 UCI.instance.putCommand("info depth " + currdepth);
 
+                roundWatch.start();
                 Window aspWindow = new Window(ALPHA_START, BETA_START);
 
                 if (useAspirationWindow && currdepth >= 3) {
@@ -165,6 +170,9 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
                 orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
 
+                roundWatch.stop();
+                ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
+
                 Map statOfDepth = new LinkedHashMap();
                 negaMaxAlphaBeta.collectStatistics(statOfDepth);
                 stats.put("depth=" + currdepth, statOfDepth);
@@ -180,6 +188,8 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         } finally {
             //negaMaxAlphaBeta.reset();
         }
+
+        UCILogger.log(format("EBF: %s",ebf.report()));
 
         return new IterativeSearchResult(savedMove, rslt);
     }
