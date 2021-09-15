@@ -9,7 +9,7 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTDoubleHashingCache implements TTCacheInterface {
+public final class TTDoubleHashingCache implements TTCacheInterface {
 
 
     public static final int bitSize = 23;
@@ -217,4 +217,13 @@ public class TTDoubleHashingCache implements TTCacheInterface {
 
     }
 
+    /**
+     * calc hashfull permill
+     *
+     * @return
+     */
+    @Override
+    public long calcHashFull() {
+        return (long) size * 1000 / (CAPACITY * 2);
+    }
 }

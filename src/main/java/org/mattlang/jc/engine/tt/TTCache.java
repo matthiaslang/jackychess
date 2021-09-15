@@ -9,7 +9,7 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-public class TTCache implements TTCacheInterface {
+public final class TTCache implements TTCacheInterface {
 
     public static final int bitSize = 23;
 

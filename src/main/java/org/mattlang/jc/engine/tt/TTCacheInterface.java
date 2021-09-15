@@ -12,4 +12,6 @@ public interface TTCacheInterface extends StatisticsCollector {
             int depth, int move);
 
     void updateAging(BoardRepresentation board);
+
+    long calcHashFull();
 }

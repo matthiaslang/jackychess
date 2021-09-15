@@ -15,7 +15,7 @@ import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
-import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTEntry;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -46,7 +46,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
     private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
 
-    public TTCache ttCache;
+    public TTCacheInterface ttCache;
 
     private PVTriangularArray pvArray = new PVTriangularArray();
 
