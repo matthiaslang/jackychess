@@ -70,13 +70,16 @@ public final class TTCache2 implements TTCacheInterface {
                 return entry;
             } else if (entry.zobristHash == boardZobristHash) {
                 return entry;
-            } else if (!withinAge(entry)) {
+            }
+            // mark entries which might be relevant for reusing:
+            if (!withinAge(entry)) {
                 idxOfEntryOutdated = idx;
+            } else if (entry.isLower(tpe)) {
+                idxOfEntryWithLowerType = idx;
             } else if (entry.depth > depth) {
                 idxOfEntryWithHigherDepth = idx;
-            } else if (entry.isLower(tpe)) {
-                idxOfEntryWithLowerType=idx;
             }
+
         }
         // if all buckets are filled and no one with the direct zobrist hash, we need to exchange one of them with an older age:
         if (idxOfEntryOutdated >= 0) {
@@ -84,7 +87,7 @@ public final class TTCache2 implements TTCacheInterface {
         }
 
         // otherwise choose one with a lower prioritized type:
-        if (idxOfEntryWithLowerType >=0){
+        if (idxOfEntryWithLowerType >=0) {
             return map[idxOfEntryWithLowerType];
         }
 
