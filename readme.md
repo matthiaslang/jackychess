@@ -206,11 +206,6 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 ### Version 0.9.11
 
-- experimental code available as options:
-    - null move pruning. not activated by default, as it doesnt seem any benefit so far.
-    - late move reductions. not activated by default as it doesnt bring any benefit so far.
-    - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
-
 - fixed UCI time control options: wtime, btime, winc, binc have been ignored if movestogo has not been set
 
 
