@@ -28,6 +28,10 @@ and works fine with this client. It was also tested with pyChess. However - any 
 Simply add the engine to your prefered UCI Gui Client and then you should be ready to use it.
 You should have several UCI options able to set in the UI then.
 
+## Rating
+
+The engine has a ELO rating of 1455 in the CCLR Blitz index, see http://ccrl.chessdom.com/ccrl/404/
+
 
 
 ## License
@@ -242,9 +246,6 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 
 - todo: experiments/perfts with better tt caching...
 - todo: combine pst evaluation with some non-static-evaluations like pawn, king safety, etc, endgame (king distance)...
-
-- todo add pseudo rnd opening option to better measure turnaments          
-
 
 
 ## bugs
