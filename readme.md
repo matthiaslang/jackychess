@@ -80,13 +80,6 @@ The engine has several UCI parameter. Find more information under [UCI Parameter
            
 ## Experimental Implementations
 
-### table based move generation
-
-in branch experimental/tableBasedMoveGenerator
-
-This implementation uses a pre-filled move table with all possible moves, instead of a 12x8 field. But it does not look like an improvement.
-First simple tests show that it is slightly slower than the current move generator implementation.
-
 ### mtdf
 
 The mtdf implementation is currently not working properly and therefore does not give beneficial results.
