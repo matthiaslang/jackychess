@@ -39,8 +39,12 @@ public class PieceList {
     }
 
     public static class Array {
+
         int[] arr;
         private int size = 0;
+
+        // copy of arr used to deliver outside (has always the size)
+        int[] arrCopyForOutput = null;
 
         public Array(int maxSize) {
             arr = new int[maxSize];
@@ -50,6 +54,7 @@ public class PieceList {
         public final void insert(int val) {
             arr[size] = val;
             size++;
+            arrCopyForOutput = null;
         }
 
         public final void remove(int val) {
@@ -68,15 +73,20 @@ public class PieceList {
             }
             arr[size-1] = -1;
             size--;
+            arrCopyForOutput = null;
         }
 
         public final int[] getArr() {
-            return Arrays.copyOf(arr, size);
+            if (arrCopyForOutput == null) {
+                arrCopyForOutput = Arrays.copyOf(arr, size);
+            }
+            return arrCopyForOutput;
         }
 
         public final void clean() {
             Arrays.fill(arr, -1);
             size = 0;
+            arrCopyForOutput = null;
         }
 
         public final int size() {
