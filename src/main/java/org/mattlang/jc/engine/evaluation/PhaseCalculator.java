@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.PieceList;
 
 /**
  * Calculates a factor for the game phase based on the existing material.
@@ -16,7 +17,13 @@ public class PhaseCalculator {
     private static final int Midgame = 5255;
     private static final int Endgame = 435;
 
-    private static final int[] PhaseValues = new int[] { 0, 155, 305, 405, 1050, 0 };
+    public static final int PV_PAWN = 0;
+    public static final int PV_KNIGHT = 155;
+    public static final int PV_BISHOP = 305;
+    public static final int PV_ROOK = 405;
+    public static final int PV_QUEEN = 1050;
+    public static final int PV_KING = 0;
+    private static final int[] PhaseValues = new int[] { PV_PAWN, PV_KNIGHT, PV_BISHOP, PV_ROOK, PV_QUEEN, PV_KING };
 
     public static double Linstep(double edge0, double edge1, double v) {
         return Math.min(1, Math.max(0, (v - edge0) / (edge1 - edge0)));
@@ -28,7 +35,7 @@ public class PhaseCalculator {
      * @param currBoard
      * @return
      */
-    public static double calcPhaseFactor(BoardRepresentation currBoard) {
+    public static double calcPhaseFactorOld(BoardRepresentation currBoard) {
         int phase = 0;
 
         for (int i = 0; i < 64; ++i) {
@@ -39,6 +46,21 @@ public class PhaseCalculator {
                 phase += PhaseValues[pieceIndex];
             }
         }
+
+        double factor = Linstep(Endgame, Midgame, phase);
+        return factor;
+    }
+
+    public static double calcPhaseFactor(BoardRepresentation currBoard) {
+        int phase = 0;
+
+        PieceList wp = currBoard.getWhitePieces();
+        PieceList bp = currBoard.getBlackPieces();
+
+        phase += (wp.getKnights().size() + bp.getKnights().size()) * PV_KNIGHT +
+                (wp.getBishops().size() + bp.getBishops().size()) * PV_BISHOP +
+                (wp.getRooks().size() + bp.getRooks().size()) * PV_ROOK +
+                (wp.getQueens().size() + bp.getQueens().size()) * PV_QUEEN;
 
         double factor = Linstep(Endgame, Midgame, phase);
         return factor;
