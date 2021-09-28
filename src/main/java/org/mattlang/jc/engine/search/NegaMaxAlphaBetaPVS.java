@@ -281,6 +281,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     }
 
                 }
+
+                // update "bad" heuristic
+                if (useHistoryHeuristic && !moveCursor.isCapture()) {
+                    updateBHeuristic(color, moveCursor, depth);
+                }
             }
         }
 
@@ -362,6 +367,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private void updateHistoryHeuristic(Color color, MoveCursor move, int depth) {
         historyHeuristic.update(color, move, depth);
+    }
+
+    private void updateBHeuristic(Color color, MoveCursor move, int depth) {
+        historyHeuristic.updateBad(color, move, depth);
     }
 
     private void updateKillerMoves(Color color, int move, int ply) {

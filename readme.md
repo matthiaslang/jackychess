@@ -228,7 +228,16 @@ On lower time turnaments 2s etc. there does not seem any benefit.
 ### Version 0.9.15
 
 - cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
-- 
+
+
+### Version 0.9.15.1
+
+- fixed history heuristic
+  - history heuristic is now scaled by "bad" history heuristics
+  - seems to gain now something by sprt testing ~40 Elos
+
+
+
 
 ## todo 
 
