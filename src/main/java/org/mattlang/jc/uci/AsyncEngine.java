@@ -4,6 +4,7 @@ import static java.util.logging.Level.SEVERE;
 
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
@@ -75,12 +76,13 @@ public class AsyncEngine {
             try {
                 return Optional.ofNullable(result.get(2000, TimeUnit.MILLISECONDS));
             } catch (InterruptedException | IllegalMonitorStateException | ExecutionException | TimeoutException e) {
-                //e.printStackTrace();
+                logger.log(Level.WARNING, "Exception getting result", e);
             }
             result = null;
             future = null;
         } else {
             // stop without go...?
+            logger.warning("got 'stop' without having a 'go' or internal error!");
 
         }
         return Optional.empty();
