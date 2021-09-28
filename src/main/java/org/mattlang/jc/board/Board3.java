@@ -286,7 +286,9 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public Board3 copy() {
-        return new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos);
+        Board3 copied = new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos);
+        copied.zobristHash = Zobrist.hash(copied);
+        return copied;
     }
 
     @Override
