@@ -69,7 +69,8 @@ public class UciProcessor {
             result.thenAccept(move ->sendBestMove(move));
 
         } else if ("stop".equals(cmdStr)) {
-            asyncEngine.stop();
+            Optional<Move> optBestMove = asyncEngine.stop();
+            optBestMove.ifPresent(m -> sendBestMove(m));
         }
 
     }
