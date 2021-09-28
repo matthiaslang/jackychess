@@ -230,7 +230,9 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
                 " seldepth " + rslt.selDepth +
                 " score cp " + rslt.max + " nodes " + nodes
                 + " hashfull " + hashfull
-                + " nps " + nps + " pv " + rslt.pvList.toPvStr());
+                + " nps " + nps
+                + " time " + duration
+                + " pv " + rslt.pvList.toPvStr());
         UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
     }
 
