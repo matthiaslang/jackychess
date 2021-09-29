@@ -5,6 +5,7 @@ import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -21,13 +22,14 @@ import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
-
-    private int maxDepth;
 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
@@ -51,85 +53,99 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
-        this.maxDepth = maxDepth;
-        Move savedMove = null;
-        NegaMaxResult rslt = null;
 
         StopWatch watch = new StopWatch();
         watch.start();
 
         long stopTime = System.currentTimeMillis() + timeout;
 
-        OrderHints orderHints = NO_HINTS;
-
         gameContext.initNewMoveSearch(gameState);
         ebf.clear();
+        ArrayList<IterativeRoundResult> rounds = new ArrayList<>();
 
+        IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
-                StopWatch roundWatch = new StopWatch();
+                IterativeRoundResult irr = searchRound(watch, lastResults, gameState, gameContext, currdepth, stopTime);
+                lastResults = irr;
 
-                UCI.instance.putCommand("info depth " + currdepth);
-
-                roundWatch.start();
-                Window aspWindow = new Window(ALPHA_START, BETA_START);
-
-                if (useAspirationWindow && currdepth >= 3) {
-                    aspWindow.limitWindow(rslt);
-                    rslt = searchWithAspirationWindow(aspWindow, gameState, gameContext, stopTime, orderHints,
-                            currdepth);
-
-                } else {
-                    rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
-                            currdepth,
-                            aspWindow.getAlpha(), aspWindow.getBeta(),
-                            stopTime, orderHints);
-                }
-
-                if (rslt.savedMove != null) {
-                    savedMove = rslt.savedMove;
-                }
-                if (rslt.savedMove != null) {
-                    printRoundInfo(gameContext, rslt, watch, negaMaxAlphaBeta);
-                } else {
-                    // todo why does this happen that no best move gets returned from nega max search...
-                    // we need to further analyze this situation.
-                    UCILogger.log("no result from negamax for window: " + aspWindow.descr());
-                    LOGGER.info("no result from negamax on iteration depth:" + currdepth);
-                    LOGGER.info("negamax result: " + rslt);
-                    Map statOfDepth = new LinkedHashMap();
-                    negaMaxAlphaBeta.collectStatistics(statOfDepth);
-
-                    LOGGER.info("statistics: " + statOfDepth);
-                    if (savedMove != null) {
-                        UCILogger.log("best move so far: " + savedMove.toStr());
-                    }
-                }
-
-                orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
-
-                roundWatch.stop();
-                ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
-
-                Map statOfDepth = new LinkedHashMap();
-                negaMaxAlphaBeta.collectStatistics(statOfDepth);
-                stats.put("depth=" + currdepth, statOfDepth);
-                negaMaxAlphaBeta.resetStatistics();
-
-                // experiment: !!!
-                // reset cache after each depth, otherwise we would get cache fails with previous lower depth results
-                // which is not useful
-                negaMaxAlphaBeta.resetCaches();
+                rounds.add(irr);
             }
         } catch (TimeoutException te) {
-            return new IterativeSearchResult(savedMove, rslt);
+            return new IterativeSearchResult(rounds);
         } finally {
             //negaMaxAlphaBeta.reset();
         }
 
-        UCILogger.log(format("EBF: %s",ebf.report()));
+        UCILogger.log(format("EBF: %s", ebf.report()));
 
-        return new IterativeSearchResult(savedMove, rslt);
+        return new IterativeSearchResult(rounds);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    static class IterativeRoundResult {
+
+        private final NegaMaxResult rslt;
+        private final OrderHints orderHints;
+        private final StopWatch roundWatch;
+    }
+
+    private IterativeRoundResult searchRound(StopWatch watch, IterativeRoundResult lastRoundResults,
+            GameState gameState, GameContext gameContext, int currdepth,
+            long stopTime) {
+
+        StopWatch roundWatch = new StopWatch();
+
+        UCI.instance.putCommand("info depth " + currdepth);
+
+        roundWatch.start();
+        Window aspWindow = new Window(ALPHA_START, BETA_START);
+
+        NegaMaxResult rslt = null;
+
+        if (useAspirationWindow && currdepth >= 3) {
+            aspWindow.limitWindow(lastRoundResults.getRslt());
+            rslt = searchWithAspirationWindow(aspWindow, gameState, gameContext, stopTime,
+                    lastRoundResults.getOrderHints(),
+                    currdepth);
+
+        } else {
+            rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+                    currdepth,
+                    aspWindow.getAlpha(), aspWindow.getBeta(),
+                    stopTime, lastRoundResults.getOrderHints());
+        }
+
+        if (rslt.savedMove != null) {
+            printRoundInfo(gameContext, rslt, watch, negaMaxAlphaBeta);
+        } else {
+            // todo why does this happen that no best move gets returned from nega max search...
+            // we need to further analyze this situation.
+            UCILogger.log("no result from negamax for window: " + aspWindow.descr());
+            LOGGER.info("no result from negamax on iteration depth:" + currdepth);
+            LOGGER.info("negamax result: " + rslt);
+            Map statOfDepth = new LinkedHashMap();
+            negaMaxAlphaBeta.collectStatistics(statOfDepth);
+
+            LOGGER.info("statistics: " + statOfDepth);
+        }
+
+        roundWatch.stop();
+        ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
+
+        Map statOfDepth = new LinkedHashMap();
+        negaMaxAlphaBeta.collectStatistics(statOfDepth);
+        stats.put("depth=" + currdepth, statOfDepth);
+        negaMaxAlphaBeta.resetStatistics();
+
+        // experiment: !!!
+        // reset cache after each depth, otherwise we would get cache fails with previous lower depth results
+        // which is not useful
+        negaMaxAlphaBeta.resetCaches();
+
+        OrderHints orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
+        return new IterativeRoundResult(rslt, orderHints, roundWatch);
     }
 
     private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
