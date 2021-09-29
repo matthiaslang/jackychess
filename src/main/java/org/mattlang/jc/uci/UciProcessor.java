@@ -57,7 +57,7 @@ public class UciProcessor {
         } else if (CMD_ISREADY.equals(cmdStr)) {
             UCI.instance.putCommand(CMD_READYOK);
         } else if (CMD_UCINEWGAME.equals(cmdStr)) {
-            gameContext = new GameContext();
+            gameContext = createNewGameContext();
         } else if (cmdStr.startsWith("position")) {
             gameState = setPosition(cmdStr);
         } else if (cmdStr.startsWith("setoption name ")) {
@@ -66,13 +66,28 @@ public class UciProcessor {
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
             CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
-            result.thenAccept(move ->sendBestMove(move));
+            result.thenAccept(move -> sendBestMove(move));
 
         } else if ("stop".equals(cmdStr)) {
-            Optional<Move> optBestMove = asyncEngine.stop();
-            optBestMove.ifPresent(m -> sendBestMove(m));
+            stop();
         }
 
+    }
+
+    private void stop() {
+        LOGGER.info("got uci stop, trying to stop async running engine...");
+        Optional<Move> optBestMove = asyncEngine.stop();
+        if (optBestMove.isPresent()) {
+            LOGGER.info("stopped engine, sending best move so far:");
+            sendBestMove(optBestMove.get());
+        } else {
+            LOGGER.info("no best move so far, maybe engine is not running... in any way we need to send bestmove with empty move!");
+            UCI.instance.putCommand(CMD_BESTMOVE + " ");
+        }
+    }
+
+    private GameContext createNewGameContext() {
+        return new GameContext(configValues);
     }
 
     private void quit() {
