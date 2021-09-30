@@ -9,12 +9,18 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
+/**
+ * TT Cache which saves buckes linear in the entry matrix itself with offsets on the current index.
+ */
 public final class TTCache2 implements TTCacheInterface {
 
-    public static final int bitSize = 23;
+    public static final int BIT_SIZE = 24;
 
-    public static final int CAPACITY = 1 << bitSize;
-    public static final int MAX_AGE = 2;
+    public static final int CAPACITY = 1 << BIT_SIZE;
+
+    // our search tree reaches currently mostly not more than 10 plies. therefore max age of 10 might be a good
+    // value for sorting out old entries.
+    public static final int MAX_AGE = 10;
 
     public static final int BUCKETS = 5;
 
@@ -43,7 +49,7 @@ public final class TTCache2 implements TTCacheInterface {
     private TTEntry checkFoundEntry(TTEntry[] map, int index, long boardZobristHash) {
         for (int idx = index; idx < index + BUCKETS; idx++) {
             TTEntry entry = map[idx];
-            if (entry != null && entry.zobristHash == boardZobristHash /*&& withinAge(entry)*/) {
+            if (entry != null && entry.zobristHash == boardZobristHash) {
                 cacheHit++;
                 return entry;
             }
@@ -118,7 +124,7 @@ public final class TTCache2 implements TTCacheInterface {
         TTEntry entry = findTTEntryForStoring(board, side, depth, tpe);
         if (entry == null) {
             // we have no place to store it
-        } else if (entry.depth > depth || entry.getAging() != currAging) {
+        } else {
             entry.update(boardZobristHash, eval, tpe, depth, currAging, move);
         }
     }

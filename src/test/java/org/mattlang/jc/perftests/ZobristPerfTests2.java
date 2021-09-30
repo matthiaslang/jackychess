@@ -23,7 +23,7 @@ import org.mattlang.jc.uci.UCI;
  */
 public class ZobristPerfTests2 {
 
-    public static final int MAX_DEPTH = 7;
+    public static final int MAX_DEPTH = 6;
     public static final int TIMEOUT = 60000;
     public static final String POSITION =
             "position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w - - 0 0";
@@ -67,6 +67,7 @@ public class ZobristPerfTests2 {
                             .config(c -> c.timeout.setValue(TIMEOUT))
                             .config(c -> c.activatePvsSearch.setValue(true))
                             .config(c -> c.maxDepth.setValue(MAX_DEPTH))
+                            .config(c -> c.useTTCache.setValue(false))
                             .boards.set(() -> new Board3()));
 
                     // now starting engine:

@@ -2,10 +2,12 @@ package org.mattlang.jc.uci;
 
 import java.util.HashMap;
 
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.TTCacheInterface;
 
 import lombok.Getter;
 
@@ -24,9 +26,16 @@ public class GameContext {
     private KillerMoves killerMoves = new KillerMoves();
 
     @Getter
-    public TTCache ttCache = new TTCache();
+    public TTCacheInterface ttCache = new TTCache();
 
     private HashMap<String, Object> context = new HashMap<>();
+
+    public GameContext() {
+    }
+
+    public GameContext(ConfigValues configValues) {
+        ttCache = configValues.cacheImpls.getValue().createSupplier().get();
+    }
 
     public <T> T getContext(String name) {
         return (T) context.get(name);

@@ -10,6 +10,7 @@ public class ConfigValues {
     private UCIOptions allOptions = new UCIOptions();
 
     public final UCIGroup common = new UCIGroup("Common", "Common parameter");
+    public final UCIGroup experimental = new UCIGroup("Experimental", "Experimental parameter used during development");
 
     public final UCIGroup limits = new UCIGroup("Limits", "Parameter which limit the search or search time in some way.");
 
@@ -43,9 +44,15 @@ public class ConfigValues {
                     EvalFunctions.class, EvalFunctions.MINIMAL_PST);
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
-            new UCIComboOption(allOptions, common, "MoveListImpl",
+            new UCIComboOption(allOptions, experimental, "MoveListImpl",
                     "internally. Only for development testing",
                     MoveListImpls.class, MoveListImpls.OPTIMIZED);
+
+    public final UCIComboOption<CacheImpls> cacheImpls =
+            new UCIComboOption(allOptions, experimental, "TTCacheImpl",
+                    "internally. Only for development testing",
+                    CacheImpls.class, CacheImpls.STANDARD);
+
 
     public final UCIGroup moveOrder = new UCIGroup("Move Order", "Parameter influencing the move order in alpha beta search");
 
