@@ -21,7 +21,7 @@ public class ConfigValues {
     public final UCISpinOption maxQuiescence =
             new UCISpinOption(allOptions, limits, "quiescence",
                     "the maximum search depth in quiescence",
-                    0, 10, 10);
+                    0, 50, 10);
 
     public final UCIGroup caching = new UCIGroup("Caching", "Parameter for caching of information during search.");
     public final UCICheckOption useTTCache = new UCICheckOption(allOptions, caching, "useTTCache",
