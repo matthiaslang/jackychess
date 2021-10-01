@@ -47,15 +47,26 @@ public class BitChessBoard {
     public void set(int i, byte figureCode) {
         long posMask = 1L << i;
 
-        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
-        int colorIdx = ((figureCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
-
         if (figureCode == FigureConstants.FT_EMPTY || figureCode == 0) {
-            colorBB[colorIdx] &= ~posMask;
-            pieceBB[figType] &= ~posMask;
+            colorBB[nWhite] &= ~posMask;
+            colorBB[nBlack] &= ~posMask;
+            for (int figType = 0; figType < 6; figType++) {
+                pieceBB[figType] &= ~posMask;
+            }
         } else {
+            int colorIdx = ((figureCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
+            int otherColor = colorIdx == nWhite ? nBlack : nWhite;
+            byte figType = (byte) (figureCode & MASK_OUT_COLOR);
             colorBB[colorIdx] |= posMask;
-            pieceBB[figType] |= posMask;
+            colorBB[otherColor] &= ~posMask;
+
+            for (int ft = 0; ft < 6; ft++) {
+                if (ft == figType) {
+                    pieceBB[ft] |= posMask;
+                } else {
+                    pieceBB[ft] &= ~posMask;
+                }
+            }
         }
 
     }
