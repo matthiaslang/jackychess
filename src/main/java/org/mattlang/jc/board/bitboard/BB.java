@@ -42,7 +42,7 @@ public class BB {
 
     public static final long kingAttacks(long kingSet) {
         long attacks = eastOne(kingSet) | westOne(kingSet) | nortOne(kingSet) | soutOne(kingSet)
-                | noEaOne(kingSet) | noWeOne(kingSet) | soEaOne(kingSet | soWeOne(kingSet));
+                | noEaOne(kingSet) | noWeOne(kingSet) | soEaOne(kingSet ) | soWeOne(kingSet);
 //        kingSet |= attacks;
 //        attacks |= nortOne(kingSet) | soutOne(kingSet);
         return attacks;

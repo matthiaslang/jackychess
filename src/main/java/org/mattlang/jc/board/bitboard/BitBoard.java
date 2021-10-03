@@ -14,6 +14,8 @@ import org.mattlang.jc.board.*;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
+import lombok.Getter;
+
 public class BitBoard implements BoardRepresentation {
 
     public static final String[] FEN_START_POSITION = {
@@ -28,6 +30,7 @@ public class BitBoard implements BoardRepresentation {
     };
     public static final int NO_EN_PASSANT_OPTION = -1;
 
+    @Getter
     private BitChessBoard board = new BitChessBoard();
 
     private CastlingRights castlingRights = new CastlingRights();
@@ -367,5 +370,6 @@ public class BitBoard implements BoardRepresentation {
     public long getZobristHash() {
         return zobristHash;
     }
+
 
 }

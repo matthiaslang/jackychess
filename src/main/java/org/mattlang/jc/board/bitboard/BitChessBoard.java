@@ -1,11 +1,13 @@
 package org.mattlang.jc.board.bitboard;
 
 import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import java.util.Arrays;
 
+import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 
@@ -24,7 +26,6 @@ public class BitChessBoard {
     private static final int nBlack = 1;     // any black piece
 
     public BitChessBoard() {
-
     }
 
     public BitChessBoard(long[] colorBB, long[] pieceBB) {
@@ -47,24 +48,25 @@ public class BitChessBoard {
     public void set(int i, byte figureCode) {
         long posMask = 1L << i;
 
+        long invPosMask = ~posMask;
         if (figureCode == FigureConstants.FT_EMPTY || figureCode == 0) {
-            colorBB[nWhite] &= ~posMask;
-            colorBB[nBlack] &= ~posMask;
+            colorBB[nWhite] &= invPosMask;
+            colorBB[nBlack] &= invPosMask;
             for (int figType = 0; figType < 6; figType++) {
-                pieceBB[figType] &= ~posMask;
+                pieceBB[figType] &= invPosMask;
             }
         } else {
             int colorIdx = ((figureCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
             int otherColor = colorIdx == nWhite ? nBlack : nWhite;
             byte figType = (byte) (figureCode & MASK_OUT_COLOR);
             colorBB[colorIdx] |= posMask;
-            colorBB[otherColor] &= ~posMask;
+            colorBB[otherColor] &= invPosMask;
 
             for (int ft = 0; ft < 6; ft++) {
                 if (ft == figType) {
                     pieceBB[ft] |= posMask;
                 } else {
-                    pieceBB[ft] &= ~posMask;
+                    pieceBB[ft] &= invPosMask;
                 }
             }
         }
@@ -109,5 +111,35 @@ public class BitChessBoard {
 
     public BitChessBoard copy() {
         return new BitChessBoard(colorBB.clone(), pieceBB.clone());
+    }
+
+    public static String toStrBoard(long bb) {
+        return BoardPrinter.toStr((row, col) -> {
+            int pos = (7 - row) * 8 + col;
+            return isBitSet(bb, pos) ? 'X' : '.';
+        });
+
+    }
+
+    public static String toStr(long bb) {
+        StringBuilder b = new StringBuilder();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                int pos = (7 - row) * 8 + col;
+                b.append(isBitSet(bb, pos) ? '1' : '.');
+
+            }
+            b.append("\n");
+        }
+        return b.toString();
+    }
+
+    private static boolean isBitSet(long bb, int pos) {
+        long posMask = 1L << pos;
+        return (bb & posMask) != 0;
+    }
+
+    public long getColorMask(Color color) {
+        return color == WHITE ? colorBB[nWhite] : colorBB[nBlack];
     }
 }
