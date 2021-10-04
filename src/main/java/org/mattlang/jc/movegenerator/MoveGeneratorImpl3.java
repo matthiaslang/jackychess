@@ -28,7 +28,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
    bounds and we can forget it. You can see how mailbox[] is used
    in attack() in board.c. */
 
-    private static final int[] mailbox = {
+    public static final int[] mailbox = {
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, 0, 1, 2, 3, 4, 5, 6, 7, -1,
@@ -43,7 +43,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
     };
 
-    private static final int[] mailbox64 = {
+    public static final int[] mailbox64 = {
             21, 22, 23, 24, 25, 26, 27, 28,
             31, 32, 33, 34, 35, 36, 37, 38,
             41, 42, 43, 44, 45, 46, 47, 48,
@@ -55,9 +55,9 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
     };
 
     /* should the figures silde? (bishop, rook & queen)  */
-    private static final boolean[] slide = { false, false, true, true, true, false };
+    public static final boolean[] slide = { false, false, true, true, true, false };
 
-    private static final int[][] offset = {
+    public static final int[][] offset = {
             { 0, 0, 0, 0, 0, 0, 0, 0 }, /* Pawn, not used */
             { -21, -19, -12, -8, 8, 12, 19, 21 }, /* KNIGHT */
             { -11, -9, 9, 11 }, /* BISHOP */
@@ -66,7 +66,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
             { -11, -10, -9, -1, 1, 9, 10, 11 }  /* KING */
     };
 
-    private static final int[] pawnCaptureOffset = { 11, 9 };
+    public static final int[] pawnCaptureOffset = { 11, 9 };
 
     /**
      * @param board current board

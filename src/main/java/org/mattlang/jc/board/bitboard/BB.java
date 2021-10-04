@@ -41,10 +41,18 @@ public class BB {
     }
 
     public static final long kingAttacks(long kingSet) {
-        long attacks = eastOne(kingSet) | westOne(kingSet) | nortOne(kingSet) | soutOne(kingSet)
-                | noEaOne(kingSet) | noWeOne(kingSet) | soEaOne(kingSet ) | soWeOne(kingSet);
-//        kingSet |= attacks;
-//        attacks |= nortOne(kingSet) | soutOne(kingSet);
-        return attacks;
+        return eastOne(kingSet) | westOne(kingSet) | nortOne(kingSet) | soutOne(kingSet)
+                | noEaOne(kingSet) | noWeOne(kingSet) | soEaOne(kingSet) | soWeOne(kingSet);
+    }
+
+    public static long knightAttacks(long knightSet) {
+        return nortOne(noEaOne(knightSet))
+                | nortOne(noWeOne(knightSet))
+                | westOne(noWeOne(knightSet))
+                | westOne(soWeOne(knightSet))
+                | eastOne(noEaOne(knightSet))
+                | eastOne(soEaOne(knightSet))
+                | soutOne(soWeOne(knightSet))
+                | soutOne(soEaOne(knightSet));
     }
 }

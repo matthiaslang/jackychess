@@ -3,6 +3,7 @@ package org.mattlang.jc.movegenerator;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
+import static org.mattlang.jc.movegenerator.MoveGeneratorImpl3.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,7 +13,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
@@ -26,65 +26,17 @@ import org.mattlang.jc.moves.MoveImpl;
  */
 public class BBMoveGeneratorImpl implements MoveGenerator {
 
-    /* Now we have the mailbox array, so called because it looks like a
-   mailbox, at least according to Bob Hyatt. This is useful when we
-   need to figure out what pieces can go where. Let's say we have a
-   rook on square a4 (32) and we want to know if it can move one
-   square to the left. We subtract 1, and we get 31 (h5). The rook
-   obviously can't move to h5, but we don't know that without doing
-   a lot of annoying work. Sooooo, what we do is figure out a4's
-   mailbox number, which is 61. Then we subtract 1 from 61 (60) and
-   see what mailbox[60] is. In this case, it's -1, so it's out of
-   bounds and we can forget it. You can see how mailbox[] is used
-   in attack() in board.c. */
 
-    private static final int[] mailbox = {
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, 0, 1, 2, 3, 4, 5, 6, 7, -1,
-            -1, 8, 9, 10, 11, 12, 13, 14, 15, -1,
-            -1, 16, 17, 18, 19, 20, 21, 22, 23, -1,
-            -1, 24, 25, 26, 27, 28, 29, 30, 31, -1,
-            -1, 32, 33, 34, 35, 36, 37, 38, 39, -1,
-            -1, 40, 41, 42, 43, 44, 45, 46, 47, -1,
-            -1, 48, 49, 50, 51, 52, 53, 54, 55, -1,
-            -1, 56, 57, 58, 59, 60, 61, 62, 63, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-    };
-
-    private static final int[] mailbox64 = {
-            21, 22, 23, 24, 25, 26, 27, 28,
-            31, 32, 33, 34, 35, 36, 37, 38,
-            41, 42, 43, 44, 45, 46, 47, 48,
-            51, 52, 53, 54, 55, 56, 57, 58,
-            61, 62, 63, 64, 65, 66, 67, 68,
-            71, 72, 73, 74, 75, 76, 77, 78,
-            81, 82, 83, 84, 85, 86, 87, 88,
-            91, 92, 93, 94, 95, 96, 97, 98
-    };
-
-    /* should the figures silde? (bishop, rook & queen)  */
-    private static final boolean[] slide = { false, false, true, true, true, false };
-
-    private static final int[][] offset = {
-            { 0, 0, 0, 0, 0, 0, 0, 0 }, /* Pawn, not used */
-            { -21, -19, -12, -8, 8, 12, 19, 21 }, /* KNIGHT */
-            { -11, -9, 9, 11 }, /* BISHOP */
-            { -10, -1, 1, 10 }, /* ROOK */
-            { -11, -10, -9, -1, 1, 9, 10, 11 }, /* QUEEN */
-            { -11, -10, -9, -1, 1, 9, 10, 11 }  /* KING */
-    };
-
-    private static final int[] pawnCaptureOffset = { 11, 9 };
 
     private static final long[] kingAttacks = new long[64];
+    private static final long[] knightAttacks = new long[64];
 
     static {
         // precalculate attacks:
         long sqBB = 1;
         for (int sq = 0; sq < 64; sq++, sqBB <<= 1) {
             kingAttacks[sq] = BB.kingAttacks(sqBB);
+            knightAttacks[sq] = BB.knightAttacks(sqBB);
         }
     }
 
@@ -110,6 +62,9 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         PieceList pieces = side == WHITE ? board.getWhitePieces() : board.getBlackPieces();
 
+        long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
+        long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
+
         for (int pawn : pieces.getPawns().getArr()) {
             genPawnMoves(board, collector, pawn, side);
         }
@@ -121,9 +76,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
 
         for (int knight : pieces.getKnights().getArr()) {
-            byte figureCode = FigureType.Knight.figureCode;
-            int[] figOffsets = offset[figureCode];
-            genPieceMoves(board, knight, collector, xside, figureCode, figOffsets, slide[figureCode]);
+            genKnightMoves(bitBoard, knight, collector, ownFigsMask, opponentFigsMask);
         }
 
         for (int rook : pieces.getRooks().getArr()) {
@@ -138,33 +91,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
             genPieceMoves(board, queen, collector, xside, figureCode, figOffsets, slide[figureCode]);
         }
 
-        genKingMoves(bitBoard, pieces.getKing(), collector, xside);
-
-        // todo test debug code:
-//
-//        MoveList lnew=new MoveListImpl();
-//        MoveList lold=new MoveListImpl();
-//
-//        genKingMoves(bitBoard, pieces.getKing(), lnew, xside);
-//
-//        byte figureCode = FigureType.King.figureCode;
-//        int[] figOffsets = offset[figureCode];
-//        genPieceMoves(board, pieces.getKing(), lold, xside, figureCode, figOffsets, slide[figureCode]);
-//
-//        List<MoveImpl> llnew=extractList(lnew);
-//        List<MoveImpl> llold =extractList(lold);
-//        if (!llnew.equals(llold)) {
-//            System.out.println(board.toUniCodeStr());
-//             debugmode=true;
-//            // debug recomputing with new way:
-//            genKingMoves(bitBoard, pieces.getKing(), lnew, xside);
-//
-//            throw new IllegalStateException("different move lists");
-//        }
-
-
-
-        // end test code
+        genKingMoves(bitBoard, pieces.getKing(), collector, ownFigsMask, opponentFigsMask);
 
         generateRochade(board, side, collector);
     }
@@ -203,28 +130,12 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
     }
 
-    private void genKingMoves(BitBoard board, int kingPos, MoveCollector collector, Color xside) {
+    private void genKingMoves(BitBoard board, int kingPos, MoveCollector collector, long ownFigsMask, long opponentFigsMask) {
         long kingAttack = kingAttacks[kingPos];
-
-        long ownFigsMask = board.getBoard().getColorMask(xside.invert());
-        long opponentFigsMask = board.getBoard().getColorMask(xside);
 
         long moves = kingAttack & ~ownFigsMask;
         long attacks = moves & opponentFigsMask;
         long quietMoves = moves & ~attacks;
-
-        if (debugmode){
-            System.out.println("kingattack: \n" + BitChessBoard.toStr(kingAttack));
-            System.out.println("ownfigs: \n" + BitChessBoard.toStr(ownFigsMask));
-            System.out.println("oppenentfigs: \n" + BitChessBoard.toStr(opponentFigsMask));
-
-            // debug intersting situation where we have different quiet and attack moves
-            System.out.println("moves: \n" + BitChessBoard.toStr(moves));
-            System.out.println("attacks: \n" + BitChessBoard.toStr(attacks));
-            System.out.println("quietmoves: \n" + BitChessBoard.toStr(quietMoves));
-
-            System.out.println("debug");
-        }
 
         while (attacks != 0) {
             final int toIndex = Long.numberOfTrailingZeros(attacks);
@@ -235,6 +146,27 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         while (quietMoves != 0) {
             final int toIndex = Long.numberOfTrailingZeros(quietMoves);
             collector.genMove(FT_KING, kingPos, toIndex, (byte) 0);
+            quietMoves &= quietMoves - 1;
+        }
+
+    }
+
+    private void genKnightMoves(BitBoard board, int knight, MoveCollector collector,long ownFigsMask, long opponentFigsMask) {
+        long knightAttack = knightAttacks[knight];
+
+        long moves = knightAttack & ~ownFigsMask;
+        long attacks = moves & opponentFigsMask;
+        long quietMoves = moves & ~attacks;
+
+        while (attacks != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(attacks);
+            collector.genMove(FT_KNIGHT, knight, toIndex, board.getFigureCode(toIndex));
+            attacks &= attacks - 1;
+        }
+
+        while (quietMoves != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(quietMoves);
+            collector.genMove(FT_KNIGHT, knight, toIndex, (byte) 0);
             quietMoves &= quietMoves - 1;
         }
 
