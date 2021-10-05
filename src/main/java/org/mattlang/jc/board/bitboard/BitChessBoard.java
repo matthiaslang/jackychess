@@ -33,16 +33,24 @@ public class BitChessBoard {
         this.pieceBB = pieceBB;
     }
 
-    long getPieceSet(int pt, int color) {
+    public long getPieceSet(int pt, int color) {
         return pieceBB[pt] & colorBB[color];
     }
 
-    long getWhitePawns() {
+    public long getPieceSet(int pt, Color color) {
+        return pieceBB[pt] & colorBB[color == WHITE ? nWhite : nBlack];
+    }
+
+    public long getWhitePawns() {
         return pieceBB[FT_PAWN] & colorBB[nWhite];
     }
 
-    long getPawns(int color) {
+    public long getPawns(int color) {
         return getPieceSet(FT_PAWN, color);
+    }
+
+    public long getColorMask(Color color) {
+        return color == WHITE ? colorBB[nWhite] : colorBB[nBlack];
     }
 
     public void set(int i, byte figureCode) {
@@ -139,7 +147,4 @@ public class BitChessBoard {
         return (bb & posMask) != 0;
     }
 
-    public long getColorMask(Color color) {
-        return color == WHITE ? colorBB[nWhite] : colorBB[nBlack];
-    }
 }

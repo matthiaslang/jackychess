@@ -5,6 +5,12 @@ package org.mattlang.jc.board.bitboard;
  */
 public class BB {
 
+    public static final long rank4 = 0x00000000FF000000L;
+    public static final long rank5 = 0x000000FF00000000L;
+
+    public static final long notAFile = 0xfefefefefefefefeL;
+    public static final long notHFile = 0x7f7f7f7f7f7f7f7fL;
+
     public static final long soutOne(long b) {
         return b >> 8;
     }
@@ -13,8 +19,7 @@ public class BB {
         return b << 8;
     }
 
-    public static final long notAFile = 0xfefefefefefefefeL;
-    public static final long notHFile = 0x7f7f7f7f7f7f7f7fL;
+
 
     public static final long eastOne(long b) {
         return (b << 1) & notAFile;
@@ -54,5 +59,32 @@ public class BB {
                 | eastOne(soEaOne(knightSet))
                 | soutOne(soWeOne(knightSet))
                 | soutOne(soEaOne(knightSet));
+    }
+
+    public static long wSinglePushTargets(long wpawns, long empty) {
+        return nortOne(wpawns) & empty;
+    }
+
+    public static long wDblPushTargets(long wpawns, long empty) {
+        long singlePushs = wSinglePushTargets(wpawns, empty);
+        return nortOne(singlePushs) & empty & rank4;
+    }
+
+    public static long bSinglePushTargets(long bpawns, long empty) {
+        return soutOne(bpawns) & empty;
+    }
+
+    public static long bDoublePushTargets(long bpawns, long empty) {
+        long singlePushs = bSinglePushTargets(bpawns, empty);
+        return soutOne(singlePushs) & empty & rank5;
+    }
+
+    public static long wPawnsAble2Push(long wpawns, long empty) {
+        return soutOne(empty) & wpawns;
+    }
+
+    public static long wPawnsAble2DblPush(long wpawns, long empty) {
+        long emptyRank3 = soutOne(empty & rank4) & empty;
+        return wPawnsAble2Push(wpawns, emptyRank3);
     }
 }

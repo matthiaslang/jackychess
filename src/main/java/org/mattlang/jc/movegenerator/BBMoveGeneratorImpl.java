@@ -1,21 +1,17 @@
 package org.mattlang.jc.movegenerator;
 
+import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
 import static org.mattlang.jc.movegenerator.MoveGeneratorImpl3.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.moves.MoveImpl;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -65,9 +61,13 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
         long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
 
+        genPawnMoves(bitBoard, collector, side);
         for (int pawn : pieces.getPawns().getArr()) {
             genPawnMoves(board, collector, pawn, side);
         }
+
+        // debug!!!
+//        System.out.println(((MoveListImpl) collector).extractList());
 
         for (int bishop : pieces.getBishops().getArr()) {
             byte figureCode = FigureType.Bishop.figureCode;
@@ -97,15 +97,6 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
     }
 
     private boolean debugmode =false;
-
-    private List<MoveImpl> extractList(MoveList moveList){
-        ArrayList<MoveImpl>  l1 = new ArrayList<>();
-        for (MoveCursor moveCursor : moveList) {
-            l1.add(new MoveImpl(moveCursor.getMoveInt()));
-        }
-        l1.sort(Comparator.comparingInt(MoveImpl::toInt));
-        return l1;
-    }
 
 
     private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,
@@ -265,33 +256,73 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
     }
 
-    private void genPawnMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
-        boolean isOnBaseLine = false;
+    private void genPawnMoves(BitBoard bitBoard, MoveCollector collector, Color side) {
+        BitChessBoard bb = bitBoard.getBoard();
+        long pawns = bb.getPieceSet(FT_PAWN, side);
+        long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
+
         if (side == WHITE) {
-            isOnBaseLine = i >= 8 && i <= 15;
+            long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
+
+            while (singlePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
+                singlePushTargets &= singlePushTargets - 1;
+            }
+
+            long doublePushTargets = BB.wDblPushTargets(pawns, empty);
+            while (doublePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
+                collector.genPawnMove(toIndex - 16, toIndex, side, (byte) 0);
+                doublePushTargets &= doublePushTargets - 1;
+            }
+
         } else {
-            isOnBaseLine = i >= 48 && i <= 55;
-        }
-        int pawnOffset = side == WHITE ? 10 : -10;
-        // check single and double move:
-        // get single move:
-        int n = mailbox[mailbox64[i] + pawnOffset];
-        if (n != -1) {
-            byte target = board.getFigureCode(n);
-            if (target == FigureConstants.FT_EMPTY) {
+            long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
 
-                collector.genPawnMove(i, n, side, (byte) 0);
+            while (singlePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
+                singlePushTargets &= singlePushTargets - 1;
+            }
 
-                if (isOnBaseLine) {
-                    // get double move from baseline:
-                    n = mailbox[mailbox64[i] + 2 * pawnOffset];
-                    target = board.getFigureCode(n);
-                    if (target == FigureConstants.FT_EMPTY) {
-                        collector.genPawnMove(i, n, side, (byte) 0);
-                    }
-                }
+            long doublePushTargets = BB.bDoublePushTargets(pawns, empty);
+            while (doublePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
+                collector.genPawnMove(toIndex + 16, toIndex, side, (byte) 0);
+                doublePushTargets &= doublePushTargets - 1;
             }
         }
+    }
+
+    private void genPawnMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
+
+        //                boolean isOnBaseLine = false;
+        //                if (side == WHITE) {
+        //                    isOnBaseLine = i >= 8 && i <= 15;
+        //                } else {
+        //                    isOnBaseLine = i >= 48 && i <= 55;
+        //                }
+        //                int pawnOffset = side == WHITE ? 10 : -10;
+        //                // check single and double move:
+        //                // get single move:
+        //                int n = mailbox[mailbox64[i] + pawnOffset];
+        //                if (n != -1) {
+        //                    byte target = board.getFigureCode(n);
+        //                    if (target == FigureConstants.FT_EMPTY) {
+        //
+        //                        collector.genPawnMove(i, n, side, (byte) 0);
+        //
+        //                        if (isOnBaseLine) {
+        //                            // get double move from baseline:
+        //                            n = mailbox[mailbox64[i] + 2 * pawnOffset];
+        //                            target = board.getFigureCode(n);
+        //                            if (target == FigureConstants.FT_EMPTY) {
+        //                                collector.genPawnMove(i, n, side, (byte) 0);
+        //                            }
+        //                        }
+        //                    }
+        //                }
         // check capture:
         genPawnCaptureMoves(board, collector, i, side);
     }
