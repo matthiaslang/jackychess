@@ -87,4 +87,20 @@ public class BB {
         long emptyRank3 = soutOne(empty & rank4) & empty;
         return wPawnsAble2Push(wpawns, emptyRank3);
     }
+
+    public static long wPawnEastAttacks(long wpawns) {
+        return noEaOne(wpawns);
+    }
+
+    public static long wPawnWestAttacks(long wpawns) {
+        return noWeOne(wpawns);
+    }
+
+    public static long bPawnEastAttacks(long bpawns) {
+        return soEaOne(bpawns);
+    }
+
+    public static long bPawnWestAttacks(long bpawns) {
+        return soWeOne(bpawns);
+    }
 }
