@@ -1,13 +1,24 @@
 package org.mattlang.jc.board.bitboard;
 
+import static java.util.Arrays.fill;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * see https://www.chessprogramming.org/Looking_for_Magics
  */
 public class GenerateMagics {
 
-    static Random random = new Random();
+    static Random random = new Random(42);
 
     static long random() {
         return random.nextLong();
@@ -27,33 +38,13 @@ public class GenerateMagics {
         return random_long() & random_long() & random_long();
     }
 
-    static int count_1s(long b) {
-        //       return Long.bitCount(b);
-        int r;
-        for (r = 0; b != 0; r++, b &= b - 1)
-            ;
-        return r;
-    }
-
-    //    public static final int[] BitTable = new int[] {
-    //            63, 30, 3, 32, 25, 41, 22, 33, 15, 50, 42, 13, 11, 53, 19, 34, 61, 29, 2,
-    //            51, 21, 43, 45, 10, 18, 47, 1, 54, 9, 57, 0, 35, 62, 31, 40, 4, 49, 5, 52,
-    //            26, 60, 6, 23, 44, 46, 27, 56, 16, 7, 39, 48, 24, 59, 14, 12, 55, 38, 28,
-    //            58, 20, 37, 17, 36, 8 };
-
-    //    static int pop_1st_bit(long bb) {
-    //        long b = bb ^ (bb - 1);
-    //        long fold = ((b & 0xffffffffL) ^ (b >> 32));
-    //        return BitTable[(int) (fold * 0x783a9b23L) >> 26];
-    //    }
-
     static long index_to_long(int index, int bits, long m) {
         int i, j;
         long result = 0L;
         for (i = 0; i < bits; i++) {
             //            j = pop_1st_bit(m);
-            //            j = Long.numberOfTrailingZeros(m);
-            j = Long.numberOfLeadingZeros(m);
+                        j = Long.numberOfTrailingZeros(m);
+//            j = Long.numberOfLeadingZeros(m);
             m &= (m - 1);
             if ((index & (1L << i)) != 0)
                 result |= (1L << j);
@@ -146,7 +137,30 @@ public class GenerateMagics {
         return (int) val;
     }
 
-    static long find_magic(int sq, int m, boolean bishop) {
+    /**
+     * Result of a magic search.
+     */
+    @AllArgsConstructor
+    @Getter
+    static class MagicResult {
+
+        /**
+         * the found magic number.
+         */
+        long magic;
+
+        /**
+         * the hash indices to the attack tables.
+         */
+        long hashIndex[] = new long[4096];
+
+        /**
+         * maximum index of hashIndex (as usually not all 4096 entries are filled)
+         */
+        int maxIndex;
+    }
+
+    static MagicResult find_magic(int sq, int m, boolean bishop) {
         long mask;
 
         long b[] = new long[4096];
@@ -158,30 +172,35 @@ public class GenerateMagics {
         boolean fail;
 
         mask = bishop ? bmask(sq) : rmask(sq);
-        n = count_1s(mask);
+        n = Long.bitCount(mask);
 
-        for (i = 0; i < (1 << n); i++) {
+        int combinations = 1 << n;
+        for (i = 0; i < combinations; i++) {
             b[i] = index_to_long(i, n, mask);
             a[i] = bishop ? batt(sq, b[i]) : ratt(sq, b[i]);
         }
         for (k = 0; k < 100000000; k++) {
             magic = random_long_fewbits();
-            if (count_1s((mask * magic) & 0xFF00000000000000L) < 6)
+            if (Long.bitCount((mask * magic) & 0xFF00000000000000L) < 6)
                 continue;
-            for (i = 0; i < 4096; i++)
-                used[i] = 0L;
-            for (i = 0, fail = false; !fail && i < (1 << n); i++) {
+
+            fill(used, 0L);
+
+            int maxIndex = 0;
+
+            for (i = 0, fail = false; !fail && i < combinations; i++) {
                 j = transform(b[i], magic, m);
-                if (used[j] == 0L)
+                if (used[j] == 0L) {
                     used[j] = a[i];
-                else if (used[j] != a[i])
+                    maxIndex = Math.max(maxIndex, j);
+                } else if (used[j] != a[i])
                     fail = true;
             }
             if (!fail)
-                return magic;
+                return new MagicResult(magic, used, maxIndex);
         }
         System.out.printf("***Failed***\n");
-        return 0L;
+        throw new IllegalStateException("nothing found!!");
     }
 
     static int RBits[] = new int[] {
@@ -206,18 +225,46 @@ public class GenerateMagics {
             6, 5, 5, 5, 5, 5, 5, 6
     };
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int square;
 
-        System.out.printf("public static final long RMagic[] = new long[]{\n");
-        for (square = 0; square < 64; square++)
-            System.out.printf("  0x%sL,\n", Long.toHexString(find_magic(square, RBits[square], false)));
-        System.out.printf("};\n\n");
+        File outFile = new File("src/main/java/org/mattlang/jc/board/bitboard/MagicValues.java");
+        try (FileOutputStream fos = new FileOutputStream(outFile); PrintStream ps = new PrintStream(fos)) {
+            calc(ps);
+        }
+    }
 
-        System.out.printf("public static final long BMagic[] = new long[]{\n");
-        for (square = 0; square < 64; square++)
-            System.out.printf("  0x%sL,\n", Long.toHexString(find_magic(square, BBits[square], true)));
-        System.out.printf("};\n\n");
+    public static void calc(PrintStream out) {
+        int square;
 
+        out.println("package org.mattlang.jc.board.bitboard;\n\n");
+
+        out.println("class MagicValues{\n");
+
+        out.printf("public static final Magix RMagic[] = new Magix[]{\n");
+        for (square = 0; square < 64; square++) {
+            MagicResult magicResult = find_magic(square, RBits[square], false);
+            out.printf(" new Magix(0x%sL, %s),\n", Long.toHexString(magicResult.magic),
+                    fmtHashIndex(magicResult.hashIndex, magicResult.maxIndex));
+        }
+        out.printf("};\n\n");
+
+        out.printf("public static final Magix BMagic[] = new Magix[]{\n");
+        for (square = 0; square < 64; square++) {
+            MagicResult magicResult = find_magic(square, BBits[square], true);
+            out.printf("  new Magix(0x%sL, %s),\n", Long.toHexString(magicResult.magic),
+                    fmtHashIndex(magicResult.hashIndex, magicResult.maxIndex));
+        }
+        out.printf("};\n\n");
+        out.printf("};\n\n");
+    }
+
+    private static String fmtHashIndex(long[] hashIndex, int max) {
+        return " new long[] {" +
+                Arrays.stream(hashIndex)
+                        .limit(max)
+                        .mapToObj(l -> "0x" + Long.toHexString(l) + "L")
+                        .collect(Collectors.joining(","))
+                + "}";
     }
 }
