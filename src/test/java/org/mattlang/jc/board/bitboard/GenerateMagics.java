@@ -158,6 +158,15 @@ public class GenerateMagics {
          * maximum index of hashIndex (as usually not all 4096 entries are filled)
          */
         int maxIndex;
+
+        /**
+         * shift bits used for calculating the index.
+         */
+        int bits;
+
+        /** the attack mask on empty board for the figure in that position.*/
+        long mask;
+
     }
 
     static MagicResult find_magic(int sq, int m, boolean bishop) {
@@ -197,7 +206,7 @@ public class GenerateMagics {
                     fail = true;
             }
             if (!fail)
-                return new MagicResult(magic, used, maxIndex);
+                return new MagicResult(magic, used, maxIndex, m, mask);
         }
         System.out.printf("***Failed***\n");
         throw new IllegalStateException("nothing found!!");
@@ -244,7 +253,8 @@ public class GenerateMagics {
         out.printf("public static final Magix RMagic[] = new Magix[]{\n");
         for (square = 0; square < 64; square++) {
             MagicResult magicResult = find_magic(square, RBits[square], false);
-            out.printf(" new Magix(0x%sL, %s),\n", Long.toHexString(magicResult.magic),
+            out.printf(" new Magix(0x%sL, 0x%sL, %s, %s),\n", Long.toHexString(magicResult.magic),
+                    Long.toHexString(magicResult.mask), magicResult.bits,
                     fmtHashIndex(magicResult.hashIndex, magicResult.maxIndex));
         }
         out.printf("};\n\n");
@@ -252,7 +262,8 @@ public class GenerateMagics {
         out.printf("public static final Magix BMagic[] = new Magix[]{\n");
         for (square = 0; square < 64; square++) {
             MagicResult magicResult = find_magic(square, BBits[square], true);
-            out.printf("  new Magix(0x%sL, %s),\n", Long.toHexString(magicResult.magic),
+            out.printf("  new Magix(0x%sL, 0x%sL, %s, %s),\n", Long.toHexString(magicResult.magic),
+                    Long.toHexString(magicResult.mask), magicResult.bits,
                     fmtHashIndex(magicResult.hashIndex, magicResult.maxIndex));
         }
         out.printf("};\n\n");
