@@ -8,7 +8,10 @@ import static org.mattlang.jc.movegenerator.MoveGeneratorImpl3.*;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.board.bitboard.*;
+import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -76,17 +79,13 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
 
         for (int queen : pieces.getQueens().getArr()) {
-            byte figureCode = FigureType.Queen.figureCode;
-            int[] figOffsets = offset[figureCode];
-            genPieceMoves(board, queen, collector, xside, figureCode, figOffsets, slide[figureCode]);
+            genQueenMoves(bitBoard, queen, collector, ownFigsMask, opponentFigsMask, empty);
         }
 
         genKingMoves(bitBoard, pieces.getKing(), collector, ownFigsMask, opponentFigsMask);
 
         generateRochade(board, side, collector);
     }
-
-    private boolean debugmode =false;
 
 
     private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,
@@ -153,55 +152,25 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     }
 
+    private void genQueenMoves(BitBoard bitBoard, int queen,
+            MoveCollector collector, long ownFigsMask,
+            long opponentFigsMask, long empty) {
+        long occupancy = ownFigsMask | opponentFigsMask;
+        long attacksRook = MagicBitboards.genRookAttacs(queen, occupancy);
+        long attacksBishop = MagicBitboards.genBishopAttacs(queen, occupancy);
+        long attacks = attacksRook | attacksBishop;
+
+        generateBBMoves(attacks, bitBoard, queen, FT_QUEEN, collector, opponentFigsMask, empty);
+
+    }
+
     private void genRookMoves(BitBoard bitBoard, int rook,
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty) {
         long occupancy = ownFigsMask | opponentFigsMask;
-
         long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
 
-        long quiet = attacks & empty;
-        long captures = attacks & opponentFigsMask;
-
-        while (quiet != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(quiet);
-            collector.genMove(FT_ROOK, rook, toIndex, (byte) 0);
-            quiet &= quiet - 1;
-        }
-
-        while (captures != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(captures);
-            collector.genMove(FT_ROOK, rook, toIndex, bitBoard.getFigureCode(toIndex));
-            captures &= captures - 1;
-        }
-    }
-
-    private void genDebugRookMoves(BitBoard bitBoard, int rook,
-            MoveCollector collector, long ownFigsMask,
-            long opponentFigsMask, long empty) {
-        long occupancy = ownFigsMask | opponentFigsMask;//& ~(1 << rook);
-        System.out.print("occupance:\n" + BB.toStrBoard(occupancy));
-
-        System.out.println("magic mask:\n" + BB.toStrBoard(MagicValues.RMagic[rook].getMask()));
-
-        long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
-
-        System.out.println("magic attacks:\n" + BB.toStrBoard(attacks));
-
-        long quiet = attacks & empty;
-        long captures = attacks & opponentFigsMask;
-
-        while (quiet != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(quiet);
-            collector.genMove(FT_ROOK, rook, toIndex, (byte) 0);
-            quiet &= quiet - 1;
-        }
-
-        while (captures != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(captures);
-            collector.genMove(FT_ROOK, rook, toIndex, bitBoard.getFigureCode(toIndex));
-            captures &= captures - 1;
-        }
+        generateBBMoves(attacks, bitBoard, rook, FT_ROOK, collector, opponentFigsMask, empty);
     }
 
     private void genBishopMoves(BitBoard bitBoard, int bishop,
@@ -211,18 +180,25 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
 
+        generateBBMoves(attacks, bitBoard, bishop, FT_BISHOP, collector, opponentFigsMask, empty);
+    }
+
+    private void generateBBMoves(long attacks, BitBoard bitBoard, int figPos, byte figType,
+            MoveCollector collector,
+            long opponentFigsMask, long empty) {
+
         long quiet = attacks & empty;
         long captures = attacks & opponentFigsMask;
 
         while (quiet != 0) {
             final int toIndex = Long.numberOfTrailingZeros(quiet);
-            collector.genMove(FT_BISHOP, bishop, toIndex, (byte) 0);
+            collector.genMove(figType, figPos, toIndex, (byte) 0);
             quiet &= quiet - 1;
         }
 
         while (captures != 0) {
             final int toIndex = Long.numberOfTrailingZeros(captures);
-            collector.genMove(FT_BISHOP, bishop, toIndex, bitBoard.getFigureCode(toIndex));
+            collector.genMove(figType, figPos, toIndex, bitBoard.getFigureCode(toIndex));
             captures &= captures - 1;
         }
     }
