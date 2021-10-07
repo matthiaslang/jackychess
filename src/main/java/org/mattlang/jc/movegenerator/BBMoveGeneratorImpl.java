@@ -11,6 +11,7 @@ import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -60,17 +61,13 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
         long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
+        long empty = ~ownFigsMask & ~opponentFigsMask;
 
         genPawnMoves(bitBoard, collector, side);
         genPawnCaptureMoves(bitBoard, collector, side);
 
-
-
-
         for (int bishop : pieces.getBishops().getArr()) {
-            byte figureCode = FigureType.Bishop.figureCode;
-            int[] figOffsets = offset[figureCode];
-            genPieceMoves(board, bishop, collector, xside, figureCode, figOffsets, slide[figureCode]);
+            genBishopMoves(bitBoard, bishop, collector, ownFigsMask, opponentFigsMask, empty);
         }
 
         for (int knight : pieces.getKnights().getArr()) {
@@ -159,6 +156,28 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
             quietMoves &= quietMoves - 1;
         }
 
+    }
+
+    private void genBishopMoves(BitBoard bitBoard, int bishop, MoveCollector collector, long ownFigsMask,
+            long opponentFigsMask, long empty) {
+        long occupancy = ownFigsMask | opponentFigsMask & ~(1 << bishop);
+
+        long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
+
+        long quiet = attacks & empty;
+        long captures = attacks & opponentFigsMask;
+
+        while (quiet != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(quiet);
+            collector.genMove(FT_BISHOP, bishop, toIndex, (byte) 0);
+            quiet &= quiet - 1;
+        }
+
+        while (captures != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(captures);
+            collector.genMove(FT_BISHOP, bishop, toIndex, bitBoard.getFigureCode(toIndex));
+            captures &= captures - 1;
+        }
     }
 
     /**

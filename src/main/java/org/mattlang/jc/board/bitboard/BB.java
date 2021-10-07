@@ -1,5 +1,7 @@
 package org.mattlang.jc.board.bitboard;
 
+import org.mattlang.jc.board.BoardPrinter;
+
 /**
  * Static bitboard stuff.
  */
@@ -102,5 +104,32 @@ public class BB {
 
     public static long bPawnWestAttacks(long bpawns) {
         return soWeOne(bpawns);
+    }
+
+
+    public static String toStrBoard(long bb) {
+        return BoardPrinter.toStr((row, col) -> {
+            int pos = (7 - row) * 8 + col;
+            return isBitSet(bb, pos) ? 'X' : '.';
+        });
+
+    }
+
+    public static String toStr(long bb) {
+        StringBuilder b = new StringBuilder();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                int pos = (7 - row) * 8 + col;
+                b.append(isBitSet(bb, pos) ? '1' : '.');
+
+            }
+            b.append("\n");
+        }
+        return b.toString();
+    }
+
+    private static boolean isBitSet(long bb, int pos) {
+        long posMask = 1L << pos;
+        return (bb & posMask) != 0;
     }
 }
