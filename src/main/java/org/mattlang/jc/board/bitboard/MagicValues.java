@@ -10,7 +10,7 @@ package org.mattlang.jc.board.bitboard;
  */
 
 
-class MagicValues{
+public class MagicValues{
 
 public static final Magix RMagic[] = new Magix[]{
  new Magix(0, false, 0x80028210244000L, 0x101010101017eL, 12),

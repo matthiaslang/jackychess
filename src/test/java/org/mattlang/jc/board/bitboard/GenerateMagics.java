@@ -97,7 +97,7 @@ public class GenerateMagics {
         out.println(" * Contains precalculated magic hash values.\n");
         out.println(" */\n\n");
 
-        out.println("class MagicValues{\n");
+        out.println("public class MagicValues{\n");
 
         out.printf("public static final Magix RMagic[] = new Magix[]{\n");
         for (square = 0; square < 64; square++) {
