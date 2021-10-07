@@ -9,17 +9,27 @@ import lombok.Getter;
 @Getter
 public class Magix {
 
+    int sq;
+
+    boolean bishop;
+
     long magic;
 
-    /** the attack mask of the figure on the empty board. */
+    /**
+     * the attack mask of the figure on the empty board.
+     */
     long mask;
 
     int bits;
 
-    /** the hash table with the attacs by opponent occupancy, indexed by the hash generated via the magic value. */
+    /**
+     * the hash table with the attacs by opponent occupancy, indexed by the hash generated via the magic value.
+     */
     long[] hash;
 
-    public Magix(long magic, long mask, int bits) {
+    public Magix(int sq, boolean bishop, long magic, long mask, int bits) {
+        this.sq = sq;
+        this.bishop = bishop;
         this.magic = magic;
         this.mask = mask;
         this.bits = bits;
@@ -34,11 +44,11 @@ public class Magix {
         return (int) val;
     }
 
-
-    public void calcHashAttacks(){
-//        MagicCalcInfo calcInfo = new MagicCalcInfo(sq, bishop);
-
+    public void calcHashAttacks() {
+        MagicCalcInfo calcInfo = new MagicCalcInfo(sq, bishop);
+        hash = calcInfo.calcHashAttacksArray(bits, magic);
     }
+
 }
 
 

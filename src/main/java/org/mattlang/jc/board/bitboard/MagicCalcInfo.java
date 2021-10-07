@@ -1,5 +1,7 @@
 package org.mattlang.jc.board.bitboard;
 
+import java.util.Arrays;
+
 import lombok.Getter;
 
 /**
@@ -119,5 +121,36 @@ public class MagicCalcInfo {
                 result |= (1L << j);
         }
         return result;
+    }
+
+
+    public long[] calcHashAttacksArray(int bits, long magic) {
+
+        long used[] = new long[4096];
+
+        int i, j, n;
+        boolean fail;
+
+        n = Long.bitCount(mask);
+        int combinations = 1 << n;
+
+        int maxIndex = 0;
+
+        for (i = 0, fail = false; !fail && i < combinations; i++) {
+            j = Magix.calcIndex(b[i], magic, bits);
+            if (used[j] == 0L) {
+                used[j] = a[i];
+                maxIndex = Math.max(maxIndex, j);
+            } else if (used[j] != a[i])
+                fail = true;
+        }
+
+        if (!fail) {
+            return Arrays.copyOf(used, maxIndex + 1);
+        } else {
+            // the magic was not good enough
+            return null;
+        }
+
     }
 }

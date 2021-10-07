@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -48,60 +47,13 @@ public class GenerateMagics {
             if (Long.bitCount((calcInfo.mask * magic) & 0xFF00000000000000L) < 6)
                 continue;
 
-            Optional<Magix> result = calcHashAttacks(calcInfo, bits, magic);
-            if (result.isPresent()) {
-                return result.get();
+            long used[] = calcInfo.calcHashAttacksArray(bits, magic);
+            if (used != null) {
+                return new Magix(sq, bishop, magic, calcInfo.mask, bits);
             }
         }
         System.out.printf("***Failed***\n");
         throw new IllegalStateException("nothing found!!");
-    }
-
-    /**
-     * Calculates Attacks and builds the hash map from indices of occupancy&figMask to attack sets.
-     *
-     * @param bits
-     * @param magic
-     * @return
-     */
-    static Optional<Magix> calcHashAttacks(MagicCalcInfo calcInfo, int bits, long magic) {
-        long used[] = calcHashAttacksArray(calcInfo, bits, magic);
-        if (used != null) {
-            return Optional.of(new Magix(magic, calcInfo.mask, bits));
-        } else {
-            // the magic was not good enough
-            return Optional.empty();
-        }
-    }
-
-    static long[] calcHashAttacksArray(MagicCalcInfo calcInfo, int bits, long magic) {
-
-        long used[] = new long[4096];
-
-        int i, j, n;
-        boolean fail;
-
-        n = Long.bitCount(calcInfo.mask);
-        int combinations = 1 << n;
-
-        int maxIndex = 0;
-
-        for (i = 0, fail = false; !fail && i < combinations; i++) {
-            j = transform(calcInfo.b[i], magic, bits);
-            if (used[j] == 0L) {
-                used[j] = calcInfo.a[i];
-                maxIndex = Math.max(maxIndex, j);
-            } else if (used[j] != calcInfo.a[i])
-                fail = true;
-        }
-
-        if (!fail) {
-            return Arrays.copyOf(used, maxIndex + 1);
-        } else {
-            // the magic was not good enough
-            return null;
-        }
-
     }
 
     static int RBits[] = new int[] {
@@ -140,25 +92,32 @@ public class GenerateMagics {
 
         out.println("package org.mattlang.jc.board.bitboard;\n\n");
 
+        out.println("/**\n");
+        out.println(" * Generated with GenerateMagics.java class\n");
+        out.println(" * Contains precalculated magic hash values.\n");
+        out.println(" */\n\n");
+
         out.println("class MagicValues{\n");
 
         out.printf("public static final Magix RMagic[] = new Magix[]{\n");
         for (square = 0; square < 64; square++) {
             Magix magicResult = find_magic(square, RBits[square], false);
-            out.printf(" new Magix(0x%sL, 0x%sL, %s),\n", Long.toHexString(magicResult.magic),
-                    Long.toHexString(magicResult.mask), magicResult.bits);
+            printMagicDeclaration(out, magicResult);
         }
         out.printf("};\n\n");
 
         out.printf("public static final Magix BMagic[] = new Magix[]{\n");
         for (square = 0; square < 64; square++) {
             Magix magicResult = find_magic(square, BBits[square], true);
-            out.printf("  new Magix(0x%sL, 0x%sL, %s),\n", Long.toHexString(magicResult.magic),
-                    Long.toHexString(magicResult.mask), magicResult.bits
-            );
+            printMagicDeclaration(out, magicResult);
         }
         out.printf("};\n\n");
         out.printf("};\n\n");
+    }
+
+    private static void printMagicDeclaration(PrintStream out, Magix magix) {
+        out.printf(" new Magix(%s, %s, 0x%sL, 0x%sL, %s),\n", magix.sq, magix.bishop, Long.toHexString(magix.magic),
+                Long.toHexString(magix.mask), magix.bits);
     }
 
     private static String fmtHashIndex(long[] hashIndex) {
