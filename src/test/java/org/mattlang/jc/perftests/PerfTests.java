@@ -8,10 +8,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
+import org.mattlang.jc.movegenerator.*;
 
 /**
  * PerfTests
@@ -45,7 +42,7 @@ public class PerfTests {
 
     private LegalMoveGenerator initBitBoardMoveGen() {
         Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
-        LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
+        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
         return generator;
     }
 

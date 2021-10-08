@@ -232,43 +232,69 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
     public static boolean canFigureCaptured(BoardRepresentation board, int i, Color side) {
         Color xside = side.invert();
 
-        CaptureChecker captureChecker = new CaptureChecker();
-        // 1. test rook && queen vertical & horizontal captures:
-        genPieceMoves(board, i, captureChecker, xside, FT_ROOK, offset[FT_ROOK], slide[FT_ROOK]);
-        if (captureChecker.hasCapturesBy(FT_ROOK)) {
+        BitBoard bitBoard = (BitBoard) board;
+
+        BitChessBoard bb = bitBoard.getBoard();
+        long ownFigsMask = bb.getColorMask(xside.invert());
+        long opponentFigsMask = bb.getColorMask(xside);
+
+        // 1. test bishop and queen diagonal captures
+        long occupancy = ownFigsMask | opponentFigsMask;
+
+        long attacks = MagicBitboards.genBishopAttacs(i, occupancy);
+        if ((attacks & bb.getPieceSet(FT_BISHOP, xside)) != 0) {
             return true;
         }
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_QUEEN)) {
+        if ((attacks & bb.getPieceSet(FT_QUEEN, xside)) != 0) {
             return true;
         }
-        // 2. test bishop and queen diagonal captures:
-        captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, FT_BISHOP, offset[FT_BISHOP], slide[FT_BISHOP]);
-        if (captureChecker.hasCapturesBy(FT_BISHOP)) {
+
+        // 2. test rook and queen vertical/horizontal captures:
+        attacks = MagicBitboards.genRookAttacs(i, occupancy);
+        if ((attacks & bb.getPieceSet(FT_ROOK, xside)) != 0) {
             return true;
         }
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_QUEEN)) {
+        if ((attacks & bb.getPieceSet(FT_QUEEN, xside)) != 0) {
             return true;
         }
 
         // 3. test knight
-        captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, FT_KNIGHT, offset[FT_KNIGHT], slide[FT_KNIGHT]);
-        if (captureChecker.hasCapturesBy(FT_KNIGHT)) {
+        attacks = knightAttacks[i];
+        if ((attacks & bb.getPieceSet(FT_KNIGHT, xside)) != 0) {
             return true;
+
         }
 
         // 4. pawns:
-        captureChecker.reset();
-        genPawnCaptureMoves(board, captureChecker, i, side);
-        if (captureChecker.hasCapturesBy(FigureConstants.FT_PAWN)) {
-            return true;
+        long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
+        long figMask = 1L << i;
+
+        if (side == WHITE) {
+            long capturesEast = BB.bPawnWestAttacks(otherPawns);
+            if ((figMask & capturesEast) != 0) {
+                return true;
+            }
+
+            long capturesWest = BB.bPawnEastAttacks(otherPawns);
+            if ((figMask & capturesWest) != 0) {
+                return true;
+            }
+
+        } else {
+            long capturesEast = BB.wPawnWestAttacks(otherPawns);
+            if ((figMask & capturesEast) != 0) {
+                return true;
+            }
+
+            long capturesWest = BB.wPawnEastAttacks(otherPawns);
+            if ((figMask & capturesWest) != 0) {
+                return true;
+            }
         }
 
         // 5. test king
-        captureChecker.reset();
-        genPieceMoves(board, i, captureChecker, xside, FT_KING, offset[FT_KING], slide[FT_KING]);
-        if (captureChecker.hasCapturesBy(FT_KING)) {
+        attacks = kingAttacks[i];
+        if ((attacks & bb.getPieceSet(FT_KING, xside)) != 0) {
             return true;
         }
 
