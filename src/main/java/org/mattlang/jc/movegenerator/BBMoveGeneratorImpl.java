@@ -87,29 +87,6 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         generateRochade(board, side, collector);
     }
 
-
-    private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,
-            byte figureType,
-            int[] figOffsets, boolean slide) {
-
-        for (int j = 0; j < figOffsets.length; ++j) { /* for all knight or ray directions */
-            for (int n = i; ; ) { /* starting with from square */
-                n = mailbox[mailbox64[n] + figOffsets[j]]; /* next square along the ray j */
-                if (n == -1)
-                    break; /* outside board */
-                byte targetN = board.getFigureCode(n);
-                if (targetN != FigureConstants.FT_EMPTY) {
-                    if (Figure.getColor(targetN) == xside)
-                        collector.genMove(figureType, i, n, targetN); /* capture from i to n */
-                    break;
-                }
-                collector.genMove(figureType, i, n, (byte) 0); /* quiet move from i to n */
-                if (!slide)
-                    break; /* next direction */
-            }
-        }
-    }
-
     private void genKingMoves(BitBoard board, int kingPos, MoveCollector collector, long ownFigsMask, long opponentFigsMask) {
         long kingAttack = kingAttacks[kingPos];
 
@@ -245,7 +222,8 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         if ((attacks & bb.getPieceSet(FT_BISHOP, xside)) != 0) {
             return true;
         }
-        if ((attacks & bb.getPieceSet(FT_QUEEN, xside)) != 0) {
+        long otherQueens = bb.getPieceSet(FT_QUEEN, xside);
+        if ((attacks & otherQueens) != 0) {
             return true;
         }
 
@@ -254,7 +232,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         if ((attacks & bb.getPieceSet(FT_ROOK, xside)) != 0) {
             return true;
         }
-        if ((attacks & bb.getPieceSet(FT_QUEEN, xside)) != 0) {
+        if ((attacks & otherQueens) != 0) {
             return true;
         }
 
