@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.mattlang.jc.board.Board3;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
+import org.mattlang.jc.movegenerator.*;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -49,9 +49,24 @@ public class Factory {
     }
 
     /**
-     * Stable is currently PVS Search (without caching) and with new material eval.
+     * Same as stable only with Bitboard implementation and bitboard move generator
      * @return
      */
+    public static SearchParameter createBitboard() {
+        return new SearchParameter()
+                .evaluateFunction.set(DefaultEvaluateFunction::new)
+                .moveGenerator.set(BBMoveGeneratorImpl::new)
+                .legalMoveGenerator.set(BBLegalMoveGeneratorImpl::new)
+                .boards.set(BitBoard::new)
+                .checkChecker.set(BBCheckCheckerImpl::new)
+                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
+                .config(c -> {
+                    c.maxDepth.setValue(15);
+                    c.maxQuiescence.setValue(2);
+                    c.timeout.setValue(15000);
+                });
+    }
+
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(DefaultEvaluateFunction::new)
@@ -65,7 +80,6 @@ public class Factory {
                     c.timeout.setValue(15000);
                 });
     }
-
 
     public static SearchParameter createIterativeDeepeningMtdf() {
         return new SearchParameter()
