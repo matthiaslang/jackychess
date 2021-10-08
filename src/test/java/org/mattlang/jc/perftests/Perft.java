@@ -46,7 +46,7 @@ public class Perft {
         long stop = System.currentTimeMillis();
         long duration = stop-start;
         if (duration!=0) {
-            long nodesPerSecond = nodes * 1000 / duration;
+            long nodesPerSecond = (long)nodes * 1000 / duration;
             System.out.println("Nodes/s = " + nodesPerSecond);
         }
         SoftAssertions softly = new SoftAssertions();
