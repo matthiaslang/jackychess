@@ -8,8 +8,8 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
@@ -30,7 +30,7 @@ public class SearchParameter {
 
     public final Impl<MoveList> moveList = new Impl<>(this, MoveListImpls.OPTIMIZED.createSupplier());
 
-    public final Impl<BoardRepresentation> boards = new Impl<>(this, Board3::new);
+    public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new DefaultEvaluateFunction());
 
@@ -67,9 +67,13 @@ public class SearchParameter {
                 }
             }
         }
-
+        
+        LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        LOGGER.info("Move Gen: " + moveGenerator.instance().getClass().getSimpleName());
+        LOGGER.info("Legal Move Gen: " + legalMoveGenerator.instance().getClass().getSimpleName());
+        LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         for (UCIOption option : config.getAllOptions().getAllOptions()) {
             LOGGER.info(option.getName() + ": " + option.getValue());
         }
