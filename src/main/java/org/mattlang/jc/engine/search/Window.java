@@ -3,6 +3,8 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
+import java.util.logging.Logger;
+
 import lombok.Getter;
 
 /**
@@ -10,6 +12,8 @@ import lombok.Getter;
  */
 @Getter
 public class Window {
+
+    private static final Logger LOGGER = Logger.getLogger(Window.class.getSimpleName());
 
     int alpha;
     int beta;
@@ -40,6 +44,14 @@ public class Window {
 
     public boolean outsideWindow(NegaMaxResult rslt) {
         int score = rslt.max;
+        // this is currently a pathological effect, that we sometimes do not find a result
+        // in this case we at least stop aspiration search loop and log in the iterative deepening the
+        // problematic case
+        if (score <= ALPHA_START || score >= BETA_START) {
+            LOGGER.info("Aspiration Window reached outer bounds! score = " + score);
+            return false;
+        }
+
         return score <= alpha || score >= beta;
     }
 
