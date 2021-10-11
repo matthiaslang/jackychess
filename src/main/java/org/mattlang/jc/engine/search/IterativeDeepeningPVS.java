@@ -77,7 +77,9 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
             //negaMaxAlphaBeta.reset();
         }
 
-        UCILogger.log(format("EBF: %s", ebf.report()));
+        String ebfReport = format("EBF: %s", ebf.report());
+        UCILogger.log(ebfReport);
+        LOGGER.info(ebfReport);
 
         return new IterativeSearchResult(rounds);
     }
