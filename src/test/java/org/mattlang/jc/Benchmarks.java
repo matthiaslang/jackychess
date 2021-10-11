@@ -22,6 +22,14 @@ public class Benchmarks {
         return benchmark(benchMarkName, doSomethingToMeasure, 10);
     }
 
+    public static BenchmarkResults benchmarkWithResults(
+            String benchMarkName,
+            Runnable doSomethingToMeasure)
+    {
+        StopWatch watch = benchmark(benchMarkName, doSomethingToMeasure, 10);
+        return new BenchmarkResults(benchMarkName, watch, null, null);
+    }
+
 
     public static StopWatch benchmark(
             String benchMarkName,
