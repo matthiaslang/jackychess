@@ -16,9 +16,29 @@ public class UCIGroup {
     @Getter
     private String description;
 
-    public UCIGroup(String name, String description) {
+    @Getter
+    private UCIOptions options;
+
+    public UCIGroup(UCIOptions options, String name, String description) {
+        this.options = options;
         this.name = name;
         this.description = description;
+    }
+
+    public UCISpinOption createSpinOpt(String name, String description, int min, int max,
+            int defaultValue) {
+        return new UCISpinOption(options, this, name, description, min, max, defaultValue);
+    }
+
+    public <E extends Enum> UCIComboOption<E> createComboOpt(String name, String description,
+            Class<E> eclass,
+            E defaultValue) {
+        return new UCIComboOption<>(options, this, name, description, eclass, defaultValue);
+    }
+
+    public UCICheckOption createCheckOpt(String name, String description,
+            boolean defaultValue) {
+        return new UCICheckOption(options, this, name, description, defaultValue);
     }
 
     @Override

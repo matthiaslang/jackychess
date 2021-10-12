@@ -15,10 +15,36 @@ public class UCIOptions {
 
     private Map<String, UCIOption> options = new LinkedHashMap<>();
 
+    private Map<String, UCIGroup> groups = new LinkedHashMap<>();
+
     public void put(String name, UCIOption option) {
         if (options.put(name, option) != null) {
             throw new IllegalArgumentException("Duplicate UCI option name " + name);
         }
+    }
+
+    public UCIGroup createGroup(String name, String descr) {
+        UCIGroup group = new UCIGroup(this, name, descr);
+        if (groups.put(name, group) != null) {
+            throw new IllegalArgumentException("Duplicate UCI group name " + name);
+        }
+        return group;
+    }
+
+    public UCISpinOption createSpinOpt(UCIGroup group, String name, String description, int min, int max,
+            int defaultValue) {
+        return new UCISpinOption(this, group, name, description, min, max, defaultValue);
+    }
+
+    public <E extends Enum> UCIComboOption<E> createComboOpt(UCIGroup group, String name, String description,
+            Class<E> eclass,
+            E defaultValue) {
+        return new UCIComboOption<>(this, group, name, description, eclass, defaultValue);
+    }
+
+    public UCICheckOption createCheckOpt(UCIGroup group, String name, String description,
+            boolean defaultValue) {
+        return new UCICheckOption(this, group, name, description, defaultValue);
     }
 
     public Collection<UCIOption> getAllOptions() {

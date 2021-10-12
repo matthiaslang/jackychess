@@ -9,77 +9,92 @@ public class ConfigValues {
     @Getter
     private UCIOptions allOptions = new UCIOptions();
 
-    public final UCIGroup common = new UCIGroup("Common", "Common parameter");
-    public final UCIGroup experimental = new UCIGroup("Experimental", "Experimental parameter used during development");
+    public final UCIGroup common = allOptions.createGroup("Common", "Common parameter");
+    public final UCIGroup experimental =
+            allOptions.createGroup("Experimental", "Experimental parameter used during development");
 
-    public final UCIGroup limits = new UCIGroup("Limits", "Parameter which limit the search or search time in some way.");
+    public final UCIGroup limits =
+            allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
 
     public final UCISpinOption timeout = new UCITimeoutOption(allOptions, limits);
-    public final UCISpinOption maxDepth = new UCISpinOption(allOptions, limits, "maxdepth",
+
+    public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
             3, 50, 20);
+
     public final UCISpinOption maxQuiescence =
-            new UCISpinOption(allOptions, limits, "quiescence",
+            limits.createSpinOpt("quiescence",
                     "the maximum search depth in quiescence",
                     0, 50, 10);
 
-    public final UCIGroup caching = new UCIGroup("Caching", "Parameter for caching of information during search.");
-    public final UCICheckOption useTTCache = new UCICheckOption(allOptions, caching, "useTTCache",
+    public final UCIGroup caching =
+            allOptions.createGroup("Caching", "Parameter for caching of information during search.");
+
+    public final UCICheckOption useTTCache = caching.createCheckOpt("useTTCache",
             "Flag, if the tt cache to store scores should be activated",
             true);
 
-    public final UCIGroup search = new UCIGroup("Search", "Parameter that influence search.");
+    public final UCIGroup search = allOptions.createGroup("Search", "Parameter that influence search.");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            new UCIComboOption(allOptions, search, "searchalg",
+            search.createComboOpt("searchalg",
                     "the search algorithm to use. Only for development testing.",
                     SearchAlgorithms.class, SearchAlgorithms.STABLE);
-    public final UCICheckOption activatePvsSearch = new UCICheckOption(allOptions, search, "activatePvsSearch",
+
+    public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",
             "should principal variation search be used",
             true);
 
     public final UCIComboOption<EvalFunctions> evluateFunctions =
-            new UCIComboOption(allOptions, search, "evaluateFunction",
+            search.createComboOpt("evaluateFunction",
                     "the evaluation function to use. Only for development testing",
                     EvalFunctions.class, EvalFunctions.MINIMAL_PST);
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
-            new UCIComboOption(allOptions, experimental, "MoveListImpl",
+            experimental.createComboOpt("MoveListImpl",
                     "internally. Only for development testing",
                     MoveListImpls.class, MoveListImpls.OPTIMIZED);
 
     public final UCIComboOption<CacheImpls> cacheImpls =
-            new UCIComboOption(allOptions, experimental, "TTCacheImpl",
+            experimental.createComboOpt("TTCacheImpl",
                     "internally. Only for development testing",
                     CacheImpls.class, CacheImpls.STANDARD);
 
-
-    public final UCIGroup moveOrder = new UCIGroup("Move Order", "Parameter influencing the move order in alpha beta search");
+    public final UCIGroup moveOrder =
+            allOptions.createGroup("Move Order", "Parameter influencing the move order in alpha beta search");
 
     public final UCICheckOption useHistoryHeuristic =
-            new UCICheckOption(allOptions, moveOrder, "useHistoryHeuristic",
+            moveOrder.createCheckOpt("useHistoryHeuristic",
                     "should history heuristic be used for move ordering",
                     true);
-    public final UCICheckOption useKillerMoves = new UCICheckOption(allOptions, moveOrder, "useKillerMoves",
+    public final UCICheckOption useKillerMoves = moveOrder.createCheckOpt("useKillerMoves",
             "should killer moves heuristic be used for move ordering", true);
-    public final UCICheckOption useMvvLvaSorting = new UCICheckOption(allOptions, moveOrder, "useMvvLvaSorting",
+    public final UCICheckOption useMvvLvaSorting = moveOrder.createCheckOpt("useMvvLvaSorting",
             "should mvv lva sorting be used for move ordering",
             true);
-    public final UCICheckOption usePvSorting = new UCICheckOption(allOptions, moveOrder, "usePvSorting",
+    public final UCICheckOption usePvSorting = moveOrder.createCheckOpt("usePvSorting",
             "should principal variation information used for move ordering",
             true);
 
-    public final UCIGroup pruning = new UCIGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
+    public final UCIGroup pruning =
+            allOptions.createGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
 
-    public final UCICheckOption aspiration = new UCICheckOption(allOptions, pruning, "aspiration",
+    public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",
             true);
-    public final UCICheckOption useNullMoves = new UCICheckOption(allOptions, pruning, "useNullMoves",
+    public final UCICheckOption useNullMoves = pruning.createCheckOpt("useNullMoves",
             "should null move pruning be used during search",
             false);
     public final UCICheckOption useLateMoveReductions =
-            new UCICheckOption(allOptions, pruning, "useLateMoveReductions",
+            pruning.createCheckOpt("useLateMoveReductions",
                     "should late move reductions be used during search",
                     false);
 
+    public final UCIGroup extensions =
+            allOptions.createGroup("Extensions", "Parameter influencing the extension of the search tree");
+
+    public final UCICheckOption chessExtension =
+            extensions.createCheckOpt("useCheckExtension",
+                    "on check, extend the search depth",
+                    false);
 }
