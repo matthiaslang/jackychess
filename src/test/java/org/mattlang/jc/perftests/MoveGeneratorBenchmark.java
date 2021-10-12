@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
+import org.mattlang.jc.movegenerator.*;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -44,21 +44,40 @@ public class MoveGeneratorBenchmark {
                 });
 
         Map itTT = Factory.getDefaults().collectStatistics();
-
+        LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
         StopWatch measureLegalMove = benchmark(
                 "legal move gen",
                 () -> {
                     Engine engine = new Engine();
 
                     engine.getBoard().setStartPosition();
-                    Perft.perft(new LegalMoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
+
+                    Perft.perft(legalMoveGen, engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
                     });
                 });
         Map itNormal = Factory.getDefaults().collectStatistics();
 
+        StopWatch measureBBLegalMove = benchmark(
+                "bb legal move gen",
+                () -> {
+                    Engine engine = new Engine();
+                    LegalMoveGenerator generator = initBitBoardMoveGen();
+
+                    engine.getBoard().setStartPosition();
+                    Perft.perft(generator, engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
+                    });
+                });
+
         System.out.println("legal move gen: " + measureLegalMove.toString());
+        System.out.println("bb legal move gen: " + measureBBLegalMove.toString());
         System.out.println("non legal move gen: " + measureNonLegal.toString());
 
     }
 
+    private LegalMoveGenerator initBitBoardMoveGen() {
+        Factory.getDefaults().boards.set(() -> new BitBoard());
+        Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
+        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        return generator;
+    }
 }
