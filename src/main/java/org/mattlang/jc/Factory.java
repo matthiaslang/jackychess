@@ -39,7 +39,7 @@ public class Factory {
                 .evaluateFunction.set(DefaultEvaluateFunction::new)
                 .moveGenerator.set(MoveGeneratorImpl3::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
-                .boards.set(Board3::new)
+                .boards.set(BitBoard::new)
                 .searchMethod.set(IterativeDeepeningPVS::new)
                 .config(c -> {
                     c.maxDepth.setValue(15);
