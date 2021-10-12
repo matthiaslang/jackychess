@@ -357,7 +357,7 @@ public class BitBoard implements BoardRepresentation {
 
         long kingBB = bb.getPieceSet(FT_KING, side);
         final int king = Long.numberOfTrailingZeros(kingBB);
-        pieceList.set(king, FT_KING);
+        pieceList.setKing(king);
 
         return pieceList;
     }

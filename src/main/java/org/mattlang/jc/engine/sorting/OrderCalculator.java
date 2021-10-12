@@ -52,10 +52,10 @@ public class OrderCalculator {
     }
 
 
-    public void prepareOrder(Color color, final int hashMove, final int depth) {
+    public void prepareOrder(Color color, final int hashMove, final int ply, final int depth) {
 
         this.hashMove = hashMove;
-        int index = targetDepth - depth;
+        int index = ply-1;
         // if we are at the root and have scores from a previous run, lets take them:
         if (index == 0 && orderHints.moveScores != null) {
             // todo assert that the first pvs should be the highest score...
@@ -68,7 +68,7 @@ public class OrderCalculator {
             scores = null;
         }
 
-        this.ply = targetDepth - depth;
+        this.ply = ply;
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(ply) : 0;
         this.color = color;
         this.depth = depth;
