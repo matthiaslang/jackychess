@@ -169,7 +169,7 @@ public class MinimalPstEvaluation implements EvaluateFunction {
                 QUEEN_EG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
                 KING_EG.calcScore(wp.getKing(), bp.getKing(), who2mov);
 
-        double score = PhaseCalculator.scaleByPhase(currBoard, midGame, endGame);
+        double score = PhaseCalculator.scaleByPhase(wp, bp, midGame, endGame);
         return (int) score;
     }
 

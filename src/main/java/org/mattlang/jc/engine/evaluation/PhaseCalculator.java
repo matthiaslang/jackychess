@@ -52,10 +52,13 @@ public class PhaseCalculator {
     }
 
     public static double calcPhaseFactor(BoardRepresentation currBoard) {
-        int phase = 0;
-
         PieceList wp = currBoard.getWhitePieces();
         PieceList bp = currBoard.getBlackPieces();
+        return calcPhaseFactor(wp, bp);
+    }
+
+    public static double calcPhaseFactor(PieceList wp, PieceList bp) {
+        int phase = 0;
 
         phase += (wp.getKnights().size() + bp.getKnights().size()) * PV_KNIGHT +
                 (wp.getBishops().size() + bp.getBishops().size()) * PV_BISHOP +
@@ -68,6 +71,12 @@ public class PhaseCalculator {
 
     public static double scaleByPhase(BoardRepresentation currBoard, int midGame, int endGame) {
         double factor = calcPhaseFactor(currBoard);
+        double score = factor * midGame + (1 - factor) * endGame;
+        return score;
+    }
+
+    public static double scaleByPhase(PieceList wp, PieceList bp, int midGame, int endGame) {
+        double factor = calcPhaseFactor(wp, bp);
         double score = factor * midGame + (1 - factor) * endGame;
         return score;
     }
