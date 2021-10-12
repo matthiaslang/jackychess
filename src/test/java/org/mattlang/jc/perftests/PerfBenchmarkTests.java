@@ -2,7 +2,7 @@ package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.Benchmarks.benchmarkWithResults;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.perftests.Perft.assertPerft;
+import static org.mattlang.jc.perftests.Perft.*;
 
 import java.util.ArrayList;
 
@@ -25,6 +25,18 @@ public class PerfBenchmarkTests {
         ArrayList<BenchmarkResults> results = new ArrayList<>();
 
         results.add(benchmarkWithResults(
+                "bitboard move gen",
+                () -> {
+                    Factory.setDefaults(Factory.createStable());
+                    BitBoard board = new BitBoard();
+                    board.setStartPosition();
+                    LegalMoveGenerator generator = initBitBoardMoveGen();
+
+                    perftInitialPosition(board, generator);
+                }));
+
+
+        results.add(benchmarkWithResults(
                 "mailbox move gen",
                 () -> {
                     Factory.setDefaults(Factory.createStable());
@@ -36,15 +48,7 @@ public class PerfBenchmarkTests {
                     perftInitialPosition(board, generator);
                 }));
 
-        results.add(benchmarkWithResults(
-                "bitboard move gen",
-                () -> {
-                    BitBoard board = new BitBoard();
-                    board.setStartPosition();
-                    LegalMoveGenerator generator = initBitBoardMoveGen();
 
-                    perftInitialPosition(board, generator);
-                }));
 
         for (BenchmarkResults result : results) {
             System.out.println(result.getName() + ": " + result.getWatch().toString());
@@ -53,21 +57,26 @@ public class PerfBenchmarkTests {
 
     private LegalMoveGenerator initBitBoardMoveGen() {
         Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
+        Factory.getDefaults().legalMoveGenerator.set(() -> new BBLegalMoveGeneratorImpl());
         Factory.getDefaults().checkChecker.set(() -> new BBCheckCheckerImpl());
         LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
         return generator;
     }
 
     private void perftInitialPosition(BoardRepresentation board, LegalMoveGenerator generator) {
-        assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0, 0);
+//        assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0, 0);
+//
+//        assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0, 0);
+//
+//        assertPerft(generator, board, WHITE, 3, 8902, 34, 0, 0, 0);
+//
+//        assertPerft(generator, board, WHITE, 4, 197281, 1576, 0, 0, 0);
 
-        assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0, 0);
+        perftReset();
+        perft(generator, board, WHITE, 5, (visitedBoard, color1, depth1) -> {
+        });
 
-        assertPerft(generator, board, WHITE, 3, 8902, 34, 0, 0, 0);
-
-        assertPerft(generator, board, WHITE, 4, 197281, 1576, 0, 0, 0);
-
-        assertPerft(generator, board, WHITE, 5, 4865609, 82719, 258, 0, 0);
+//        assertPerft(generator, board, WHITE, 5, 4865609, 82719, 258, 0, 0);
 
         // takes too long for unit test
         //      assertPerft(generator, board, WHITE, 6, 119060324, 2812008, 0, 0);
