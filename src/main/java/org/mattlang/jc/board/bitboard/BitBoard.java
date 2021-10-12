@@ -35,9 +35,6 @@ public class BitBoard implements BoardRepresentation {
 
     private CastlingRights castlingRights = new CastlingRights();
 
-    private PieceList blackPieces = new PieceList();
-    private PieceList whitePieces = new PieceList();
-
     private long zobristHash = 0L;
 
     /**
@@ -57,18 +54,6 @@ public class BitBoard implements BoardRepresentation {
         this.castlingRights = castlingRights;
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
 
-        initPeaceList();
-    }
-
-    private void initPeaceList() {
-        for (int i = 0; i < 64; i++) {
-            if (board.get(i) != FigureConstants.FT_EMPTY) {
-                Figure figure = getFigure(i);
-                PieceList pieceList = figure.color == Color.WHITE ? whitePieces : blackPieces;
-
-                pieceList.set(i, figure.figureType.figureCode);
-            }
-        }
     }
 
     @Override
@@ -79,7 +64,6 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public void setPosition(String[] fenPosition) {
-        cleanPeaceList();
         for (int i = 0; i < 8; i++) {
             String row = expandRow(fenPosition[i]);
             for (int j = 0; j < 8; j++) {
@@ -89,10 +73,6 @@ public class BitBoard implements BoardRepresentation {
         zobristHash = Zobrist.hash(this);
     }
 
-    private void cleanPeaceList() {
-        whitePieces.clean();
-        blackPieces.clean();
-    }
 
     @Override
     public GameState setFenPosition(String fen) {
@@ -105,14 +85,10 @@ public class BitBoard implements BoardRepresentation {
         board.set(pos, figureCode);
         // remove from piece list, if this is a "override/capture" of this field:
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
-            PieceList pieceList = ((oldFigure & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
-            pieceList.remove(pos, (byte) (oldFigure & MASK_OUT_COLOR));
             zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
-            PieceList pieceList = ((figureCode & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
-            pieceList.set(pos, (byte) (figureCode & MASK_OUT_COLOR));
             zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
         }
     }
@@ -166,7 +142,6 @@ public class BitBoard implements BoardRepresentation {
         for (int i = 0; i < 64; i++) {
             board.set(i, Figure.EMPTY.figureCode);
         }
-        cleanPeaceList();
     }
 
     private String expandRow(String row) {
@@ -290,9 +265,10 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public int findPosOfFigure(byte figureCode) {
-        // refactor to "findKingPos"
-        PieceList pieceList = ((figureCode & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
-        return pieceList.getKing();
+        // todo that method should be renamed to something like getKingPos()
+        long kingBB = board.getPieceSet(FT_KING, (figureCode & BLACK.code)==BLACK.code?BLACK:WHITE);
+        final int king = Long.numberOfTrailingZeros(kingBB);
+        return king;
     }
 
     @Override
@@ -333,11 +309,57 @@ public class BitBoard implements BoardRepresentation {
     }
 
     public PieceList getBlackPieces() {
-        return blackPieces;
+        return createPieceList(BLACK);
     }
 
     public PieceList getWhitePieces() {
-        return whitePieces;
+        return createPieceList(WHITE);
+    }
+
+    private PieceList createPieceList(Color side) {
+        PieceList pieceList = new PieceList();
+        BitChessBoard bb = board;
+
+        long pawnBB = bb.getPieceSet(FT_PAWN, side);
+        while (pawnBB != 0) {
+            final int pawn = Long.numberOfTrailingZeros(pawnBB);
+            pieceList.set(pawn, FT_PAWN);
+            pawnBB &= pawnBB - 1;
+        }
+
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        while (bishopBB != 0) {
+            final int bishop = Long.numberOfTrailingZeros(bishopBB);
+            pieceList.set(bishop, FT_BISHOP);
+            bishopBB &= bishopBB - 1;
+        }
+
+        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        while (knightBB != 0) {
+            final int knight = Long.numberOfTrailingZeros(knightBB);
+            pieceList.set(knight, FT_KNIGHT);
+            knightBB &= knightBB - 1;
+        }
+
+        long rookBB = bb.getPieceSet(FT_ROOK, side);
+        while (rookBB != 0) {
+            final int rook = Long.numberOfTrailingZeros(rookBB);
+            pieceList.set(rook, FT_ROOK);
+            rookBB &= rookBB - 1;
+        }
+
+        long queenBB = bb.getPieceSet(FT_QUEEN, side);
+        while (queenBB != 0) {
+            final int queen = Long.numberOfTrailingZeros(queenBB);
+            pieceList.set(queen, FT_QUEEN);
+            queenBB &= queenBB - 1;
+        }
+
+        long kingBB = bb.getPieceSet(FT_KING, side);
+        final int king = Long.numberOfTrailingZeros(kingBB);
+        pieceList.set(king, FT_KING);
+
+        return pieceList;
     }
 
     @Override
