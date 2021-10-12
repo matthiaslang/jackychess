@@ -19,7 +19,7 @@ public final class TTEntry {
     long zobristHash;
 
     @Getter
-    private int value;
+    private short value;
 
     private byte type;
 
@@ -34,7 +34,7 @@ public final class TTEntry {
 
     public TTEntry(long zobristHash, int value, byte type, int depth, byte aging, int move) {
         this.zobristHash = zobristHash;
-        this.value = value;
+        this.value = (short)value;
         this.type = type;
         this.depth = depth;
         this.aging = aging;
@@ -59,7 +59,7 @@ public final class TTEntry {
 
     void update(long zobristHash, int value, byte type, int depth, byte aging, int move) {
         this.zobristHash = zobristHash;
-        this.value = value;
+        this.value = (short)value;
         this.type = type;
         this.depth = depth;
         this.aging = aging;
