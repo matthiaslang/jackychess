@@ -4,10 +4,11 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
-import static org.mattlang.jc.movegenerator.MoveGeneratorImpl3.*;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -54,40 +55,54 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
     public void generate(BoardRepresentation board, Color side, MoveCollector collector) {
 
         BitBoard bitBoard = (BitBoard) board;
+        BitChessBoard bb = bitBoard.getBoard();
 
         Color xside = side.invert();  /* the side not to move */
-
-        PieceList pieces = side == WHITE ? board.getWhitePieces() : board.getBlackPieces();
 
         long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
         long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
         long empty = ~ownFigsMask & ~opponentFigsMask;
 
-        genPawnMoves(bitBoard, collector, side);
         genPawnCaptureMoves(bitBoard, collector, side);
+        genPawnMoves(bb, collector, side);
 
-        for (int bishop : pieces.getBishops().getArr()) {
-            genBishopMoves(bitBoard, bishop, collector, ownFigsMask, opponentFigsMask, empty);
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        while (bishopBB != 0) {
+            final int bishop = Long.numberOfTrailingZeros(bishopBB);
+            genBishopMoves(bb, bishop, collector, ownFigsMask, opponentFigsMask, empty);
+            bishopBB &= bishopBB - 1;
         }
 
-        for (int knight : pieces.getKnights().getArr()) {
-            genKnightMoves(bitBoard, knight, collector, ownFigsMask, opponentFigsMask);
+        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        while (knightBB != 0) {
+            final int knight = Long.numberOfTrailingZeros(knightBB);
+            genKnightMoves(bb, knight, collector, ownFigsMask, opponentFigsMask);
+            knightBB &= knightBB - 1;
         }
 
-        for (int rook : pieces.getRooks().getArr()) {
-            genRookMoves(bitBoard, rook, collector, ownFigsMask, opponentFigsMask, empty);
+        long rookBB = bb.getPieceSet(FT_ROOK, side);
+        while (rookBB != 0) {
+            final int rook = Long.numberOfTrailingZeros(rookBB);
+            genRookMoves(bb, rook, collector, ownFigsMask, opponentFigsMask, empty);
+            rookBB &= rookBB - 1;
         }
 
-        for (int queen : pieces.getQueens().getArr()) {
-            genQueenMoves(bitBoard, queen, collector, ownFigsMask, opponentFigsMask, empty);
+        long queenBB = bb.getPieceSet(FT_QUEEN, side);
+        while (queenBB != 0) {
+            final int queen = Long.numberOfTrailingZeros(queenBB);
+            genQueenMoves(bb, queen, collector, ownFigsMask, opponentFigsMask, empty);
+            queenBB &= queenBB - 1;
         }
 
-        genKingMoves(bitBoard, pieces.getKing(), collector, ownFigsMask, opponentFigsMask);
+        long kingBB = bb.getPieceSet(FT_KING, side);
+        final int king = Long.numberOfTrailingZeros(kingBB);
+        genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask);
 
         generateRochade(board, side, collector);
     }
 
-    private void genKingMoves(BitBoard board, int kingPos, MoveCollector collector, long ownFigsMask, long opponentFigsMask) {
+    private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
+            long opponentFigsMask) {
         long kingAttack = kingAttacks[kingPos];
 
         long moves = kingAttack & ~ownFigsMask;
@@ -96,7 +111,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         while (attacks != 0) {
             final int toIndex = Long.numberOfTrailingZeros(attacks);
-            collector.genMove(FT_KING, kingPos, toIndex, board.getFigureCode(toIndex));
+            collector.genMove(FT_KING, kingPos, toIndex, bb.get(toIndex));
             attacks &= attacks - 1;
         }
 
@@ -108,7 +123,8 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     }
 
-    private void genKnightMoves(BitBoard board, int knight, MoveCollector collector,long ownFigsMask, long opponentFigsMask) {
+    private void genKnightMoves(BitChessBoard bb, int knight, MoveCollector collector, long ownFigsMask,
+            long opponentFigsMask) {
         long knightAttack = knightAttacks[knight];
 
         long moves = knightAttack & ~ownFigsMask;
@@ -117,7 +133,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         while (attacks != 0) {
             final int toIndex = Long.numberOfTrailingZeros(attacks);
-            collector.genMove(FT_KNIGHT, knight, toIndex, board.getFigureCode(toIndex));
+            collector.genMove(FT_KNIGHT, knight, toIndex, bb.get(toIndex));
             attacks &= attacks - 1;
         }
 
@@ -129,7 +145,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     }
 
-    private void genQueenMoves(BitBoard bitBoard, int queen,
+    private void genQueenMoves(BitChessBoard bb, int queen,
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty) {
         long occupancy = ownFigsMask | opponentFigsMask;
@@ -137,35 +153,41 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         long attacksBishop = MagicBitboards.genBishopAttacs(queen, occupancy);
         long attacks = attacksRook | attacksBishop;
 
-        generateBBMoves(attacks, bitBoard, queen, FT_QUEEN, collector, opponentFigsMask, empty);
+        generateBBMoves(attacks, bb, queen, FT_QUEEN, collector, opponentFigsMask, empty);
 
     }
 
-    private void genRookMoves(BitBoard bitBoard, int rook,
+    private void genRookMoves(BitChessBoard bb, int rook,
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty) {
         long occupancy = ownFigsMask | opponentFigsMask;
         long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
 
-        generateBBMoves(attacks, bitBoard, rook, FT_ROOK, collector, opponentFigsMask, empty);
+        generateBBMoves(attacks, bb, rook, FT_ROOK, collector, opponentFigsMask, empty);
     }
 
-    private void genBishopMoves(BitBoard bitBoard, int bishop,
+    private void genBishopMoves(BitChessBoard bb, int bishop,
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty) {
         long occupancy = ownFigsMask | opponentFigsMask;
 
         long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
 
-        generateBBMoves(attacks, bitBoard, bishop, FT_BISHOP, collector, opponentFigsMask, empty);
+        generateBBMoves(attacks, bb, bishop, FT_BISHOP, collector, opponentFigsMask, empty);
     }
 
-    private void generateBBMoves(long attacks, BitBoard bitBoard, int figPos, byte figType,
+    private void generateBBMoves(long attacks, BitChessBoard bb, int figPos, byte figType,
             MoveCollector collector,
             long opponentFigsMask, long empty) {
 
         long quiet = attacks & empty;
         long captures = attacks & opponentFigsMask;
+
+        while (captures != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(captures);
+            collector.genMove(figType, figPos, toIndex, bb.get(toIndex));
+            captures &= captures - 1;
+        }
 
         while (quiet != 0) {
             final int toIndex = Long.numberOfTrailingZeros(quiet);
@@ -173,11 +195,6 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
             quiet &= quiet - 1;
         }
 
-        while (captures != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(captures);
-            collector.genMove(figType, figPos, toIndex, bitBoard.getFigureCode(toIndex));
-            captures &= captures - 1;
-        }
     }
 
     /**
@@ -194,6 +211,12 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         byte figure = board.getFigureCode(i);
         Color side = Figure.getColor(figure);
         return canFigureCaptured(board, i, side);
+    }
+
+    public static boolean canKingCaptured(BitBoard bitBoard, Color side) {
+        long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side);
+        int kingPos = Long.numberOfTrailingZeros(kingBB);
+        return canFigureCaptured(bitBoard, kingPos, side);
     }
 
     /**
@@ -311,7 +334,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
             while (capturesEast != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex + 9, side, bitBoard.getFigureCode(fromIndex + 9));
+                collector.genPawnMove(fromIndex, fromIndex + 9, side, bb.get(fromIndex + 9));
                 capturesEast &= capturesEast - 1;
             }
 
@@ -319,7 +342,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
             while (capturesWest != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex + 7, side, bitBoard.getFigureCode(fromIndex + 7));
+                collector.genPawnMove(fromIndex, fromIndex + 7, side, bb.get(fromIndex + 7));
                 capturesWest &= capturesWest - 1;
             }
 
@@ -350,14 +373,14 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
             while (capturesEast != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex - 7, side, bitBoard.getFigureCode(fromIndex - 7));
+                collector.genPawnMove(fromIndex, fromIndex - 7, side, bb.get(fromIndex - 7));
                 capturesEast &= capturesEast - 1;
             }
 
             long capturesWest = pawns & BB.wPawnEastAttacks(otherPieces);
             while (capturesWest != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex - 9, side, bitBoard.getFigureCode(fromIndex - 9));
+                collector.genPawnMove(fromIndex, fromIndex - 9, side, bb.get(fromIndex - 9));
                 capturesWest &= capturesWest - 1;
             }
 
@@ -384,8 +407,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
     }
 
-    private void genPawnMoves(BitBoard bitBoard, MoveCollector collector, Color side) {
-        BitChessBoard bb = bitBoard.getBoard();
+    private void genPawnMoves(BitChessBoard bb, MoveCollector collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
         long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
 
@@ -419,25 +441,6 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
                 final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
                 collector.genPawnMove(toIndex + 16, toIndex, side, (byte) 0);
                 doublePushTargets &= doublePushTargets - 1;
-            }
-        }
-    }
-
-    private static void genPawnCaptureMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
-        int n;
-        int m = side == WHITE ? 1 : -1;
-        Color xside = side.invert();
-        for (int offset : pawnCaptureOffset) {
-            n = mailbox[mailbox64[i] + offset * m];
-            if (n != -1) {
-                byte target = board.getFigureCode(n);
-                if (target != FigureConstants.FT_EMPTY && Figure.getColor(target) == xside) {
-                    collector.genPawnMove(i, n, side, target);
-                } else if (board.isEnPassantCapturePossible(n)) {
-                    collector.genEnPassant(i, n, side, board.getEnPassantCapturePos());
-                } else if (target == FigureConstants.FT_EMPTY) {
-                    collector.hypotheticalPawnCapture(i, n);
-                }
             }
         }
     }
