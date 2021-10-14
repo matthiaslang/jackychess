@@ -7,12 +7,12 @@ import org.mattlang.jc.board.Color;
  */
 public class KillerMoves {
 
-    int MAX_KILLERS = 2;
+    public static final int MAX_KILLERS = 2;
 
-    int MAX_PLY = 100;
+    public static final int MAX_PLY = 100;
 
-    private int[][] killerMovesWhite = new int[MAX_PLY][2];
-    private int[][] killerMovesBlack = new int[MAX_PLY][2];
+    private int[][] killerMovesWhite = new int[MAX_PLY][MAX_KILLERS];
+    private int[][] killerMovesBlack = new int[MAX_PLY][MAX_KILLERS];
 
     public void addKiller(Color color, int move, int ply) {
         if (ply < MAX_PLY) {
@@ -39,11 +39,6 @@ public class KillerMoves {
 
     private int[] getOrCreateKillerList(Color color, int ply) {
         int[][] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
-        int[] kmovesList = killerMoves[ply];
-        //        if (kmovesList == null) {
-        //            kmovesList = new ArrayList<>();
-        //            killerMoves[ply] = kmovesList;
-        //        }
-        return kmovesList;
+        return killerMoves[ply];
     }
 }
