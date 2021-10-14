@@ -66,7 +66,27 @@ public class EngineTest {
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningPVS()
                 .config(c->c.timeout.setValue(60000))
-                .config(c->c.maxDepth.setValue(7)));
+                .config(c->c.maxDepth.setValue(8)));
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+    @Test
+    public void testIterativeDeepeningPVSBitboard() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .config(c->c.timeout.setValue(600000))
+                .config(c->c.maxDepth.setValue(8)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();

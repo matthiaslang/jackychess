@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import java.util.List;
 
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class NegaMaxResult {
 
@@ -24,29 +25,34 @@ public class NegaMaxResult {
      */
     public final List<MoveScore> moveScores;
 
-    /** pv list from negamax search. */
+    /**
+     * pv list from negamax search.
+     */
     public final PVList pvList;
 
-    /** the target depth. */
+    /**
+     * the target depth.
+     */
     public final int targetDepth;
 
-    /** selected depth due to quiescence search. */
+    /**
+     * selected depth due to quiescence search.
+     */
     public final int selDepth;
 
-    public NegaMaxResult(int directScore, int max, Move savedMove, List<MoveScore> moveScores, List<Integer> pvMoves,
-            int targetDepth,
-            int selDepth) {
+    public NegaMaxResult(int directScore, List<Integer> pvMoves,
+            SearchContext searchContext) {
         this.directScore = directScore;
-        this.max = max;
-        this.savedMove = savedMove;
-        this.moveScores = moveScores;
+        this.max = searchContext.getSavedMoveScore();
+        this.savedMove = new MoveImpl(searchContext.getSavedMove());
+        this.moveScores = searchContext.getMoveScores();
         this.pvList = new PVList(pvMoves);
         ;
         //        if (!pvList.getPvMoves().equals(pvMoves)){
         //             throw new IllegalStateException("hey here is something weird!")   ;
         //        }
-        this.targetDepth = targetDepth;
-        this.selDepth = selDepth;
+        this.targetDepth = searchContext.getTargetDepth();
+        this.selDepth = searchContext.getSelDepth();
 
     }
 

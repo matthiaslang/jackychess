@@ -3,8 +3,6 @@ package org.mattlang.jc.engine.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mattlang.jc.engine.MoveCursor;
-
 /**
  * Triangular Array to store the PVs during recursive search.
  */
@@ -21,15 +19,15 @@ public class PVTriangularArray {
      * Sets a PV found in ply ply.
      * Updates the internal triangular array.
      *
-     * @param move
+     * @param bestMove
      * @param ply
      */
-    public void set(MoveCursor move, int ply) {
+    public void set(int bestMove, int ply) {
         int index = ply - 1;
         int[] rowForPly = array[index];
         int[] rowForUnderPly = array[index + 1];
 
-        rowForPly[0] = move.getMoveInt();
+        rowForPly[0] = bestMove;
         for (int i = 0; i < MAX - 1; i++) {
             if (rowForUnderPly[i] != 0) {
                 rowForPly[i + 1] = rowForUnderPly[i];
