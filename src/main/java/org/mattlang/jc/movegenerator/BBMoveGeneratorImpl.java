@@ -24,20 +24,6 @@ import org.mattlang.jc.engine.MoveList;
  */
 public class BBMoveGeneratorImpl implements MoveGenerator {
 
-
-
-    private static final long[] kingAttacks = new long[64];
-    private static final long[] knightAttacks = new long[64];
-
-    static {
-        // precalculate attacks:
-        long sqBB = 1;
-        for (int sq = 0; sq < 64; sq++, sqBB <<= 1) {
-            kingAttacks[sq] = BB.kingAttacks(sqBB);
-            knightAttacks[sq] = BB.knightAttacks(sqBB);
-        }
-    }
-
     /**
      * @param board current board
      * @param side  the side to move
@@ -103,7 +89,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
             long opponentFigsMask) {
-        long kingAttack = kingAttacks[kingPos];
+        long kingAttack = BB.getKingAttacs(kingPos);
 
         long moves = kingAttack & ~ownFigsMask;
         long attacks = moves & opponentFigsMask;
@@ -125,7 +111,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     private void genKnightMoves(BitChessBoard bb, int knight, MoveCollector collector, long ownFigsMask,
             long opponentFigsMask) {
-        long knightAttack = knightAttacks[knight];
+        long knightAttack = BB.getKnightAttacs(knight);
 
         long moves = knightAttack & ~ownFigsMask;
         long attacks = moves & opponentFigsMask;
@@ -260,7 +246,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
 
         // 3. test knight
-        attacks = knightAttacks[i];
+        attacks = BB.getKnightAttacs(i);
         if ((attacks & bb.getPieceSet(FT_KNIGHT, xside)) != 0) {
             return true;
 
@@ -294,7 +280,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
 
         // 5. test king
-        attacks = kingAttacks[i];
+        attacks = BB.getKingAttacs(i);
         if ((attacks & bb.getPieceSet(FT_KING, xside)) != 0) {
             return true;
         }

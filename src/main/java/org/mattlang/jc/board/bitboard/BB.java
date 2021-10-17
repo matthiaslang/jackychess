@@ -13,6 +13,27 @@ public class BB {
     public static final long notAFile = 0xfefefefefefefefeL;
     public static final long notHFile = 0x7f7f7f7f7f7f7f7fL;
 
+    private static final long[] kingAttacks = new long[64];
+    private static final long[] knightAttacks = new long[64];
+
+    static {
+        // precalculate attacks:
+        long sqBB = 1;
+        for (int sq = 0; sq < 64; sq++, sqBB <<= 1) {
+            kingAttacks[sq] = BB.kingAttacks(sqBB);
+            knightAttacks[sq] = BB.knightAttacks(sqBB);
+        }
+    }
+
+
+    public static final long getKingAttacs(int kingPos){
+        return kingAttacks[kingPos] ;
+    }
+
+    public static final long getKnightAttacs(int kingPos){
+        return knightAttacks[kingPos] ;
+    }
+
     public static final long soutOne(long b) {
         return b >>> 8;
     }
