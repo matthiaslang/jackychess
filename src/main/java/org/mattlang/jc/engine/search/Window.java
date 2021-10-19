@@ -29,6 +29,15 @@ public class Window {
      */
     int wideningPhase = 0;
 
+    /**
+     * indicates that alpha side has widened. Without search anomalies only one direction should be widened.
+     */
+    private boolean alphaWidened;
+    /**
+     * indicates that beta side has widened. Without search anomalies only one direction should be widened.
+     */
+    private boolean betaWidened;
+
     public Window(int alpha, int beta) {
         this.alpha = alpha;
         this.beta = beta;
@@ -62,8 +71,20 @@ public class Window {
         lastScore = score;
         if (score <= alpha) {
             alpha = alpha - delta - (alpha - score);
+            alphaWidened=true;
+            if (betaWidened) {
+                LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
+            }
         } else if (score >= beta) {
             beta = beta + delta + (score - beta);
+            betaWidened=true;
+            if (alphaWidened){
+                /**
+                 * a search anomaly: the result of alpha/beta switches between alpha and beta. Normally that should not be the case but can
+                 * happen...
+                 */
+                LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
+            }
         }
 
         // after 3 phases, set the full window:
