@@ -1,11 +1,16 @@
 package org.mattlang.jc.engine.evaluation.evaltables;
 
+import static org.mattlang.jc.board.Color.WHITE;
+
+import java.util.Objects;
+
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.PieceList;
 
 /**
  * A board pattern with evaluations per field.
  */
-public class Pattern {
+public final class Pattern {
 
     private final int[] boardPattern;
 
@@ -30,9 +35,12 @@ public class Pattern {
     };
 
     public Pattern(int[] boardPattern) {
-        this.boardPattern = boardPattern;
+        this.boardPattern = Objects.requireNonNull(boardPattern);
+        if (boardPattern.length != 64) {
+            throw new IllegalArgumentException("Pattern has not 64 values!");
+        }
         this.flippedPattern = new int[64];
-        for(int i=0; i<64; i++) {
+        for (int i = 0; i < 64; i++) {
             flippedPattern[i] = boardPattern[FLIP[i]];
         }
     }
@@ -56,5 +64,27 @@ public class Pattern {
         b += boardPattern[blackFigure];
 
         return (w - b) * who2mov;
+    }
+
+    /**
+     * Calc weighted population count of bitmasks; useful in evaluations.
+     *
+     * @param bb
+     * @param color
+     * @return
+     */
+    public int dotProduct(long bb, Color color) {
+
+        int[] weights = color == WHITE ? flippedPattern : boardPattern;
+
+        long bit = 1;
+        int accu = 0;
+        for (int sq = 0; sq < 64; sq++, bit += bit) {
+            if ((bb & bit) != 0)
+                accu += weights[sq];
+            // accu += weights[sq] & -((  bb & bit) == bit); // branchless 1
+            // accu += weights[sq] & -(( ~bb & bit) == 0);   // branchless 2
+        }
+        return accu;
     }
 }
