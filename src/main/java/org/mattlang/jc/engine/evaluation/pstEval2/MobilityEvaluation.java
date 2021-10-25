@@ -16,7 +16,7 @@ import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
  */
 public class MobilityEvaluation {
 
-    public final static Pattern BISHOP_MOBILITY = new Pattern(new int[] {
+    public static final int[] MATRIX_10 = new int[] {
             10, 10, 10, 10, 10, 10, 10, 10,
             10, 10, 10, 10, 10, 10, 10, 10,
             10, 10, 10, 10, 10, 10, 10, 10,
@@ -25,51 +25,61 @@ public class MobilityEvaluation {
             10, 10, 10, 10, 10, 10, 10, 10,
             10, 10, 10, 10, 10, 10, 10, 10,
             10, 10, 10, 10, 10, 10, 10, 10,
-    });
+    };
 
-    public final static Pattern KNIGHT_MOBILITY = new Pattern(new int[] {
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-    });
+    public static final int[] MATRIX_0 = new int[] {
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+    };
 
-    public final static Pattern ROOK_MOBILITY = new Pattern(new int[] {
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-    });
+    public static final int[] MATRIX_15 = new int[] {
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+            15, 15, 15, 15, 15, 15, 15, 15,
+    };
 
-    public final static Pattern QUEEN_MOBILITY = new Pattern(new int[] {
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-    });
+    public static final int[] MATRIX_5 = new int[] {
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5,
+    };
 
-    public final static Pattern KING_MOBILITY = new Pattern(new int[] {
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            10, 10, 10, 10, 10, 10, 10, 10,
-    });
+    public static final int[] MATRIX_1 = new int[] {
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+    };
+
+    public final static Pattern BISHOP_MOBILITY = new Pattern(MATRIX_10);
+
+    public final static Pattern KNIGHT_MOBILITY = new Pattern(MATRIX_10);
+
+    public final static Pattern ROOK_MOBILITY = new Pattern(MATRIX_1);
+
+    public final static Pattern QUEEN_MOBILITY = new Pattern(MATRIX_5);
+
+    public final static Pattern KING_MOBILITY = new Pattern(MATRIX_1);
 
     public static final int IWHITE = Color.WHITE.ordinal();
     public static final int IBLACK = Color.BLACK.ordinal();
