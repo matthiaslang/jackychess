@@ -1,10 +1,13 @@
 package org.mattlang.jc.engine.evaluation;
 
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.PieceList;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
  * Calculates a factor for the game phase based on the existing material.
@@ -69,8 +72,26 @@ public class PhaseCalculator {
         return factor;
     }
 
+    public static double calcPhaseFactor(BitChessBoard bb) {
+        int phase = 0;
+
+        phase += (bb.getKnightsCount(nWhite) + bb.getKnightsCount(nBlack)) * PV_KNIGHT +
+                (bb.getBishopsCount(nWhite) + bb.getBishopsCount(nBlack)) * PV_BISHOP +
+                (bb.getRooksCount(nWhite) + bb.getRooksCount(nBlack)) * PV_ROOK +
+                (bb.getQueensCount(nWhite) + bb.getQueensCount(nBlack)) * PV_QUEEN;
+
+        double factor = Linstep(Endgame, Midgame, phase);
+        return factor;
+    }
+
     public static double scaleByPhase(BoardRepresentation currBoard, int midGame, int endGame) {
         double factor = calcPhaseFactor(currBoard);
+        double score = factor * midGame + (1 - factor) * endGame;
+        return score;
+    }
+
+    public static double scaleByPhase(BitChessBoard bb, int midGame, int endGame) {
+        double factor = calcPhaseFactor(bb);
         double score = factor * midGame + (1 - factor) * endGame;
         return score;
     }
