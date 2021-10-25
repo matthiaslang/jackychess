@@ -2,8 +2,7 @@ package org.mattlang.jc.board.bitboard;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 import java.util.Arrays;
 
@@ -21,8 +20,8 @@ public class BitChessBoard {
     private long[] colorBB = new long[2];
     private long[] pieceBB = new long[6];
 
-    private static final int nWhite = 0;     // any white piece
-    private static final int nBlack = 1;     // any black piece
+    public static final int nWhite = 0;     // any white piece
+    public static final int nBlack = 1;     // any black piece
 
     public BitChessBoard() {
     }
@@ -40,12 +39,44 @@ public class BitChessBoard {
         return pieceBB[pt] & colorBB[color == WHITE ? nWhite : nBlack];
     }
 
-    public long getWhitePawns() {
-        return pieceBB[FT_PAWN] & colorBB[nWhite];
+    public int getKnightsCount(int color) {
+        return Long.bitCount(getPieceSet(FT_KNIGHT, color));
+    }
+
+    public int getBishopsCount(int color) {
+        return Long.bitCount(getPieceSet(FT_BISHOP, color));
+    }
+
+    public int getRooksCount(int color) {
+        return Long.bitCount(getPieceSet(FT_ROOK, color));
+    }
+
+    public int getQueensCount(int color) {
+        return Long.bitCount(getPieceSet(FT_QUEEN, color));
     }
 
     public long getPawns(int color) {
         return getPieceSet(FT_PAWN, color);
+    }
+
+    public long getKnights(int color) {
+        return getPieceSet(FT_KNIGHT, color);
+    }
+
+    public long getBishops(int color) {
+        return getPieceSet(FT_BISHOP, color);
+    }
+
+    public long getRooks(int color) {
+        return getPieceSet(FT_ROOK, color);
+    }
+
+    public long getQueens(int color) {
+        return getPieceSet(FT_QUEEN, color);
+    }
+
+    public long getKings(int color) {
+        return getPieceSet(FT_KING, color);
     }
 
     public long getColorMask(Color color) {
