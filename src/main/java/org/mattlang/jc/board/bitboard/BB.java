@@ -153,4 +153,24 @@ public class BB {
         long posMask = 1L << pos;
         return (bb & posMask) != 0;
     }
+
+    /**
+     * Calc weighted population count; useful in evaluations.
+     *
+     * @param bb
+     * @param weights
+     * @return
+     */
+    public static int dotProduct(long bb, byte weights[]) {
+        long bit = 1;
+        int accu = 0;
+        for (int sq = 0; sq < 64; sq++, bit += bit) {
+            if ((bb & bit) != 0)
+                accu += weights[sq];
+            // accu += weights[sq] & -((  bb & bit) == bit); // branchless 1
+            // accu += weights[sq] & -(( ~bb & bit) == 0);   // branchless 2
+        }
+        return accu;
+    }
+
 }
