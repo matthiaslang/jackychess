@@ -134,7 +134,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         if (depth == 0) {
-            return quiesce(ply, 0, color, alpha, beta);
+            return quiesce(ply+1, -1, color, alpha, beta);
         }
 
         boolean areWeInCheck = searchContext.isInCheck(color);
@@ -238,7 +238,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     searchContext.updateRootBestMove(depth, bestMove, score);
 
                     if (max >= beta) {
-                        updateCutOffHeuristics(ply, depth, color, bestMove, moveCursor);
+//                        if (!areWeInCheck) {
+                            updateCutOffHeuristics(ply, depth, color, bestMove, moveCursor);
+//                        }
                         cutOff++;
                         break;
                     }
@@ -258,7 +260,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private void updateBadHeuristic(int depth, Color color, MoveCursor moveCursor) {
         if (useHistoryHeuristic && !moveCursor.isCapture()) {
-            updateBHeuristic(color, moveCursor, depth);
+            historyHeuristic.updateBad(color, moveCursor, depth);
         }
     }
 
@@ -327,10 +329,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             sc = -KING_WEIGHT + ply;
         }
         return sc;
-    }
-
-    private void updateBHeuristic(Color color, MoveCursor move, int depth) {
-        historyHeuristic.updateBad(color, move, depth);
     }
 
 

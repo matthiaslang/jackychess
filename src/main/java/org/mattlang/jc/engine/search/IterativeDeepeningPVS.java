@@ -21,6 +21,7 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.MoveValidator;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -121,6 +122,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
 
         if (rslt.savedMove != null) {
             printRoundInfo(gameContext, rslt, watch, negaMaxAlphaBeta);
+            MoveValidator.validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...
             // we need to further analyze this situation.
@@ -149,6 +151,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         OrderHints orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
         return new IterativeRoundResult(rslt, orderHints, roundWatch);
     }
+
 
     private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, OrderHints orderHints, int currdepth) {
