@@ -64,7 +64,7 @@ public class Gobbler {
 
     private void gobbleIn(InputStream in) throws IOException {
         LineNumberReader r = new LineNumberReader(new InputStreamReader(in));
-        while (!finished) {
+        while (!finished && !Thread.currentThread().isInterrupted()) {
             String line = r.readLine();
             logger.info(name + " IN: " + line);
             if (line != null) {
