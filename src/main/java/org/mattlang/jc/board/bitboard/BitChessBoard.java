@@ -39,6 +39,22 @@ public class BitChessBoard {
         return pieceBB[pt] & colorBB[color == WHITE ? nWhite : nBlack];
     }
 
+    public int getKnightsCount() {
+        return Long.bitCount(pieceBB[FT_KNIGHT]);
+    }
+
+    public int getBishopsCount() {
+        return Long.bitCount(pieceBB[FT_BISHOP]);
+    }
+
+    public int getRooksCount() {
+        return Long.bitCount(pieceBB[FT_ROOK]);
+    }
+
+    public int getQueensCount() {
+        return Long.bitCount(pieceBB[FT_QUEEN]);
+    }
+
     public int getKnightsCount(int color) {
         return Long.bitCount(getPieceSet(FT_KNIGHT, color));
     }

@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
@@ -75,10 +73,10 @@ public class PhaseCalculator {
     public static double calcPhaseFactor(BitChessBoard bb) {
         int phase = 0;
 
-        phase += (bb.getKnightsCount(nWhite) + bb.getKnightsCount(nBlack)) * PV_KNIGHT +
-                (bb.getBishopsCount(nWhite) + bb.getBishopsCount(nBlack)) * PV_BISHOP +
-                (bb.getRooksCount(nWhite) + bb.getRooksCount(nBlack)) * PV_ROOK +
-                (bb.getQueensCount(nWhite) + bb.getQueensCount(nBlack)) * PV_QUEEN;
+        phase += bb.getKnightsCount() * PV_KNIGHT +
+                bb.getBishopsCount() * PV_BISHOP +
+                bb.getRooksCount() * PV_ROOK +
+                bb.getQueensCount() * PV_QUEEN;
 
         double factor = Linstep(Endgame, Midgame, phase);
         return factor;
