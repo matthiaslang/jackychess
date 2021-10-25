@@ -29,19 +29,22 @@ public class PVMovesAreWrongTest {
 
     int maxDepth = 7;
 
+
     @Test
-    public void pvMovesWrongTest() throws IOException {
+    public void pvMovesWrongTest2() throws IOException {
 
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
+                .config(c -> c.maxDepth.setValue(4))
+                .config(c -> c.maxQuiescence.setValue(4))
                 .config(c -> c.useTTCache.setValue(false))
+                .config(c -> c.aspiration.setValue(false))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.timeout.setValue(600)));
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState = engine.getBoard().setFenPosition("position startpos moves d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 f2f3 e8g8 c1e3 b8d7 d1d2 c7c5 g1h3 d8a5 e1c1 c5d4 e3d4 a5d8 c1b1 f8e8 h3f2 a7a6 c3d5 e7e5 d5f6 g7f6 d4c3 e8e6 f1e2 f6g7 f2g4 d8h4 h1f1 d7f6 d2e1 h4g5 f3f4 g5h5 g4f6 e6f6 e2h5 g6h5 f4f5 b7b6 c3b4 c8b7 d1d6 f6d6 b4d6 a8d8 c4c5 b6c5 d6c5 d8c8 b2b4 f7f6 e1e2 g7f8 c5f8 g8f8 f1d1 c8c7 b1b2 c7g7 d1d8 f8e7 d8b8 e7d6   ");
+        GameState gameState = engine.getBoard().setFenPosition("position startpos moves d2d4 g8f6 c2c4 e7e6 b1c3 d7d5 c1g5 f8e7 e2e3 e8g8 g1f3 h7h6 g5f6 e7f6 a1c1 c7c6 f1d3 d5c4 d3c4 b7b5 c4b3 b5b4 c3e4 c8a6 d1d2 f6e7 h2h3 a6b5 f3e5 d8c7 d2c2 f8e8 a2a4 b5a6 e5c6 b8c6 c2c6 c7c6 c1c6 a6b7 d4d5 b7c6 d5c6 a8c8 a4a5 c8c6 e1e2 c6a6 h1a1 e7d8 a1a4 d8e7 e2f3 e8c8 f3f4 f7f5 e4g3 g8h7 e3e4 e7g5 f4f3 f5f4 g3h5 e6e5 a4b4 h7g6 f3g4 a6a5 b4b7 g5f6 b3e6 c8c7 b7c7 g6h7 h5f6 h7g6 f6h5 g6h7 c7g7 h7h8 ");
         System.out.println(engine.getBoard().toUniCodeStr());
 
         SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
@@ -80,6 +83,8 @@ public class PVMovesAreWrongTest {
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
+
+
 
     public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
         LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
