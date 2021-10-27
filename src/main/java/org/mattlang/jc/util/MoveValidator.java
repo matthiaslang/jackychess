@@ -28,7 +28,6 @@ public class MoveValidator {
 
         Color who2Move = gameState.getWho2Move();
         for (Move move : rslt.pvList.getPvMoves()) {
-            System.out.println("Checking PV " + move.toStr());
 
             boolean legal = isLegalMove(board, move, who2Move);
 
@@ -36,7 +35,6 @@ public class MoveValidator {
                 board.move(move);
             } else {
                 LOGGER.warning("Illegal PV Move " + move.toStr());
-                //                LOGGER.warning(board.toUniCodeStr());
 
             }
             who2Move = who2Move.invert();

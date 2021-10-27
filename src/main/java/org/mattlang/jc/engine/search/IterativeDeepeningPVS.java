@@ -18,6 +18,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -69,8 +70,11 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
                 IterativeRoundResult irr = searchRound(watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
-
                 rounds.add(irr);
+
+                if (irr.isCheckMate()) {
+                    break;
+                }
             }
         } catch (TimeoutException te) {
             return new IterativeSearchResult(rounds);
@@ -92,6 +96,10 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         private final NegaMaxResult rslt;
         private final OrderHints orderHints;
         private final StopWatch roundWatch;
+
+        public boolean isCheckMate() {
+            return Math.abs(Math.abs(rslt.directScore)- Weights.KING_WEIGHT)<100;
+        }
     }
 
     private IterativeRoundResult searchRound(StopWatch watch, IterativeRoundResult lastRoundResults,
