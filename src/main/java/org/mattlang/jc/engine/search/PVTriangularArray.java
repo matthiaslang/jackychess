@@ -28,10 +28,10 @@ public class PVTriangularArray {
         int[] rowForUnderPly = array[index + 1];
 
         rowForPly[0] = bestMove;
+        // copy over the next deeper ply. if we reach a 0 value, we stop ( but after copying the 0 value as end marker).
         for (int i = 0; i < MAX - 1; i++) {
-            if (rowForUnderPly[i] != 0) {
-                rowForPly[i + 1] = rowForUnderPly[i];
-            } else {
+            rowForPly[i + 1] = rowForUnderPly[i];
+            if (rowForUnderPly[i] == 0) {
                 break;
             }
         }
@@ -56,5 +56,20 @@ public class PVTriangularArray {
                 array[i][j] = 0;
             }
         }
+    }
+
+    /**
+     * reset pv ply info.
+     *
+     * This is necessary to not deliver illegal moves after "check" situations to use "older" pv infos from a previous
+     * deeper search.
+     *
+     * @param ply
+     */
+    public void reset(int ply) {
+        int index = ply - 1;
+        int[] rowForPly = array[index];
+        // mark as empty:
+        rowForPly[0] = 0;
     }
 }

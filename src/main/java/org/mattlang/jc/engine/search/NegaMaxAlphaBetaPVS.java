@@ -75,6 +75,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private SearchContext searchContext;
 
+    private boolean debug=true;
+
     public NegaMaxAlphaBetaPVS() {
         reset();
     }
@@ -170,6 +172,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int bestMove = 0;
 
+        pvArray.reset(ply);
+
         try (MoveList moves = searchContext.generateMoves(color)) {
             if (moves.isCheckMate()) {
                 return determineCheckMateOrPatt(ply, areWeInCheck);
@@ -233,6 +237,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     max = score;
 
                     bestMove = moveCursor.getMoveInt();
+
+//                    if (debug) {
+//                        System.out.println("ply:" + ply + " pv:" + new MoveImpl(bestMove).toStr() + " score:" + score);
+//                    }
 
                     pvArray.set(bestMove, ply);
                     searchContext.updateRootBestMove(depth, bestMove, score);
