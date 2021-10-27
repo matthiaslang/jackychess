@@ -3,7 +3,13 @@ package org.mattlang.jc.engine.evaluation.evaltables;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.PieceList;
@@ -62,8 +68,6 @@ public final class Pattern {
         return (w - b) * who2mov;
     }
 
-
-
     public final int calcScore(int whiteFigure, int blackFigure, int who2mov) {
         int w = 0;
         int b = 0;
@@ -71,6 +75,14 @@ public final class Pattern {
         b += boardPattern[blackFigure];
 
         return (w - b) * who2mov;
+    }
+
+    public final int getVal(int pos, Color color) {
+        if (color == WHITE) {
+            return flippedPattern[pos];
+        } else {
+            return boardPattern[pos];
+        }
     }
 
     /**
@@ -93,5 +105,33 @@ public final class Pattern {
             // accu += weights[sq] & -(( ~bb & bit) == 0);   // branchless 2
         }
         return accu;
+    }
+
+    /**
+     * Loads a pattern from a csv file.
+     *
+     * @param resourceFile a resource file path relative to the folder "pattern"
+     * @return
+     */
+    public static Pattern load(String resourceFile) {
+        String fullName = "/pattern/" + resourceFile;
+
+        List<Integer> values = new ArrayList<>();
+
+        new BufferedReader(new InputStreamReader(Pattern.class.getResourceAsStream(fullName)))
+                .lines().forEach(line -> {
+                    if (line.startsWith("//")) {
+
+                    } else {
+                        // parse and append the values:
+                        values.addAll(Arrays.stream(line.split(";"))
+                                .map(s -> s.trim())
+                                .map(s -> Integer.parseInt(s))
+                                .collect(Collectors.toList()));
+                    }
+                });
+
+        return new Pattern(values.stream().mapToInt(i -> i.intValue()).toArray());
+
     }
 }
