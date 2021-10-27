@@ -165,3 +165,7 @@ move generation and search should therefore a bit faster, overall search should 
 
 - chess extensions (deactivated,does not bring anything so far...)
 
+     
+#### bugfix
+
+- fixed issue delivering illegal pv moves after a check mate;
