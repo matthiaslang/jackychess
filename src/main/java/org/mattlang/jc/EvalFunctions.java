@@ -5,30 +5,26 @@ import java.util.function.Supplier;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.pstEval2.PstEvaluation2;
+
+import lombok.Getter;
 
 public enum EvalFunctions {
 
-    DEFAULT {
-        @Override
-        public Supplier<EvaluateFunction> createSupplier() {
-            return DefaultEvaluateFunction::new;
-        }
-    },
+    DEFAULT(DefaultEvaluateFunction::new),
 
-    MINIMAL_PST {
-        @Override
-        public Supplier<EvaluateFunction> createSupplier() {
-            return MinimalPstEvaluation::new;
-        }
-    },
+    MINIMAL_PST(MinimalPstEvaluation::new),
 
-    PST2 {
-        @Override
-        public Supplier<EvaluateFunction> createSupplier() {
-            return PstEvaluation2::new;
-        }
-    };
+    PST2(PstEvaluation2::new),
 
-    public abstract Supplier<EvaluateFunction> createSupplier();
+    PARAMETERIZED(ParameterizedEvaluation::new);
+
+    @Getter
+    private final Supplier<EvaluateFunction> supplier;
+
+    EvalFunctions(Supplier<EvaluateFunction> supplier) {
+        this.supplier = supplier;
+    }
+
 }

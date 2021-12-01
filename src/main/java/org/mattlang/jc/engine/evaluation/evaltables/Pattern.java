@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,10 +116,18 @@ public final class Pattern {
      */
     public static Pattern load(String resourceFile) {
         String fullName = "/pattern/" + resourceFile;
+        return loadFromFullPath(fullName);
+    }
+
+    public static Pattern loadFromFullPath(String fullName) {
 
         List<Integer> values = new ArrayList<>();
 
-        new BufferedReader(new InputStreamReader(Pattern.class.getResourceAsStream(fullName)))
+        InputStream is = Pattern.class.getResourceAsStream(fullName);
+        if (is == null) {
+            throw new IllegalArgumentException("Could not load pst pattern from resource file " + fullName);
+        }
+        new BufferedReader(new InputStreamReader(is))
                 .lines().forEach(line -> {
                     if (line.startsWith("//")) {
 

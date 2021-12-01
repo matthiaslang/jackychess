@@ -50,6 +50,11 @@ public class ConfigValues {
                     "the evaluation function to use. Only for development testing",
                     EvalFunctions.class, EvalFunctions.MINIMAL_PST);
 
+    public final UCIComboOption<EvalParameterSet> evaluateParamSet =
+            search.createComboOpt("evalParamSet",
+                    "the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing",
+                    EvalParameterSet.class, EvalParameterSet.DEFAULT);
+
     public final UCIComboOption<MoveListImpls> moveListImpls =
             experimental.createComboOpt("MoveListImpl",
                     "internally. Only for development testing",

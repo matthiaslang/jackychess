@@ -37,7 +37,7 @@ public class AsyncEngine {
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options, GameContext gameContext) {
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
-        searchParams.evaluateFunction.set(options.evluateFunctions.getValue().createSupplier());
+        searchParams.evaluateFunction.set(options.evluateFunctions.getValue().getSupplier());
         searchParams.moveList.set(options.moveListImpls.getValue().createSupplier());
         searchParams.setConfig(options);
 
