@@ -13,14 +13,14 @@ public class PatternTest {
     @Test
     public void patternTest() {
         Pattern test = new Pattern(new int[] {
+                5, 0, 0, 0, 0, 0, 0, 8,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 50, 115, 100, 0, 0, 0,
+                3, 0, 50, 115, 100, 0, 0, 9,
         });
 
         Board3 board = new Board3();

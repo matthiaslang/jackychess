@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.engine.evaluation.parameval.ConfigTools.parseInt;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,11 +45,4 @@ public class MobLinFun {
 
     }
 
-    private static int parseInt(String str, String name) {
-        try {
-            return Integer.parseInt(str);
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("Cant parse " + name + ": " + str, nfe);
-        }
-    }
 }

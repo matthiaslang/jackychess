@@ -5,8 +5,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.engine.evaluation.parameval.MobLinFun.parse;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.mattlang.jc.board.Color;
@@ -23,18 +21,21 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public static final int IWHITE = Color.WHITE.ordinal();
     public static final int IBLACK = Color.BLACK.ordinal();
 
-    public static final int MOBILITY = 0;
-    public static final int CAPTURES = 1;
-    public static final int CONNECTIVITY = 2;
+    public static final int MOBILITY_MG = 0;
+    public static final int MOBILITY_EG = 1;
+    public static final int CAPTURES = 2;
+    public static final int CONNECTIVITY = 3;
+
+    public static final int MAX_TYPE_INDEX = CONNECTIVITY + 1;
     /**
      * splitted results by color, figure type, and mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
      * Also the bitmasks of all aspect are saved for debugging purpose. Once we are save with it,
      * we should deactive that lot of individual values.
      */
-    private long[][][] masks = new long[2][6][3];
-    private int[][][] detailedResults = new int[2][6][3];
-    public int[][] results = new int[2][3];
+    private long[][][] masks = new long[2][6][MAX_TYPE_INDEX];
+    private int[][][] detailedResults = new int[2][6][MAX_TYPE_INDEX];
+    public int[][] results = new int[2][MAX_TYPE_INDEX];
 
     //    private MobLinFun funPawnMG;
     private MobLinFun funKnightMG;
@@ -49,8 +50,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private MobLinFun funQueenEG;
     private MobLinFun funKingEG;
 
-    public ParameterizedMobilityEvaluation(String subPath) {
-        Properties properties = loadPropertyFile(subPath);
+    public ParameterizedMobilityEvaluation(Properties properties) {
 
         funKnightMG = parseFun(properties, "knightMobMG");
         funBishopMG = parseFun(properties, "bishopMobMG");
@@ -73,22 +73,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
     }
 
-    private Properties loadPropertyFile(String subPath) {
-        Properties properties = new Properties();
-        String fullName = subPath + "mobility.properties";
-        InputStream is =
-                ParameterizedMobilityEvaluation.class.getResourceAsStream(fullName);
-        if (is == null) {
-            throw new IllegalArgumentException("Could not find mobility properties resource file " + fullName);
-        }
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not read mobility properties from resource file " + fullName, e);
-        }
-        return properties;
-    }
-
     public void eval(BitBoard bitBoard) {
 
         clear();
@@ -107,7 +91,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private void clear() {
         for (int c = 0; c < 2; c++) {
 
-            for (int t = 0; t < 3; t++) {
+            for (int t = 0; t < MAX_TYPE_INDEX; t++) {
                 results[c][t] = 0;
                 for (int f = 0; f < 6; f++) {
                     masks[c][f][t] = 0L;
@@ -119,7 +103,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     private void aggregate() {
         for (int c = 0; c < 2; c++) {
-            for (int t = 0; t < 3; t++) {
+            for (int t = 0; t < MAX_TYPE_INDEX; t++) {
                 for (int f = 0; f < 6; f++) {
                     results[c][t] += detailedResults[c][f][t];
                 }
@@ -232,48 +216,54 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     private void countKing(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_KING, funKingMG, side, mobility, captures, connectivity);
+        countFigureVals(FT_KING, funKingMG, funKingEG, side, mobility, captures, connectivity);
     }
 
     private void countQueen(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_QUEEN, funQueenMG, side, mobility, captures, connectivity);
+        countFigureVals(FT_QUEEN, funQueenMG, funQueenEG, side, mobility, captures, connectivity);
     }
 
     private void countRook(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_ROOK, funRookMG, side, mobility, captures, connectivity);
+        countFigureVals(FT_ROOK, funRookMG, funRookEG, side, mobility, captures, connectivity);
     }
 
     private void countKnight(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_KNIGHT, funKnightMG, side, mobility, captures, connectivity);
+        countFigureVals(FT_KNIGHT, funKnightMG, funKnightEG, side, mobility, captures, connectivity);
     }
 
     private void countBishop(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_BISHOP, funBishopMG, side, mobility, captures, connectivity);
+        countFigureVals(FT_BISHOP, funBishopMG, funBishopEG, side, mobility, captures, connectivity);
     }
 
-    private void countFigureVals(byte figureType, MobLinFun fun, Color side, long mobility, long captures,
+    private void countFigureVals(byte figureType, MobLinFun mgFun, MobLinFun egFun, Color side, long mobility,
+            long captures,
             long connectivity) {
-        masks[side.ordinal()][figureType][MOBILITY] |= mobility;
+        masks[side.ordinal()][figureType][MOBILITY_MG] |= mobility;
         masks[side.ordinal()][figureType][CAPTURES] |= captures;
         masks[side.ordinal()][figureType][CONNECTIVITY] |= connectivity;
 
-        detailedResults[side.ordinal()][figureType][MOBILITY] += fun.calc(Long.bitCount(mobility));
+        int mobCount = Long.bitCount(mobility);
+        detailedResults[side.ordinal()][figureType][MOBILITY_MG] += mgFun.calc(mobCount);
+        detailedResults[side.ordinal()][figureType][MOBILITY_EG] += egFun.calc(mobCount);
         //        detailedResults[side.ordinal()][figureType][CAPTURES] += weights.dotProduct(captures, side) * 2;
         //        detailedResults[side.ordinal()][figureType][CONNECTIVITY] += weights.dotProduct(connectivity, side) / 2;
 
     }
 
     @Override
-    public int eval(BitBoard bitBoard, Color who2Move) {
+    public void eval(EvalResult result, BitBoard bitBoard, Color who2Move) {
         eval(bitBoard);
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
 
-        int score = (results[IWHITE][MOBILITY] - results[IBLACK][MOBILITY]) * who2mov +
-                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;
+        result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov;
+        result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]) * who2mov;
+
+        //        int score = (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov +
+        //                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;
 
         //score += (results[IWHITE][CONNECTIVITY] - results[IBLACK][CONNECTIVITY]) * who2mov +
         //                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;
 
-        return score;
+        //        return score;
     }
 }
