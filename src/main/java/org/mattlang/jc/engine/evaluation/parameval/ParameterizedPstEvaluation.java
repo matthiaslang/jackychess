@@ -18,32 +18,32 @@ import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
  */
 public class ParameterizedPstEvaluation implements EvaluateFunction {
 
-    private Pattern PAWN_MG;
-    private Pattern KNIGHT_MG;
-    private Pattern BISHOP_MG;
-    private Pattern ROOK_MG;
-    private Pattern QUEEN_MG;
-    private Pattern KING_MG;
-    private Pattern PAWN_EG;
-    private Pattern KNIGHT_EG;
-    private Pattern BISHOP_EG;
-    private Pattern ROOK_EG;
-    private Pattern QUEEN_EG;
-    private Pattern KING_EG;
+    private Pattern pawnMG;
+    private Pattern knightMG;
+    private Pattern bishopMG;
+    private Pattern rookMG;
+    private Pattern queenMG;
+    private Pattern kingMG;
+    private Pattern pawnEG;
+    private Pattern knightEG;
+    private Pattern bishopEG;
+    private Pattern rookEG;
+    private Pattern queenEG;
+    private Pattern kingEG;
 
     public ParameterizedPstEvaluation(String subPath) {
-        PAWN_MG = loadFromFullPath(subPath + "pawnMG.csv");
-        KNIGHT_MG = loadFromFullPath(subPath + "knightMG.csv");
-        BISHOP_MG = loadFromFullPath(subPath + "bishopMG.csv");
-        ROOK_MG = loadFromFullPath(subPath + "rookMG.csv");
-        QUEEN_MG = loadFromFullPath(subPath + "queenMG.csv");
-        KING_MG = loadFromFullPath(subPath + "kingMG.csv");
-        PAWN_EG = loadFromFullPath(subPath + "pawnEG.csv");
-        KNIGHT_EG = loadFromFullPath(subPath + "knightEG.csv");
-        BISHOP_EG = loadFromFullPath(subPath + "bishopEG.csv");
-        ROOK_EG = loadFromFullPath(subPath + "rookEG.csv");
-        QUEEN_EG = loadFromFullPath(subPath + "queenEG.csv");
-        KING_EG = loadFromFullPath(subPath + "kingEG.csv");
+        pawnMG = loadFromFullPath(subPath + "pawnMG.csv");
+        knightMG = loadFromFullPath(subPath + "knightMG.csv");
+        bishopMG = loadFromFullPath(subPath + "bishopMG.csv");
+        rookMG = loadFromFullPath(subPath + "rookMG.csv");
+        queenMG = loadFromFullPath(subPath + "queenMG.csv");
+        kingMG = loadFromFullPath(subPath + "kingMG.csv");
+        pawnEG = loadFromFullPath(subPath + "pawnEG.csv");
+        knightEG = loadFromFullPath(subPath + "knightEG.csv");
+        bishopEG = loadFromFullPath(subPath + "bishopEG.csv");
+        rookEG = loadFromFullPath(subPath + "rookEG.csv");
+        queenEG = loadFromFullPath(subPath + "queenEG.csv");
+        kingEG = loadFromFullPath(subPath + "kingEG.csv");
 
     }
 
@@ -57,18 +57,18 @@ public class ParameterizedPstEvaluation implements EvaluateFunction {
             PieceList wp = currBoard.getWhitePieces();
             PieceList bp = currBoard.getBlackPieces();
 
-            int midGame = PAWN_MG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
-                    KNIGHT_MG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
-                    BISHOP_MG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
-                    ROOK_MG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
-                    QUEEN_MG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
-                    KING_MG.calcScore(wp.getKing(), bp.getKing(), who2mov);
-            int endGame = PAWN_EG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
-                    KNIGHT_EG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
-                    BISHOP_EG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
-                    ROOK_EG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
-                    QUEEN_EG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
-                    KING_EG.calcScore(wp.getKing(), bp.getKing(), who2mov);
+            int midGame = pawnMG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
+                    knightMG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
+                    bishopMG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
+                    rookMG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
+                    queenMG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
+                    kingMG.calcScore(wp.getKing(), bp.getKing(), who2mov);
+            int endGame = pawnEG.calcScore(wp.getPawns(), bp.getPawns(), who2mov) +
+                    knightEG.calcScore(wp.getKnights(), bp.getKnights(), who2mov) +
+                    bishopEG.calcScore(wp.getBishops(), bp.getBishops(), who2mov) +
+                    rookEG.calcScore(wp.getRooks(), bp.getRooks(), who2mov) +
+                    queenEG.calcScore(wp.getQueens(), bp.getQueens(), who2mov) +
+                    kingEG.calcScore(wp.getKing(), bp.getKing(), who2mov);
 
             double score = PhaseCalculator.scaleByPhase(wp, bp, midGame, endGame);
             return (int) score;
@@ -79,18 +79,18 @@ public class ParameterizedPstEvaluation implements EvaluateFunction {
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         BitChessBoard bb = currBoard.getBoard();
 
-        int midGame = PAWN_MG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
-                KNIGHT_MG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
-                BISHOP_MG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
-                ROOK_MG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
-                QUEEN_MG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
-                KING_MG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
-        int endGame = PAWN_EG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
-                KNIGHT_EG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
-                BISHOP_EG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
-                ROOK_EG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
-                QUEEN_EG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
-                KING_EG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
+        int midGame = pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
+                knightMG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
+                bishopMG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
+                rookMG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
+                queenMG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
+                kingMG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
+        int endGame = pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
+                knightEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
+                bishopEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
+                rookEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
+                queenEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
+                kingEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
 
         double score = PhaseCalculator.scaleByPhase(bb, midGame, endGame);
         return (int) score;

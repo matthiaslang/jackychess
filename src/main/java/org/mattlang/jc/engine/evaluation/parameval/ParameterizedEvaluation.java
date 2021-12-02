@@ -21,13 +21,17 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private ParameterizedPstEvaluation pstEvaluation;
 
+    private ParameterizedMobilityEvaluation mobEvaluation;
+
     public ParameterizedEvaluation() {
         configName = Factory.getDefaults().getConfig().evaluateParamSet.getValue().name().toLowerCase();
 
         // read in all configuration for all the evaluation components:
 
-        pstEvaluation = new ParameterizedPstEvaluation("/config/" + configName + "/pst/");
+        String configDir = "/config/" + configName + "/";
+        pstEvaluation = new ParameterizedPstEvaluation(configDir + "pst/");
 
+        mobEvaluation=new ParameterizedMobilityEvaluation(configDir);
     }
 
     @Override
@@ -36,6 +40,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         BitBoard bitBoard = (BitBoard) currBoard;
 
         int score = pstEvaluation.eval(currBoard, who2Move);
+
+        score+= mobEvaluation.eval(bitBoard, who2Move);
 
         return score;
     }
