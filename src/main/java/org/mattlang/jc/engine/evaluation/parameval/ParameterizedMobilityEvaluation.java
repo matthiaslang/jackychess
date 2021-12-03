@@ -9,6 +9,7 @@ import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
+import org.mattlang.jc.engine.evaluation.Tools;
 
 /**
  * Paremeterized Mobility Evaluation.
@@ -36,7 +37,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public static final int CAPTURES = 2;
     public static final int KING_ATT_COUNT = 3;
     public static final int KING_ATT_WEIGHT = 4;
-    public static final int CONNECTIVITY = 5;
+    public static final int TROPISM_MG = 5;
+    public static final int TROPISM_EG = 6;
+
+    public static final int CONNECTIVITY = 7;
 
     public static final int MAX_TYPE_INDEX = CONNECTIVITY + 1;
     /**
@@ -54,11 +58,18 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         private MobLinFun mobilityMG;
         private MobLinFun mobilityEG;
 
+        private TropismFun tropismMG;
+        private TropismFun tropismEG;
+
         private KingAttackFun kingAtt;
 
         public FigParams(EvalConfig config, String propBaseName) {
             mobilityMG = config.parseFun(propBaseName + "MobMG");
             mobilityEG = config.parseFun(propBaseName + "MobEG");
+
+            tropismMG = config.parseTrFun(propBaseName + "TropismMG");
+            tropismEG = config.parseTrFun(propBaseName + "TropismEG");
+
             kingAtt = config.parseKAFun(propBaseName + "KingAttack");
         }
     }
@@ -121,7 +132,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long empty = ~ownFigsMask & ~opponentFigsMask;
         long occupancy = ownFigsMask | opponentFigsMask;
 
-        long oppKingZone = BB.kingAttacks(bb.getPieceSet(FT_KING, xside));
+        long oppKingMask = bb.getPieceSet(FT_KING, xside);
+        long oppKingZone = BB.kingAttacks(oppKingMask);
+        int oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
         long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
@@ -136,7 +149,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
-            countBishop(side, mobility, captures, connectivity, kingZoneAttacs);
+            int tropism = getTropism(bishop, oppKingPos);
+
+            countFigureVals(FT_BISHOP, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             bishopBB &= bishopBB - 1;
         }
@@ -152,8 +167,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long mobility = moves & ~captures & noOppPawnAttacs;
             long kingZoneAttacs = knightAttack & oppKingZone;
             long connectivity = knightAttack & ownFigsMask;
+            int tropism = getTropism(knight, oppKingPos);
 
-            countKnight(side, mobility, captures, connectivity, kingZoneAttacs);
+            countFigureVals(FT_KNIGHT, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             knightBB &= knightBB - 1;
         }
@@ -167,7 +183,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long connectivity = attacks & ownFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
-            countRook(side, mobility, captures, connectivity, kingZoneAttacs);
+            int tropism = getTropism(rook, oppKingPos);
+
+            countFigureVals(FT_ROOK, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             rookBB &= rookBB - 1;
         }
@@ -183,7 +201,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
-            countQueen(side, mobility, captures, connectivity, kingZoneAttacs);
+            int tropism = getTropism(queen, oppKingPos);
+
+            countFigureVals(FT_QUEEN, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             queenBB &= queenBB - 1;
         }
@@ -198,7 +218,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long mobility = moves & ~captures & noOppPawnAttacs;
         long kingZoneAttacs = kingAttack & oppKingZone;
         long connectivity = kingAttack & ownFigsMask;
-        countKing(side, mobility, captures, connectivity, kingZoneAttacs);
+        int tropism = getTropism(king, oppKingPos);
+
+        countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
     }
 
@@ -223,31 +245,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
     }
 
-    private void countKing(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
-        countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs);
-    }
-
-    private void countQueen(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
-        countFigureVals(FT_QUEEN, side, mobility, captures, connectivity, kingZoneAttacs);
-    }
-
-    private void countRook(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
-        countFigureVals(FT_ROOK, side, mobility, captures, connectivity, kingZoneAttacs);
-    }
-
-    private void countKnight(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
-        countFigureVals(FT_KNIGHT, side, mobility, captures, connectivity, kingZoneAttacs);
-    }
-
-    private void countBishop(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
-        countFigureVals(FT_BISHOP, side, mobility, captures, connectivity, kingZoneAttacs);
-    }
-
     private void countFigureVals(byte figureType, Color side,
             long mobility,
             long captures,
             long connectivity,
-            long kingZoneAttacs) {
+            long kingZoneAttacs,
+            int tropism) {
 
         FigParams params = figParams[figureType];
 
@@ -263,9 +266,24 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         detailedResults[side.ordinal()][figureType][MOBILITY_EG] += params.mobilityEG.calc(mobCount);
         detailedResults[side.ordinal()][figureType][KING_ATT_COUNT] += kingAttCount;
         detailedResults[side.ordinal()][figureType][KING_ATT_WEIGHT] += params.kingAtt.calc(kingAttCount);
+
+        detailedResults[side.ordinal()][figureType][TROPISM_MG] += params.tropismMG.calc(tropism);
+        detailedResults[side.ordinal()][figureType][TROPISM_EG] += params.tropismEG.calc(tropism);
+
         //        detailedResults[side.ordinal()][figureType][CAPTURES] += weights.dotProduct(captures, side) * 2;
         //        detailedResults[side.ordinal()][figureType][CONNECTIVITY] += weights.dotProduct(connectivity, side) / 2;
 
+    }
+
+    /**
+     * Weights the distance to the king from -7 to +6.
+     * +6 == nearest to the king. -7 fartest from king.
+     * @param sq1
+     * @param sq2
+     * @return
+     */
+    private int getTropism(int sq1, int sq2) {
+        return 7 - Tools.manhattanDistance(sq1, sq2);
     }
 
     @Override
@@ -276,15 +294,21 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov;
         result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]) * who2mov;
 
+        result.midGame += (results[IWHITE][TROPISM_MG] - results[IBLACK][TROPISM_MG]) * who2mov;
+        result.endGame += (results[IWHITE][TROPISM_EG] - results[IBLACK][TROPISM_EG]) * who2mov;
+
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
          *  than two attackers or if the attacker has no queen.                    *
          **************************************************************************/
 
-        if (results[IWHITE][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0) results[IWHITE][KING_ATT_WEIGHT] = 0;
-        if (results[IBLACK][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0) results[IBLACK][KING_ATT_WEIGHT] = 0;
+        if (results[IWHITE][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0)
+            results[IWHITE][KING_ATT_WEIGHT] = 0;
+        if (results[IBLACK][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
+            results[IBLACK][KING_ATT_WEIGHT] = 0;
 
-        result.result += (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] -  SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]]) * who2mov;
+        result.result += (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] - SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]])
+                * who2mov;
 
 
         //        int score = (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov +

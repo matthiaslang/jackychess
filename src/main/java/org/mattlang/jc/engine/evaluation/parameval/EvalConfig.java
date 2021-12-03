@@ -50,6 +50,14 @@ public class EvalConfig {
         }
     }
 
+    public TropismFun parseTrFun(String propName) {
+        try {
+            return TropismFun.parse(getProp(propName));
+        } catch (RuntimeException r) {
+            throw new ConfigParseException("Error parsing Property " + propName, r);
+        }
+    }
+
     public KingAttackFun parseKAFun(String propName) {
         try {
             return KingAttackFun.parse(getProp(propName));
