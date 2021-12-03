@@ -6,12 +6,17 @@ package org.mattlang.jc;
 public enum EvalParameterSet {
 
     /**
-     * only Material Evaluation.
+     * only Material Evaluation.  Used as Reference for the "simplest" evaluation.
      */
     DEFAULT,
 
     /**
-     * Material and Mobility Evaluation.
+     * Current best evaluation with several evaluation terms.
      */
-    MATANDMOB
+    CURRENT,
+
+    /**
+     * Experimental evaluation set to try out different parameters and compare with other sets.
+     */
+    EXPERIMENTAL
 }

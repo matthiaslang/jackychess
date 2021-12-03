@@ -26,6 +26,8 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     private int rookEG;
     private int queenEG;
 
+    private boolean deactivated = false;
+
     public ParameterizedMaterialEvaluation(Properties properties) {
 
         pawnMG = ConfigTools.getIntProp(properties, "matPawnMG");
@@ -39,23 +41,39 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         bishopEG = ConfigTools.getIntProp(properties, "matBishopEG");
         rookEG = ConfigTools.getIntProp(properties, "matRookEG");
         queenEG = ConfigTools.getIntProp(properties, "matQueenEG");
+
+        /**
+         * some configs might not use material properties, but use only PST for the material evaluation.
+         * In that case the properties are all 0, and we can disable this evaluation.
+         */
+        deactivated =
+                pawnMG + knightMG + bishopMG + rookMG + queenMG + pawnEG + knightEG + bishopEG + rookEG + queenEG == 0;
     }
 
     @Override
     public void eval(EvalResult result, BitBoard bitBoard, Color who2Move) {
+        if (deactivated) {
+            return;
+        }
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         BitChessBoard bb = bitBoard.getBoard();
 
-        result.midGame += pawnMG * (bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack)) * who2mov +
-                knightMG * (bb.getKnightsCount(nWhite) - bb.getKnightsCount(nBlack)) * who2mov +
-                bishopMG * (bb.getBishopsCount(nWhite) - bb.getBishopsCount(nBlack)) * who2mov +
-                rookMG * (bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack)) * who2mov +
-                queenMG * (bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack)) * who2mov;
+        int pawnsDiff = bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack);
+        int knightsDiff = bb.getKnightsCount(nWhite) - bb.getKnightsCount(nBlack);
+        int bishopsDiff = bb.getBishopsCount(nWhite) - bb.getBishopsCount(nBlack);
+        int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
+        int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
 
-        result.endGame += pawnEG * (bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack)) * who2mov +
-                knightEG * (bb.getKnightsCount(nWhite) - bb.getKnights(nBlack)) * who2mov +
-                bishopEG * (bb.getBishopsCount(nWhite) - bb.getBishopsCount(nBlack)) * who2mov +
-                rookEG * (bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack)) * who2mov +
-                queenEG * (bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack)) * who2mov;
+        result.midGame += pawnMG * pawnsDiff * who2mov +
+                knightMG * knightsDiff * who2mov +
+                bishopMG * bishopsDiff * who2mov +
+                rookMG * rooksDiff * who2mov +
+                queenMG * queensDiff * who2mov;
+
+        result.endGame += pawnEG * pawnsDiff * who2mov +
+                knightEG * knightsDiff * who2mov +
+                bishopEG * bishopsDiff * who2mov +
+                rookEG * rooksDiff * who2mov +
+                queenEG * queensDiff * who2mov;
     }
 }

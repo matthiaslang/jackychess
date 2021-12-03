@@ -115,10 +115,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         Color xside = side.invert();
 
-        long ownFigsMask = bb.getColorMask(xside.invert());
+        long ownFigsMask = bb.getColorMask(side);
         long opponentFigsMask = bb.getColorMask(xside);
         long empty = ~ownFigsMask & ~opponentFigsMask;
         long occupancy = ownFigsMask | opponentFigsMask;
+
+        long oppKingZone = BB.kingAttacks(bb.getPieceSet(FT_KING, xside));
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
         long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
@@ -131,6 +133,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
+            long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
             countBishop(side, mobility, captures, connectivity);
 
@@ -146,6 +149,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long moves = knightAttack & ~ownFigsMask;
             long captures = moves & opponentFigsMask;
             long mobility = moves & ~captures & noOppPawnAttacs;
+            long kingZoneAttacs = knightAttack & oppKingZone;
             long connectivity = knightAttack & ownFigsMask;
 
             countKnight(side, mobility, captures, connectivity);
@@ -161,6 +165,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
             long connectivity = attacks & ownFigsMask;
+            long kingZoneAttacs = attacks & oppKingZone;
             countRook(side, mobility, captures, connectivity);
 
             rookBB &= rookBB - 1;
@@ -175,6 +180,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = attacksRook | attacksBishop;
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
+            long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
             countQueen(side, mobility, captures, connectivity);
 
@@ -189,6 +195,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long moves = kingAttack & ~ownFigsMask;
         long captures = moves & opponentFigsMask;
         long mobility = moves & ~captures & noOppPawnAttacs;
+        long kingZoneAttacs = kingAttack & oppKingZone;
         long connectivity = kingAttack & ownFigsMask;
         countKing(side, mobility, captures, connectivity);
 
