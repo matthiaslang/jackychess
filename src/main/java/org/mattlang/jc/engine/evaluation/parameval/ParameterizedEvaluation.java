@@ -1,15 +1,11 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.engine.evaluation.parameval.ConfigTools.loadPropertyFile;
+import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
-import java.util.Properties;
-
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
 /**
  * Another experimental evaluation.
@@ -22,8 +18,6 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
  */
 public class ParameterizedEvaluation implements EvaluateFunction {
 
-    private String configName = "default";
-
     private ParameterizedMaterialEvaluation matEvaluation;
 
     private ParameterizedPstEvaluation pstEvaluation;
@@ -33,32 +27,26 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     private EvalResult result = new EvalResult();
 
     public ParameterizedEvaluation() {
-        configName = Factory.getDefaults().getConfig().evaluateParamSet.getValue().name().toLowerCase();
 
-        // read in all configuration for all the evaluation components:
+        EvalConfig config = new EvalConfig();
 
-        String configDir = "/config/" + configName + "/";
+        matEvaluation = new ParameterizedMaterialEvaluation(config);
+        pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
 
-        Properties properties = loadPropertyFile(configDir + "config.properties");
-
-        matEvaluation = new ParameterizedMaterialEvaluation(properties);
-        pstEvaluation = new ParameterizedPstEvaluation(configDir + "pst/");
-
-        mobEvaluation = new ParameterizedMobilityEvaluation(properties);
+        mobEvaluation = new ParameterizedMobilityEvaluation(config);
     }
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
         BitBoard bitBoard = (BitBoard) currBoard;
 
-        result.midGame = 0;
-        result.endGame = 0;
+        result.clear();
 
         matEvaluation.eval(result, bitBoard, who2Move);
         pstEvaluation.eval(result, bitBoard, who2Move);
         mobEvaluation.eval(result, bitBoard, who2Move);
 
-        double score = PhaseCalculator.scaleByPhase(bitBoard, result.midGame, result.endGame);
+        double score = scaleByPhase(bitBoard, result.midGame, result.endGame) + result.result;
         return (int) score;
     }
 }

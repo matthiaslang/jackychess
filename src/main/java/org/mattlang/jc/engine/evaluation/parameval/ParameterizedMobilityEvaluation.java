@@ -3,9 +3,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.engine.evaluation.parameval.MobLinFun.parse;
-
-import java.util.Properties;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -18,13 +15,28 @@ import org.mattlang.jc.board.bitboard.MagicBitboards;
  */
 public class ParameterizedMobilityEvaluation implements EvalComponent {
 
+    private static int[] SAFETYTABLE = {
+            0, 0, 1, 2, 3, 5, 7, 9, 12, 15,
+            18, 22, 26, 30, 35, 39, 44, 50, 56, 62,
+            68, 75, 82, 85, 89, 97, 105, 113, 122, 131,
+            140, 150, 169, 180, 191, 202, 213, 225, 237, 248,
+            260, 272, 283, 295, 307, 319, 330, 342, 354, 366,
+            377, 389, 401, 412, 424, 436, 448, 459, 471, 483,
+            494, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500
+    };
+
     public static final int IWHITE = Color.WHITE.ordinal();
     public static final int IBLACK = Color.BLACK.ordinal();
 
     public static final int MOBILITY_MG = 0;
     public static final int MOBILITY_EG = 1;
     public static final int CAPTURES = 2;
-    public static final int CONNECTIVITY = 3;
+    public static final int KING_ATT_COUNT = 3;
+    public static final int KING_ATT_WEIGHT = 4;
+    public static final int CONNECTIVITY = 5;
 
     public static final int MAX_TYPE_INDEX = CONNECTIVITY + 1;
     /**
@@ -37,43 +49,32 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private int[][][] detailedResults = new int[2][6][MAX_TYPE_INDEX];
     public int[][] results = new int[2][MAX_TYPE_INDEX];
 
-    //    private MobLinFun funPawnMG;
-    private MobLinFun funKnightMG;
-    private MobLinFun funBishopMG;
-    private MobLinFun funRookMG;
-    private MobLinFun funQueenMG;
-    private MobLinFun funKingMG;
-    //    private MobLinFun funPawnEG;
-    private MobLinFun funKnightEG;
-    private MobLinFun funBishopEG;
-    private MobLinFun funRookEG;
-    private MobLinFun funQueenEG;
-    private MobLinFun funKingEG;
+    static class FigParams {
 
-    public ParameterizedMobilityEvaluation(Properties properties) {
+        private MobLinFun mobilityMG;
+        private MobLinFun mobilityEG;
 
-        funKnightMG = parseFun(properties, "knightMobMG");
-        funBishopMG = parseFun(properties, "bishopMobMG");
-        funRookMG = parseFun(properties, "rookMobMG");
-        funQueenMG = parseFun(properties, "queenMobMG");
-        funKingMG = parseFun(properties, "kingMobMG");
+        private KingAttackFun kingAtt;
 
-        funKnightEG = parseFun(properties, "knightMobEG");
-        funBishopEG = parseFun(properties, "bishopMobEG");
-        funRookEG = parseFun(properties, "rookMobEG");
-        funQueenEG = parseFun(properties, "queenMobEG");
-        funKingEG = parseFun(properties, "kingMobEG");
-    }
-
-    private MobLinFun parseFun(Properties properties, String propName) {
-        try {
-            return parse(properties.getProperty(propName));
-        } catch (RuntimeException r) {
-            throw new IllegalArgumentException("Error parsing Property " + propName, r);
+        public FigParams(EvalConfig config, String propBaseName) {
+            mobilityMG = config.parseFun(propBaseName + "MobMG");
+            mobilityEG = config.parseFun(propBaseName + "MobEG");
+            kingAtt = config.parseKAFun(propBaseName + "KingAttack");
         }
     }
 
-    public void eval(BitBoard bitBoard) {
+    private FigParams[] figParams = new FigParams[6];
+
+    public ParameterizedMobilityEvaluation(EvalConfig config) {
+
+        figParams[FT_KNIGHT] = new FigParams(config, "knight");
+        figParams[FT_BISHOP] = new FigParams(config, "bishop");
+        figParams[FT_ROOK] = new FigParams(config, "rook");
+        figParams[FT_QUEEN] = new FigParams(config, "queen");
+        figParams[FT_KING] = new FigParams(config, "king");
+    }
+
+    private void eval(BitBoard bitBoard) {
 
         clear();
 
@@ -135,7 +136,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
-            countBishop(side, mobility, captures, connectivity);
+            countBishop(side, mobility, captures, connectivity, kingZoneAttacs);
 
             bishopBB &= bishopBB - 1;
         }
@@ -152,7 +153,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long kingZoneAttacs = knightAttack & oppKingZone;
             long connectivity = knightAttack & ownFigsMask;
 
-            countKnight(side, mobility, captures, connectivity);
+            countKnight(side, mobility, captures, connectivity, kingZoneAttacs);
 
             knightBB &= knightBB - 1;
         }
@@ -166,7 +167,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long connectivity = attacks & ownFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
-            countRook(side, mobility, captures, connectivity);
+            countRook(side, mobility, captures, connectivity, kingZoneAttacs);
 
             rookBB &= rookBB - 1;
         }
@@ -182,7 +183,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
             long connectivity = attacks & ownFigsMask;
-            countQueen(side, mobility, captures, connectivity);
+            countQueen(side, mobility, captures, connectivity, kingZoneAttacs);
 
             queenBB &= queenBB - 1;
         }
@@ -197,7 +198,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long mobility = moves & ~captures & noOppPawnAttacs;
         long kingZoneAttacs = kingAttack & oppKingZone;
         long connectivity = kingAttack & ownFigsMask;
-        countKing(side, mobility, captures, connectivity);
+        countKing(side, mobility, captures, connectivity, kingZoneAttacs);
 
     }
 
@@ -222,36 +223,46 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
     }
 
-    private void countKing(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_KING, funKingMG, funKingEG, side, mobility, captures, connectivity);
+    private void countKing(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
+        countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs);
     }
 
-    private void countQueen(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_QUEEN, funQueenMG, funQueenEG, side, mobility, captures, connectivity);
+    private void countQueen(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
+        countFigureVals(FT_QUEEN, side, mobility, captures, connectivity, kingZoneAttacs);
     }
 
-    private void countRook(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_ROOK, funRookMG, funRookEG, side, mobility, captures, connectivity);
+    private void countRook(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
+        countFigureVals(FT_ROOK, side, mobility, captures, connectivity, kingZoneAttacs);
     }
 
-    private void countKnight(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_KNIGHT, funKnightMG, funKnightEG, side, mobility, captures, connectivity);
+    private void countKnight(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
+        countFigureVals(FT_KNIGHT, side, mobility, captures, connectivity, kingZoneAttacs);
     }
 
-    private void countBishop(Color side, long mobility, long captures, long connectivity) {
-        countFigureVals(FT_BISHOP, funBishopMG, funBishopEG, side, mobility, captures, connectivity);
+    private void countBishop(Color side, long mobility, long captures, long connectivity, long kingZoneAttacs) {
+        countFigureVals(FT_BISHOP, side, mobility, captures, connectivity, kingZoneAttacs);
     }
 
-    private void countFigureVals(byte figureType, MobLinFun mgFun, MobLinFun egFun, Color side, long mobility,
+    private void countFigureVals(byte figureType, Color side,
+            long mobility,
             long captures,
-            long connectivity) {
+            long connectivity,
+            long kingZoneAttacs) {
+
+        FigParams params = figParams[figureType];
+
         masks[side.ordinal()][figureType][MOBILITY_MG] |= mobility;
         masks[side.ordinal()][figureType][CAPTURES] |= captures;
         masks[side.ordinal()][figureType][CONNECTIVITY] |= connectivity;
 
-        int mobCount = Long.bitCount(mobility);
-        detailedResults[side.ordinal()][figureType][MOBILITY_MG] += mgFun.calc(mobCount);
-        detailedResults[side.ordinal()][figureType][MOBILITY_EG] += egFun.calc(mobCount);
+        // mobility count is mobility to empty fields as well as captures of enemy pieces:
+        int mobCount = Long.bitCount(mobility) + Long.bitCount(captures);
+        int kingAttCount = Long.bitCount(kingZoneAttacs);
+
+        detailedResults[side.ordinal()][figureType][MOBILITY_MG] += params.mobilityMG.calc(mobCount);
+        detailedResults[side.ordinal()][figureType][MOBILITY_EG] += params.mobilityEG.calc(mobCount);
+        detailedResults[side.ordinal()][figureType][KING_ATT_COUNT] += kingAttCount;
+        detailedResults[side.ordinal()][figureType][KING_ATT_WEIGHT] += params.kingAtt.calc(kingAttCount);
         //        detailedResults[side.ordinal()][figureType][CAPTURES] += weights.dotProduct(captures, side) * 2;
         //        detailedResults[side.ordinal()][figureType][CONNECTIVITY] += weights.dotProduct(connectivity, side) / 2;
 
@@ -264,6 +275,17 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov;
         result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]) * who2mov;
+
+        /**************************************************************************
+         *  Merge king attack score. We don't apply this value if there are less   *
+         *  than two attackers or if the attacker has no queen.                    *
+         **************************************************************************/
+
+        if (results[IWHITE][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0) results[IWHITE][KING_ATT_WEIGHT] = 0;
+        if (results[IBLACK][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0) results[IBLACK][KING_ATT_WEIGHT] = 0;
+
+        result.result += (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] -  SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]]) * who2mov;
+
 
         //        int score = (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov +
         //                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;

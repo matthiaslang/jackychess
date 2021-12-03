@@ -7,37 +7,32 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Represents a term like "2*(mob-14)" .
+ * Represents a term like "2*att" .
  */
 @AllArgsConstructor
 @Getter
-public class MobLinFun implements Function {
+public class KingAttackFun implements Function {
 
     /**
-     * pattern for a linear formular like "2*(mob-14)"
+     * pattern for a linear formular like "2 * att"
      */
-    private final static String LIN_FUN_PATTERN = "(?<factor>.*)\\*\\(mob(?<koeff>.*)\\)";
+    private final static String LIN_FUN_PATTERN = "(?<factor>.*)\\*att";
 
     private int factor;
-    private int koeff;
 
     @Override
     public int calc(int mob) {
-        return factor * (mob + koeff);
+        return factor * mob;
     }
 
-    public static MobLinFun parse(String term) {
-        term = term.replace(" ","");
+    public static KingAttackFun parse(String term) {
+        term = term.replace(" ", "");
 
         Matcher matcher = Pattern.compile(LIN_FUN_PATTERN).matcher(term);
         if (matcher.matches()) {
-
             String strFactor = matcher.group("factor");
-            String strKoeff = matcher.group("koeff");
             int factor = EvalConfig.parseInt(strFactor, "Factor");
-            int koeff = EvalConfig.parseInt(strKoeff, "Koefficient");
-
-            return new MobLinFun(factor, koeff);
+            return new KingAttackFun(factor);
         } else {
             throw new ConfigParseException("Cant parse " + term);
         }

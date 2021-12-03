@@ -3,8 +3,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
-import java.util.Properties;
-
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -28,19 +26,19 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     private boolean deactivated = false;
 
-    public ParameterizedMaterialEvaluation(Properties properties) {
+    public ParameterizedMaterialEvaluation(EvalConfig config) {
 
-        pawnMG = ConfigTools.getIntProp(properties, "matPawnMG");
-        knightMG = ConfigTools.getIntProp(properties, "matKnightMG");
-        bishopMG = ConfigTools.getIntProp(properties, "matBishopMG");
-        rookMG = ConfigTools.getIntProp(properties, "matRookMG");
-        queenMG = ConfigTools.getIntProp(properties, "matQueenMG");
+        pawnMG = config.getIntProp("matPawnMG");
+        knightMG = config.getIntProp("matKnightMG");
+        bishopMG = config.getIntProp("matBishopMG");
+        rookMG = config.getIntProp("matRookMG");
+        queenMG = config.getIntProp("matQueenMG");
 
-        pawnEG = ConfigTools.getIntProp(properties, "matPawnEG");
-        knightEG = ConfigTools.getIntProp(properties, "matKnightEG");
-        bishopEG = ConfigTools.getIntProp(properties, "matBishopEG");
-        rookEG = ConfigTools.getIntProp(properties, "matRookEG");
-        queenEG = ConfigTools.getIntProp(properties, "matQueenEG");
+        pawnEG = config.getIntProp("matPawnEG");
+        knightEG = config.getIntProp("matKnightEG");
+        bishopEG = config.getIntProp("matBishopEG");
+        rookEG = config.getIntProp("matRookEG");
+        queenEG = config.getIntProp("matQueenEG");
 
         /**
          * some configs might not use material properties, but use only PST for the material evaluation.
