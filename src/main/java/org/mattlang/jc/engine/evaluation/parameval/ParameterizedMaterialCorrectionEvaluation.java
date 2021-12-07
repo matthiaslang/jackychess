@@ -18,6 +18,10 @@ public class ParameterizedMaterialCorrectionEvaluation {
         rules = config.parseMaterialRules();
     }
 
+    public ParameterizedMaterialCorrectionEvaluation(List<MaterialCorrectionRule> rules) {
+        this.rules = rules;
+    }
+
     public int correct(BitChessBoard bb, int result) {
 
         int stronger;

@@ -28,6 +28,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     ParameterizedMaterialCorrectionEvaluation matCorrection;
 
+    ParameterizedAdjustmentsEvaluation adjustments;
+
     private EvalResult result = new EvalResult();
 
     public ParameterizedEvaluation() {
@@ -41,6 +43,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         pawnEvaluation = new ParameterizedPawnEvaluation(config);
 
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
+        adjustments = new ParameterizedAdjustmentsEvaluation(config);
     }
 
     @Override
@@ -53,6 +56,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         pstEvaluation.eval(result, bitBoard);
         mobEvaluation.eval(result, bitBoard);
         pawnEvaluation.eval(result, bitBoard);
+        result.result += adjustments.adjust(bitBoard.getBoard(), who2Move);
 
         int score = (int) scaleByPhase(bitBoard, result.midGame, result.endGame) + result.result;
 
@@ -60,6 +64,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
-        return (int) score;
+        return score;
     }
 }

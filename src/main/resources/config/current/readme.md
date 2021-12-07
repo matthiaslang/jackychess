@@ -22,7 +22,7 @@ Motor                     Punkte                              Ja                
 
 ## experimental mit pst + mobility + geänderte mat werte + tropism + king attacks
 
-revision 94f25c6e
+revision EVAL001 94f25c6e
 
 Motor                     Punkte                              Ja                             Ja                             Ja                             Ja    S-B
 1: Jacky17 Eval MinPst       63,0/90 ······························ ==0=010===1111==111===0==110=0 0110==1110111==0111====01110== 1111=111111=11111=11111111==1=  2251,0
@@ -42,7 +42,7 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 
 ## pawn evaluations min.material
 
-current == experimental from   revision 94f25c6e
+current == experimental from   revision EVAL001 94f25c6e
 
 
 seeems like experimental is now a bit worser thant current.
@@ -55,5 +55,41 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 4 jc0917_ELDEFAULT             -247      43     180   19.4%   34.4%
 
 
+only with min mat but not with pawn stuff:
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST               129      37     180   67.8%   47.8%
+2 jc0917_ELCURR                  54      33     180   57.8%   56.7%
+3 jc0917_ELEXP                   19      33     180   52.8%   56.7%
+4 jc0917_ELDEFAULT             -223      41     180   21.7%   38.9%
 
 
+     
+only with pawn stuff, but not with minmat correction:
+
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST               136      41     180   68.6%   38.3%
+2 jc0917_ELEXP                   85      42     180   61.9%   35.0%
+3 jc0917_ELCURR                  43      41     180   56.1%   36.7%
+4 jc0917_ELDEFAULT             -325      59     180   13.3%   18.9%
+                   
+so, problem seems to be the minimal mat correction. 
+
+
+only with pawn stuff and adjustments, but no minmat correction:
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST               105      39     180   64.7%   42.8%
+2 jc0917_ELEXP                   49      39     180   56.9%   41.7%
+3 jc0917_ELCURR                  45      39     180   56.4%   41.7%
+4 jc0917_ELDEFAULT             -220      45     180   21.9%   32.8%
+
+
+only with pawn stuff and adjustments without tempo, but no minmat correction:
+
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST                50      48     120   57.1%   40.8%
+2 jc0917_ELEXP                    0      47     120   50.0%   43.3%
+3 jc0917_ELCURR                 -50      49     120   42.9%   39.2%
