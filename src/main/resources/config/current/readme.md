@@ -88,6 +88,8 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 
 only with pawn stuff and adjustments without tempo, but no minmat correction:
 
+revision: EVAL002
+
 
 Rank Name                          Elo     +/-   Games   Score    Draw
 1 jc0917_ELMINPST                50      48     120   57.1%   40.8%
