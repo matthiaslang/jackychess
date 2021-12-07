@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
@@ -49,11 +48,10 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard, Color who2Move) {
+    public void eval(EvalResult result, BitBoard bitBoard) {
         if (deactivated) {
             return;
         }
-        int who2mov = who2Move == Color.WHITE ? 1 : -1;
         BitChessBoard bb = bitBoard.getBoard();
 
         int pawnsDiff = bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack);
@@ -62,16 +60,16 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
         int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
 
-        result.midGame += pawnMG * pawnsDiff * who2mov +
-                knightMG * knightsDiff * who2mov +
-                bishopMG * bishopsDiff * who2mov +
-                rookMG * rooksDiff * who2mov +
-                queenMG * queensDiff * who2mov;
+        result.midGame += pawnMG * pawnsDiff +
+                knightMG * knightsDiff +
+                bishopMG * bishopsDiff +
+                rookMG * rooksDiff +
+                queenMG * queensDiff;
 
-        result.endGame += pawnEG * pawnsDiff * who2mov +
-                knightEG * knightsDiff * who2mov +
-                bishopEG * bishopsDiff * who2mov +
-                rookEG * rooksDiff * who2mov +
-                queenEG * queensDiff * who2mov;
+        result.endGame += pawnEG * pawnsDiff +
+                knightEG * knightsDiff +
+                bishopEG * bishopsDiff +
+                rookEG * rooksDiff +
+                queenEG * queensDiff;
     }
 }

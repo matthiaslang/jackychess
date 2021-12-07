@@ -69,6 +69,12 @@ public final class Pattern {
         return (w - b) * who2mov;
     }
 
+    public final int calcScore(long whiteFigures, long blackFigures) {
+        int w = dotProduct(whiteFigures, WHITE);
+        int b = dotProduct(blackFigures, BLACK);
+        return w - b;
+    }
+
     public final int calcScore(int whiteFigure, int blackFigure, int who2mov) {
         int w = 0;
         int b = 0;

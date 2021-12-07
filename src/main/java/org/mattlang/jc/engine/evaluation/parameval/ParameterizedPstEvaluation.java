@@ -4,7 +4,6 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
@@ -44,21 +43,20 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard, Color who2Move) {
-        int who2mov = who2Move == Color.WHITE ? 1 : -1;
+    public void eval(EvalResult result, BitBoard bitBoard) {
         BitChessBoard bb = bitBoard.getBoard();
 
-        result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
-                knightMG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
-                bishopMG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
-                rookMG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
-                queenMG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
-                kingMG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
-        result.endGame += pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack), who2mov) +
-                knightEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack), who2mov) +
-                bishopEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), who2mov) +
-                rookEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack), who2mov) +
-                queenEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), who2mov) +
-                kingEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), who2mov);
+        result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
+                knightMG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
+                bishopMG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
+                rookMG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
+                queenMG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
+                kingMG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
+        result.endGame += pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
+                knightEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
+                bishopEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
+                rookEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
+                queenEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
+                kingEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
     }
 }

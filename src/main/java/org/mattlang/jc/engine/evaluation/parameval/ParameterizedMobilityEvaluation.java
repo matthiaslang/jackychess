@@ -287,15 +287,14 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard, Color who2Move) {
+    public void eval(EvalResult result, BitBoard bitBoard) {
         eval(bitBoard);
-        int who2mov = who2Move == Color.WHITE ? 1 : -1;
 
-        result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov;
-        result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]) * who2mov;
+        result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]);
+        result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]);
 
-        result.midGame += (results[IWHITE][TROPISM_MG] - results[IBLACK][TROPISM_MG]) * who2mov;
-        result.endGame += (results[IWHITE][TROPISM_EG] - results[IBLACK][TROPISM_EG]) * who2mov;
+        result.midGame += (results[IWHITE][TROPISM_MG] - results[IBLACK][TROPISM_MG]);
+        result.endGame += (results[IWHITE][TROPISM_EG] - results[IBLACK][TROPISM_EG]);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
@@ -307,8 +306,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         if (results[IBLACK][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
             results[IBLACK][KING_ATT_WEIGHT] = 0;
 
-        result.result += (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] - SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]])
-                * who2mov;
+        result.result +=
+                (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] - SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]]);
 
 
         //        int score = (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov +

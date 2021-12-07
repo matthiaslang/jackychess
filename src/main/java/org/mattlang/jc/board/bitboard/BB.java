@@ -7,11 +7,30 @@ import org.mattlang.jc.board.BoardPrinter;
  */
 public class BB {
 
+    public static final long rank1 = 0x00000000000000FFL;
+    public static final long rank2 = 0x000000000000FF00L;
+    public static final long rank3 = 0x0000000000FF0000L;
     public static final long rank4 = 0x00000000FF000000L;
     public static final long rank5 = 0x000000FF00000000L;
+    public static final long rank6 = 0x0000FF0000000000L;
+    public static final long rank7 = 0x00FF000000000000L;
+    public static final long rank8 = 0xFF00000000000000L;
 
     public static final long notAFile = 0xfefefefefefefefeL;
     public static final long notHFile = 0x7f7f7f7f7f7f7f7fL;
+
+    public static final long ABC_File = 0x0707070707070707L;
+    public static final long ABC_on_rank2 = ABC_File & rank2;
+    public static final long ABC_on_rank3 = ABC_File & rank3;
+    public static final long ABC_on_rank7 = ABC_File & rank7;
+    public static final long ABC_on_rank6 = ABC_File & rank6;
+
+    public static final long FGH_File = 0xe0e0e0e0e0e0e0e0L;
+
+    public static final long FGH_on_rank2 = FGH_File & rank2;
+    public static final long FGH_on_rank3 = FGH_File & rank3;
+    public static final long FGH_on_rank7 = FGH_File & rank7;
+    public static final long FGH_on_rank6 = FGH_File & rank6;
 
     private static final long[] kingAttacks = new long[64];
     private static final long[] knightAttacks = new long[64];

@@ -1,9 +1,12 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static java.util.stream.Collectors.toList;
+import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
 import static org.mattlang.jc.engine.evaluation.parameval.MobLinFun.parse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 import org.mattlang.jc.Factory;
@@ -88,5 +91,11 @@ public class EvalConfig {
                     e);
         }
         return properties;
+    }
+
+    public List<MaterialCorrectionRule> parseMaterialRules() {
+        return properties.stringPropertyNames().stream().filter(n -> n.startsWith("materialRule."))
+                .map(n -> parse(n.replace("materialRule.", ""), properties.getProperty(n)))
+                .collect(toList());
     }
 }

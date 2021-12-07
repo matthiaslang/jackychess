@@ -11,7 +11,7 @@ Testing notes:
 73% better than default with current changes.
 
 
-experimental mit pst + mobility + leicht geänderte werte aus CPW:     
+## experimental mit pst + mobility + leicht geänderte werte aus CPW:     
 
 Motor                     Punkte                              Ja                             Ja                             Ja                             Ja    S-B
 1: Jacky17 Eval MinPst       69,0/90 ······························ 0=1==11==1==11==111===0=0===== 1=1===11===111=11=1=1111111111 1111=1=11=11=111=111111=011111  2428,5
@@ -20,7 +20,7 @@ Motor                     Punkte                              Ja                
 4: Jacky17 Eval Default      21,0/90 0000=0=00=00=000=000000=100000 ====0000=0=0=0=0==0=00=0=00000 000=10====0===00======00=010== ······························  1011,0
                                                                  
 
-experimental mit pst + mobility + geänderte mat werte + tropism + king attacks
+## experimental mit pst + mobility + geänderte mat werte + tropism + king attacks
 
 revision 94f25c6e
 
@@ -40,7 +40,20 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 3 jc0917_ELCURR                  -8      37     180   48.9%   46.7%
 4 jc0917_ELDEFAULT             -209      40     180   23.1%   39.4%
 
+## pawn evaluations min.material
 
-         
+current == experimental from   revision 94f25c6e
+
+
+seeems like experimental is now a bit worser thant current.
+
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST               123      39     180   66.9%   42.8%
+2 jc0917_ELCURR                  58      37     180   58.3%   46.7%
+3 jc0917_ELEXP                   37      36     180   55.3%   50.6%
+4 jc0917_ELDEFAULT             -247      43     180   19.4%   34.4%
+
+
 
 
