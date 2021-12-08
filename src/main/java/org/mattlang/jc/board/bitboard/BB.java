@@ -202,7 +202,7 @@ public class BB {
         return gen;
     }
 
-    public static long soutFill(long gen) {
+    public static long southFill(long gen) {
         gen |= (gen >> 8);
         gen |= (gen >> 16);
         gen |= (gen >> 32);
@@ -214,11 +214,11 @@ public class BB {
     }
 
     public static long wRearFill(long wpawns) {
-        return soutFill(wpawns);
+        return southFill(wpawns);
     }
 
     public static long bFrontFill(long bpawns) {
-        return soutFill(bpawns);
+        return southFill(bpawns);
     }
 
     public static long bRearFill(long bpawns) {
@@ -226,6 +226,6 @@ public class BB {
     }
 
     public static long fileFill(long gen) {
-        return nortFill(gen) | soutFill(gen);
+        return nortFill(gen) | southFill(gen);
     }
 }

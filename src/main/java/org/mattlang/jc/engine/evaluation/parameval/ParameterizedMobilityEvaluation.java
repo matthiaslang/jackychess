@@ -51,6 +51,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
      */
     private long[][][] masks = new long[2][6][MAX_TYPE_INDEX];
     private int[][][] detailedResults = new int[2][6][MAX_TYPE_INDEX];
+    private long[][] maskResults = new long[2][MAX_TYPE_INDEX];
     public int[][] results = new int[2][MAX_TYPE_INDEX];
 
     static class FigParams {
@@ -105,6 +106,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             for (int t = 0; t < MAX_TYPE_INDEX; t++) {
                 results[c][t] = 0;
+                maskResults[c][t] = 0L;
                 for (int f = 0; f < 6; f++) {
                     masks[c][f][t] = 0L;
                     detailedResults[c][f][t] = 0;
@@ -118,6 +120,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             for (int t = 0; t < MAX_TYPE_INDEX; t++) {
                 for (int f = 0; f < 6; f++) {
                     results[c][t] += detailedResults[c][f][t];
+                    maskResults[c][t] |= masks[c][f][t];
                 }
             }
         }
@@ -231,7 +234,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
      * @param side
      * @return
      */
-    private long createOpponentPawnAttacs(BitChessBoard bb, Color side) {
+    public static long createOpponentPawnAttacs(BitChessBoard bb, Color side) {
         long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
 
         if (side == WHITE) {

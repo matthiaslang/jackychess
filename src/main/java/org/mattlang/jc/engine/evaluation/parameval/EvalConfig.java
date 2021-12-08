@@ -33,6 +33,14 @@ public class EvalConfig {
         properties = loadPropertyFile(configDir + "config.properties");
     }
 
+    public int getPosIntProp(String propName) {
+        int val = parseInt(getProp(propName), propName);
+        if (val < 0) {
+            throw new ConfigParseException("Value " + propName + " must not be negative!");
+        }
+        return val;
+    }
+
     public int getIntProp(String propName) {
         return parseInt(getProp(propName), propName);
     }

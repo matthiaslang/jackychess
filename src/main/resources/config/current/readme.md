@@ -95,3 +95,35 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 1 jc0917_ELMINPST                50      48     120   57.1%   40.8%
 2 jc0917_ELEXP                    0      47     120   50.0%   43.3%
 3 jc0917_ELCURR                 -50      49     120   42.9%   39.2%
+ 
+# after EVAL002
+
+add some simple minimal mat correction rules:
+
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST                38      47     120   55.4%   44.2%
+2 jc0917_ELEXP                  -12      46     120   48.3%   45.0%
+3 jc0917_ELCURR                 -26      46     120   46.3%   45.8%
+                            
+
+with all minimal mat correction rules:
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELMINPST                41      45     120   55.8%   48.3%
+2 jc0917_ELCURR                 -20      46     120   47.1%   45.8%
+3 jc0917_ELEXP                  -20      46     120   47.1%   45.8%
+
+                    
+## add pawn evaluation... no minimal mat corr
+
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELEXP                   26      47     120   53.8%   42.5%
+2 jc0917_ELMINPST                 9      46     120   51.2%   45.8%
+3 jc0917_ELCURR                 -35      47     120   45.0%   43.3%
+
+
+exp is the first time a little bit better than min pst!!!
+
+
