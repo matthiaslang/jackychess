@@ -192,4 +192,40 @@ public class BB {
         return accu;
     }
 
+    // pawn file fills, see: https://www.chessprogramming.org/Pawn_Fills#FileFill
+    
+
+    public static long nortFill(long gen) {
+        gen |= (gen << 8);
+        gen |= (gen << 16);
+        gen |= (gen << 32);
+        return gen;
+    }
+
+    public static long soutFill(long gen) {
+        gen |= (gen >> 8);
+        gen |= (gen >> 16);
+        gen |= (gen >> 32);
+        return gen;
+    }
+
+    public static long wFrontFill(long wpawns) {
+        return nortFill(wpawns);
+    }
+
+    public static long wRearFill(long wpawns) {
+        return soutFill(wpawns);
+    }
+
+    public static long bFrontFill(long bpawns) {
+        return soutFill(bpawns);
+    }
+
+    public static long bRearFill(long bpawns) {
+        return nortFill(bpawns);
+    }
+
+    public static long fileFill(long gen) {
+        return nortFill(gen) | soutFill(gen);
+    }
 }
