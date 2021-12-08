@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
-import static org.mattlang.jc.engine.evaluation.parameval.MobLinFun.parse;
+import static org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun.parse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.engine.evaluation.parameval.functions.KingAttackFun;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
+import org.mattlang.jc.engine.evaluation.parameval.functions.TropismFun;
 
 import lombok.Getter;
 

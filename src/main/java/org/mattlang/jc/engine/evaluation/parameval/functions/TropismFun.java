@@ -1,22 +1,25 @@
-package org.mattlang.jc.engine.evaluation.parameval;
+package org.mattlang.jc.engine.evaluation.parameval.functions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.mattlang.jc.engine.evaluation.parameval.ConfigParseException;
+import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Represents a term like "2*att" .
+ * Represents a term like "2*tropism" .
  */
 @AllArgsConstructor
 @Getter
-public class KingAttackFun implements Function {
+public class TropismFun implements Function {
 
     /**
-     * pattern for a linear formular like "2 * att"
+     * pattern for a linear formular like "2 * tropism"
      */
-    private final static String LIN_FUN_PATTERN = "(?<factor>.*)\\*att";
+    private final static String LIN_FUN_PATTERN = "(?<factor>.*)\\*tropism";
 
     private int factor;
 
@@ -25,14 +28,14 @@ public class KingAttackFun implements Function {
         return factor * mob;
     }
 
-    public static KingAttackFun parse(String term) {
+    public static TropismFun parse(String term) {
         term = term.replace(" ", "");
 
         Matcher matcher = Pattern.compile(LIN_FUN_PATTERN).matcher(term);
         if (matcher.matches()) {
             String strFactor = matcher.group("factor");
             int factor = EvalConfig.parseInt(strFactor, "Factor");
-            return new KingAttackFun(factor);
+            return new TropismFun(factor);
         } else {
             throw new ConfigParseException("Cant parse " + term);
         }

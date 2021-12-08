@@ -10,6 +10,9 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.parameval.functions.KingAttackFun;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
+import org.mattlang.jc.engine.evaluation.parameval.functions.TropismFun;
 
 /**
  * Paremeterized Mobility Evaluation.

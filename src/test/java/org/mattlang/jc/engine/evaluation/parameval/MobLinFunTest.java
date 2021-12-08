@@ -1,9 +1,10 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.engine.evaluation.parameval.MobLinFun.parse;
+import static org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun.parse;
 
 import org.junit.Test;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
 
 public class MobLinFunTest {
 
