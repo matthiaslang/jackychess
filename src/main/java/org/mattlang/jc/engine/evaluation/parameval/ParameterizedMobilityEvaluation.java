@@ -46,6 +46,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public static final int CONNECTIVITY = 7;
 
     public static final int MAX_TYPE_INDEX = CONNECTIVITY + 1;
+
+    private final int rookOpen;
+    private final int rookHalf;
     /**
      * splitted results by color, figure type, and mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
@@ -87,6 +90,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         figParams[FT_ROOK] = new FigParams(config, "rook");
         figParams[FT_QUEEN] = new FigParams(config, "queen");
         figParams[FT_KING] = new FigParams(config, "king");
+
+        rookOpen = config.getPosIntProp("rookOpen");
+        rookHalf = config.getPosIntProp("rookHalf");
     }
 
     private void eval(BitBoard bitBoard) {
@@ -180,6 +186,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             knightBB &= knightBB - 1;
         }
 
+        long ownPawns = bb.getPieceSet(FT_PAWN, side);
+        long oppPawns = bb.getPieceSet(FT_PAWN, xside);
+
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
             final int rook = Long.numberOfTrailingZeros(rookBB);
@@ -192,6 +201,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             int tropism = getTropism(rook, oppKingPos);
 
             countFigureVals(FT_ROOK, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+
+            rookOpenFiles(side, rook, oppKingPos, ownPawns, oppPawns);
 
             rookBB &= rookBB - 1;
         }
@@ -227,6 +238,31 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         int tropism = getTropism(king, oppKingPos);
 
         countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+
+    }
+
+    private void rookOpenFiles(Color side, int rook, int otherKing, long ownPawns, long oppPawns) {
+        long rookMask = 1L << rook;
+
+        long fileFilled = BB.fileFill(rookMask);
+        boolean ownPawnOnFile = (fileFilled & ownPawns) != 0;
+        boolean oppPawnOnFile = (fileFilled & oppPawns) != 0;
+
+        // fully open file:
+        if (!ownPawnOnFile && !oppPawnOnFile) {
+            detailedResults[side.ordinal()][FT_ROOK][MOBILITY_MG] += rookOpen;
+            detailedResults[side.ordinal()][FT_ROOK][MOBILITY_EG] += rookOpen;
+            if (Tools.colDistance(rook, otherKing)<2){
+                detailedResults[side.ordinal()][FT_ROOK][KING_ATT_WEIGHT] += 1;
+            }
+        } else if (!ownPawnOnFile && oppPawnOnFile) {
+            // half open:
+            detailedResults[side.ordinal()][FT_ROOK][MOBILITY_MG] += rookHalf;
+            detailedResults[side.ordinal()][FT_ROOK][MOBILITY_EG] += rookHalf;
+            if (Tools.colDistance(rook, otherKing)<2){
+                detailedResults[side.ordinal()][FT_ROOK][KING_ATT_WEIGHT] += 2;
+            }
+        }
 
     }
 

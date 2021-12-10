@@ -8,16 +8,29 @@ public class Tools {
     public static final int manhattanDistance(int sq1, int sq2) {
         int file1, file2, rank1, rank2;
         int rankDistance, fileDistance;
-        file1 = sq1  & 7;
-        file2 = sq2  & 7;
+        file1 = sq1 & 7;
+        file2 = sq2 & 7;
         rank1 = sq1 >> 3;
         rank2 = sq2 >> 3;
-        rankDistance = Math.abs (rank2 - rank1);
-        fileDistance = Math.abs (file2 - file1);
+        rankDistance = Math.abs(rank2 - rank1);
+        fileDistance = Math.abs(file2 - file1);
         return rankDistance + fileDistance;
     }
 
+    public static int file(int sq) {
+        return sq & 7;
+    }
 
+    public static int rank(int sq) {
+        return sq >> 3;
+    }
+
+    public static final int colDistance(int sq1, int sq2) {
+        int file1, file2;
+        file1 = sq1 & 7;
+        file2 = sq2 & 7;
+        return Math.abs(file2 - file1);
+    }
 
     public static final int calcKnightDistance(long b1, long b2) {
         int d = 0;
