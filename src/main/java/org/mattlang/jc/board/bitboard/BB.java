@@ -7,6 +7,18 @@ import org.mattlang.jc.board.BoardPrinter;
  */
 public class BB {
 
+    // the individual files:
+    public static final long A = 0x0101010101010101L;
+    public static final long B = 0x0202020202020202L;
+    public static final long C = 0x0404040404040404L;
+    public static final long D = 0x0808080808080808L;
+    public static final long E = 0x1010101010101010L;
+    public static final long F = 0x2020202020202020L;
+    public static final long G = 0x4040404040404040L;
+    public static final long H = 0x8080808080808080L;
+
+    public static final long ALL = A | B | C | D | E | F | G | H;
+
     public static final long rank1 = 0x00000000000000FFL;
     public static final long rank2 = 0x000000000000FF00L;
     public static final long rank3 = 0x0000000000FF0000L;
@@ -16,16 +28,16 @@ public class BB {
     public static final long rank7 = 0x00FF000000000000L;
     public static final long rank8 = 0xFF00000000000000L;
 
-    public static final long notAFile = 0xfefefefefefefefeL;
-    public static final long notHFile = 0x7f7f7f7f7f7f7f7fL;
+    public static final long notAFile = ALL & ~A;
+    public static final long notHFile = ALL & ~H;
 
-    public static final long ABC_File = 0x0707070707070707L;
+    public static final long ABC_File = A | B | C;
     public static final long ABC_on_rank2 = ABC_File & rank2;
     public static final long ABC_on_rank3 = ABC_File & rank3;
     public static final long ABC_on_rank7 = ABC_File & rank7;
     public static final long ABC_on_rank6 = ABC_File & rank6;
 
-    public static final long FGH_File = 0xe0e0e0e0e0e0e0e0L;
+    public static final long FGH_File = F | G | H;
 
     public static final long FGH_on_rank2 = FGH_File & rank2;
     public static final long FGH_on_rank3 = FGH_File & rank3;
