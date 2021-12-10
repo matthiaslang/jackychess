@@ -44,6 +44,10 @@ public class EvalConfig {
         return val;
     }
 
+    public boolean getBoolProp(String propName) {
+        return Boolean.parseBoolean(getProp(propName));
+    }
+
     public int getIntProp(String propName) {
         return parseInt(getProp(propName), propName);
     }
@@ -109,4 +113,6 @@ public class EvalConfig {
                 .map(n -> parse(n.replace("materialRule.", ""), properties.getProperty(n)))
                 .collect(toList());
     }
+
+
 }

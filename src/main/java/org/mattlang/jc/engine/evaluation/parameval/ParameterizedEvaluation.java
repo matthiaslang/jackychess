@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -32,9 +30,17 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private EvalResult result = new EvalResult();
 
+    private boolean caching=false;
+
+    private EvalCache evalCache=EvalCache.instance;
+
+
+
     public ParameterizedEvaluation() {
 
         EvalConfig config = new EvalConfig();
+
+        caching = config.getBoolProp("caching.active");
 
         matEvaluation = new ParameterizedMaterialEvaluation(config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
@@ -48,6 +54,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
+
+        if (caching){
+            int cachedResult=evalCache.find(currBoard.getZobristHash(), who2Move);
+            if (cachedResult != EvalCache.NORESULT) {
+                return cachedResult;
+            }
+        }
+
         BitBoard bitBoard = (BitBoard) currBoard;
 
         result.clear();
@@ -58,12 +72,17 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         pawnEvaluation.eval(result, bitBoard);
         result.result += adjustments.adjust(bitBoard.getBoard(), who2Move);
 
-        int score = (int) scaleByPhase(bitBoard, result.midGame, result.endGame) + result.result;
+        int score = result.calcCompleteScore(bitBoard);
 
         score = matCorrection.correct(bitBoard.getBoard(), score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
+
+        if (caching){
+            evalCache.save(currBoard.getZobristHash(), who2Move, score);
+        }
+
         return score;
     }
 }
