@@ -25,7 +25,7 @@ public interface BoardRepresentation {
 
     void move(Move move);
 
-    byte move(int from, int to);
+    void move(int from, int to);
 
     Figure getFigure(int i);
 

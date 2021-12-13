@@ -176,10 +176,9 @@ public class BitBoard implements BoardRepresentation {
      *
      * @param from
      * @param to
-     * @return the captured figure or empty
      */
     @Override
-    public byte move(int from, int to) {
+    public void move(int from, int to) {
         byte figure = board.get(from);
         // remove castling rights when rooks or kings are moved:
         if (figure == W_KING) {
@@ -211,7 +210,6 @@ public class BitBoard implements BoardRepresentation {
         }
 
         set(from, Figure.EMPTY.figureCode);
-        byte capturedFigure = board.get(to);
         set(to, figure);
 
         resetEnPassant();
@@ -224,7 +222,6 @@ public class BitBoard implements BoardRepresentation {
             setEnPassantOption((from + to) / 2);
         }
 
-        return capturedFigure;
     }
 
     @Override
