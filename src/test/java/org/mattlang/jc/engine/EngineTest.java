@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.MoveListImpls;
 import org.mattlang.jc.board.Board3;
@@ -14,6 +15,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
@@ -45,7 +47,32 @@ public class EngineTest {
         Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
         .config(c->c.timeout.setValue(60000))
-        .config(c->c.maxDepth.setValue(7)));
+        .config(c->c.maxDepth.setValue(9)));
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go();
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+
+    @Test
+    @Ignore
+    public void testProfilingParamEvaluation() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                        .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c->c.timeout.setValue(18000000))
+                .config(c->c.maxDepth.setValue(9))
+                .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -97,6 +124,35 @@ public class EngineTest {
 
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+    /**
+     * see http://talkchess.com/forum3/viewtopic.php?f=7&t=78474&sid=05defae5cb855cf36d64c12f445ff2fbTt%20fen%2070%20Position%20test
+     * Fine 70 test position to analyze tt caching
+     * @throws IOException
+     */
+    @Test
+    public void testFine70TTCaching() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c->c.timeout.setValue(18000000))
+                .config(c->c.maxDepth.setValue(14))
+//                .config(c->c.aspiration.setValue(false))
+                .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+        // now starting engine:
+        Engine engine = new Engine();
+        GameState state = engine.getBoard().setFenPosition("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
+
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go(state, new GameContext());
+
+        System.out.println(move.toStr());
+        
+        assertThat(move.toStr()).isEqualTo("a1b1");
     }
 
     @Test
