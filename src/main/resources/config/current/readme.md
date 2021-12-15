@@ -126,4 +126,40 @@ Rank Name                          Elo     +/-   Games   Score    Draw
 
 exp is the first time a little bit better than min pst!!!
 
+## EVAL003
+
+compare 14 with eval experiment.
+
+Score of jc0917_ELEXPFULL vs jc0914-REFERENCE: 29 - 26 - 24  [0.519] 79
+...      jc0917_ELEXPFULL playing White: 16 - 13 - 11  [0.537] 40
+...      jc0917_ELEXPFULL playing Black: 13 - 13 - 13  [0.500] 39
+...      White vs Black: 29 - 26 - 24  [0.519] 79
+Elo difference: 13.2 +/- 64.6, LOS: 65.7 %, DrawRatio: 30.4 %
+
+
+
+Motor                          Punkte                              St                             Ja                             Ja    S-B
+1: Stockfish_10_x64 Level 5       33,5/60 ······························ 011==1110=10111100001000001011 110000111101001001011001111111  942,00
+2: Jacky17 Eval Experimental Full 30,0/60 100==0001=01000011110111110100 ······························ 01001=11=0=0=0=010=11111=0=0=1  896,50
+3: Jackychess-0.9.14              26,5/60 001111000010110110100110000000 10110=00=1=1=1=101=00000=1=1=0 ······························  837,00
+ 
+so, experimental seem to be now a bit better than 0.9.14 reference impl.
+
+          
+## EVAL004:
+
+rook open/half open eval
+                        
+
+Seems to bring small benefit on 1200 games:
+
+Rank Name                          Elo     +/-   Games   Score    Draw
+1 jc0917_ELEXP                    9      19     800   51.3%   40.4%
+2 jc0917_ELCURR                   0      19     800   50.1%   40.1%
+3 jc0917_ELMINPST               -10      19     800   48.6%   39.3% 
+                                          
+so, we use it!
+
+
+
 
