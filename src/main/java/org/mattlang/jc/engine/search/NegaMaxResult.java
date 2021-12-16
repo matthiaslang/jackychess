@@ -40,8 +40,11 @@ public class NegaMaxResult {
      */
     public final int selDepth;
 
+    public final int nodesVisited;
+    public final int quiescenceNodesVisited;
+
     public NegaMaxResult(int directScore, List<Integer> pvMoves,
-            SearchContext searchContext) {
+            SearchContext searchContext, int nodesVisited, int quiescenceNodesVisited) {
         this.directScore = directScore;
         this.max = searchContext.getSavedMoveScore();
         this.savedMove = new MoveImpl(searchContext.getSavedMove());
@@ -54,6 +57,8 @@ public class NegaMaxResult {
         this.targetDepth = searchContext.getTargetDepth();
         this.selDepth = searchContext.getSelDepth();
 
+        this.nodesVisited = nodesVisited;
+        this.quiescenceNodesVisited = quiescenceNodesVisited;
     }
 
     @Override

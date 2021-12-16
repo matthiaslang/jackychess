@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCICheckOption;
 import org.mattlang.jc.uci.UCIOption;
@@ -21,9 +21,6 @@ import lombok.Getter;
 @Getter
 public class EngineBenchmarksRunner {
 
-    public static final int MAX_DEPTH = 5;
-    public static final int TIMEOUT = 60000;
-
     public static final String[] POSITIONS = {
             "position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w - - 0 0",
             "position fen r4rk1/p2n1ppp/bqp1p3/8/5n1P/b1P2QP1/PP1R1P2/1R4K1 w - - 0 0",
@@ -34,7 +31,7 @@ public class EngineBenchmarksRunner {
 
     private GameContext gameContext = new GameContext();
 
-    private ArrayList<BenchmarkResults> results = new ArrayList<>();
+    private ArrayList<BenchmarkIterativeResults> results = new ArrayList<>();
 
     public void benchmarkExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
@@ -45,22 +42,32 @@ public class EngineBenchmarksRunner {
         }
     }
 
-    private BenchmarkResults benchmarkRun(String fenposition) {
+    public void benchmarkSingleExecute(SearchParameter searchParameter) {
+        gameContext = new GameContext();
+        Factory.setDefaults(searchParameter);
+
+        for (String position : POSITIONS) {
+            results.add(benchmarkRun(position, 1));
+        }
+    }
+
+    private BenchmarkIterativeResults benchmarkRun(String fenposition) {
+        return benchmarkRun(fenposition, 10);
+    }
+
+    private BenchmarkIterativeResults benchmarkRun(String fenposition, int count) {
 
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition(fenposition);
         System.out.println(engine.getBoard().toUniCodeStr());
         String name = generateNameFromOptions();
 
-        StopWatch watch = benchmark(
+        ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
-                () -> {
-                    // now starting engine:
-                    Move move = engine.go(state, gameContext);
-                });
+                () -> engine.goIterative(state, gameContext), count);
         Map stats = Factory.getDefaults().collectStatistics();
 
-        return new BenchmarkResults(name, watch, stats, fenposition);
+        return new BenchmarkIterativeResults(name, execResults, stats, fenposition);
     }
 
     private String generateNameFromOptions() {

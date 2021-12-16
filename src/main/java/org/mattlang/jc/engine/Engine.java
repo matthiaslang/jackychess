@@ -2,6 +2,7 @@ package org.mattlang.jc.engine;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
 
 public class Engine {
@@ -34,7 +35,11 @@ public class Engine {
     }
 
     public Move go(GameState gameState, GameContext gameContext) {
-        return searchMethod.search(gameState, gameContext, depth);
+        return searchMethod.iterativeSearch(gameState, gameContext, depth).getSavedMove();
+    }
+
+    public IterativeSearchResult goIterative(GameState gameState, GameContext gameContext) {
+        return searchMethod.iterativeSearch(gameState, gameContext, depth);
     }
 
     public void move(Move move) {

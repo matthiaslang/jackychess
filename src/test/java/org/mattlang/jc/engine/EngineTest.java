@@ -10,10 +10,7 @@ import org.junit.Test;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.MoveListImpls;
-import org.mattlang.jc.board.Board3;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -28,10 +25,12 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         // now starting engine:
-        Engine engine = new Engine(new NegaMaxAlphaBetaPVS(new DefaultEvaluateFunction()), 6);
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
+        NegaMaxAlphaBetaPVS searchMethod = new NegaMaxAlphaBetaPVS(new DefaultEvaluateFunction());
+
+        BoardRepresentation board = new Board3();
+        board.setStartPosition();
+        Move move = searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), new GameContext(), 6);
+        System.out.println(board.toUniCodeStr());
 
         System.out.println(move.toStr());
         // with the evaluation function it should yield e7e5:

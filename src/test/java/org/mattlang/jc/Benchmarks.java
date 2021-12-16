@@ -1,7 +1,10 @@
 package org.mattlang.jc;
 
-public class Benchmarks {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
+public class Benchmarks {
 
     /**
      * Does a benchmark of some code reducing warm up of JIT by rerunning the code
@@ -15,25 +18,42 @@ public class Benchmarks {
      * @param doSomethingToMeasure
      * @return
      */
+    public static <T> StopWatch benchmark(
+            String benchMarkName,
+            Callable<T> doSomethingToMeasure) {
+        return benchmark(benchMarkName, doSomethingToMeasure, 10).getWatch();
+    }
+
     public static StopWatch benchmark(
             String benchMarkName,
-            Runnable doSomethingToMeasure)
-    {
-        return benchmark(benchMarkName, doSomethingToMeasure, 10);
+            Runnable doSomethingToMeasure) {
+        return benchmark(benchMarkName, wrap(doSomethingToMeasure), 10).getWatch();
+    }
+
+    public static <T> BenchmarkResults benchmarkWithResults(
+            String benchMarkName,
+            Callable<T> doSomethingToMeasure) {
+        ExecResults<T> bmResult = benchmark(benchMarkName, doSomethingToMeasure, 10);
+        return new BenchmarkResults<T>(benchMarkName, bmResult, null, null);
     }
 
     public static BenchmarkResults benchmarkWithResults(
             String benchMarkName,
-            Runnable doSomethingToMeasure)
-    {
-        StopWatch watch = benchmark(benchMarkName, doSomethingToMeasure, 10);
-        return new BenchmarkResults(benchMarkName, watch, null, null);
+            Runnable doSomethingToMeasure) {
+        ExecResults bmResult = benchmark(benchMarkName, wrap(doSomethingToMeasure), 10);
+        return new BenchmarkResults(benchMarkName, bmResult, null, null);
     }
 
+    private static Callable wrap(Runnable doSomethingToMeasure) {
+        return () -> {
+            doSomethingToMeasure.run();
+            return null;
+        };
+    }
 
-    public static StopWatch benchmark(
+    public static <T> ExecResults<T> benchmark(
             String benchMarkName,
-            Runnable doSomethingToMeasure, int maxRounds) {
+            Callable<T> doSomethingToMeasure, int maxRounds) {
 
         int rounds = 0;
         long lastMeasuredTime = 0;
@@ -42,14 +62,18 @@ public class Benchmarks {
         StopWatch minWatch = new StopWatch();
 
         System.out.println("starting benchmark " + benchMarkName + " ...");
+        List<T> results = new ArrayList<>();
         do {
             lastMeasuredTime = measuredTime;
             rounds++;
             StopWatch watch = new StopWatch();
             watch.start();
-
-            doSomethingToMeasure.run();
-
+            try {
+                results.add(doSomethingToMeasure.call());
+            } catch (Exception e) {
+                watch.stop();
+                return new ExecResults<>(watch, results, e);
+            }
             watch.stop();
             measuredTime = watch.getDuration();
 
@@ -59,12 +83,12 @@ public class Benchmarks {
 
             System.out.println("round: " + rounds + " last: " + lastMeasuredTime + " current:" + measuredTime);
 
-            if (diffAccepted(lastMeasuredTime, measuredTime) && rounds>=3) {
+            if (diffAccepted(lastMeasuredTime, measuredTime) && rounds >= 3) {
                 break;
             }
         } while (rounds < maxRounds);
         System.out.println("benchmark result " + benchMarkName + ": " + minWatch.toString());
-        return minWatch;
+        return new ExecResults<>(minWatch, results);
     }
 
     private static boolean diffAccepted(long lastMeasuredTime, long measuredTime) {

@@ -1,6 +1,5 @@
 package org.mattlang.jc;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -13,11 +12,15 @@ import org.supercsv.prefs.CsvPreference;
 import lombok.Getter;
 
 @Getter
-public class BenchmarkResults {
+public class BenchmarkResults<T> {
 
     private final Boolean aspiration;
+    private final Boolean useNullMoves;
+
     String name;
     StopWatch watch;
+    private final ExecResults<T> execResult;
+
     private final long duration;
     private final String formattedDuration;
     private final String fenposition;
@@ -35,9 +38,10 @@ public class BenchmarkResults {
     private final String searchAlgorithm;
     private final String moveListImpl;
 
-    public BenchmarkResults(String name, StopWatch watch, Map stats, String fenposition) {
+    public BenchmarkResults(String name, ExecResults<T> execResults, Map stats, String fenposition) {
         this.name = name;
-        this.watch = watch;
+        this.watch = execResults.getWatch();
+        this.execResult = execResults;
         this.duration = watch.getDuration();
         this.formattedDuration = watch.getFormattedDuration();
         this.stats = stats;
@@ -54,7 +58,8 @@ public class BenchmarkResults {
         this.pvSearch = config.activatePvsSearch.getValue();
         this.maxQuiescence = config.maxQuiescence.getValue();
         this.searchAlgorithm = config.searchAlgorithm.getValue().name();
-        this.aspiration=config.aspiration.getValue();
+        this.aspiration = config.aspiration.getValue();
+        this.useNullMoves = config.useNullMoves.getValue();
         this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getSimpleName();
 
     }
@@ -63,10 +68,12 @@ public class BenchmarkResults {
             { "name", "fenposition", "depth", "maxQuiescence", "duration", "formattedDuration", "searchAlgorithm",
                     "evaluateFunction",
                     "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
-                    "pvSearch", "aspiration", "moveListImpl" };
+                    "pvSearch", "aspiration", "useNullMoves", "moveListImpl", "move", "nodesVisited",
+                    "quiescenceNodesVisited" };
 
-    public static void writeCsvReport(ArrayList<BenchmarkResults> results, String filename) throws IOException {
-        try (Writer writer = new FileWriter(new File(filename));
+    public static void writeCsvReport(ArrayList<BenchmarkIterativeResults> results, String filename)
+            throws IOException {
+        try (Writer writer = new FileWriter(filename);
                 CsvBeanWriter csvWriter = new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
             csvWriter.writeHeader(props);
             for (BenchmarkResults result : results) {
