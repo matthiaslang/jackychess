@@ -9,7 +9,6 @@ import java.util.Map;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -118,6 +117,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int negaMaximize(int ply, int depth, Color color,
             int alpha, int beta) {
         nodesVisited++;
+        boolean not_pv = Math.abs(beta - alpha) <= 1;
 
         if (searchContext.isRepetition()) {
             return Weights.REPETITION_WEIGHT;
@@ -143,7 +143,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         checkTimeout();
 
-        boolean not_pv = beta - alpha <= 1;
+
 
         /**************************************************************************
          * EVAL PRUNING / STATIC NULL MOVE                                         *
@@ -229,41 +229,52 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                 searchedMoves++;
 
-                int score;
-                if (firstChild) {
-                    /**
-                     * do full search (for pvs search on the first move, or if pvs search is deactivated)
-                     */
-                    score = -negaMaximize(ply + 1, depth - 1, color.invert(), -beta, -max);
-                    if (doPVSSearch) {
-                        firstChild = false;
-                    }
-                } else {
-                    /**
-                     * in pvs search try to do a 0 window search on all other than the first move:
-                     * we combine this with late move reductions if possible
-                     */
-                    int R = 0;
-                    /**
-                     * combine it with late move reductions if possible and activated
-                     */
-                    boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
-                    if (doLMR) {
-                        R = 1;
-                        if (searchedMoves > LMR_AFTER_N_SEARCHED_MOVES + LMR_N_MOVES_REDUCE_MORE && depth > 4) {
-                            R = depth / 3;
-                        }
-                    }
-                    // pvs try 0 window with or without late move reduction
-                    score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -max - 1, -max);
-
-                    /**
-                     * do a full window search in pvs search if score is out of our max, beta window:
-                     */
-                    if (max < score && score < beta) {
-                        score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -beta, -max);
+                /**
+                 * Late move reduction
+                 */
+                int R = 0;
+                boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
+                if (doLMR) {
+                    R = 1;
+                    if (searchedMoves > LMR_N_MOVES_REDUCE_MORE ) {
+                        R++;
                     }
                 }
+
+                boolean redo = false;
+                int score;
+                do {
+                    if (firstChild) {
+                        /**
+                         * do full search (for pvs search on the first move, or if pvs search is deactivated)
+                         */
+                        score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -beta, -max);
+                        if (doPVSSearch) {
+                            firstChild = false;
+                        }
+                    } else {
+                        // pvs try 0 window
+                        score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -max - 1, -max);
+
+                        /**
+                         * do a full window search in pvs search if score is out of our max, beta window:
+                         */
+                        if (max < score && score < beta) {
+                            score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -beta, -max);
+                        }
+                    }
+
+                    /**********************************************************************
+                     *  Sometimes reduced search brings us above alpha. This is unusual,   *
+                     *  since we expected reduced move to be bad in first place. It is     *
+                     *  not certain now, so let's search to the full, unreduced depth.     *
+                     **********************************************************************/
+                    redo = false;
+                    if (R > 0 && score > max) {
+                        R = 0;
+                        redo = true;
+                    }
+                } while (redo);
 
                 /** save score for all root moves: */
                 searchContext.updateRootMoveScore(depth, moveCursor.getMoveInt(), score);
@@ -351,8 +362,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
                 depth > 3 &&
                 !moveCursor.isCapture() &&
-                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
-                moveCursor.getOrder() >= OrderCalculator.LATE_MOVE_REDUCTION_BORDER &&
+                !moveCursor.isPawnPromotion() &&
+//                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
+                moveCursor.getOrder() >= OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck;
     }
 
