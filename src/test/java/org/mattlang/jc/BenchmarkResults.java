@@ -9,6 +9,8 @@ public class BenchmarkResults<T> {
 
     private final Boolean aspiration;
     private final Boolean useNullMoves;
+    private final String testName;
+    private final String testExpectedBestMove;
 
     String name;
     StopWatch watch;
@@ -31,14 +33,16 @@ public class BenchmarkResults<T> {
     private final String searchAlgorithm;
     private final String moveListImpl;
 
-    public BenchmarkResults(String name, ExecResults<T> execResults, Map stats, String fenposition) {
+    public BenchmarkResults(String name, ExecResults<T> execResults, Map stats, TestPosition testPosition) {
         this.name = name;
         this.watch = execResults.getWatch();
         this.execResult = execResults;
         this.duration = watch.getDuration();
         this.formattedDuration = watch.getFormattedDuration();
         this.stats = stats;
-        this.fenposition = fenposition;
+        this.fenposition = testPosition.getFen();
+        this.testName=testPosition.getName();
+        this.testExpectedBestMove=testPosition.getExpectedBestMove();
 
         ConfigValues config = Factory.getDefaults().getConfig();
         this.depth = config.maxDepth.getValue();

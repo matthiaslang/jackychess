@@ -27,8 +27,8 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
     private String ebfReport;
 
     public BenchmarkIterativeResults(String name,
-            ExecResults<IterativeSearchResult> execResults, Map stats, String fenposition) {
-        super(name, execResults, stats, fenposition);
+            ExecResults<IterativeSearchResult> execResults, Map stats, TestPosition testPosition) {
+        super(name, execResults, stats, testPosition);
 
         move = execResults.getResults().stream().map(r -> r.getSavedMove().toStr()).collect(joining());
         nodesVisited = execResults.getResults().stream().map(r -> r.getRslt().nodesVisited).reduce(0, Integer::sum);
@@ -42,7 +42,8 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
 
 
     public static final String[] props =
-            { "name", "fenposition", "depth", "maxQuiescence", "duration", "formattedDuration", "searchAlgorithm",
+            { "name", "fenposition", "testName", "testExpectedBestMove", "depth", "maxQuiescence", "duration",
+                    "formattedDuration", "searchAlgorithm",
                     "evaluateFunction",
                     "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
                     "pvSearch", "aspiration", "useNullMoves", "moveListImpl", "move", "nodesVisited",

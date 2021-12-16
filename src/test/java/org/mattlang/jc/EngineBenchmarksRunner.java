@@ -1,9 +1,12 @@
 package org.mattlang.jc;
 
+import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.Benchmarks.benchmark;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.mattlang.jc.board.GameState;
@@ -33,11 +36,20 @@ public class EngineBenchmarksRunner {
 
     private ArrayList<BenchmarkIterativeResults> results = new ArrayList<>();
 
+    private List<TestPosition> testPositions = Arrays.stream(POSITIONS).map(p -> new TestPosition(p)).collect(toList());
+
+    public EngineBenchmarksRunner() {
+    }
+
+    public EngineBenchmarksRunner(List<TestPosition> testPositions) {
+        this.testPositions = testPositions;
+    }
+
     public void benchmarkExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
         Factory.setDefaults(searchParameter);
 
-        for (String position : POSITIONS) {
+        for (TestPosition position : testPositions) {
             results.add(benchmarkRun(position));
         }
     }
@@ -46,19 +58,19 @@ public class EngineBenchmarksRunner {
         gameContext = new GameContext();
         Factory.setDefaults(searchParameter);
 
-        for (String position : POSITIONS) {
+        for (TestPosition position : testPositions) {
             results.add(benchmarkRun(position, 1));
         }
     }
 
-    private BenchmarkIterativeResults benchmarkRun(String fenposition) {
-        return benchmarkRun(fenposition, 10);
+    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition) {
+        return benchmarkRun(testPosition, 10);
     }
 
-    private BenchmarkIterativeResults benchmarkRun(String fenposition, int count) {
+    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition, int count) {
 
         Engine engine = new Engine();
-        GameState state = engine.getBoard().setFenPosition(fenposition);
+        GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
         System.out.println(engine.getBoard().toUniCodeStr());
         String name = generateNameFromOptions();
 
@@ -67,7 +79,7 @@ public class EngineBenchmarksRunner {
                 () -> engine.goIterative(state, gameContext), count);
         Map stats = Factory.getDefaults().collectStatistics();
 
-        return new BenchmarkIterativeResults(name, execResults, stats, fenposition);
+        return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
     }
 
     private String generateNameFromOptions() {
