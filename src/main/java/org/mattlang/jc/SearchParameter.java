@@ -34,7 +34,7 @@ public class SearchParameter {
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new DefaultEvaluateFunction());
 
-    public final Impl<SearchMethod> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
+    public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
     public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, LegalMoveGeneratorImpl3::new);
 

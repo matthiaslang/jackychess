@@ -8,7 +8,7 @@ public class Engine {
 
     private BoardRepresentation board = Factory.getDefaults().boards.create();
 
-    private SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
+    private IterativeDeepeningSearch searchMethod = Factory.getDefaults().searchMethod.create();
 
     private int depth = Factory.getDefaults().getConfig().maxDepth.getValue();
 
@@ -23,7 +23,7 @@ public class Engine {
     public Engine() {
     }
 
-    public Engine(SearchMethod searchMethod, int depth) {
+    public Engine(IterativeDeepeningSearch searchMethod, int depth) {
         this.searchMethod = searchMethod;
         this.depth = depth;
     }
@@ -31,11 +31,6 @@ public class Engine {
     @Deprecated
     public Move go() {
         return searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), new GameContext(), depth);
-    }
-
-    @Deprecated
-    public Move go(Color color) {
-        return searchMethod.search(new GameState(board, color, new SimpleRepetitionChecker()), new GameContext(), depth);
     }
 
     public Move go(GameState gameState, GameContext gameContext) {

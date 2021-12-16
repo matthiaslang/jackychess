@@ -17,7 +17,7 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
-import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
@@ -27,7 +27,7 @@ import org.mattlang.jc.util.MoveValidator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector {
+public class IterativeDeepeningPVS implements IterativeDeepeningSearch, StatisticsCollector {
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
@@ -53,6 +53,7 @@ public class IterativeDeepeningPVS implements SearchMethod, StatisticsCollector 
         return iterativeSearch(gameState, gameContext, maxDepth).getSavedMove();
     }
 
+    @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
 
