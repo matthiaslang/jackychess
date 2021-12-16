@@ -16,7 +16,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
@@ -176,44 +175,6 @@ public class EngineTest {
         // check that the promotion letter is correctly returned in the bestmove:
         assertThat(move.toStr()).isEqualTo("a7a8q");
     }
-
-    @Test
-    @Ignore
-    public void testIterativeDeepeningMtdf() throws IOException {
-
-        initLogging();
-        UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningMtdf());
-        // now starting engine:
-        Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
-
-        System.out.println(move.toStr());
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e6");
-    }
-
-    @Test
-    @Ignore
-    public void testMtdfProblem() throws IOException {
-
-        initLogging();
-        UCI.instance.attachStreams();
-
-        // now starting engine:
-        Engine engine = new Engine(new IterativeDeepeningMtdf(), 6);
-        engine.getBoard().setFenPosition("position startpos moves e2e4 e7e6 g1f3 d8f6 f1c4 f6f3 g2f3");
-        System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
-
-        System.out.println(move.toStr());
-
-        assertThat(move.toStr()).isEqualTo("d7d5");
-    }
-
-
 
     /**
      * "Check" is not defined as "invalid" move position, instead we have a weight function which evals a captured

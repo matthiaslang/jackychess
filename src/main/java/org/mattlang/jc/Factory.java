@@ -8,7 +8,6 @@ import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
-import org.mattlang.jc.engine.search.IterativeDeepeningMtdf;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.*;
@@ -80,20 +79,6 @@ public class Factory {
                     c.maxQuiescence.setValue(2);
                     c.timeout.setValue(15000);
                 });
-    }
-
-    public static SearchParameter createIterativeDeepeningMtdf() {
-        return new SearchParameter()
-                .evaluateFunction.set(() -> new DefaultEvaluateFunction())
-                .moveGenerator.set(() -> new MoveGeneratorImpl3())
-                .legalMoveGenerator.set(() -> new LegalMoveGeneratorImpl3())
-                .searchMethod.set(() -> new IterativeDeepeningMtdf())
-                .config(c -> {
-                    c.maxDepth.setValue(6);
-                    c.maxQuiescence.setValue(0);
-                    c.timeout.setValue(15000);
-                })
-                ;
     }
 
     public static SearchParameter createDefaultParameter() {

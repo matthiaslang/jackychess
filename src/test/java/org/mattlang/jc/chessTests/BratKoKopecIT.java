@@ -81,14 +81,4 @@ public class BratKoKopecIT {
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }
 
-    //@Test
-    // todo we do not test with mtdf since mtdf is not working fast enough (no transposition saving of bounds)
-    // this should be activated, when mtdf is reworked to work with proper caching
-    public void testIterativeDeepeningMtdf() {
-        // create engine
-        Factory.setDefaults(Factory.createIterativeDeepeningMtdf());
-        Engine engine = new Engine();
-        EpdParsing.testPosition(engine, position, expectedBestMove);
-    }
-
 }
