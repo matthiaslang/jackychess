@@ -136,12 +136,29 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         if (depth == 0) {
-            return quiesce(ply+1, -1, color, alpha, beta);
+            return quiesce(ply + 1, -1, color, alpha, beta);
         }
 
         boolean areWeInCheck = searchContext.isInCheck(color);
 
         checkTimeout();
+
+        boolean not_pv = beta - alpha <= 1;
+
+        /**************************************************************************
+         * EVAL PRUNING / STATIC NULL MOVE                                         *
+         **************************************************************************/
+
+//        if (depth < 3
+//                && not_pv
+//                && !areWeInCheck
+//                && Math.abs(beta - 1) > ALPHA_START + 100) {
+//            int static_eval = searchContext.eval(color);
+//
+//            int eval_margin = 120 * depth;
+//            if (static_eval - eval_margin >= beta)
+//                return static_eval - eval_margin;
+//        }
 
         /**
          * null move reduction:
@@ -152,7 +169,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
          */
         if (useNullMoves &&
                 depth > 2 &&
-                beta - alpha <= 1 &&
+                not_pv &&
                 searchContext.getNullMoveCounter() == 0 &&
                 !areWeInCheck &&
                 searchContext.isOpeningOrMiddleGame()
@@ -167,6 +184,25 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 return eval;
             }
         }
+
+        /**************************************************************************
+         *  RAZORING - if a node is close to the leaf and its static score is low, *
+         *  we drop directly to the quiescence search.                             *
+         **************************************************************************/
+
+//        if (not_pv
+//                && !areWeInCheck
+//                && tte == null
+//                && searchContext.getNullMoveCounter() == 0
+//                //	&&  !(bbPc(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
+//                && depth <= 3) {
+//            int threshold = alpha - 300 - (depth - 1) * 60;
+//            if (searchContext.eval(color) < threshold) {
+//                int val = quiesce(ply + 1, -1, color, alpha, beta);
+//                if (val < threshold)
+//                    return alpha;
+//            }
+//        } // end of razoring code
 
         int max = alpha;
 
