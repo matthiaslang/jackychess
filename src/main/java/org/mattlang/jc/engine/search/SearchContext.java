@@ -133,17 +133,21 @@ public final class SearchContext {
 
     public void undoNullMove() {
         nullMoveCounter--;
-        board.setEnPassantOption(enPassantBeforeNullMove);
-        repetitionChecker = repetitionCheckerBeforeNullMove;
+        if (enPassantBeforeNullMove != board.getEnPassantMoveTargetPos()) {
+            board.setEnPassantOption(enPassantBeforeNullMove);
+        }
+//        repetitionChecker = repetitionCheckerBeforeNullMove;
     }
 
     public void doPrepareNullMove() {
         nullMoveCounter++;
         enPassantBeforeNullMove = board.getEnPassantMoveTargetPos();
-        board.setEnPassantOption(Board3.NO_EN_PASSANT_OPTION);
+        if (enPassantBeforeNullMove != Board3.NO_EN_PASSANT_OPTION) {
+            board.setEnPassantOption(Board3.NO_EN_PASSANT_OPTION);
+        }
 
-        repetitionCheckerBeforeNullMove = repetitionChecker;
-        repetitionChecker = new SimpleRepetitionChecker();
+//        repetitionCheckerBeforeNullMove = repetitionChecker;
+//        repetitionChecker = new SimpleRepetitionChecker();
     }
 
     public boolean isInCheck(Color color) {

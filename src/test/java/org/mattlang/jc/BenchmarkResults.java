@@ -1,13 +1,6 @@
 package org.mattlang.jc;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Map;
-
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import lombok.Getter;
 
@@ -64,21 +57,4 @@ public class BenchmarkResults<T> {
 
     }
 
-    public static final String[] props =
-            { "name", "fenposition", "depth", "maxQuiescence", "duration", "formattedDuration", "searchAlgorithm",
-                    "evaluateFunction",
-                    "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
-                    "pvSearch", "aspiration", "useNullMoves", "moveListImpl", "move", "nodesVisited",
-                    "quiescenceNodesVisited" };
-
-    public static void writeCsvReport(ArrayList<BenchmarkIterativeResults> results, String filename)
-            throws IOException {
-        try (Writer writer = new FileWriter(filename);
-                CsvBeanWriter csvWriter = new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
-            csvWriter.writeHeader(props);
-            for (BenchmarkResults result : results) {
-                csvWriter.write(result, props);
-            }
-        }
-    }
 }

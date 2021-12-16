@@ -78,7 +78,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
                 }
             }
         } catch (TimeoutException te) {
-            return new IterativeSearchResult(rounds);
+            String ebfReport = format("EBF: %s", ebf.report());
+            UCILogger.log(ebfReport);
+            LOGGER.info(ebfReport);
+            return new IterativeSearchResult(rounds, ebfReport);
         } finally {
             //negaMaxAlphaBeta.reset();
         }
@@ -87,7 +90,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         UCILogger.log(ebfReport);
         LOGGER.info(ebfReport);
 
-        return new IterativeSearchResult(rounds);
+        return new IterativeSearchResult(rounds, ebfReport);
     }
 
     @AllArgsConstructor

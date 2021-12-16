@@ -11,13 +11,14 @@ public class IterativeSearchResult {
 
     private Move savedMove;
     private NegaMaxResult rslt;
-
+    private String ebfReport;
     private List<IterativeDeepeningPVS.IterativeRoundResult> rounds;
 
-    public IterativeSearchResult(List<IterativeDeepeningPVS.IterativeRoundResult> rounds) {
+    public IterativeSearchResult(List<IterativeDeepeningPVS.IterativeRoundResult> rounds, String ebfReport) {
         this.rounds = rounds;
         this.rslt = findLastResult(rounds);
         this.savedMove = findLastSavedMove(rounds);
+        this.ebfReport = ebfReport;
     }
 
     private Move findLastSavedMove(List<IterativeDeepeningPVS.IterativeRoundResult> rounds) {

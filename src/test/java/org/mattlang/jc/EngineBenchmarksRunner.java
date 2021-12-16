@@ -87,6 +87,6 @@ public class EngineBenchmarksRunner {
     }
 
     public void writeCsvReport(String filename) throws IOException {
-        BenchmarkResults.writeCsvReport(results, filename);
+        BenchmarkIterativeResults.writeCsvReport(results, filename);
     }
 }
