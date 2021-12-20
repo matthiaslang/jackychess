@@ -215,9 +215,9 @@ public class BB {
     }
 
     public static long southFill(long gen) {
-        gen |= (gen >> 8);
-        gen |= (gen >> 16);
-        gen |= (gen >> 32);
+        gen |= (gen >>> 8);
+        gen |= (gen >>> 16);
+        gen |= (gen >>> 32);
         return gen;
     }
 
