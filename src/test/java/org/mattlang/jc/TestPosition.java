@@ -22,9 +22,13 @@ public class TestPosition {
 
     public TestPosition(String fen, String expectedBestMove, String name) {
         this.fen = fen;
-        this.fenPosition = "position fen " + fen + " 0 0";
+        this.fenPosition = "position fen " + fen + "0 0";
         this.expectedBestMove = expectedBestMove;
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return name + ": " + fen;
+    }
 }
