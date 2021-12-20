@@ -68,6 +68,17 @@ public class SearchOptsBenchmark2 {
                         .config(c -> c.useHistoryHeuristic.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
 
+        // everything on + cache + check extension:
+        runner.benchmarkSingleExecute(
+                everythingOff()
+                        .config(c -> c.activatePvsSearch.setValue(true))
+                        .config(c -> c.usePvSorting.setValue(true))
+                        .config(c -> c.useKillerMoves.setValue(true))
+                        .config(c -> c.useMvvLvaSorting.setValue(true))
+                        .config(c -> c.useHistoryHeuristic.setValue(true))
+                        .config(c -> c.chessExtension.setValue(true))
+                        .config(c -> c.useTTCache.setValue(true)));
+
         // everything on + cache +  nullMove:
         runner.benchmarkSingleExecute(
                 everythingOff()
