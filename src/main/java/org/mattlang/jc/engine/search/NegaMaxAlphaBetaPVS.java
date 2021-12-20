@@ -123,6 +123,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return Weights.REPETITION_WEIGHT;
         }
 
+        boolean areWeInCheck = searchContext.isInCheck(color);
+        depth = checkToExtend(areWeInCheck, color, depth);
+
+        if (depth == 0) {
+            return quiesce(ply + 1, -1, color, alpha, beta);
+        }
+        
         TTEntry tte = searchContext.getTTEntry(color);
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
             if (tte.isExact()) // stored value is exact
@@ -134,16 +141,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             if (alpha >= beta)
                 return adjustScore(tte.getValue(), ply); // if lowerbound surpasses upperbound
         }
-
-        if (depth == 0) {
-            return quiesce(ply + 1, -1, color, alpha, beta);
-        }
-
-        boolean areWeInCheck = searchContext.isInCheck(color);
-
+        
         checkTimeout();
-
-
 
         /**************************************************************************
          * EVAL PRUNING / STATIC NULL MOVE                                         *
@@ -221,8 +220,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             boolean firstChild = true;
 
-            depth = checkToExtend(areWeInCheck, color, depth);
-
             int searchedMoves = 0;
             for (MoveCursor moveCursor : moves) {
                 searchContext.doMove(moveCursor);
@@ -232,14 +229,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 /**
                  * Late move reduction
                  */
-                int R = 0;
-                boolean doLMR = canWeDoLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
-                if (doLMR) {
-                    R = 1;
-                    if (searchedMoves > LMR_N_MOVES_REDUCE_MORE ) {
-                        R++;
-                    }
-                }
+                int R = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
 
                 boolean redo = false;
                 int score;
@@ -356,16 +346,26 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      * @param areWeInCheck
      * @return
      */
-    private boolean canWeDoLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
+    private int determineLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
             boolean areWeInCheck) {
-        return useLateMoveReductions &&
+        if (useLateMoveReductions &&
                 searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
                 depth > 3 &&
                 !moveCursor.isCapture() &&
                 !moveCursor.isPawnPromotion() &&
-//                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
+                //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
                 moveCursor.getOrder() >= OrderCalculator.KILLER_SCORE &&
-                !areWeInCheck;
+                !areWeInCheck) {
+
+            if (searchedMoves > LMR_N_MOVES_REDUCE_MORE) {
+                return 2;
+            } else {
+                return 1;
+            }
+
+        } else {
+            return 0;
+        }
     }
 
     /**
