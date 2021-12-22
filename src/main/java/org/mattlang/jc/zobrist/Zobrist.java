@@ -4,6 +4,8 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
+import java.util.Random;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
 
