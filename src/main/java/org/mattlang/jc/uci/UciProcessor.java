@@ -163,7 +163,7 @@ public class UciProcessor {
     }
 
     private void identifyYourself() {
-        String version = Factory.getAppProps().getProperty("version");
+        String version = Factory.getAppProps().getProperty("longversion");
         String buildtime = Factory.getAppProps().getProperty("buildtime");
         UCI.instance.putCommand("id name JackyChess " + version + " build at: " + buildtime);
         UCI.instance.putCommand("id author Matthias Lang");
