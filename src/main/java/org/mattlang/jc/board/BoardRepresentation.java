@@ -27,6 +27,10 @@ public interface BoardRepresentation {
 
     void move(int from, int to);
 
+    void switchSiteToMove();
+
+    Color getSiteToMove();
+
     Figure getFigure(int i);
 
     byte getFigureCode(int i);

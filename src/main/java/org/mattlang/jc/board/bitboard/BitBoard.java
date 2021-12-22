@@ -37,6 +37,9 @@ public class BitBoard implements BoardRepresentation {
 
     private long zobristHash = 0L;
 
+    @Getter
+    private Color siteToMove;
+
     /**
      * the target pos of the en passant move that could be taken as next move on the board.
      * -1 if no en passant is possible.
@@ -47,12 +50,14 @@ public class BitBoard implements BoardRepresentation {
         for (int i = 0; i < 64; i++) {
             board.set(i, FT_EMPTY);
         }
+        siteToMove = WHITE;
     }
 
-    public BitBoard(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos) {
+    public BitBoard(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos, Color siteToMove) {
         this.board = board;
         this.castlingRights = castlingRights;
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
+        this.siteToMove = siteToMove;
 
     }
 
@@ -60,6 +65,7 @@ public class BitBoard implements BoardRepresentation {
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
         castlingRights = new CastlingRights();
+        siteToMove=WHITE;
     }
 
     @Override
@@ -70,6 +76,7 @@ public class BitBoard implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
+        siteToMove=WHITE;
         zobristHash = Zobrist.hash(this);
     }
 
@@ -225,6 +232,12 @@ public class BitBoard implements BoardRepresentation {
     }
 
     @Override
+    public void switchSiteToMove() {
+        siteToMove = siteToMove.invert();
+        zobristHash = Zobrist.colorFlip(zobristHash);
+    }
+
+    @Override
     public Figure getFigure(int i) {
         return Figure.getFigureByCode(board.get(i));
     }
@@ -240,22 +253,19 @@ public class BitBoard implements BoardRepresentation {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        BitBoard board1 = (BitBoard) o;
-        return enPassantMoveTargetPos == board1.enPassantMoveTargetPos &&
-                board.equals(board1.board) &&
-                castlingRights.equals(board1.castlingRights);
+        BitBoard bitBoard = (BitBoard) o;
+        return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos && board.equals(bitBoard.board)
+                && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(castlingRights, enPassantMoveTargetPos);
-        result = 31 * result + board.hashCode();
-        return result;
+        return Objects.hash(board, castlingRights, siteToMove, enPassantMoveTargetPos);
     }
 
     @Override
     public BitBoard copy() {
-        BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos);
+        BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         return copied;
     }

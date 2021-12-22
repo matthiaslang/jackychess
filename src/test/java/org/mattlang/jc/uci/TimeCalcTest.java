@@ -6,7 +6,6 @@ import static org.mattlang.jc.uci.TimeCalc.determineTime;
 import org.junit.Test;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 
 public class TimeCalcTest {
@@ -16,7 +15,7 @@ public class TimeCalcTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        GameState gameState = new GameState(board, Color.BLACK);
+        GameState gameState = new GameState(board);
         gameState = gameState.getBoard()
                 .setFenPosition(
                         "position startpos moves d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 a2a3 c8a6 d1c2 c7c5 d4d5 e6d5 c4d5 d7d6 b1c3 f8e7\n"
@@ -39,7 +38,7 @@ public class TimeCalcTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        GameState gameState = new GameState(board, Color.WHITE);
+        GameState gameState = new GameState(board);
         GoParameter goparams = new GoParameter();
         goparams.wtime = 60000;
         goparams.btime = 60000;
@@ -57,7 +56,7 @@ public class TimeCalcTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        GameState gameState = new GameState(board, Color.WHITE);
+        GameState gameState = new GameState(board);
         GoParameter goparams = new GoParameter();
         goparams.wtime = 60000;
         goparams.btime = 30000;
@@ -74,7 +73,7 @@ public class TimeCalcTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        GameState gameState = new GameState(board, Color.WHITE);
+        GameState gameState = new GameState(board);
         GoParameter goparams = new GoParameter();
         goparams.wtime = 900;
         goparams.btime = 800;
@@ -91,7 +90,7 @@ public class TimeCalcTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        GameState gameState = new GameState(board, Color.WHITE);
+        GameState gameState = new GameState(board);
         GoParameter goparams = new GoParameter();
         goparams.wtime = 900;
         goparams.btime = 100;

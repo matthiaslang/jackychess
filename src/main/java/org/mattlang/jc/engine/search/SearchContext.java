@@ -67,6 +67,8 @@ public final class SearchContext {
 
     private final TTCacheInterface ttCache;
 
+//    private final TTCache3 ttc;
+
     private final EvaluateFunction evaluate;
 
     // null move stuff
@@ -94,6 +96,7 @@ public final class SearchContext {
         savedMove = 0;
 
         ttCache = context.getTtCache();
+        //ttc = context.getTtc();
     }
 
     public void adjustSelDepth(int depth) {
@@ -136,6 +139,7 @@ public final class SearchContext {
         if (enPassantBeforeNullMove != board.getEnPassantMoveTargetPos()) {
             board.setEnPassantOption(enPassantBeforeNullMove);
         }
+        board.switchSiteToMove();
 //        repetitionChecker = repetitionCheckerBeforeNullMove;
     }
 
@@ -145,7 +149,7 @@ public final class SearchContext {
         if (enPassantBeforeNullMove != Board3.NO_EN_PASSANT_OPTION) {
             board.setEnPassantOption(Board3.NO_EN_PASSANT_OPTION);
         }
-
+        board.switchSiteToMove();
 //        repetitionCheckerBeforeNullMove = repetitionChecker;
 //        repetitionChecker = new SimpleRepetitionChecker();
     }
@@ -156,7 +160,12 @@ public final class SearchContext {
 
     public void storeTT(Color color, int max, int alpha, int beta, int depth,
             int move) {
+        // TESTSETSETET
+//        if (color==Color.BLACK){
+//            return;
+//        }
         if (doCaching) {
+//            ttc.addValue(board.getZobristHash(), max, depth, TTCache3.toFlag(max, alpha, beta),0);
             ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
         }
     }
@@ -166,6 +175,15 @@ public final class SearchContext {
             return ttCache.getTTEntry(board, color);
         } else {
             return null;
+        }
+    }
+    public long getTTEEntry(Color color) {
+        if (doCaching) {
+//            return ttc.getValue(board.getZobristHash());
+            return 0;
+            //            return ttCache.getTTEntry(board, color);
+        } else {
+            return 0;
         }
     }
 
@@ -189,7 +207,7 @@ public final class SearchContext {
         rslts.put("savedMove", new MoveImpl(getSavedMove()));
         rslts.put("savedMoveScore", getSavedMoveScore());
         Map ttcacheMap = new LinkedHashMap();
-        ttCache.collectStatistics(ttcacheMap);
+//        ttCache.collectStatistics(ttcacheMap);
         rslts.put("ttcache", ttcacheMap);
 
     }

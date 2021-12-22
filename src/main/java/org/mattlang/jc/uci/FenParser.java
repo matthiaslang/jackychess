@@ -19,7 +19,6 @@ public class FenParser {
             throw new IllegalStateException("Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
         RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
-        Color who2Move = WHITE;
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
         int movesSection = 2;
@@ -36,7 +35,7 @@ public class FenParser {
             String noHalfMoves = splitted[6];
             String nextMoveNum = splitted[7];
 
-            who2Move = setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
+            setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
 
             movesSection = 8;
         } else {
@@ -50,11 +49,10 @@ public class FenParser {
                     Move move = parseMove(board, moveStr);
                     board.move(move);
                     repetitionChecker.push(board);
-                    who2Move = who2Move.invert();
                 }
             }
         }
-        return new GameState(board, who2Move, repetitionChecker);
+        return new GameState(board, repetitionChecker);
     }
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
@@ -127,6 +125,9 @@ public class FenParser {
             if (rochade.contains("q")) {
                 board.setCastlingAllowed(BLACK, LONG);
             }
+        }
+        if (!"w".equals(zug)) {
+            board.switchSiteToMove();
         }
 
         return "w".equals(zug) ? WHITE : BLACK;

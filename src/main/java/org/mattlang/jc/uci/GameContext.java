@@ -26,14 +26,20 @@ public class GameContext {
     private KillerMoves killerMoves = new KillerMoves();
 
     @Getter
-    public TTCacheInterface ttCache = new TTCache();
+    public TTCacheInterface ttCache;
+
+//    @Getter
+//    public TTCache3 ttc = new TTCache3();
 
     private HashMap<String, Object> context = new HashMap<>();
 
     public GameContext() {
+//        ttc.clearValues();
+        ttCache = new TTCache();
     }
 
     public GameContext(ConfigValues configValues) {
+//        ttc.clearValues();
         ttCache = configValues.cacheImpls.getValue().createSupplier().get();
     }
 

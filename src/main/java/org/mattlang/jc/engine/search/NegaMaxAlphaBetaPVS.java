@@ -126,10 +126,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         boolean areWeInCheck = searchContext.isInCheck(color);
         depth = checkToExtend(areWeInCheck, color, depth);
 
-        if (depth == 0) {
-            return quiesce(ply + 1, -1, color, alpha, beta);
-        }
-        
+
+
         TTEntry tte = searchContext.getTTEntry(color);
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
             if (tte.isExact()) // stored value is exact
@@ -141,7 +139,25 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             if (alpha >= beta)
                 return adjustScore(tte.getValue(), ply); // if lowerbound surpasses upperbound
         }
-        
+
+         /*
+        long tte = searchContext.getTTEntry(color);
+        if (tte != 0 && ply != 1 && TTCache3.getDepth(tte) >= depth) {
+            int tteScore = TTCache3.getScore(tte);
+            int tteType = TTCache3.getFlag(tte);
+            if (tteType == TTEntry.EXACT_VALUE) // stored value is exact
+                return adjustScore(tteScore, ply);
+            if (tteType == TTEntry.LOWERBOUND && tteScore > alpha)
+                alpha = adjustScore(tteScore, ply); // update lowerbound alpha if needed
+            else if (tteType == TTEntry.UPPERBOUND && tteScore < beta)
+                beta = adjustScore(tteScore, ply); // update upperbound beta if needed
+            if (alpha >= beta)
+                return adjustScore(tteScore, ply); // if lowerbound surpasses upperbound
+        }
+        */
+        if (depth == 0) {
+            return quiesce(ply + 1, -1, color, alpha, beta);
+        }
         checkTimeout();
 
         /**************************************************************************
@@ -410,7 +426,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
-            searchContext.storeTT(color, eval, alpha, beta, depth, 0);
+            // todo should we store values from quiescence? and with what depth?
+            //searchContext.storeTT(color, eval, alpha, beta, /*depth*/ 0, 0);
             return eval;
         }
 
@@ -450,7 +467,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
         }
 
-        searchContext.storeTT(color, x, alpha, beta, depth, 0);
+        // todo store values from quiescence? and if so, with what depth?
+        //searchContext.storeTT(color, x, alpha, beta, /*depth*/ 0, 0);
 
         return alpha;
     }

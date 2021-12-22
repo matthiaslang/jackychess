@@ -246,7 +246,7 @@ public final class MoveImpl implements Move {
     @Override
     public void move(BoardRepresentation board) {
         board.move(getFromIndex(), getToIndex());
-
+        board.switchSiteToMove();
         if (type >= ENPASSANT_MOVE) {
             board.setPos(decodeEnPassantCapturePos(), FigureConstants.FT_EMPTY);
         } else if (isPromotion()) {
@@ -272,6 +272,7 @@ public final class MoveImpl implements Move {
     @Override
     public void undo(BoardRepresentation board) {
         board.move(getToIndex(), getFromIndex());
+        board.switchSiteToMove();
         if (capturedFigure != 0) {
             board.setPos(getToIndex(), capturedFigure);
         }

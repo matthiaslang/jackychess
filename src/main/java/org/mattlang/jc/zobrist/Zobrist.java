@@ -1,9 +1,8 @@
 package org.mattlang.jc.zobrist;
 
 import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
-import java.util.Random;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
@@ -22,6 +21,8 @@ public class Zobrist {
 
     private static long[] rndCastling = new long[MAXCASTLING];
 
+    private static long colorFlip;
+
     static {
         initRandomNumbers();
     }
@@ -36,6 +37,8 @@ public class Zobrist {
         for (int i = 0; i < MAXCASTLING; i++) {
             rndCastling[i] = random.nextLong();
         }
+
+        colorFlip = random.nextLong();
     }
 
     public static long hash(BoardRepresentation board) {
@@ -48,6 +51,9 @@ public class Zobrist {
         }
         h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
         h = updateCastling(h, board.getCastlingRights());
+        if (board.getSiteToMove() == WHITE) {
+            h = Zobrist.colorFlip(h);
+        }
 
         return h;
     }
@@ -66,13 +72,18 @@ public class Zobrist {
         return h;
     }
 
-    public static long updateEnPassant(long h,  int enPassantMoveTargetPos) {
+    public static long updateEnPassant(long h, int enPassantMoveTargetPos) {
         h ^= rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
         return h;
     }
 
     public static long updateCastling(long h, byte castlingRights) {
         h ^= rndCastling[castlingRights];
+        return h;
+    }
+
+    public static long colorFlip(long h) {
+        h ^= colorFlip;
         return h;
     }
 }

@@ -29,7 +29,8 @@ public class EngineTest {
 
         BoardRepresentation board = new Board3();
         board.setStartPosition();
-        Move move = searchMethod.search(new GameState(board, Color.BLACK, new SimpleRepetitionChecker()), new GameContext(), 6);
+        board.switchSiteToMove();
+        Move move = searchMethod.search(new GameState(board, new SimpleRepetitionChecker()), new GameContext(), 6);
         System.out.println(board.toUniCodeStr());
 
         System.out.println(move.toStr());
@@ -96,6 +97,7 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
+        engine.getBoard().switchSiteToMove();
         Move move = engine.go();
 
         System.out.println(move.toStr());

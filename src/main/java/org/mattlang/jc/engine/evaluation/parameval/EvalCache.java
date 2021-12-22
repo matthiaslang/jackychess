@@ -9,10 +9,8 @@ public class EvalCache {
     public static final int CAPACITY = 1 << bitSize;
     public static final int NORESULT = 1000000;
 
-    private long[] zobristsWhite = new long[CAPACITY];
-    private int[] scoresWhite = new int[CAPACITY];
-    private long[] zobristsBlack = new long[CAPACITY];
-    private int[] scoresBlack = new int[CAPACITY];
+    private long[] zobrists = new long[CAPACITY];
+    private int[] scores = new int[CAPACITY];
 
     public final static EvalCache instance = new EvalCache();
 
@@ -22,18 +20,10 @@ public class EvalCache {
 
     public int find(long zobristHash, Color who2Move) {
         int index = h0(zobristHash);
-        switch (who2Move) {
-        case WHITE:
-            if (zobristsWhite[index] == zobristHash) {
-                return scoresWhite[index];
-            }
-            break;
-        case BLACK:
-            if (zobristsBlack[index] == zobristHash) {
-                return scoresBlack[index];
-            }
-            break;
+        if (zobrists[index] == zobristHash) {
+            return scores[index];
         }
+
         return NORESULT;
     }
 
@@ -43,15 +33,9 @@ public class EvalCache {
 
     public void save(long zobristHash, Color who2Move, int score) {
         int index = h0(zobristHash);
-        switch (who2Move) {
-        case WHITE:
-            zobristsWhite[index] = zobristHash;
-            scoresWhite[index] = score;
-            break;
-        case BLACK:
-            zobristsBlack[index] = zobristHash;
-            scoresBlack[index] = score;
-            break;
-        }
+
+        zobrists[index] = zobristHash;
+        scores[index] = score;
+
     }
 }

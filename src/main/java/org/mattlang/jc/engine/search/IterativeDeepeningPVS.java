@@ -197,6 +197,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         long nps = duration == 0 ? nodes : nodes * 1000 / duration;
 
         long hashfull = gameContext.ttCache.calcHashFull();
+//        long hashfull = gameContext.ttc.getUsagePercentage();
         UCI.instance.putCommand("info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
                 " score cp " + rslt.max + " nodes " + nodes

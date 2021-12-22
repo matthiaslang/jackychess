@@ -14,6 +14,8 @@ import java.util.Objects;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
+import lombok.Getter;
+
 /**
  * Represents a board with figures.
  * This variant keeps a redundant piece list in addition to the board.
@@ -38,12 +40,15 @@ public class Board3 implements BoardRepresentation {
 
     private byte[] board = new byte[64];
 
-    private CastlingRights castlingRights= new CastlingRights();
+    private CastlingRights castlingRights = new CastlingRights();
 
     private PieceList blackPieces = new PieceList();
     private PieceList whitePieces = new PieceList();
 
-    private long zobristHash=0L;
+    private long zobristHash = 0L;
+
+    @Getter
+    private Color siteToMove;
 
     /**
      * the target pos of the en passant move that could be taken as next move on the board.
@@ -52,15 +57,17 @@ public class Board3 implements BoardRepresentation {
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
     public Board3() {
-        for(int i=0; i<64; i++) {
+        for (int i = 0; i < 64; i++) {
             board[i] = FT_EMPTY;
         }
+        siteToMove = WHITE;
     }
 
-    public Board3(byte[] board, CastlingRights castlingRights, int enPassantMoveTargetPos) {
+    public Board3(byte[] board, CastlingRights castlingRights, int enPassantMoveTargetPos, Color siteToMove) {
         this.board = board;
         this.castlingRights = castlingRights;
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
+        this.siteToMove = siteToMove;
 
         initPeaceList();
     }
@@ -80,6 +87,7 @@ public class Board3 implements BoardRepresentation {
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
         castlingRights = new CastlingRights();
+        siteToMove=WHITE;
     }
 
     @Override
@@ -91,6 +99,7 @@ public class Board3 implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
+        siteToMove=WHITE;
         zobristHash = Zobrist.hash(this);
     }
 
@@ -255,6 +264,12 @@ public class Board3 implements BoardRepresentation {
     }
 
     @Override
+    public void switchSiteToMove() {
+        siteToMove = siteToMove.invert();
+        zobristHash = Zobrist.colorFlip(zobristHash);
+    }
+
+    @Override
     public Figure getFigure(int i) {
         return Figure.getFigureByCode(board[i]);
     }
@@ -283,7 +298,7 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public Board3 copy() {
-        Board3 copied = new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos);
+        Board3 copied = new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         return copied;
     }

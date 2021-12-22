@@ -11,7 +11,7 @@ import org.mattlang.jc.board.Color;
 
 public final class TTCache implements TTCacheInterface {
 
-    public static final int bitSize = 23;
+    public static final int bitSize = 24;
 
     public static final int CAPACITY = 1 << bitSize;
     public static final int MAX_AGE = 2;
@@ -28,20 +28,13 @@ public final class TTCache implements TTCacheInterface {
 
     private TTAging aging = new TTAging();
 
-    private TTEntry[] whitemap = new TTEntry[CAPACITY];
-    private TTEntry[] blackmap = new TTEntry[CAPACITY];
+    private TTEntry[] map = new TTEntry[CAPACITY];
 
     @Override
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
         int hashEntry = h0(boardZobristHash);
-        switch (side) {
-        case WHITE:
-            return checkFoundEntry(whitemap[hashEntry], boardZobristHash);
-        case BLACK:
-            return checkFoundEntry(blackmap[hashEntry], boardZobristHash);
-        }
-        throw new IllegalStateException("something is completely wrong here?!");
+        return checkFoundEntry(map[hashEntry], boardZobristHash);
     }
 
     private TTEntry checkFoundEntry(TTEntry entry, long boardZobristHash) {
@@ -78,20 +71,11 @@ public final class TTCache implements TTCacheInterface {
 
     private void storeTT(long boardZobristHash, Color side, TTEntry ttEntry) {
         int hashEntry = h0(boardZobristHash);
-        switch (side) {
-        case WHITE:
-            if (whitemap[hashEntry] == null) {
-                size++;
-            }
-            whitemap[hashEntry] = ttEntry;
-            break;
-        case BLACK:
-            if (blackmap[hashEntry] == null) {
-                size++;
-            }
-            blackmap[hashEntry] = ttEntry;
-            break;
+        if (map[hashEntry] == null) {
+            size++;
         }
+        map[hashEntry] = ttEntry;
+
     }
 
     @Override
