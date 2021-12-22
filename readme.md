@@ -77,13 +77,6 @@ Nevertheless the goal is to make it stronger with each version.
 
 The engine has several UCI parameter. Find more information under [UCI Parameter](docs/uciparameter.md)
 
-           
-## Experimental Implementations
-
-### mtdf
-
-The mtdf implementation is currently not working properly and therefore does not give beneficial results.
-
 
 # Versions
 
