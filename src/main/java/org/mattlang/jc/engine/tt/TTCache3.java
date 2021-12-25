@@ -3,12 +3,16 @@ package org.mattlang.jc.engine.tt;
 import static org.mattlang.jc.engine.tt.TTEntry.*;
 
 import java.util.Arrays;
+import java.util.Map;
+
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 
 /**
  * Experimentell cache using only a long array to be faster and more memory efficient    .
  * todo move saving needs to be adjusted to 32 bit
  */
-public class TTCache3 {
+public class TTCache3 implements TTCacheInterface {
 
 	private static final int POWER_2_TT_ENTRIES = 22;
 	private static final int BUCKET_SIZE = 4;
@@ -16,6 +20,8 @@ public class TTCache3 {
 
 	// key, value
 	private static long[] keys;
+
+	private TTAging aging = new TTAging();
 
 	static {
 		keyShifts = 64 - POWER_2_TT_ENTRIES;
@@ -25,6 +31,13 @@ public class TTCache3 {
 	}
 
 	public static long halfMoveCounter = 0;
+
+	/**
+	 * 8: depth
+	 * 8: flag
+	 * 16+32 = 48: move
+	 *
+	 * */
 
 	// ///////////////////// DEPTH //10 bits
 	private static final int FLAG = 10; // 2
@@ -132,7 +145,7 @@ public class TTCache3 {
 	}
 
 	public static int getMove(final long value) {
-		return (int) (value >>> MOVE & 0x3fffff);
+		return (int) (value >>> MOVE & 0xffffffff);
 	}
 
 	// SCORE,HALF_MOVE_COUNTER,MOVE,FLAG,DEPTH
@@ -166,5 +179,45 @@ public class TTCache3 {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void resetStatistics() {
+
+	}
+
+	@Override
+	public void collectStatistics(Map stats) {
+
+	}
+
+	private final TTEntry leightweightEntry = new TTEntry(0L, 0, (byte) 0, 0, (byte) 0, 0);
+
+	@Override
+	public TTEntry getTTEntry(BoardRepresentation board, Color side) {
+		long v = getValue(board.getZobristHash());
+		if (v != 0) {
+			leightweightEntry.update(board.getZobristHash(), getScore(v), (byte) getFlag(v), getDepth(v), (byte) 0,
+					getMove(v));
+			return leightweightEntry;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
+			int move) {
+		addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move);
+	}
+
+	@Override
+	public void updateAging(BoardRepresentation board) {
+		halfMoveCounter = aging.updateAging(board);
+	}
+
+	@Override
+	public long calcHashFull() {
+		return getUsagePercentage();
 	}
 }
