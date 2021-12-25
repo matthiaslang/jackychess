@@ -42,9 +42,13 @@ public class Main {
 
     private static String replaceVariables(String configFileContent) {
         Optional<String> optLogDir = APPCONFIG.getStringValue(LOGGING_DIR);
+        Optional<String> optLogFile = APPCONFIG.getStringValue(LOGGING_FILE);
         // either use a cofigured directory or the java.util.logging placeholder %h for user home:
         String logDir = optLogDir.isPresent() ? optLogDir.get() : "%h";
+        String version = Factory.getAppProps().getProperty("version");
+        String logFile = optLogFile.isPresent() ? optLogFile.get() : "jackyChess-" + version;
         configFileContent = configFileContent.replace("%h", logDir);
+        configFileContent = configFileContent.replace("<FILE>", logFile);
 
         return configFileContent;
     }

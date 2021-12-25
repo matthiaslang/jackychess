@@ -14,6 +14,7 @@ public class AppConfiguration {
 
     public static final String LOGGING_ACTIVATE = "jacky.logging.activate";
     public static final String LOGGING_DIR = "jacky.logging.dir";
+    public static final String LOGGING_FILE = "jacky.logging.file";
 
     public static final String CONFIG_FILE = "jacky.config";
 
