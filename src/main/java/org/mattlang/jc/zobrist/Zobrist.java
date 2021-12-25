@@ -1,7 +1,6 @@
 package org.mattlang.jc.zobrist;
 
 import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import java.util.Random;
@@ -53,7 +52,7 @@ public class Zobrist {
         }
         h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
         h = updateCastling(h, board.getCastlingRights());
-        if (board.getSiteToMove() == WHITE) {
+        if (board.getSiteToMove() == BLACK) {
             h = Zobrist.colorFlip(h);
         }
 

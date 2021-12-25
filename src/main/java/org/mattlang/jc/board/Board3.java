@@ -86,13 +86,10 @@ public class Board3 implements BoardRepresentation {
     @Override
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
-        castlingRights = new CastlingRights();
-        siteToMove=WHITE;
     }
 
     @Override
     public void setPosition(String[] fenPosition) {
-        cleanPeaceList();
         for (int i = 0; i < 8; i++) {
             String row = expandRow(fenPosition[i]);
             for (int j = 0; j < 8; j++) {
@@ -100,6 +97,7 @@ public class Board3 implements BoardRepresentation {
             }
         }
         siteToMove=WHITE;
+        castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
     }
 

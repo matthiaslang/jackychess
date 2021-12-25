@@ -126,11 +126,13 @@ public final class SearchContext {
 
     public void doMove(MoveCursor moveCursor) {
         moveCursor.move(board);
+        board.switchSiteToMove();
         repetitionChecker.push(board);
     }
 
     public void undoMove(MoveCursor moveCursor) {
         moveCursor.undoMove(board);
+        board.switchSiteToMove();
         repetitionChecker.pop();
     }
 

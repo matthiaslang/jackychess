@@ -48,6 +48,7 @@ public class FenParser {
                     String moveStr = splitted[moveIndex];
                     Move move = parseMove(board, moveStr);
                     board.move(move);
+                    board.switchSiteToMove();
                     repetitionChecker.push(board);
                 }
             }
@@ -95,7 +96,7 @@ public class FenParser {
         return MoveImpl.createPromotion(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
     }
 
-    private Color setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
+    private void setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
                               String noHalfMoves,
                               String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -105,7 +106,7 @@ public class FenParser {
         // todo parse and set rest of fen string...
 
         if (zug == null || zug.trim().length() == 0) {
-            return WHITE;
+            return ;
         }
 
         if (!"-".equals(enpassant)) {
@@ -126,10 +127,8 @@ public class FenParser {
                 board.setCastlingAllowed(BLACK, LONG);
             }
         }
-        if (!"w".equals(zug)) {
+        if ("b".equals(zug)) {
             board.switchSiteToMove();
         }
-
-        return "w".equals(zug) ? WHITE : BLACK;
     }
 }

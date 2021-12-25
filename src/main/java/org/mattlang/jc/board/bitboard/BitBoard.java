@@ -64,8 +64,6 @@ public class BitBoard implements BoardRepresentation {
     @Override
     public void setStartPosition() {
         setPosition(FEN_START_POSITION);
-        castlingRights = new CastlingRights();
-        siteToMove=WHITE;
     }
 
     @Override
@@ -77,6 +75,7 @@ public class BitBoard implements BoardRepresentation {
             }
         }
         siteToMove=WHITE;
+        castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
     }
 
