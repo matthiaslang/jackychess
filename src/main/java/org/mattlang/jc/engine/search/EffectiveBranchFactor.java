@@ -16,7 +16,7 @@ public class EffectiveBranchFactor {
         double factor;
     }
 
-    private final static int MAX=20;
+    private final static int MAX=64;
     private EBF[] ebfs = new EBF[MAX];
 
     public void update(int currdepth, long duration, int nodesVisited) {
