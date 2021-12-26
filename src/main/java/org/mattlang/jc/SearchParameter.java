@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.*;
+import org.mattlang.jc.engine.CheckChecker;
+import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.IterativeDeepeningSearch;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
-import org.mattlang.jc.engine.evaluation.StalemateCheckerImpl;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.*;
 import org.mattlang.jc.uci.UCIGroup;
@@ -41,8 +43,6 @@ public class SearchParameter {
     public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, MoveGeneratorImpl3::new);
 
     public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, SimpleBoardStatsGenerator::new);
-
-    public final Impl<StalemateChecker> stalemateChecker = new Impl<>(this, StalemateCheckerImpl::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
 
