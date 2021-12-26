@@ -2,31 +2,41 @@ package org.mattlang.jc;
 
 import java.util.function.Supplier;
 
-import org.mattlang.jc.engine.tt.TTBucketCache;
-import org.mattlang.jc.engine.tt.TTCache;
-import org.mattlang.jc.engine.tt.TTCache2;
-import org.mattlang.jc.engine.tt.TTCacheInterface;
+import org.mattlang.jc.engine.tt.*;
 
 public enum CacheImpls {
 
     STANDARD {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
-            return () -> new TTCache();
+            return TTCache::new;
         }
     },
 
     V2 {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
-            return () -> new TTCache2();
+            return TTCache2::new;
         }
     },
 
+    V3 {
+        @Override
+        public Supplier<TTCacheInterface> createSupplier() {
+            return TTCache3::new;
+        }
+    },
+
+    V4 {
+        @Override
+        public Supplier<TTCacheInterface> createSupplier() {
+            return TTCache4::new;
+        }
+    },
     BUCKETS {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
-            return () -> new TTBucketCache();
+            return TTBucketCache::new;
         }
     };
 

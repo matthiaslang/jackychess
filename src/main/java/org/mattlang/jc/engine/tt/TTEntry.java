@@ -54,12 +54,19 @@ public final class TTEntry {
     }
 
     public boolean isEmpty() {
-        return zobristHash ==0L;
+        return zobristHash == 0L;
+    }
+
+    void updateRetVals(int value, byte type, int depth, int move) {
+        this.value = (short) value;
+        this.type = type;
+        this.depth = depth;
+        this.move = move;
     }
 
     void update(long zobristHash, int value, byte type, int depth, byte aging, int move) {
         this.zobristHash = zobristHash;
-        this.value = (short)value;
+        this.value = (short) value;
         this.type = type;
         this.depth = depth;
         this.aging = aging;
