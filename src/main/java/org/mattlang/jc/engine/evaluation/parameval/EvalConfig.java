@@ -97,13 +97,12 @@ public class EvalConfig {
         InputStream is =
                 ParameterizedMobilityEvaluation.class.getResourceAsStream(resourceFile);
         if (is == null) {
-            throw new ConfigParseException("Could not find mobility properties resource file " + resourceFile);
+            throw new ConfigParseException("Could not find properties resource file " + resourceFile);
         }
         try {
             properties.load(is);
         } catch (IOException e) {
-            throw new ConfigParseException("Could not read mobility properties from resource file " + resourceFile,
-                    e);
+            throw new ConfigParseException("Could not read properties from resource file " + resourceFile, e);
         }
         return properties;
     }
