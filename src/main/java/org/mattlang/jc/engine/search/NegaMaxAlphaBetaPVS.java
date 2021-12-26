@@ -427,7 +427,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
             // todo should we store values from quiescence? and with what depth?
-            //searchContext.storeTT(color, eval, alpha, beta, /*depth*/ 0, 0);
+            searchContext.storeTT(color, eval, alpha, beta, depth, 0);
             return eval;
         }
 
@@ -468,7 +468,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         // todo store values from quiescence? and if so, with what depth?
-        //searchContext.storeTT(color, x, alpha, beta, /*depth*/ 0, 0);
+        searchContext.storeTT(color, x, alpha, beta, depth, 0);
 
         return alpha;
     }
