@@ -15,8 +15,8 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
-import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
+import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.*;
 import org.mattlang.jc.uci.UCIGroup;
@@ -34,7 +34,7 @@ public class SearchParameter {
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 
-    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new DefaultEvaluateFunction());
+    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new MinimalPstEvaluation());
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 

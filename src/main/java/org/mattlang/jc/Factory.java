@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -36,7 +35,7 @@ public class Factory {
 
     public static SearchParameter createIterativeDeepeningPVS() {
         return new SearchParameter()
-                .evaluateFunction.set(DefaultEvaluateFunction::new)
+                .evaluateFunction.set(MinimalPstEvaluation::new)
                 .moveGenerator.set(MoveGeneratorImpl3::new)
                 .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
                 .boards.set(BitBoard::new)
@@ -54,7 +53,7 @@ public class Factory {
      */
     public static SearchParameter createBitboard() {
         return new SearchParameter()
-                .evaluateFunction.set(DefaultEvaluateFunction::new)
+                .evaluateFunction.set(MinimalPstEvaluation::new)
                 .moveGenerator.set(BBMoveGeneratorImpl::new)
                 .legalMoveGenerator.set(BBLegalMoveGeneratorImpl::new)
                 .boards.set(BitBoard::new)

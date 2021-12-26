@@ -11,7 +11,7 @@ import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.MoveListImpls;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
+import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
@@ -25,7 +25,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         // now starting engine:
-        NegaMaxAlphaBetaPVS searchMethod = new NegaMaxAlphaBetaPVS(new DefaultEvaluateFunction());
+        NegaMaxAlphaBetaPVS searchMethod = new NegaMaxAlphaBetaPVS(new MinimalPstEvaluation());
 
         BoardRepresentation board = new Board3();
         board.setStartPosition();
@@ -184,7 +184,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
-        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
+        EvaluateFunction eval = new MinimalPstEvaluation();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -205,7 +205,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
+        EvaluateFunction eval = new MinimalPstEvaluation();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -230,8 +230,8 @@ public class EngineTest {
     public void testProblemNoBestMoveFound() throws IOException {
         initLogging();
         UCI.instance.attachStreams();
-        
-        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
+
+        EvaluateFunction eval = new MinimalPstEvaluation();
 
         BoardRepresentation board = new Board3();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");

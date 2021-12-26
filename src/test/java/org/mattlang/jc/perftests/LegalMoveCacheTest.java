@@ -10,8 +10,9 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.DefaultEvaluateFunction;
+import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.moves.MoveListImpl;
@@ -88,7 +89,7 @@ public class LegalMoveCacheTest {
 
         Factory.getDefaults().moveList.set(() -> new MoveListImpl());
 
-        DefaultEvaluateFunction eval = new DefaultEvaluateFunction();
+        EvaluateFunction eval = new MinimalPstEvaluation();
 
         stopwatch.start();
         int num = 100_000_000;
