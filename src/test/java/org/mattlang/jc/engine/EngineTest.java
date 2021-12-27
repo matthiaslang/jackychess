@@ -140,7 +140,7 @@ public class EngineTest {
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c->c.timeout.setValue(18000000))
-                .config(c->c.maxDepth.setValue(14))
+                .config(c->c.maxDepth.setValue(18))
 //                .config(c->c.aspiration.setValue(false))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
