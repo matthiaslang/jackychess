@@ -12,8 +12,8 @@ import org.mattlang.jc.engine.search.MoveScore;
 
 public class OrderCalculator {
 
+    public static final int HASHMOVE_SCORE = -1500_000_000;
     public static final int PV_SCORE = -1000_000_000;
-    public static final int HASHMOVE_SCORE = -500_000_000;
     public static final int GOOD_CAPTURES_SCORE = -100_000_000;
 
     public static final int KILLER_SCORE = -10_000_000;
@@ -69,7 +69,7 @@ public class OrderCalculator {
         }
 
         this.ply = ply;
-        this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(ply) : 0;
+        this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(index) : 0;
         this.color = color;
         this.depth = depth;
     }
