@@ -135,6 +135,17 @@ public final class TTCache implements TTCacheInterface {
      * @return
      */
     public long calcHashFull() {
-        return (long)size *1000 / (CAPACITY * 2);
+        return getUsagePercentage();
+    }
+
+
+    public long getUsagePercentage() {
+        int usage = 0;
+        for (int i = 0; i < 1000; i++) {
+            if (map[i] != null) {
+                usage++;
+            }
+        }
+        return usage;
     }
 }
