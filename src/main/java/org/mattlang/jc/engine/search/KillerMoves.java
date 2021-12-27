@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+
 import org.mattlang.jc.board.Color;
 
 /**
@@ -8,8 +10,6 @@ import org.mattlang.jc.board.Color;
 public class KillerMoves {
 
     public static final int MAX_KILLERS = 2;
-
-    public static final int MAX_PLY = 100;
 
     private int[][] killerMovesWhite = new int[MAX_PLY][MAX_KILLERS];
     private int[][] killerMovesBlack = new int[MAX_PLY][MAX_KILLERS];

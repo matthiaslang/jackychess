@@ -19,6 +19,9 @@ import lombok.Getter;
  */
 public class GameContext {
 
+    /** max ply used to setup array structures. */
+    public static final int MAX_PLY = 64;
+
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
 

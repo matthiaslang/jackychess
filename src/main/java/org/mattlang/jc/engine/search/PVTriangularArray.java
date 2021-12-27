@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +10,10 @@ import java.util.List;
  */
 public class PVTriangularArray {
 
-    private static final int MAX = 100;
-
     /**
      * Moves of the triangular array.
      */
-    private int[][] array = new int[MAX][MAX];
+    private int[][] array = new int[MAX_PLY][MAX_PLY];
 
     /**
      * Sets a PV found in ply ply.
@@ -29,7 +29,7 @@ public class PVTriangularArray {
 
         rowForPly[0] = bestMove;
         // copy over the next deeper ply. if we reach a 0 value, we stop ( but after copying the 0 value as end marker).
-        for (int i = 0; i < MAX - 1; i++) {
+        for (int i = 0; i < MAX_PLY - 1; i++) {
             rowForPly[i + 1] = rowForUnderPly[i];
             if (rowForUnderPly[i] == 0) {
                 break;
@@ -39,7 +39,7 @@ public class PVTriangularArray {
 
     public List<Integer> getPvMoves() {
         ArrayList<Integer> result = new ArrayList();
-        for (int i = 0; i < MAX; i++) {
+        for (int i = 0; i < MAX_PLY; i++) {
             int pv = array[0][i];
             if (pv != 0) {
                 result.add(pv);
@@ -51,8 +51,8 @@ public class PVTriangularArray {
     }
 
     public void reset() {
-        for (int i = 0; i < MAX; i++) {
-            for (int j = 0; j < MAX; j++) {
+        for (int i = 0; i < MAX_PLY; i++) {
+            for (int j = 0; j < MAX_PLY; j++) {
                 array[i][j] = 0;
             }
         }

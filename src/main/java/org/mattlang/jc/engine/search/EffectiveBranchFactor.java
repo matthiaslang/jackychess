@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+
 import lombok.AllArgsConstructor;
 
 /**
@@ -16,8 +18,7 @@ public class EffectiveBranchFactor {
         double factor;
     }
 
-    private final static int MAX=64;
-    private EBF[] ebfs = new EBF[MAX];
+    private EBF[] ebfs = new EBF[MAX_PLY];
 
     public void update(int currdepth, long duration, int nodesVisited) {
         double factor;
@@ -30,14 +31,14 @@ public class EffectiveBranchFactor {
     }
 
     public void clear() {
-        for (int i = 0; i < MAX; i++) {
+        for (int i = 0; i < MAX_PLY; i++) {
             ebfs[i] = null;
         }
     }
 
     public String report() {
         StringBuilder b = new StringBuilder();
-        for (int i = 1; i < MAX; i++) {
+        for (int i = 1; i < MAX_PLY; i++) {
             if (ebfs[i] != null) {
                 report(b, i, ebfs[i]);
             } else {
