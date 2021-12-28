@@ -20,8 +20,6 @@ public class MoveListImpl implements MoveList {
     private IntList moves = new IntList();
     private int[] order = new int[200];
 
-    private boolean subset = false;
-    private boolean legal = false;
     private boolean checkMate = false;
     private boolean sorted = false;
 
@@ -96,26 +94,8 @@ public class MoveListImpl implements MoveList {
     }
 
     @Override
-    public boolean isSubset() {
-        return subset;
-    }
-
-    @Override
-    public boolean isLegal() {
-        return legal;
-    }
-
-    @Override
     public boolean isCheckMate() {
         return checkMate;
-    }
-
-    public void setSubset(boolean subset) {
-        this.subset = subset;
-    }
-
-    public void setLegal(boolean legal) {
-        this.legal = legal;
     }
 
     public void setCheckMate(boolean checkMate) {
@@ -146,8 +126,6 @@ public class MoveListImpl implements MoveList {
     public void reset() {
         moves.reset();
 
-        subset = false;
-        legal = false;
         checkMate = false;
         sorted = false;
     }

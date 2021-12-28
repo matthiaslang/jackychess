@@ -30,7 +30,6 @@ public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
             }
             moveCursor.undoMove(currBoard);
         }
-        moves.setLegal(true);
         moves.setCheckMate(moves.size() == 0);
         return moves;
     }
@@ -61,9 +60,7 @@ public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
             }
             moveCursor.undoMove(currBoard);
         }
-        moves.setSubset(true);
         moves.setCheckMate(!atLeastOneLegalMove);
-        moves.setLegal(true);
         return moves;
     }
 
