@@ -226,9 +226,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         pvArray.reset(ply);
 
         try (MoveList moves = searchContext.generateMoves(color)) {
-            if (moves.isCheckMate()) {
-                return determineCheckMateOrPatt(ply, areWeInCheck);
-            }
 
             sortMoves(ply, depth, color, moves);
 
@@ -239,6 +236,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int searchedMoves = 0;
             for (MoveCursor moveCursor : moves) {
                 searchContext.doMove(moveCursor);
+
+                // skip illegal moves:
+                if (searchContext.isInCheck(color)) {
+                    searchContext.undoMove(moveCursor);
+                    continue;
+                }
 
                 searchedMoves++;
 
@@ -301,7 +304,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     if (max >= beta) {
 //                        if (!areWeInCheck) {
                             updateCutOffHeuristics(ply, depth, color, bestMove, moveCursor);
-//                        }
+                        //                        }
                         cutOff++;
                         break;
                     }
@@ -310,6 +313,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                 // update "bad" heuristic
                 updateBadHeuristic(depth, color, moveCursor);
+            }
+
+            if (searchedMoves == 0) {
+                return determineCheckMateOrPatt(ply, areWeInCheck);
             }
         }
 
@@ -370,7 +377,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 !moveCursor.isCapture() &&
                 !moveCursor.isPawnPromotion() &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
-                moveCursor.getOrder() >= OrderCalculator.KILLER_SCORE &&
+                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
 
             if (searchedMoves > LMR_N_MOVES_REDUCE_MORE) {
@@ -442,11 +449,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         boolean areWeInCheck = searchContext.isInCheck(color);
 
-        try (MoveList moves = searchContext.generateNonQuietMoves(color)) {
-            if (moves.isCheckMate()) {
-                return determineCheckMateOrPatt(ply, areWeInCheck);
-            }
+        Color opponent=color.invert();
 
+        try (MoveList moves = searchContext.generateMoves(color)) {
             nodes += moves.size();
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
@@ -454,16 +459,37 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
             sortMoves(ply, depth, color, moves);
 
+            int searchedMoves = 0;
             /* loop through the capture moves */
             for (MoveCursor moveCursor : moves) {
                 searchContext.doMove(moveCursor);
-                x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
-                searchContext.undoMove(moveCursor);
-                if (x > alpha) {
-                    if (x >= beta)
-                        return beta;
-                    alpha = x;
+
+                // skip illegal moves:
+                if (searchContext.isInCheck(color)) {
+                    searchContext.undoMove(moveCursor);
+                    continue;
                 }
+                searchedMoves++;
+
+                if (moveCursor.isCapture()
+                        || moveCursor.isPawnPromotion()
+                        || searchContext.isInCheck(opponent)) {
+
+                    x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                    if (x > alpha) {
+                        if (x >= beta) {
+                            searchContext.undoMove(moveCursor);
+                            return beta;
+                        }
+                        alpha = x;
+                    }
+                }
+
+                searchContext.undoMove(moveCursor);
+            }
+
+            if (searchedMoves == 0) {
+                return determineCheckMateOrPatt(ply, areWeInCheck);
             }
         }
 

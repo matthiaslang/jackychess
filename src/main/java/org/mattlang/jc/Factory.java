@@ -55,7 +55,7 @@ public class Factory {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
                 .moveGenerator.set(BBMoveGeneratorImpl::new)
-                .legalMoveGenerator.set(BBLegalMoveGeneratorImpl::new)
+                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))

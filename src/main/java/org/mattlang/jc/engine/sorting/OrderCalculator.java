@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.sorting;
 import java.util.HashMap;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
@@ -95,7 +94,8 @@ public class OrderCalculator {
         if (scores != null) {
             Integer rslt = scores.get(moveInt);
             if (rslt == null){
-                UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
+               // UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
+                // this could happen for pseudo legal moves for illegal moves: here we have no score from the last round
                 return 0;
             }
             return -rslt;
