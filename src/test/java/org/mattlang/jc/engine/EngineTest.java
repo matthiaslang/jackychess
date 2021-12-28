@@ -118,6 +118,7 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
+        engine.getBoard().switchSiteToMove();
         Move move = engine.go();
 
         System.out.println(move.toStr());
