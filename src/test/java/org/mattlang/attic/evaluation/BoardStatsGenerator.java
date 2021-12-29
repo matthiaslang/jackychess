@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.evaluation;
+package org.mattlang.attic.evaluation;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;

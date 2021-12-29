@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.evaluation;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mattlang.attic.evaluation.PattChecking;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.Engine;

@@ -14,8 +14,6 @@ import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.evaluation.BoardStatsGenerator;
-import org.mattlang.jc.engine.evaluation.SimpleBoardStatsGenerator;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.*;
@@ -41,8 +39,6 @@ public class SearchParameter {
     public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, BBLegalMoveGeneratorImpl::new);
 
     public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, BBMoveGeneratorImpl::new);
-
-    public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, SimpleBoardStatsGenerator::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 

@@ -7,7 +7,6 @@ import static org.mattlang.jc.movegenerator.CastlingDef.*;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.CaptureChecker;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 

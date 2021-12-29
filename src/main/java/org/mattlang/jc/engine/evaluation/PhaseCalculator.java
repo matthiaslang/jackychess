@@ -1,9 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.PieceList;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
@@ -28,28 +25,6 @@ public class PhaseCalculator {
 
     public static double Linstep(double edge0, double edge1, double v) {
         return Math.min(1, Math.max(0, (v - edge0) / (edge1 - edge0)));
-    }
-
-    /**
-     * Calculates a phase factor (1 == Middle Game; 0 == Endgame, or something between)
-     *
-     * @param currBoard
-     * @return
-     */
-    public static double calcPhaseFactorOld(BoardRepresentation currBoard) {
-        int phase = 0;
-
-        for (int i = 0; i < 64; ++i) {
-            byte figure = currBoard.getFigureCode(i);
-            if (figure != FigureConstants.FT_EMPTY) {
-
-                byte pieceIndex = (byte) (figure & MASK_OUT_COLOR);
-                phase += PhaseValues[pieceIndex];
-            }
-        }
-
-        double factor = Linstep(Endgame, Midgame, phase);
-        return factor;
     }
 
     public static double calcPhaseFactor(BoardRepresentation currBoard) {

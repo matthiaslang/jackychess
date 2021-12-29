@@ -1,8 +1,9 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.movegenerator.MoveCollector;
 
 public final class CaptureChecker implements MoveCollector {
 
