@@ -9,7 +9,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 
 /**
  * Helper class for debugging.
@@ -21,7 +21,7 @@ public class MoveValidator {
 
     private static final Logger LOGGER = Logger.getLogger(MoveValidator.class.getSimpleName());
 
-    private static LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
+    private static BBLegalMoveGeneratorImpl legalMoveGen = new BBLegalMoveGeneratorImpl();
 
     public static void validate(GameState gameState, NegaMaxResult rslt) {
         BoardRepresentation board = gameState.getBoard().copy();

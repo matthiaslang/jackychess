@@ -1,4 +1,4 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import org.mattlang.jc.board.FigureType;
 

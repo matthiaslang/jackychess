@@ -1,4 +1,4 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_QUEEN;
@@ -10,6 +10,8 @@ import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.BitmaskProducer;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 
 /**

@@ -1,4 +1,4 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
@@ -7,6 +7,9 @@ import static org.mattlang.jc.movegenerator.CastlingDef.*;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.movegenerator.CaptureChecker;
+import org.mattlang.jc.movegenerator.MoveCollector;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board

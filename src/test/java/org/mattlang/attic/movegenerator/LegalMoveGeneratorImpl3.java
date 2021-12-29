@@ -1,4 +1,4 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -6,6 +6,8 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 

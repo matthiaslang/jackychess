@@ -88,7 +88,6 @@ see [Version History](docs/versionhistory.md)
 - todo more bitboard special stuff
   - legal move check optimizations not using a full board, but a bitboard
 - todo: experiments/perfts with better tt caching...
-- todo: combine pst evaluation with some non-static-evaluations like pawn, king safety, etc, endgame (king distance)...
 
 
 ## bugs

@@ -1,7 +1,7 @@
 package org.mattlang.jc.uci;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board3;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 
 public class FenParserTest {

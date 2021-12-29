@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;

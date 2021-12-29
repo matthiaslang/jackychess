@@ -3,7 +3,7 @@ package org.mattlang.jc.engine.tt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board3;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 

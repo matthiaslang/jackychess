@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board3;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.PieceList;
 
 public class PatternTest {

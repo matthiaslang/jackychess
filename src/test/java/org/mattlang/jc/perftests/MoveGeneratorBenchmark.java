@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.uci.UCI;
 
 /**

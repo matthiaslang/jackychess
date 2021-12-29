@@ -1,4 +1,4 @@
-package org.mattlang.jc.board;
+package org.mattlang.attic.board;
 
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
@@ -11,6 +11,7 @@ import static org.mattlang.jc.board.RochadeType.SHORT;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 

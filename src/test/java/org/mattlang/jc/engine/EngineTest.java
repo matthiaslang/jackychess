@@ -7,10 +7,14 @@ import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.MoveListImpls;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.SimpleRepetitionChecker;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;

@@ -5,6 +5,7 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.EvalFunctions;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -17,7 +18,6 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;

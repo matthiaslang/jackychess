@@ -12,12 +12,12 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board3;
+import org.mattlang.attic.board.Board3;
+import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.moves.MoveImpl;
 
 public class MoveGeneratorTest {

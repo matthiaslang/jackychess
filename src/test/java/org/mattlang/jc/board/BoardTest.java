@@ -2,6 +2,7 @@ package org.mattlang.jc.board;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.moves.MoveImpl;
 
 public class BoardTest {

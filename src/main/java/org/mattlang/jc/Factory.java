@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
-import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -36,8 +37,8 @@ public class Factory {
     public static SearchParameter createIterativeDeepeningPVS() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(MoveGeneratorImpl3::new)
-                .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
+                .moveGenerator.set(BBMoveGeneratorImpl::new)
+                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .searchMethod.set(IterativeDeepeningPVS::new)
                 .config(c -> {
@@ -69,9 +70,10 @@ public class Factory {
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(MoveGeneratorImpl3::new)
-                .legalMoveGenerator.set(LegalMoveGeneratorImpl3::new)
-                .boards.set(Board3::new)
+                .moveGenerator.set(BBMoveGeneratorImpl::new)
+                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
+                .boards.set(BitBoard::new)
+                .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
                 .config(c -> {
                     c.maxDepth.setValue(15);

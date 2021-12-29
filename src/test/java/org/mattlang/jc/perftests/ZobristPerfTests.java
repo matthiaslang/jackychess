@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
+import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board3;
-import org.mattlang.jc.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.jc.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.zobrist.Zobrist;
 
 /**

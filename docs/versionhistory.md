@@ -164,6 +164,9 @@ move generation and search should therefore a bit faster, overall search should 
 ### Version 0.9.17
 
 - chess extensions (deactivated,does not bring anything so far...)
+- pseudo legal move generation for faster move generation in Alpha Beta Pruning
+- parameterized evaluation function (based on CPW) which is slightly better thant the minimal pst evaluation
+- 
 
      
 #### bugfix

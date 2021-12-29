@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.uci.TimeCalc.determineTime;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Board3;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 

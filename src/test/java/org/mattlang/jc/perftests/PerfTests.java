@@ -4,11 +4,16 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.perftests.Perft.assertPerft;
 
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
+import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
+import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 
 /**
  * PerfTests

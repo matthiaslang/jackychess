@@ -5,8 +5,8 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.*;
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;

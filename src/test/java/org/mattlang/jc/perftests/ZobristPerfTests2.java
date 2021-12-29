@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;

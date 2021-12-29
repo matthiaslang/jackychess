@@ -38,13 +38,13 @@ public class SearchParameter {
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
-    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, LegalMoveGeneratorImpl3::new);
+    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, BBLegalMoveGeneratorImpl::new);
 
-    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, MoveGeneratorImpl3::new);
+    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, BBMoveGeneratorImpl::new);
 
     public final Impl<BoardStatsGenerator> boardStatsGenerator = new Impl<>(this, SimpleBoardStatsGenerator::new);
 
-    public final Impl<CheckChecker> checkChecker = new Impl<>(this, CheckCheckerImpl::new);
+    public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
 
     public void log() {

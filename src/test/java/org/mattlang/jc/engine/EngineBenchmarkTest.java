@@ -5,10 +5,10 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.board.Board3;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;

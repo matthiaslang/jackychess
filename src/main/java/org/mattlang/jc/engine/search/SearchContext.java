@@ -5,7 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.RepetitionChecker;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -148,8 +152,8 @@ public final class SearchContext {
     public void doPrepareNullMove() {
         nullMoveCounter++;
         enPassantBeforeNullMove = board.getEnPassantMoveTargetPos();
-        if (enPassantBeforeNullMove != Board3.NO_EN_PASSANT_OPTION) {
-            board.setEnPassantOption(Board3.NO_EN_PASSANT_OPTION);
+        if (enPassantBeforeNullMove != BitBoard.NO_EN_PASSANT_OPTION) {
+            board.setEnPassantOption(BitBoard.NO_EN_PASSANT_OPTION);
         }
         board.switchSiteToMove();
 //        repetitionCheckerBeforeNullMove = repetitionChecker;

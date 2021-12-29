@@ -3,6 +3,7 @@ package org.mattlang.jc.movegenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitBoard;
