@@ -1,6 +1,10 @@
 package org.mattlang.jc.board.bitboard;
 
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation.BLACK_KNIGHT_STARTPOS;
+
 import org.junit.Test;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation;
 
 public class BBTest {
 
@@ -11,6 +15,38 @@ public class BBTest {
         long fileFilled = BB.fileFill(rookMask);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
+    }
+
+
+
+    @Test
+    public void testKingZone(){
+        long kingMask = 1L << 63;
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
+        long fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.WHITE);
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
+
+        fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.BLACK);
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
+
+    }
+
+    @Test
+    public void testKingZone2(){
+        long kingMask = 1L << 1;
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
+        long fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.WHITE);
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
+
+        fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.BLACK);
+
+        System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
+
     }
 
     @Test
@@ -25,7 +61,8 @@ public class BBTest {
         long H = 0x8080808080808080L;
 
         
-        System.out.println("Pattern \n" + BitChessBoard.toStr(A*2*2));
+        
+        System.out.println("Pattern \n" + BitChessBoard.toStr(BLACK_KNIGHT_STARTPOS));
     }
 
     @Test

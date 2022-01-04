@@ -1,8 +1,10 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BB.*;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -18,6 +20,14 @@ import org.mattlang.jc.engine.evaluation.parameval.functions.TropismFun;
  * Paremeterized Mobility Evaluation.
  */
 public class ParameterizedMobilityEvaluation implements EvalComponent {
+
+    private static final long WHITE_QUEEN_DEVELOPED_MASK = ALL & ~rank1 & ~rank2;
+    private static final long BLACK_QUEEN_DEVELOPED_MASK = ALL & ~rank7 & ~rank8;
+
+    public static final long WHITE_BISHOPS_STARTPOS = C1 | F1;
+    public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
+    public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
+    public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
 
     private static int[] SAFETYTABLE = {
             0, 0, 1, 2, 3, 5, 7, 9, 12, 15,
@@ -44,11 +54,13 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public static final int TROPISM_EG = 6;
 
     public static final int CONNECTIVITY = 7;
+    public static final int POSITIONAL_THEMES = 8;
 
-    public static final int MAX_TYPE_INDEX = CONNECTIVITY + 1;
+    public static final int MAX_TYPE_INDEX = POSITIONAL_THEMES + 1;
 
     private final int rookOpen;
     private final int rookHalf;
+    private final int earlyQueenPenalty;
     /**
      * splitted results by color, figure type, and mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
@@ -93,6 +105,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         rookOpen = config.getPosIntProp("rookOpen");
         rookHalf = config.getPosIntProp("rookHalf");
+        earlyQueenPenalty = config.getPosIntProp("earlyQueenPenalty");
     }
 
     private void eval(BitBoard bitBoard) {
@@ -145,7 +158,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long occupancy = ownFigsMask | opponentFigsMask;
 
         long oppKingMask = bb.getPieceSet(FT_KING, xside);
-        long oppKingZone = BB.kingAttacks(oppKingMask);
+        long oppKingZone = createKingZoneMask(oppKingMask, xside);
         int oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
@@ -222,6 +235,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             countFigureVals(FT_QUEEN, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
+            evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
+
             queenBB &= queenBB - 1;
         }
 
@@ -239,6 +254,33 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
+    }
+
+    private void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, Color side) {
+
+        /**************************************************************************
+         *  A queen should not be developed too early                              *
+         **************************************************************************/
+
+        if (earlyQueenPenalty > 0) {
+            if ((side == WHITE && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
+
+                detailedResults[side.ordinal()][FT_QUEEN][POSITIONAL_THEMES] -=
+                        (bitCount(WHITE_BISHOPS_STARTPOS & bishopBB) + bitCount(WHITE_KNIGHT_STARTPOS & knightBB))
+                                * earlyQueenPenalty;
+            } else if ((side == BLACK && (queenBB & BLACK_QUEEN_DEVELOPED_MASK) != 0)) {
+
+                detailedResults[side.ordinal()][FT_QUEEN][POSITIONAL_THEMES] -=
+                        (bitCount(BLACK_BISHOPS_STARTPOS & bishopBB) + bitCount(BLACK_KNIGHT_STARTPOS & knightBB))
+                                * earlyQueenPenalty;
+            }
+
+        }
+    }
+
+    public static long createKingZoneMask(long oppKingMask, Color xside) {
+        long frontMask = xside == WHITE ? kingAttacks(nortOne(oppKingMask)) : kingAttacks(soutOne(oppKingMask));
+        return kingAttacks(oppKingMask) | frontMask;
     }
 
     private void rookOpenFiles(Color side, int rook, int otherKing, long ownPawns, long oppPawns) {
@@ -301,8 +343,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         masks[side.ordinal()][figureType][CONNECTIVITY] |= connectivity;
 
         // mobility count is mobility to empty fields as well as captures of enemy pieces:
-        int mobCount = Long.bitCount(mobility) + Long.bitCount(captures);
-        int kingAttCount = Long.bitCount(kingZoneAttacs);
+        int mobCount = bitCount(mobility) + bitCount(captures);
+        int kingAttCount = bitCount(kingZoneAttacs);
 
         detailedResults[side.ordinal()][figureType][MOBILITY_MG] += params.mobilityMG.calc(mobCount);
         detailedResults[side.ordinal()][figureType][MOBILITY_EG] += params.mobilityEG.calc(mobCount);
@@ -351,13 +393,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.result +=
                 (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] - SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]]);
 
+        result.result +=
+                (results[IWHITE][POSITIONAL_THEMES] - results[IBLACK][POSITIONAL_THEMES]);
 
-        //        int score = (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]) * who2mov +
-        //                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;
-
-        //score += (results[IWHITE][CONNECTIVITY] - results[IBLACK][CONNECTIVITY]) * who2mov +
-        //                (results[IWHITE][CAPTURES] - results[IBLACK][CAPTURES]) * who2mov;
-
-        //        return score;
     }
 }
