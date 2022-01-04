@@ -90,6 +90,20 @@ public class ConfigValues {
     public final UCICheckOption useNullMoves = pruning.createCheckOpt("useNullMoves",
             "should null move pruning be used during search",
             false);
+
+    public final UCICheckOption staticNullMove = pruning.createCheckOpt("staticNullMove",
+            "should static null move pruning be used during search",
+            false);
+
+    public final UCICheckOption razoring = pruning.createCheckOpt("razoring",
+            "should razoring be used during search",
+            false);
+
+
+    public final UCICheckOption deltaCutoff = pruning.createCheckOpt("deltaCutoff",
+            "should delta cutoff be used during quiescence search",
+            false);
+
     public final UCICheckOption useLateMoveReductions =
             pruning.createCheckOpt("useLateMoveReductions",
                     "should late move reductions be used during search",

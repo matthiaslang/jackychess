@@ -1,5 +1,9 @@
 package org.mattlang.jc.engine.sorting;
 
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.movegenerator.BBMoveGeneratorImpl.canFigureCaptured;
+
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
@@ -28,11 +32,6 @@ public class MvvLva {
      * array indexed by figure code to return a weight
      */
     private static int[] weights = new int[256];
-
-    /**
-     * array indexed by figuretype | capturedFigure << 5 to point to a precalculated mvvLva value.
-     */
-    private static int[] mvvLvaMatrix = new int[2 << 10];
 
     public static final int MVVLVA_PAWN = 1;
     public static final int MVVLVA_KNIGHT = 2;
@@ -87,6 +86,43 @@ public class MvvLva {
             weight += (FigureType.Queen.figureCode + 1) * 6;
         }
         return weight;
+    }
+
+    /******************************************************************************
+     *  This is not yet proper static exchange evaluation, but an approximation    *
+     *  proposed by Harm Geert Mueller under the acronym BLIND (better, or lower   *
+     *  if not defended. As the name indicates, it detects only obviously good     *
+     *  captures, but it seems enough to improve move ordering.                    *
+     ******************************************************************************/
+
+    public boolean blind(BoardRepresentation board, Move move) {
+        int sq_to = move.getToIndex();
+        int sq_fr = move.getFromIndex();
+
+        byte pc_fr = move.getFigureType();
+
+        /* captures by pawn do not lose material */
+        if (pc_fr == FT_PAWN)
+            return true;
+
+        byte captFigure = move.getCapturedFigure();
+
+        int weightFig = weights[pc_fr];
+        int weightCapFig = weights[captFigure];
+
+        /* Captures "lower takes higher" (as well as BxN) are good by definition. */
+        if (weightCapFig > weightFig || weightFig == MVVLVA_BISHOP && weightCapFig == MVVLVA_KNIGHT)
+            return true;
+
+        Figure fig = board.getPos(sq_fr);
+        /* Make the first capture, so that X-ray defender show up*/
+        board.setPos(sq_fr, Figure.EMPTY);
+
+        /* Captures of undefended pieces are good by definition */
+        boolean blind = !canFigureCaptured(board, sq_to, board.getSiteToMove());
+        board.setPos(sq_fr, fig);
+
+        return blind;
     }
 
 }
