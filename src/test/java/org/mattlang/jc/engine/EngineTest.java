@@ -15,6 +15,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.SimpleRepetitionChecker;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -225,7 +226,7 @@ public class EngineTest {
         
         // block chess with Rook:
         assertThat(move.toStr()).isEqualTo("g5a5");
-        board.move(move);
+        board.domove(move);
 
 
     }
@@ -238,7 +239,7 @@ public class EngineTest {
 
         EvaluateFunction eval = new MinimalPstEvaluation();
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         GameState gameState = board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
 
         System.out.println(board.toUniCodeStr());
@@ -250,7 +251,7 @@ public class EngineTest {
 
         // capture knight:
         assertThat(move.toStr()).isEqualTo("f8d6");
-        board.move(move);
+        board.domove(move);
 
 
 

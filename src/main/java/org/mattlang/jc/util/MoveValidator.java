@@ -32,7 +32,7 @@ public class MoveValidator {
             boolean legal = isLegalMove(board, move, who2Move);
 
             if (legal) {
-                board.move(move);
+                board.domove(move);
             } else {
                 LOGGER.warning("Illegal PV Move " + move.toStr());
 

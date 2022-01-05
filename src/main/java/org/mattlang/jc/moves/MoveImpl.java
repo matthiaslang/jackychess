@@ -5,7 +5,9 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.util.Objects;
 
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.Move;
 
 import lombok.Getter;
 
@@ -215,8 +217,12 @@ public final class MoveImpl implements Move {
         return type >= PAWN_PROMOTION_W_KNIGHT && type <= PAWN_PROMOTION_B_QUEEN;
     }
 
-    public Figure getPromotedFigure(){
+    public Figure getPromotedFigure() {
         return Figure.getFigureByCode(typeToPromotedFigure[type]);
+    }
+
+    public byte getPromotedFigureByte() {
+        return typeToPromotedFigure[type];
     }
 
     @Override
@@ -235,6 +241,11 @@ public final class MoveImpl implements Move {
     }
 
     @Override
+    public int getEnPassantCapturePos() {
+        return decodeEnPassantCapturePos();
+    }
+
+    @Override
     public String toString() {
         return toStr();
     }
@@ -243,63 +254,20 @@ public final class MoveImpl implements Move {
         return type - ENPASSANT_MOVE;
     }
 
-    @Override
-    public void move(BoardRepresentation board) {
-        board.move(getFromIndex(), getToIndex());
-        if (type >= ENPASSANT_MOVE) {
-            board.setPos(decodeEnPassantCapturePos(), FigureConstants.FT_EMPTY);
-        } else if (isPromotion()) {
-            board.setPos(getToIndex(), typeToPromotedFigure[type]);
-        } else {
-            switch (type) {
-            case CASTLING_WHITE_LONG:
-                CastlingMove.CASTLING_WHITE_LONG.moveSecond(board);
-                break;
-            case CASTLING_WHITE_SHORT:
-                CastlingMove.CASTLING_WHITE_SHORT.moveSecond(board);
-                break;
-            case CASTLING_BLACK_SHORT:
-                CastlingMove.CASTLING_BLACK_SHORT.moveSecond(board);
-                break;
-            case CASTLING_BLACK_LONG:
-                CastlingMove.CASTLING_BLACK_LONG.moveSecond(board);
-                break;
-            }
+    public CastlingMove getCastlingMove() {
+        switch (type) {
+        case CASTLING_WHITE_LONG:
+            return CastlingMove.CASTLING_WHITE_LONG;
+        case CASTLING_WHITE_SHORT:
+            return CastlingMove.CASTLING_WHITE_SHORT;
+        case CASTLING_BLACK_SHORT:
+            return CastlingMove.CASTLING_BLACK_SHORT;
+        case CASTLING_BLACK_LONG:
+            return CastlingMove.CASTLING_BLACK_LONG;
         }
+        throw new IllegalStateException("no castling move!");
     }
 
-    @Override
-    public void undo(BoardRepresentation board) {
-        board.move(getToIndex(), getFromIndex());
-        if (capturedFigure != 0) {
-            board.setPos(getToIndex(), capturedFigure);
-        }
-        if (type >= ENPASSANT_MOVE) {
-            // override the "default" overrider field with empty..
-            board.setPos(getToIndex(), FigureConstants.FT_EMPTY);
-            // because we have the special en passant capture pos which we need to reset with the captured figure
-            board.setPos(decodeEnPassantCapturePos(), getCapturedFigure());
-        } else if (isPromotion()) {
-            Figure promotedFigure = board.getFigure(getFromIndex());
-            Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
-            board.setPos(getFromIndex(), pawn);
-        } else {
-            switch (type) {
-            case CASTLING_WHITE_LONG:
-                CastlingMove.CASTLING_WHITE_LONG.undoSecond(board);
-                break;
-            case CASTLING_WHITE_SHORT:
-                CastlingMove.CASTLING_WHITE_SHORT.undoSecond(board);
-                break;
-            case CASTLING_BLACK_SHORT:
-                CastlingMove.CASTLING_BLACK_SHORT.undoSecond(board);
-                break;
-            case CASTLING_BLACK_LONG:
-                CastlingMove.CASTLING_BLACK_LONG.undoSecond(board);
-                break;
-            }
-        }
-    }
 
     @Override
     public byte getCapturedFigure() {

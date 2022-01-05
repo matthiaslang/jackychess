@@ -47,7 +47,7 @@ public class FenParser {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
                     Move move = parseMove(board, moveStr);
-                    board.move(move);
+                    board.domove(move);
                     board.switchSiteToMove();
                     repetitionChecker.push(board);
                 }

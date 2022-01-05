@@ -171,12 +171,6 @@ public class BitBoard implements BoardRepresentation {
         return BoardPrinter.toUniCodeStr(this);
     }
 
-    @Override
-    public void move(Move move) {
-        // todo validations?
-        move.move(this);
-    }
-
     /**
      * Simple move of one figure from one field to another.
      *
@@ -399,5 +393,35 @@ public class BitBoard implements BoardRepresentation {
         return zobristHash;
     }
 
+    public void domove(Move move) {
+
+        move(move.getFromIndex(), move.getToIndex());
+        if (move.isEnPassant()) {
+            setPos(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+        } else if (move.isPromotion()) {
+            setPos(move.getToIndex(), move.getPromotedFigureByte());
+        } else if (move.isCastling()) {
+            move.getCastlingMove().moveSecond(this);
+        }
+    }
+
+    public void undo(Move move) {
+        move(move.getToIndex(), move.getFromIndex());
+        if (move.getCapturedFigure() != 0) {
+            setPos(move.getToIndex(), move.getCapturedFigure());
+        }
+        if (move.isEnPassant()) {
+            // override the "default" overrider field with empty..
+            setPos(move.getToIndex(), FigureConstants.FT_EMPTY);
+            // because we have the special en passant capture pos which we need to reset with the captured figure
+            setPos(move.getEnPassantCapturePos(), move.getCapturedFigure());
+        } else if (move.isPromotion()) {
+            Figure promotedFigure = getFigure(move.getFromIndex());
+            Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
+            setPos(move.getFromIndex(), pawn);
+        } else if (move.isCastling()) {
+            move.getCastlingMove().undoSecond(this);
+        }
+    }
 
 }

@@ -43,7 +43,7 @@ public class PattChosenTest {
 
         System.out.println(move.toStr());
 
-        engine.getBoard().move(move);
+        engine.getBoard().domove(move);
         // means we should have no patt situation:
         LegalMoveGenerator moveGenerator = Factory.getDefaults().legalMoveGenerator.create();
         MoveList whiteMoves = moveGenerator.generate(engine.getBoard(), Color.BLACK);

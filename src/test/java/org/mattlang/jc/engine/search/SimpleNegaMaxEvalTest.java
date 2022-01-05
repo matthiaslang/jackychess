@@ -43,7 +43,7 @@ public class SimpleNegaMaxEvalTest {
 
         Move move =Factory.getDefaults().searchMethod.create().search(gameState, new GameContext(),6);
         // since we recognize patts, we avoid moves which make patt:
-        board.move(move);
+        board.domove(move);
         // means we should have no patt situation:
         LegalMoveGenerator moveGenerator = new LegalMoveGeneratorImpl3();
         MoveList whiteMoves = moveGenerator.generate(board, Color.WHITE);

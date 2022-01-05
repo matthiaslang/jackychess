@@ -44,10 +44,10 @@ public class Engine {
     public IterativeSearchResult goIterative(GameState gameState, GameContext gameContext) {
         return searchMethod.iterativeSearch(gameState, gameContext, depth);
     }
-
-    public void move(Move move) {
-        board.move(move);
-    }
+//
+//    public void move(Move move) {
+//        board.move(move);
+//    }
 
     public BoardRepresentation getBoard() {
         return board;

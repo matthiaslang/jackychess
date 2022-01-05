@@ -1,10 +1,8 @@
 package org.mattlang.jc.board;
 
+import org.mattlang.jc.moves.CastlingMove;
+
 public interface Move {
-
-    void move(BoardRepresentation board);
-
-    void undo(BoardRepresentation board);
 
     byte getCapturedFigure();
 
@@ -30,7 +28,14 @@ public interface Move {
 
     int getOrder();
 
-
-    /** Representation of the move as int value. */
+    /**
+     * Representation of the move as int value.
+     */
     int toInt();
+
+    int getEnPassantCapturePos();
+
+    byte getPromotedFigureByte();
+
+    CastlingMove getCastlingMove();
 }

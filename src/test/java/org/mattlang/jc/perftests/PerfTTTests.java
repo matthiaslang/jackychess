@@ -67,7 +67,7 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
 
         // do one opening move (knigth) which should not change the tt aging:
-        board.move(new MoveImpl("b1c3"));
+        board.domove(new MoveImpl("b1c3"));
 
         ttCache.updateAging(board);
         testCacheWithPosition(board, ttCache, depth);

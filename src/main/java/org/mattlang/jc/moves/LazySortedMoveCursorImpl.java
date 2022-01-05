@@ -22,7 +22,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     @Override
     public void move(BoardRepresentation board) {
         castlingrightsBefore = board.getCastlingRights();
-        currMoveObj.move(board);
+       board.domove(currMoveObj);
     }
 
     @Override
@@ -37,7 +37,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
 
     @Override
     public void undoMove(BoardRepresentation board) {
-        currMoveObj.undo(board);
+        board.undo(currMoveObj);
         if (castlingrightsBefore != -1) {
             board.setCastlingRights(castlingrightsBefore);
         }

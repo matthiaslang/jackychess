@@ -23,8 +23,6 @@ public interface BoardRepresentation {
 
     String toUniCodeStr();
 
-    void move(Move move);
-
     void move(int from, int to);
 
     void switchSiteToMove();
@@ -73,4 +71,8 @@ public interface BoardRepresentation {
     PieceList getWhitePieces();
 
     long getZobristHash();
+
+    void domove(Move move);
+
+    void undo(Move move);
 }

@@ -68,7 +68,7 @@ public class PVMovesAreWrongTest {
             boolean legal = isLegalMove(board, move, who2Move);
 
             if (legal) {
-                board.move(move);
+                board.domove(move);
             } else {
                 System.out.println("is not legal!");
                 System.out.println(move.toStr());
@@ -124,7 +124,7 @@ public class PVMovesAreWrongTest {
             boolean legal = isLegalMove(board, move, who2Move);
 
             if (legal) {
-                board.move(move);
+                board.domove(move);
             } else {
                 System.out.println("is not legal!");
                 System.out.println(move.toStr());

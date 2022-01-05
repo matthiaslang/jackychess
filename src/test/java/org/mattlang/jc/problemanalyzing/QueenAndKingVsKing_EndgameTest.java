@@ -43,7 +43,7 @@ public class QueenAndKingVsKing_EndgameTest {
 
         // execute moves on board of pv:
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {
-            gameState.getBoard().move(move);
+            gameState.getBoard().domove(move);
 
             System.out.println(move.toStr());
             System.out.println(gameState.getBoard().toUniCodeStr());
