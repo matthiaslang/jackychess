@@ -9,7 +9,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.RepetitionChecker;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -130,32 +129,24 @@ public final class SearchContext {
 
     public void doMove(MoveCursor moveCursor) {
         moveCursor.move(board);
-        board.switchSiteToMove();
         repetitionChecker.push(board);
     }
 
     public void undoMove(MoveCursor moveCursor) {
         moveCursor.undoMove(board);
-        board.switchSiteToMove();
         repetitionChecker.pop();
     }
 
     public void undoNullMove() {
         nullMoveCounter--;
-        if (enPassantBeforeNullMove != board.getEnPassantMoveTargetPos()) {
-            board.setEnPassantOption(enPassantBeforeNullMove);
-        }
-        board.switchSiteToMove();
-//        repetitionChecker = repetitionCheckerBeforeNullMove;
+        board.undoNullMove();
+
+        //        repetitionChecker = repetitionCheckerBeforeNullMove;
     }
 
     public void doPrepareNullMove() {
         nullMoveCounter++;
-        enPassantBeforeNullMove = board.getEnPassantMoveTargetPos();
-        if (enPassantBeforeNullMove != BitBoard.NO_EN_PASSANT_OPTION) {
-            board.setEnPassantOption(BitBoard.NO_EN_PASSANT_OPTION);
-        }
-        board.switchSiteToMove();
+        board.doNullMove();
 //        repetitionCheckerBeforeNullMove = repetitionChecker;
 //        repetitionChecker = new SimpleRepetitionChecker();
     }

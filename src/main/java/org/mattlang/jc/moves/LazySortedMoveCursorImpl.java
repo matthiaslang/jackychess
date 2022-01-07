@@ -6,8 +6,6 @@ import org.mattlang.jc.engine.sorting.LongSorter;
 
 public final class LazySortedMoveCursorImpl implements MoveCursor {
 
-    private byte castlingrightsBefore;
-
     private LongSorter longSorter;
 
     private int currMove;
@@ -21,7 +19,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
 
     @Override
     public void move(BoardRepresentation board) {
-        castlingrightsBefore = board.getCastlingRights();
        board.domove(currMoveObj);
     }
 
@@ -38,9 +35,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     @Override
     public void undoMove(BoardRepresentation board) {
         board.undo(currMoveObj);
-        if (castlingrightsBefore != -1) {
-            board.setCastlingRights(castlingrightsBefore);
-        }
     }
 
     @Override

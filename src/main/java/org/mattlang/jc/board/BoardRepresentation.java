@@ -63,9 +63,6 @@ public interface BoardRepresentation {
 
     byte getCastlingRights();
 
-    void setCastlingRights(byte castlingRights);
-
-
     PieceList getBlackPieces();
 
     PieceList getWhitePieces();
@@ -75,4 +72,8 @@ public interface BoardRepresentation {
     void domove(Move move);
 
     void undo(Move move);
+
+    void undoNullMove();
+
+    void doNullMove();
 }

@@ -1,7 +1,5 @@
 package org.mattlang.jc.moves;
 
-import org.mattlang.jc.board.BoardRepresentation;
-
 import lombok.Getter;
 
 @Getter
@@ -37,11 +35,4 @@ public class CastlingMove {
         this.toIndex2 = (byte) toIndex2;
     }
 
-    public final void moveSecond(BoardRepresentation board) {
-        board.move(fromIndex2, toIndex2);
-    }
-
-    public final void undoSecond(BoardRepresentation board) {
-        board.move(toIndex2, fromIndex2);
-    }
 }

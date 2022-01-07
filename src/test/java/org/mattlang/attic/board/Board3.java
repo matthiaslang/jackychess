@@ -7,11 +7,13 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.board.bitboard.BitBoard.MAXMOVES;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
@@ -50,6 +52,12 @@ public class Board3 implements BoardRepresentation {
 
     @Getter
     private Color siteToMove;
+
+    private int[] historyEp = new int[MAXMOVES];
+    private long[] historyZobrist = new long[MAXMOVES];
+    private byte[] historyCastling = new byte[MAXMOVES];
+
+    private int moveCounter = 0;
 
     /**
      * the target pos of the en passant move that could be taken as next move on the board.
@@ -97,6 +105,7 @@ public class Board3 implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
+        moveCounter=0;
         siteToMove=WHITE;
         castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
@@ -180,6 +189,7 @@ public class Board3 implements BoardRepresentation {
     public void clearPosition() {
         Arrays.fill(board, Figure.EMPTY.figureCode);
         cleanPeaceList();
+        moveCounter=0;
     }
 
     private String expandRow(String row) {
@@ -366,21 +376,16 @@ public class Board3 implements BoardRepresentation {
     }
 
     @Override
-    public void setCastlingRights(byte newCastlingRights) {
-        if (newCastlingRights != castlingRights.getRights()) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.setRights(newCastlingRights);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        }
-    }
-
-    @Override
     public long getZobristHash() {
         return zobristHash;
     }
 
     @Override
     public void domove(Move move) {
+        historyCastling[moveCounter] = castlingRights.getRights();
+        historyEp[moveCounter] = enPassantMoveTargetPos;
+        historyZobrist[moveCounter] = zobristHash;
+        moveCounter++;
 
         move(move.getFromIndex(), move.getToIndex());
         if (move.isEnPassant()) {
@@ -388,8 +393,11 @@ public class Board3 implements BoardRepresentation {
         } else if (move.isPromotion()) {
             setPos(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
-            move.getCastlingMove().moveSecond(this);
+            CastlingMove castlingMove = move.getCastlingMove();
+            move(castlingMove.getFromIndex2(), castlingMove.getToIndex2());
         }
+
+        switchSiteToMove();
     }
 
     @Override
@@ -408,7 +416,35 @@ public class Board3 implements BoardRepresentation {
             Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
             setPos(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
-            move.getCastlingMove().undoSecond(this);
+            CastlingMove castlingMove = move.getCastlingMove();
+            move(castlingMove.getToIndex2(), castlingMove.getFromIndex2());
         }
+
+        moveCounter--;
+        castlingRights.setRights(historyCastling[moveCounter]);
+        enPassantMoveTargetPos = historyEp[moveCounter];
+        zobristHash = historyZobrist[moveCounter];
+    }
+
+
+    @Override
+    public void undoNullMove() {
+
+        siteToMove = siteToMove.invert();
+
+        moveCounter--;
+        castlingRights.setRights(historyCastling[moveCounter]);
+        enPassantMoveTargetPos = historyEp[moveCounter];
+        zobristHash = historyZobrist[moveCounter];
+    }
+
+    @Override
+    public void doNullMove() {
+        historyCastling[moveCounter] = castlingRights.getRights();
+        historyEp[moveCounter] = enPassantMoveTargetPos;
+        historyZobrist[moveCounter] = zobristHash;
+        moveCounter++;
+
+        switchSiteToMove();
     }
 }

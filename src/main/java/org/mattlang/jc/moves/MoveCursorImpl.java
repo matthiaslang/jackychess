@@ -5,7 +5,6 @@ import org.mattlang.jc.engine.MoveCursor;
 
 public final class MoveCursorImpl implements MoveCursor {
 
-    private byte castlingrightsBefore;
     private int size;
     private int iterCurser = 0;
     private MoveListImpl movelist;
@@ -24,7 +23,6 @@ public final class MoveCursorImpl implements MoveCursor {
 
     @Override
     public void move(BoardRepresentation board) {
-        castlingrightsBefore = board.getCastlingRights();
         board.domove(currMoveObj);
     }
 
@@ -41,9 +39,7 @@ public final class MoveCursorImpl implements MoveCursor {
     @Override
     public void undoMove(BoardRepresentation board) {
         board.undo(currMoveObj);
-        if (castlingrightsBefore != -1) {
-            board.setCastlingRights(castlingrightsBefore);
-        }
+
     }
 
     @Override

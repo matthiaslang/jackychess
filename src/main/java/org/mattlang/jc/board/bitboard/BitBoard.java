@@ -11,6 +11,7 @@ import static org.mattlang.jc.board.RochadeType.SHORT;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
@@ -29,6 +30,7 @@ public class BitBoard implements BoardRepresentation {
             "RNBQKBNR"
     };
     public static final int NO_EN_PASSANT_OPTION = -1;
+    public static final int MAXMOVES = 1024;
 
     @Getter
     private BitChessBoard board = new BitChessBoard();
@@ -40,6 +42,11 @@ public class BitBoard implements BoardRepresentation {
     @Getter
     private Color siteToMove;
 
+    private int[] historyEp = new int[MAXMOVES];
+    private long[] historyZobrist = new long[MAXMOVES];
+    private byte[] historyCastling = new byte[MAXMOVES];
+
+    private int moveCounter = 0;
     /**
      * the target pos of the en passant move that could be taken as next move on the board.
      * -1 if no en passant is possible.
@@ -74,6 +81,7 @@ public class BitBoard implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
+        moveCounter=0;
         siteToMove=WHITE;
         castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
@@ -148,6 +156,7 @@ public class BitBoard implements BoardRepresentation {
         for (int i = 0; i < 64; i++) {
             board.set(i, Figure.EMPTY.figureCode);
         }
+        moveCounter = 0;
     }
 
     private String expandRow(String row) {
@@ -222,6 +231,19 @@ public class BitBoard implements BoardRepresentation {
             setEnPassantOption((from + to) / 2);
         }
 
+    }
+
+    /**
+     * used during undoing. here we need not to take care about updating zobrist key, as it is reset afterwards
+     * anyway to the old value.
+     *
+     * @param from
+     * @param to
+     */
+    private void undomove(int from, int to) {
+        byte figure = board.get(from);
+        board.set(from, Figure.EMPTY.figureCode);
+        board.set(to, figure);
     }
 
     @Override
@@ -380,20 +402,16 @@ public class BitBoard implements BoardRepresentation {
     }
 
     @Override
-    public void setCastlingRights(byte newCastlingRights) {
-        if (newCastlingRights != castlingRights.getRights()) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.setRights(newCastlingRights);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        }
-    }
-
-    @Override
     public long getZobristHash() {
         return zobristHash;
     }
 
+    @Override
     public void domove(Move move) {
+        historyCastling[moveCounter] = castlingRights.getRights();
+        historyEp[moveCounter] = enPassantMoveTargetPos;
+        historyZobrist[moveCounter] = zobristHash;
+        moveCounter++;
 
         move(move.getFromIndex(), move.getToIndex());
         if (move.isEnPassant()) {
@@ -401,27 +419,61 @@ public class BitBoard implements BoardRepresentation {
         } else if (move.isPromotion()) {
             setPos(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
-            move.getCastlingMove().moveSecond(this);
+            CastlingMove castlingMove = move.getCastlingMove();
+            move(castlingMove.getFromIndex2(), castlingMove.getToIndex2());
         }
+
+        switchSiteToMove();
     }
 
+    @Override
     public void undo(Move move) {
-        move(move.getToIndex(), move.getFromIndex());
+        undomove(move.getToIndex(), move.getFromIndex());
         if (move.getCapturedFigure() != 0) {
-            setPos(move.getToIndex(), move.getCapturedFigure());
+            board.set(move.getToIndex(), move.getCapturedFigure());
         }
         if (move.isEnPassant()) {
             // override the "default" overrider field with empty..
-            setPos(move.getToIndex(), FigureConstants.FT_EMPTY);
+            board.set(move.getToIndex(), FigureConstants.FT_EMPTY);
             // because we have the special en passant capture pos which we need to reset with the captured figure
-            setPos(move.getEnPassantCapturePos(), move.getCapturedFigure());
+            board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
         } else if (move.isPromotion()) {
             Figure promotedFigure = getFigure(move.getFromIndex());
-            Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
-            setPos(move.getFromIndex(), pawn);
+            byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
+            board.set(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
-            move.getCastlingMove().undoSecond(this);
+            CastlingMove castlingMove = move.getCastlingMove();
+            undomove(castlingMove.getToIndex2(), castlingMove.getFromIndex2());
         }
+
+        siteToMove = siteToMove.invert();
+
+        moveCounter--;
+        castlingRights.setRights(historyCastling[moveCounter]);
+        enPassantMoveTargetPos = historyEp[moveCounter];
+        zobristHash = historyZobrist[moveCounter];
+
+    }
+
+    @Override
+    public void undoNullMove() {
+
+        siteToMove = siteToMove.invert();
+
+        moveCounter--;
+        castlingRights.setRights(historyCastling[moveCounter]);
+        enPassantMoveTargetPos = historyEp[moveCounter];
+        zobristHash = historyZobrist[moveCounter];
+    }
+
+    @Override
+    public void doNullMove() {
+        historyCastling[moveCounter] = castlingRights.getRights();
+        historyEp[moveCounter] = enPassantMoveTargetPos;
+        historyZobrist[moveCounter] = zobristHash;
+        moveCounter++;
+
+        switchSiteToMove();
     }
 
 }
