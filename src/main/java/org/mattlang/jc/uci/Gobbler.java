@@ -1,5 +1,7 @@
 package org.mattlang.jc.uci;
 
+import static java.util.logging.Level.FINE;
+
 import java.io.*;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,7 +33,7 @@ public class Gobbler {
     }
 
     public void putCommand(String cmd) {
-        logger.info("OUT: " + cmd);
+        logger.fine("OUT: " + cmd);
         out.println(cmd);
         out.flush();
     }
@@ -53,7 +55,7 @@ public class Gobbler {
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "failed gobbling!", e);
                     }
-                    logger.log(Level.INFO, "stopped gobbling");
+                    logger.log(FINE, "stopped gobbling");
                 }, "Gobble Thread for " + name + gobblerCounter++);
         inThread.start();
     }
@@ -66,7 +68,7 @@ public class Gobbler {
         LineNumberReader r = new LineNumberReader(new InputStreamReader(in));
         while (!finished && !Thread.currentThread().isInterrupted()) {
             String line = r.readLine();
-            logger.info(name + " IN: " + line);
+            logger.fine(name + " IN: " + line);
             if (line != null) {
                 inQueue.add(line);
             }
@@ -75,6 +77,6 @@ public class Gobbler {
 
     public void quit() {
         finished = true;
-        logger.log(Level.INFO, "gobbling got quit message");
+        logger.log(FINE, "gobbling got quit message");
     }
 }
