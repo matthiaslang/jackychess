@@ -44,7 +44,7 @@ public class MoveValidator {
         board = gameState.getBoard().copy();
         boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
         if (!legal){
-            LOGGER.warning("Illegal Best Move " + rslt.savedMove.toStr());
+            LOGGER.severe("Illegal Best Move " + rslt.savedMove.toStr());
         }
     }
 
