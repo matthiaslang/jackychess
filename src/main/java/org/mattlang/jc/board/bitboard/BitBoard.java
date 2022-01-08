@@ -180,14 +180,18 @@ public class BitBoard implements BoardRepresentation {
         return BoardPrinter.toUniCodeStr(this);
     }
 
+    @Override
+    public void println() {
+        System.out.println(toUniCodeStr());
+    }
+
     /**
      * Simple move of one figure from one field to another.
      *
      * @param from
      * @param to
      */
-    @Override
-    public void move(int from, int to) {
+    private void move(int from, int to) {
         byte figure = board.get(from);
         // remove castling rights when rooks or kings are moved:
         if (figure == W_KING) {
@@ -408,10 +412,7 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public void domove(Move move) {
-        historyCastling[moveCounter] = castlingRights.getRights();
-        historyEp[moveCounter] = enPassantMoveTargetPos;
-        historyZobrist[moveCounter] = zobristHash;
-        moveCounter++;
+        pushHistory();
 
         move(move.getFromIndex(), move.getToIndex());
         if (move.isEnPassant()) {
@@ -448,32 +449,40 @@ public class BitBoard implements BoardRepresentation {
 
         siteToMove = siteToMove.invert();
 
+        popHistory();
+
+    }
+
+    private void popHistory() {
         moveCounter--;
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
         zobristHash = historyZobrist[moveCounter];
-
     }
 
     @Override
     public void undoNullMove() {
-
         siteToMove = siteToMove.invert();
-
-        moveCounter--;
-        castlingRights.setRights(historyCastling[moveCounter]);
-        enPassantMoveTargetPos = historyEp[moveCounter];
-        zobristHash = historyZobrist[moveCounter];
+        popHistory();
     }
 
     @Override
     public void doNullMove() {
+        pushHistory();
+        switchSiteToMove();
+
+        // reset ep option, otherwise the same side would use its own ep option for an ep move..
+        int enPassantBeforeNullMove = getEnPassantMoveTargetPos();
+        if (enPassantBeforeNullMove != BitBoard.NO_EN_PASSANT_OPTION) {
+            setEnPassantOption(BitBoard.NO_EN_PASSANT_OPTION);
+        }
+    }
+
+    private void pushHistory() {
         historyCastling[moveCounter] = castlingRights.getRights();
         historyEp[moveCounter] = enPassantMoveTargetPos;
         historyZobrist[moveCounter] = zobristHash;
         moveCounter++;
-
-        switchSiteToMove();
     }
 
 }

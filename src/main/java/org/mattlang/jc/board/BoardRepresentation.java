@@ -23,7 +23,7 @@ public interface BoardRepresentation {
 
     String toUniCodeStr();
 
-    void move(int from, int to);
+    void println();
 
     void switchSiteToMove();
 

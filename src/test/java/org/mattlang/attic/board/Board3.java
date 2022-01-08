@@ -213,14 +213,18 @@ public class Board3 implements BoardRepresentation {
         return BoardPrinter.toUniCodeStr(this);
     }
 
+    @Override
+    public void println() {
+        System.out.println(toUniCodeStr());
+    }
+
     /**
      * Simple move of one figure from one field to another.
      *
      * @param from
      * @param to
      */
-    @Override
-    public void move(int from, int to) {
+    private void move(int from, int to) {
         byte figure = board[from];
         // remove castling rights when rooks or kings are moved:
         if (figure == W_KING) {
