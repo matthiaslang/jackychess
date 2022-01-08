@@ -8,6 +8,7 @@ import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
@@ -139,7 +140,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
             // todo why does this happen that no best move gets returned from nega max search...
             // we need to further analyze this situation.
             UCILogger.log("no result from negamax for window: " + aspWindow.descr());
-            LOGGER.info("no result from negamax on iteration depth:" + currdepth);
+            LOGGER.warning("no result from negamax on iteration depth:" + currdepth);
             LOGGER.info("negamax result: " + rslt);
             Map statOfDepth = new LinkedHashMap();
             negaMaxAlphaBeta.collectStatistics(statOfDepth);
@@ -168,7 +169,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, OrderHints orderHints, int currdepth) {
 
-        LOGGER.info(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
+        LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
 
         NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
                 currdepth,
@@ -177,13 +178,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
-            LOGGER.info(format("aspiration widened to %s", aspWindow.descr()));
+            LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
             rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime, orderHints);
         }
-        LOGGER.info(format("aspiration stabilized: %s", aspWindow.descr()));
+        LOGGER.fine(format("aspiration stabilized: %s", aspWindow.descr()));
         return rslt;
     }
 
@@ -198,14 +199,14 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         long hashfull = gameContext.ttCache.calcHashFull();
 //        long hashfull = gameContext.ttc.getUsagePercentage();
-        UCI.instance.putCommand("info depth " + rslt.targetDepth +
+        UCI.instance.putCommand(Level.INFO,"info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
                 " score cp " + rslt.max + " nodes " + nodes
                 + " hashfull " + hashfull
                 + " nps " + nps
                 + " time " + duration
                 + " pv " + rslt.pvList.toPvStr());
-        UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
+        UCI.instance.putCommand(Level.INFO, "info currmove " + rslt.savedMove.toStr());
     }
 
     private Map stats = new LinkedHashMap();

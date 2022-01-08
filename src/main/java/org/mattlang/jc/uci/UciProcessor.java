@@ -64,6 +64,7 @@ public class UciProcessor {
             // setoption name thinktime value 16
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
+            LOGGER.info(cmdStr);
             GoParameter goParams = parseGoParams(cmdStr);
             CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
             result.thenAccept(move -> sendBestMove(move));
@@ -87,6 +88,7 @@ public class UciProcessor {
     }
 
     private GameContext createNewGameContext() {
+        LOGGER.info("start new game");
         return new GameContext(configValues);
     }
 
@@ -158,6 +160,7 @@ public class UciProcessor {
 
 
     private GameState setPosition(String positionStr) {
+        LOGGER.info(positionStr);
         FenParser fenParser = new FenParser();
         return fenParser.setPosition(positionStr, board);
     }

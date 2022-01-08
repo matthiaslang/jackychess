@@ -32,8 +32,18 @@ public class Gobbler {
         this.name = name;
     }
 
+
     public void putCommand(String cmd) {
-        logger.fine("OUT: " + cmd);
+        putCommand(FINE, cmd);
+    }
+
+    /**
+     * put a uci command and log with a specific log level.
+     * @param level
+     * @param cmd
+     */
+    public void putCommand(Level level,String cmd) {
+        logger.log(level,"OUT: " + cmd);
         out.println(cmd);
         out.flush();
     }

@@ -51,7 +51,12 @@ public class AsyncEngine {
         }
         Factory.setDefaults(searchParams);
         UCILogger.log("site to move:" + gameState.getWho2Move());
-        Factory.getDefaults().log();
+
+        // log parameters only once for a game:
+        if (gameContext.getContext("startLogged")==null) {
+            Factory.getDefaults().log();
+            gameContext.setContext("startLogged", true);
+        }
 
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> future = executorService.submit(() -> {
