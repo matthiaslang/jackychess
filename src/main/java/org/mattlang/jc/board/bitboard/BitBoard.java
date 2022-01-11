@@ -107,6 +107,16 @@ public class BitBoard implements BoardRepresentation {
         }
     }
 
+
+    private void cleanPos(int pos) {
+        byte oldFigure = board.get(pos);
+        board.cleanPos(pos);
+        // remove from piece list, if this is a "override/capture" of this field:
+        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
+            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+        }
+    }
+
     /**
      * Sets position based on coordinate system (0,0 is the left lower corner, the white left corner)
      *
@@ -233,6 +243,66 @@ public class BitBoard implements BoardRepresentation {
             setEnPassantOption((from + to) / 2);
         } else if (figure == B_PAWN && from - to == 16) {
             setEnPassantOption((from + to) / 2);
+        }
+
+    }
+
+    private void move(byte figType, int from, int to, byte capturedFigure) {
+
+        // remove castling rights when rooks or kings are moved:
+        if (siteToMove == WHITE) {
+            if (figType == FT_KING) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(WHITE, SHORT);
+                castlingRights.retain(WHITE, LONG);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            } else if (figType == FT_ROOK && from == 0) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(WHITE, LONG);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            } else if (figType == FT_ROOK && from == 7) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(WHITE, SHORT);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            }
+        } else {
+
+            if (figType == FT_KING) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(BLACK, SHORT);
+                castlingRights.retain(BLACK, LONG);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            } else if (figType == FT_ROOK && from == 56) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(BLACK, LONG);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            } else if (figType == FT_ROOK && from == 63) {
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                castlingRights.retain(BLACK, SHORT);
+                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            }
+        }
+
+        board.move(from, to, figType, siteToMove.ordinal(), capturedFigure);
+
+        byte figCode = (byte) (figType | (siteToMove == WHITE ? WHITE.code : BLACK.code));
+
+        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
+        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
+        if (capturedFigure != 0) {
+            zobristHash = Zobrist.removeFig(zobristHash, to, capturedFigure);
+        }
+
+        resetEnPassant();
+
+        // check double pawn move. here we need to mark an possible en passant follow up move:
+        // be careful: we must not set the en passant option by undoing a double pawn move:
+        if (figType == FT_PAWN) {
+            if (siteToMove == WHITE && to - from == 16) {
+                setEnPassantOption((from + to) / 2);
+            } else if (siteToMove == BLACK && from - to == 16) {
+                setEnPassantOption((from + to) / 2);
+            }
         }
 
     }
@@ -414,7 +484,9 @@ public class BitBoard implements BoardRepresentation {
     public void domove(Move move) {
         pushHistory();
 
+//        move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
         move(move.getFromIndex(), move.getToIndex());
+
         if (move.isEnPassant()) {
             setPos(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
         } else if (move.isPromotion()) {

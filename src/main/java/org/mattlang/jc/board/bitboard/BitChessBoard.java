@@ -20,8 +20,8 @@ public class BitChessBoard {
     private long[] colorBB = new long[2];
     private long[] pieceBB = new long[6];
 
-    public static final int nWhite = 0;     // any white piece
-    public static final int nBlack = 1;     // any black piece
+    public static final int nWhite = Color.WHITE.ordinal();     // any white piece
+    public static final int nBlack = Color.BLACK.ordinal();     // any black piece
 
     public BitChessBoard() {
     }
@@ -130,6 +130,34 @@ public class BitChessBoard {
 
     }
 
+    public void setByMove(int i, byte figureCode) {
+        long posMask = 1L << i;
+
+        long invPosMask = ~posMask;
+
+        int colorIdx = ((figureCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
+        int otherColor = colorIdx == nWhite ? nBlack : nWhite;
+        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
+        colorBB[colorIdx] |= posMask;
+        colorBB[otherColor] &= invPosMask;
+
+        pieceBB[figType] |= posMask;
+
+    }
+
+    public void cleanPos(int i) {
+        long posMask = 1L << i;
+
+        long invPosMask = ~posMask;
+
+        colorBB[nWhite] &= invPosMask;
+        colorBB[nBlack] &= invPosMask;
+        for (int figType = 0; figType < 6; figType++) {
+            pieceBB[figType] &= invPosMask;
+        }
+
+    }
+
     public byte get(int i) {
         long posMask = 1L << i;
         byte colorOffset;
@@ -178,4 +206,40 @@ public class BitChessBoard {
         return BB.toStr(bb);
     }
 
+    public void move(int from, int to, byte figureCode, int color) {
+
+        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
+        long fromBB = 1L << from;
+        long toBB = 1L << to;
+        long fromToBB = fromBB ^ toBB; // |+
+        pieceBB[figType] ^= fromToBB;   // update piece bitboard
+        colorBB[color] ^= fromToBB;   // update white or black color bitboard
+        //occupiedBB            ^=  fromToBB;   // update occupied ...
+        //emptyBB               ^=  fromToBB;   // ... and empty bitboard
+
+    }
+
+    public void move(int from, int to, byte figureCode, int color, byte capturedPiece) {
+
+        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
+
+        long fromBB = 1L << from;
+        long toBB = 1L << to;
+        long fromToBB = fromBB ^ toBB; // |+
+        pieceBB[figType] ^= fromToBB;   // update piece bitboard
+        colorBB[color] ^= fromToBB;   // update white or black color bitboard
+
+        if (capturedPiece != 0) {
+            byte cPiece = (byte) (capturedPiece & MASK_OUT_COLOR);
+            pieceBB[cPiece] ^= toBB;       // reset the captured piece
+            colorBB[opponentColor(color)] ^= toBB;       // update color bitboard by captured piece
+        }
+
+        //occupiedBB            ^=  fromBB;     // update occupied, only from becomes empty
+        //emptyBB               ^=  fromBB;     // update empty bitboard
+    }
+
+    private int opponentColor(int color) {
+        return color == nWhite ? nBlack : nWhite;
+    }
 }
