@@ -35,7 +35,7 @@ public class EngineTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
         board.switchSiteToMove();
-        Move move = searchMethod.search(new GameState(board, new SimpleRepetitionChecker()), new GameContext(), 6);
+        Move move = searchMethod.search(new GameState(board, new SimpleRepetitionChecker(), null), new GameContext(), 6);
         System.out.println(board.toUniCodeStr());
 
         System.out.println(move.toStr());
