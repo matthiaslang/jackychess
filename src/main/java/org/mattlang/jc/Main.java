@@ -1,5 +1,6 @@
 package org.mattlang.jc;
 
+import static java.util.logging.Level.parse;
 import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.AppConfiguration.*;
 
@@ -43,12 +44,18 @@ public class Main {
     private static String replaceVariables(String configFileContent) {
         Optional<String> optLogDir = APPCONFIG.getStringValue(LOGGING_DIR);
         Optional<String> optLogFile = APPCONFIG.getStringValue(LOGGING_FILE);
+        Optional<String> optLogLevel = APPCONFIG.getStringValue(LOGGING_LEVEL);
+
         // either use a cofigured directory or the java.util.logging placeholder %h for user home:
         String logDir = optLogDir.isPresent() ? optLogDir.get() : "%h";
         String version = Factory.getAppProps().getProperty("version");
         String logFile = optLogFile.isPresent() ? optLogFile.get() : "jackyChess-" + version;
+        String logLevelRow =
+                optLogLevel.isPresent() ? ".level=" + parse(optLogLevel.get()) : ".level=INFO";
+
         configFileContent = configFileContent.replace("%h", logDir);
         configFileContent = configFileContent.replace("<FILE>", logFile);
+        configFileContent = configFileContent.replace(".level=INFO", logLevelRow);
 
         return configFileContent;
     }

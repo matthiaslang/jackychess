@@ -79,7 +79,6 @@ public class NegaMaxResult {
                 "directScore=" + directScore +
                 ", max=" + max +
                 ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", moveScores=" + moveScores +
                 ", pv=" + pvList.toPvStr() +
                 ", depth=" + targetDepth + "/" + selDepth +
                 ", nodes=" + nodesVisited + "/" + quiescenceNodesVisited +
