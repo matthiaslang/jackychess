@@ -11,6 +11,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.search.SearchException;
 
 public class UciProcessor {
 
@@ -43,6 +44,8 @@ public class UciProcessor {
                     processCmd(optCmd.get());
                 }
             }
+        } catch (SearchException se) {
+            LOGGER.log(SEVERE, se.toStringAllInfos());
         } catch (Exception e) {
             LOGGER.log(SEVERE, "Error in main uci processing loop!", e);
         }
@@ -64,7 +67,6 @@ public class UciProcessor {
             // setoption name thinktime value 16
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
-            LOGGER.info(cmdStr);
             GoParameter goParams = parseGoParams(cmdStr);
             CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
             result.thenAccept(move -> sendBestMove(move));
@@ -160,7 +162,6 @@ public class UciProcessor {
 
 
     private GameState setPosition(String positionStr) {
-        LOGGER.info(positionStr);
         FenParser fenParser = new FenParser();
         return fenParser.setPosition(positionStr, board);
     }

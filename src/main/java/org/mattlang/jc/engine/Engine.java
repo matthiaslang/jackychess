@@ -34,7 +34,7 @@ public class Engine {
 
     @Deprecated
     public Move go() {
-        return searchMethod.search(new GameState(board, new SimpleRepetitionChecker()), new GameContext(), depth);
+        return searchMethod.search(new GameState(board, new SimpleRepetitionChecker(), null), new GameContext(), depth);
     }
 
     public Move go(GameState gameState, GameContext gameContext) {

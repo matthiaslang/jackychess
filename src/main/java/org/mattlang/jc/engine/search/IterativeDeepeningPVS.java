@@ -8,7 +8,6 @@ import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
@@ -57,6 +56,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
+        LOGGER.info("iterative search on " + gameState.getFenStr());
 
         StopWatch watch = new StopWatch();
         watch.start();
@@ -81,17 +81,24 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         } catch (TimeoutException te) {
             String ebfReport = format("EBF: %s", ebf.report());
             UCILogger.log(ebfReport);
-            LOGGER.info(ebfReport);
-            return new IterativeSearchResult(rounds, ebfReport);
-        } finally {
-            //negaMaxAlphaBeta.reset();
+            IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
+            logIsr(isr);
+            return isr;
+        } catch (Exception e) {
+            throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
         }
 
         String ebfReport = format("EBF: %s", ebf.report());
         UCILogger.log(ebfReport);
         LOGGER.info(ebfReport);
 
-        return new IterativeSearchResult(rounds, ebfReport);
+        IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
+        logIsr(isr);
+        return isr;
+    }
+
+    private void logIsr(IterativeSearchResult isr) {
+        LOGGER.info("best move: " + isr.getSavedMove() + " " + isr.getRslt().toLogString());
     }
 
     @AllArgsConstructor
@@ -199,14 +206,14 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         long hashfull = gameContext.ttCache.calcHashFull();
 //        long hashfull = gameContext.ttc.getUsagePercentage();
-        UCI.instance.putCommand(Level.INFO,"info depth " + rslt.targetDepth +
+        UCI.instance.putCommand("info depth " + rslt.targetDepth +
                 " seldepth " + rslt.selDepth +
                 " score cp " + rslt.max + " nodes " + nodes
                 + " hashfull " + hashfull
                 + " nps " + nps
                 + " time " + duration
                 + " pv " + rslt.pvList.toPvStr());
-        UCI.instance.putCommand(Level.INFO, "info currmove " + rslt.savedMove.toStr());
+        UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
     }
 
     private Map stats = new LinkedHashMap();

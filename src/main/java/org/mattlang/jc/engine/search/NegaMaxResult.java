@@ -73,4 +73,16 @@ public class NegaMaxResult {
                 ", selDepth=" + selDepth +
                 '}';
     }
+
+    public String toLogString() {
+        return "[" +
+                "directScore=" + directScore +
+                ", max=" + max +
+                ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
+                ", moveScores=" + moveScores +
+                ", pv=" + pvList.toPvStr() +
+                ", depth=" + targetDepth + "/" + selDepth +
+                ", nodes=" + nodesVisited + "/" + quiescenceNodesVisited +
+                ']';
+    }
 }

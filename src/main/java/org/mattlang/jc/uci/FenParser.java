@@ -52,7 +52,7 @@ public class FenParser {
                 }
             }
         }
-        return new GameState(board, repetitionChecker);
+        return new GameState(board, repetitionChecker, positionStr);
     }
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
