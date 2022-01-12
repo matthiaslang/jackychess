@@ -61,6 +61,7 @@ public final class SearchContext {
     @Getter
     private ArrayList<MoveScore> moveScores = new ArrayList<>();
 
+    @Getter
     private final BoardRepresentation board;
 
     private RepetitionChecker repetitionChecker;

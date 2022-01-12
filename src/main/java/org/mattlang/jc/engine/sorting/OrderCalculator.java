@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.sorting;
 import java.util.HashMap;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
@@ -40,21 +41,22 @@ public class OrderCalculator {
     private final OrderHints orderHints;
 
     private int hashMove;
+    private BoardRepresentation board;
 
     public OrderCalculator(OrderHints orderHints, int targetDepth) {
-        this.orderHints=orderHints;
-        this.targetDepth=targetDepth;
+        this.orderHints = orderHints;
+        this.targetDepth = targetDepth;
         this.historyHeuristic = orderHints.historyHeuristic;
         this.killerMoves = orderHints.killerMoves;
         this.useMvvLva = orderHints.useMvvLvaSorting;
         this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
 
-
-    public void prepareOrder(Color color, final int hashMove, final int ply, final int depth) {
+    public void prepareOrder(Color color, final int hashMove, final int ply, final int depth,
+            BoardRepresentation board) {
 
         this.hashMove = hashMove;
-        int index = ply-1;
+        int index = ply - 1;
         // if we are at the root and have scores from a previous run, lets take them:
         if (index == 0 && orderHints.moveScores != null) {
             // todo assert that the first pvs should be the highest score...
@@ -71,6 +73,7 @@ public class OrderCalculator {
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(index) : 0;
         this.color = color;
         this.depth = depth;
+        this.board = board;
     }
 
     /**
@@ -109,8 +112,8 @@ public class OrderCalculator {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
 
             if (m.isCapture()) {
-                // good captures. we should more fine grain distinguish "good"
-                if (mvvLva >= GOOD_CAPTURE_WEIGHT) {
+                // find out good moves (currently via simple blind algorithm)
+                if (MvvLva.blind(board, m)) {
                     return -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
                     return -mvvLva;

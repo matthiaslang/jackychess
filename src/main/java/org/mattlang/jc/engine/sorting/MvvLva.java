@@ -95,7 +95,7 @@ public class MvvLva {
      *  captures, but it seems enough to improve move ordering.                    *
      ******************************************************************************/
 
-    public boolean blind(BoardRepresentation board, Move move) {
+    public static boolean blind(BoardRepresentation board, Move move) {
         int sq_to = move.getToIndex();
         int sq_fr = move.getFromIndex();
 

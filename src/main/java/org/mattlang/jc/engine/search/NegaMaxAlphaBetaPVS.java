@@ -230,7 +230,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         try (MoveList moves = searchContext.generateMoves(color)) {
 
-            sortMoves(ply, depth, color, moves);
+            sortMoves(ply, depth, color, moves, searchContext.getBoard());
 
             nodes += moves.size();
 
@@ -460,7 +460,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             searchContext.adjustSelDepth(depth);
 
             // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-            sortMoves(ply, depth, color, moves);
+            sortMoves(ply, depth, color, moves, searchContext.getBoard());
 
             int searchedMoves = 0;
             /* loop through the capture moves */
@@ -611,14 +611,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     /**
      * Sorts the move list by calculating the move order first.
-     *
-     * @param depth
+     *  @param depth
      * @param color
      * @param moves
+     * @param board
      */
-    private void sortMoves(int ply, int depth, Color color, MoveList moves) {
+    private void sortMoves(int ply, int depth, Color color, MoveList moves,
+            BoardRepresentation board) {
         int hashMove = searchContext.probeTTHashMove(color, depth);
-        orderCalculator.prepareOrder(color, hashMove, ply, depth);
+        orderCalculator.prepareOrder(color, hashMove, ply, depth, board);
         moves.sort(orderCalculator);
     }
 
