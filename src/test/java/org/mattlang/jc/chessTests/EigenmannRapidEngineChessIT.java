@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.jc.EvalFunctions;
+import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.UCI;
@@ -16,8 +18,8 @@ import org.mattlang.jc.uci.UCI;
 /**
  * Eigenmann Rapid Engine Tests Suite.
  * Most Tests fail..
- * With iterative deepening alpha beta some work fine.
- * With mtd(f) all faill currently, means there is something bad going on here, probably.
+ * ~19 of 111 seem to work fine... but some of the 19 also not, because the expected move comparison is not working well for algebraic notation.
+ *
  */
 
 @Category(ChessTests.class)
@@ -165,8 +167,15 @@ public class EigenmannRapidEngineChessIT {
     @Test
     public void testWithDefaultConfig() {
         // create engine
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(5000)));
+        Factory.setDefaults(Factory.createBitboard()
+                        .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
+                        .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL))
+                        .config(c->c.useNullMoves.setValue(true))
+                        .config(c->c.staticNullMove.setValue(true))
+                        .config(c->c.deltaCutoff.setValue(true))
+                        .config(c->c.razoring.setValue(true))
+                        .config(c->c.useLateMoveReductions.setValue(true))
+                .config(c -> c.timeout.setValue(25000)));
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }

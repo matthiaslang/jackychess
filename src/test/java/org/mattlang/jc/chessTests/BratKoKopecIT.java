@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.jc.EvalFunctions;
+import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.UCI;
@@ -76,7 +78,15 @@ public class BratKoKopecIT {
     @Test
     public void testStable() {
         // create engine
-        Factory.setDefaults(Factory.createStable());
+        Factory.setDefaults(Factory.createBitboard()
+                .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
+                .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL))
+                .config(c->c.useNullMoves.setValue(true))
+                .config(c->c.staticNullMove.setValue(true))
+                .config(c->c.deltaCutoff.setValue(true))
+                .config(c->c.razoring.setValue(true))
+                .config(c->c.useLateMoveReductions.setValue(true))
+                .config(c -> c.timeout.setValue(25000)));
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }
