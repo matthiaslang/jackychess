@@ -46,7 +46,9 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
                     "formattedDuration", "searchAlgorithm",
                     "evaluateFunction",
                     "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
-                    "pvSearch", "aspiration", "useNullMoves", "moveListImpl", "move", "nodesVisited",
+                    "pvSearch", "aspiration", "useNullMoves", "staticNullMove", "useLateMoveReductions",
+                    "deltaCutoff", "razoring",
+                    "moveListImpl", "move", "nodesVisited",
                     "quiescenceNodesVisited", "ebfReport" };
 
     public static void writeCsvReport(ArrayList<BenchmarkIterativeResults> results, String filename)

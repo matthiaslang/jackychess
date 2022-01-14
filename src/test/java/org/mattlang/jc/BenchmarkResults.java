@@ -11,6 +11,10 @@ public class BenchmarkResults<T> {
     private final Boolean useNullMoves;
     private final String testName;
     private final String testExpectedBestMove;
+    private final Boolean staticNullMove;
+    private final Boolean razoring;
+    private final Boolean useLateMoveReductions;
+    private final Boolean deltaCutoff;
 
     String name;
     StopWatch watch;
@@ -57,6 +61,10 @@ public class BenchmarkResults<T> {
         this.searchAlgorithm = config.searchAlgorithm.getValue().name();
         this.aspiration = config.aspiration.getValue();
         this.useNullMoves = config.useNullMoves.getValue();
+        this.staticNullMove = config.staticNullMove.getValue();
+        this.razoring = config.razoring.getValue();
+        this.useLateMoveReductions = config.useLateMoveReductions.getValue();
+        this.deltaCutoff = config.deltaCutoff.getValue();
         this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getSimpleName();
 
     }

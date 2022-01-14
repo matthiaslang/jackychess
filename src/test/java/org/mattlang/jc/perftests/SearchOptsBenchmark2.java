@@ -17,7 +17,7 @@ import org.mattlang.jc.uci.UCI;
  */
 public class SearchOptsBenchmark2 {
 
-    public static final int MAX_DEPTH = 5;
+    public static final int MAX_DEPTH = 6;
     public static final int TIMEOUT = 60000;
 
     /**
@@ -90,6 +90,57 @@ public class SearchOptsBenchmark2 {
                         .config(c -> c.useNullMoves.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
 
+
+        runner.benchmarkSingleExecute(
+                everythingOff()
+                        .config(c -> c.activatePvsSearch.setValue(true))
+                        .config(c -> c.usePvSorting.setValue(true))
+                        .config(c -> c.useKillerMoves.setValue(true))
+                        .config(c -> c.useMvvLvaSorting.setValue(true))
+                        .config(c -> c.useHistoryHeuristic.setValue(true))
+                        .config(c -> c.useNullMoves.setValue(true))
+                        .config(c -> c.staticNullMove.setValue(true))
+                        .config(c -> c.useTTCache.setValue(true)));
+
+        runner.benchmarkSingleExecute(
+                everythingOff()
+                        .config(c -> c.activatePvsSearch.setValue(true))
+                        .config(c -> c.usePvSorting.setValue(true))
+                        .config(c -> c.useKillerMoves.setValue(true))
+                        .config(c -> c.useMvvLvaSorting.setValue(true))
+                        .config(c -> c.useHistoryHeuristic.setValue(true))
+                        .config(c -> c.useNullMoves.setValue(true))
+                        .config(c -> c.staticNullMove.setValue(true))
+                        .config(c -> c.useLateMoveReductions.setValue(true))
+                        .config(c -> c.useTTCache.setValue(true)));
+
+        runner.benchmarkSingleExecute(
+                everythingOff()
+                        .config(c -> c.activatePvsSearch.setValue(true))
+                        .config(c -> c.usePvSorting.setValue(true))
+                        .config(c -> c.useKillerMoves.setValue(true))
+                        .config(c -> c.useMvvLvaSorting.setValue(true))
+                        .config(c -> c.useHistoryHeuristic.setValue(true))
+                        .config(c -> c.useNullMoves.setValue(true))
+                        .config(c -> c.staticNullMove.setValue(true))
+                        .config(c -> c.useLateMoveReductions.setValue(true))
+                        .config(c -> c.deltaCutoff.setValue(true))
+                        .config(c -> c.useTTCache.setValue(true)));
+
+        runner.benchmarkSingleExecute(
+                everythingOff()
+                        .config(c -> c.activatePvsSearch.setValue(true))
+                        .config(c -> c.usePvSorting.setValue(true))
+                        .config(c -> c.useKillerMoves.setValue(true))
+                        .config(c -> c.useMvvLvaSorting.setValue(true))
+                        .config(c -> c.useHistoryHeuristic.setValue(true))
+                        .config(c -> c.useNullMoves.setValue(true))
+                        .config(c -> c.staticNullMove.setValue(true))
+                        .config(c -> c.useLateMoveReductions.setValue(true))
+                        .config(c -> c.deltaCutoff.setValue(true))
+                        .config(c -> c.razoring.setValue(true))
+                        .config(c -> c.useTTCache.setValue(true)));
+        
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
         }
