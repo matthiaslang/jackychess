@@ -3,10 +3,10 @@
 A simple UCI chess engine written in Java.
 
 This project is mainly a self educational project to 
-learn the various algorithms around chess computers. 
+learn about various algorithms around chess programming. 
 Inspiration was mainly given by the great chess programming wiki
 https://www.chessprogramming.org/ where you can get a good overview about all used
-algorithms.
+algorithms, but also by many great open source engines by studying the sources.
 
 ## Goals of the engine
 
@@ -14,23 +14,24 @@ algorithms.
 - the code is simple and clear since the main purpose is to understand the algorithms.
 - the code should be exchangeable: the different implementations for search algorithms and
   related implementations are implemented by interfaces and exchangeable. This is needed to compare the algorithms, too.
+- the evaluation function is configurable to switch parameters for experimentation
 - the engine should be at least so good that it can defeat me (a mediocre amateur chess player, I hope.. :)
 - having fun to program it :)
 
 ## Requirements
 
-Java 8 to compile the engine.
+Java 8 & maven to compile the engine.
 
 The chess engine should work under any UCI chess client.
-It was mainly tested with Arena http://www.playwitharena.de/ 
-and works fine with this client. It was also tested with pyChess. However - any UCI complient UI should work.
+It was mainly tested with Arena http://www.playwitharena.de/ and with cutechess https://github.com/cutechess/cutechess
+and works fine with these clients. However - any UCI complient UI should work.
 
 Simply add the engine to your prefered UCI Gui Client and then you should be ready to use it.
 You should have several UCI options able to set in the UI then.
 
 ## Rating
 
-The engine has a ELO rating of 1455 in the CCLR Blitz index, see http://ccrl.chessdom.com/ccrl/404/
+The engine Version 0.9.14 has a ELO rating of 1455 in the CCLR Blitz index, see http://ccrl.chessdom.com/ccrl/404/
 
 
 
@@ -56,16 +57,17 @@ The engine has a ELO rating of 1455 in the CCLR Blitz index, see http://ccrl.che
 
 The chess engine uses following technics/algorithms 
 
-- a simple Board using 64 bytes for coding the figures.
-- Move Generator using a "mailbox" 10x12 Board  
-- a simple Evaluation function which mainly checks material
-and basic positional things like mobility and captures
-- an alternative PST only evaluation function
+- Bitboards
+- Move Generator using a magic bitboards  
+- an configurable Evaluation function considering material, mobility and several other simple evaluations
 - Search Algorithm is PVS with an iterative deepening algorithm using Alpha Beta Negamax.
 - Aspiration windowing
-- Move sorting by PV Moves, killer moves, history heuristic
+- null move pruning and static null move pruning
+- razoring
+- late move reduction
+- Move sorting by PV Moves, killer moves, history heuristic, captures sorted by BLIND
 - Transposition Table using zobrist hashing to cache Scores
-- Quiescence Search
+- basic quiescence search with delta cut off
 
 
 
@@ -85,11 +87,12 @@ see [Version History](docs/versionhistory.md)
 
 ## todo 
            
-- todo more bitboard special stuff
-  - legal move check optimizations not using a full board, but a bitboard
-- todo: experiments/perfts with better tt caching...
+- optimizations on all ends...
+- make evaluation better by considering more aspects
+- optimization of evaluation parameter
+- pruning optimization
+- tt cache optimization
+- make end-game stronger
+- lazy staged move generation
+- 
 
-
-## bugs
-
-see [Current known bugs](docs/bugs.md)

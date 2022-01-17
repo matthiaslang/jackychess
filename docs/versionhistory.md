@@ -1,69 +1,100 @@
 # Versions
 
 
-### Version 0.8.2
+### Version 0.9.17
 
-First real "stable" version with "stable" algorithms playing reasonable strong.
+The last versions have been mainly refactorings using now Bitboard and the respective move generation using magic
+bitboards. Not everything in the code is optimized for bitboards, yet, but its an ongoing task.
 
-#### Turnament Measurement: 10s per move:
+This Version seems now, after a long time of desperate experiments and stand still the first version after the last offical release 0.9.14
+which is measurable stronger.
 
-    Stockfish Level 1 (Elo ~ 1350): wins
-    Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
+It seems this is mainly the case caused by the move ordering BLIND and this seems now to bring also benefits
+on pruning things like LMR, razoring and null move pruning.
 
+- chess extensions (deactivated,does not bring anything so far...)
+- pseudo legal move generation for faster move generation in Alpha Beta Pruning
+- parameterized handcrafted evaluation function (based on CPW) which is slightly better or at least equal than the minimal pst evaluation
+- move sorting: captures are sorted by BLIND algorithm to find good captures. this seems to improve the pruning
 
+     
+#### bugfix
 
-
-### Version 0.9.0
-
-new pst evaluation seems to play better: beats old Version 0.8.2 in turnaments.
-
-    Stockfisch Level 2 (Elo ~ 1420): 10s move: ~50:50
-    Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better                        
-
-### Version 0.9.1
-
-TT Cache fixed and seems now working properly.
-
-### Version 0.9.2
-
-Slightly faster move generation using piece list instead of iterating complete board.
-
-### Version 0.9.3
-
-Experimental history heuristic for move ordering
-
-    Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
-    Stockfisch Level 3 (Elo ~ 1490): 10s move: jacky wins
-    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky loss 70% of Games
-
-### Version 0.9.4
-
-- fixed problem in quiescence: incorrectly decided to have check mate
-- reworked legal move filtering
+- fixed issue delivering illegal pv moves after a check mate;
 
 
-    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
+
+### Version 0.9.16
+
+- bitboard implementation
+  - move generation uses magic bitboards
+  - check checker uses bitboards
+
+move generation and search should therefore a bit faster, overall search should be ~25% faster.
+
+    Stockfisch Level 5 (Elo ~ 1630): 2s move:
 
 
-### Version 0.9.5
+### Version 0.9.15.1
 
-- killer move heuristic
-- clean up & rework move ordering (especially mvvlva)
+- fixed history heuristic
+  - history heuristic is now scaled by "bad" history heuristics
+  - seems to gain now something by sprt testing ~40 Elos
 
-### Version 0.9.6
+### Version 0.9.15
 
-- small code changes tt caching
+- cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
 
-### Version 0.9.7
+### Version 0.9.14
 
-- fix generation of non quiet moves which where introduced probably in 0.9.4.
+- fixed issue when running engine within a batch file: uci quit has not exit process (because of other threads still running)
+- log files are by default not written, but only if java property jacky.logging.activate is set to true.
+- minor internal code refactorings
 
 
-    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
+### Version 0.9.13
 
-### Version 0.9.8
+- fixed stupid bug in time calculation which produced much too high values which exceeded the complete rest time.
 
-- slightly better move ordering
+### Version 0.9.12
+
+- fixed missing promotion letter on best move
+- reworked time control calucation for blitz chess a bit
+
+### Version 0.9.11
+
+- fixed UCI time control options: wtime, btime, winc, binc have been ignored if movestogo has not been set
+
+### Version 0.9.10
+
+- cleaned up unused code (old Move classes, etc)
+- optimized move lists and move classes
+- experimental code available as options:
+  - null move pruning. not activated by default, as it doesnt seem any benefit so far.
+  - late move reductions. not activated by default as it doesnt bring any benefit so far.
+  - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
+
+
+    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
+    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
+
+
+### Version 0.9.9
+
+- reworked patt checks
+  - is now independant of evaluation function
+  - fix: did not work in quiescence for the new evaluation function
+
+
+
+    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins 70%   
+    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 70%   
+
+
+### Version 0.9.8.2
+
+- fix: missing reset in board stats generator lead to evaluate to wrong patt situations
+
 
 
 ### Version 0.9.8.1
@@ -75,7 +106,7 @@ Experimental history heuristic for move ordering
 
 
 - there seems to be a problem with search not to deliver best move under som circumstands.
-    - seems to happen in endgames, maybe because when detecting draw by repetition or mate it does not set best move...
+  - seems to happen in endgames, maybe because when detecting draw by repetition or mate it does not set best move...
 
 with the new move list impl and aspiration, it seem to be a bit better than before on turnaments with 15s time per move.
 On lower time turnaments 2s etc. there does not seem any benefit.
@@ -86,89 +117,65 @@ On lower time turnaments 2s etc. there does not seem any benefit.
     Stockfisch Level 4 (Elo ~ 1560): 10s move: wins 85%
 
 
-### Version 0.9.8.2
+### Version 0.9.8
 
-- fix: missing reset in board stats generator lead to evaluate to wrong patt situations
+- slightly better move ordering
 
+### Version 0.9.7
 
-### Version 0.9.9
-
-- reworked patt checks
-    - is now independant of evaluation function
-    - fix: did not work in quiescence for the new evaluation function
+- fix generation of non quiet moves which where introduced probably in 0.9.4.
 
 
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
 
-    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins 70%   
-    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 70%   
+### Version 0.9.6
 
-
-### Version 0.9.10
-
-- cleaned up unused code (old Move classes, etc)
-- optimized move lists and move classes
-- experimental code available as options:
-    - null move pruning. not activated by default, as it doesnt seem any benefit so far.
-    - late move reductions. not activated by default as it doesnt bring any benefit so far.
-    - hash move ordering: doesnt bring anything (since it is always the same as the pv move)
+- small code changes tt caching
 
 
-    Stockfisch Level 5 (Elo ~ 1630): 10s move: wins    
-    Stockfisch Level 5 (Elo ~ 1630): 2s move: wins 75%
+### Version 0.9.5
+
+- killer move heuristic
+- clean up & rework move ordering (especially mvvlva)
 
 
-### Version 0.9.11
+### Version 0.9.4
 
-- fixed UCI time control options: wtime, btime, winc, binc have been ignored if movestogo has not been set
-
-
-### Version 0.9.12
-
-- fixed missing promotion letter on best move
-- reworked time control calucation for blitz chess a bit
-
-### Version 0.9.13
-
-- fixed stupid bug in time calculation which produced much too high values which exceeded the complete rest time.
-
-### Version 0.9.14
-
-- fixed issue when running engine within a batch file: uci quit has not exit process (because of other threads still running)
-- log files are by default not written, but only if java property jacky.logging.activate is set to true.
-- minor internal code refactorings
+- fixed problem in quiescence: incorrectly decided to have check mate
+- reworked legal move filtering
 
 
-### Version 0.9.15
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky wins 60% of Games
 
-- cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
+### Version 0.9.3
+
+Experimental history heuristic for move ordering
+
+    Stockfisch Level 2 (Elo ~ 1420): 10s move: jacky wins
+    Stockfisch Level 3 (Elo ~ 1490): 10s move: jacky wins
+    Stockfisch Level 4 (Elo ~ 1560): 10s move: jacky loss 70% of Games
+### Version 0.9.2
+
+Slightly faster move generation using piece list instead of iterating complete board.
+
+### Version 0.9.1
+
+TT Cache fixed and seems now working properly.
+
+### Version 0.9.0
+
+new pst evaluation seems to play better: beats old Version 0.8.2 in turnaments.
+
+    Stockfisch Level 2 (Elo ~ 1420): 10s move: ~50:50
+    Stockfisch Level 2 (Elo ~ 1420): 15s move: ~60:40 ; Jacky seems to be bit better                        
 
 
-### Version 0.9.15.1
+### Version 0.8.2
 
-- fixed history heuristic
-    - history heuristic is now scaled by "bad" history heuristics
-    - seems to gain now something by sprt testing ~40 Elos
+First real "stable" version with "stable" algorithms playing reasonable strong.
 
+#### Turnament Measurement: 10s per move:
 
-### Version 0.9.16
+    Stockfish Level 1 (Elo ~ 1350): wins
+    Stockfisch Level 2 (Elo ~ 1420): sometimes wins...
 
-- bitboard implementation
-    - move generation uses magic bitboards
-    - check checker uses bitboards
-
-move generation and search should therefore a bit faster, overall search should be ~25% faster.
-
-    Stockfisch Level 5 (Elo ~ 1630): 2s move:
-
-
-### Version 0.9.17
-
-- chess extensions (deactivated,does not bring anything so far...)
-- pseudo legal move generation for faster move generation in Alpha Beta Pruning
-- parameterized evaluation function (based on CPW) which is slightly better thant the minimal pst evaluation
-- 
-
-     
-#### bugfix
-
-- fixed issue delivering illegal pv moves after a check mate;
