@@ -25,7 +25,7 @@ public final class TTE {
     private byte type;
 
     @Getter
-    int depth;
+    short depth;
 
     @Getter
     int move;
@@ -34,7 +34,7 @@ public final class TTE {
         this.zobristHash = zobristHash;
         this.value = (short) value;
         this.type = type;
-        this.depth = depth;
+        this.depth = (short) depth;
         this.move = move;
     }
 
@@ -42,7 +42,7 @@ public final class TTE {
         this.zobristHash = zobristHash;
         this.value = (short) value;
         this.type = type;
-        this.depth = depth;
+        this.depth = (short) depth;
         this.move = move;
     }
 
