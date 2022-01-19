@@ -79,21 +79,26 @@ public final class TTCache5 implements TTCacheInterface {
         long boardZobristHash = board.getZobristHash();
         int hashEntry = h0(boardZobristHash);
 
-        TTE tte = mapD[hashEntry];
-        if (tte == null) {
+        TTE tteD = mapD[hashEntry];
+        if (tteD == null) {
             mapD[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
             size++;
-        } else if (tte.depth - currAging < depth) {
-            tte.update(boardZobristHash, eval, tpe, depth + currAging, move);
-
+        } else if (tteD.depth - currAging <= depth) {
+            // try to save an existing in the "always replace table" if the entry is free:
+            if (boardZobristHash != tteD.zobristHash && mapA[hashEntry] == null) {
+                mapA[hashEntry] = mapD[hashEntry];
+                mapD[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
+            } else {
+                tteD.update(boardZobristHash, eval, tpe, depth + currAging, move);
+            }
         } else {
             // use the always replace strategy:
-            tte = mapA[hashEntry];
-            if (tte == null) {
-                mapD[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
+            TTE tteA = mapA[hashEntry];
+            if (tteA == null) {
+                mapA[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
                 size++;
             } else {
-                tte.update(boardZobristHash, eval, tpe, depth + currAging, move);
+                tteA.update(boardZobristHash, eval, tpe, depth + currAging, move);
             }
         }
 
