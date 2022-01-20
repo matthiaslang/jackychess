@@ -12,8 +12,8 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
     private E value;
 
     public UCIComboOption(UCIOptions optionBundle, UCIGroup group, String name, String description, Class<E> eclass,
-            E defaultValue) {
-        super(optionBundle, group, name, description);
+            E defaultValue, OptionType type) {
+        super(optionBundle, group, name, description, type);
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.eclass = eclass;

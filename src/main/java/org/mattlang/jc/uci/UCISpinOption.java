@@ -15,8 +15,8 @@ public class UCISpinOption extends UCIOption<Integer> {
     private int value;
 
     public UCISpinOption(UCIOptions optionBundle, UCIGroup group, String name, String description, int min, int max,
-            int defaultValue) {
-        super(optionBundle, group, name, description);
+            int defaultValue, OptionType type) {
+        super(optionBundle, group, name, description, type);
         this.min = min;
         this.max = max;
         this.defaultValue = defaultValue;

@@ -11,8 +11,8 @@ public class UCICheckOption extends UCIOption<Boolean> {
     private boolean value;
 
     public UCICheckOption(UCIOptions optionBundle, UCIGroup group, String name, String description,
-            boolean defaultValue) {
-        super(optionBundle, group, name, description);
+            boolean defaultValue, OptionType type) {
+        super(optionBundle, group, name, description, type);
         this.defaultValue = defaultValue;
         this.value = defaultValue;
     }

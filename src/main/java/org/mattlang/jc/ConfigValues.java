@@ -84,6 +84,9 @@ public class ConfigValues {
     public final UCIGroup pruning =
             allOptions.createGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
 
+    public final UCIGroup internal =
+            allOptions.createGroup("Internal", "Internal Test Parameter for Development");
+
     public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",
             true);

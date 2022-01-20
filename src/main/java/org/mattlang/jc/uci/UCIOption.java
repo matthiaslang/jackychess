@@ -29,11 +29,16 @@ public abstract class UCIOption<T> {
     @Getter
     private OptionType type = OptionType.UCI;
 
-    public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description) {
+    public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description, OptionType type) {
         this.group = requireNonNull(group);
         this.name = requireNonNull(name);
         this.description = requireNonNull(description);
+        this.type = requireNonNull(type);
         optionBundle.put(name, this);
+    }
+
+    public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description) {
+        this(optionBundle, group, name, description, OptionType.UCI);
     }
 
     public static void writeOptionsDescriptions(UCIOptions optionBundle) {
