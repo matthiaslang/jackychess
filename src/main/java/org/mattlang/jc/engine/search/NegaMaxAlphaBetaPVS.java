@@ -241,7 +241,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
          **************************************************************************/
         boolean applyFutilityPruning = false;
 
-        if (depth <= 3
+        if (futilityPruning &&
+//                ply > 3 &&
+                depth <= 3
                 && not_pv
                 && !areWeInCheck
                 && abs(alpha) < 9000
@@ -279,10 +281,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                  *  prune insufficient captures as well, but that seems too risky.     *
                  **********************************************************************/
 
-                if (futilityPruning
+                if (applyFutilityPruning
                         && searchedMoves > 0
                         && !moveCursor.isCapture()
                         && !moveCursor.isPawnPromotion()
+//                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         && !searchContext.isInCheck(color.invert())) {
                     searchContext.undoMove(moveCursor);
                     continue;

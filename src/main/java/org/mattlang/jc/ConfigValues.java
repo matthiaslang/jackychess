@@ -20,7 +20,7 @@ public class ConfigValues {
 
     public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
-            3, 50, 20);
+            3, 80, 40);
 
     public final UCISpinOption maxQuiescence =
             limits.createSpinOpt("quiescence",
