@@ -44,6 +44,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
 
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
+    private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
 
     private PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -653,8 +654,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
-        List<Integer> pvMoves = enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth);
-//        List<Integer> pvMoves =pvArray.getPvMoves();
+        List<Integer> pvMoves = expandPv
+                ? enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth)
+                : pvArray.getPvMoves();
 
         return new NegaMaxResult(directScore,
                 pvMoves, searchContext, nodesVisited,

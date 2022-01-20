@@ -87,6 +87,10 @@ public class ConfigValues {
     public final UCIGroup internal =
             allOptions.createGroup("Internal", "Internal Test Parameter for Development");
 
+    public final UCICheckOption expandPv = internal.createCheckOpt("expandPv",
+            "should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.",
+            true);
+
     public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",
             true);
