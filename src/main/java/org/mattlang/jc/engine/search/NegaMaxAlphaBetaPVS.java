@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.search;
 
+import static java.lang.Math.abs;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.util.MoveValidator.enrichPVList;
@@ -31,9 +32,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
-    /** number of searched moves to start LMR if activated.*/
+    int[] FUTILITY_MARGIN = { 0, 200, 300, 500 };
+
+    /**
+     * number of searched moves to start LMR if activated.
+     */
     private static final int LMR_AFTER_N_SEARCHED_MOVES = 3;
-    /** number of additional searched moves to do a higher reduction for LMR. */
+    /**
+     * number of additional searched moves to do a higher reduction for LMR.
+     */
     private static final int LMR_N_MOVES_REDUCE_MORE = 6;
 
     private EvaluateFunction evaluate;
@@ -69,6 +76,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean razoring = Factory.getDefaults().getConfig().razoring.getValue();
     private boolean deltaCutOff = Factory.getDefaults().getConfig().deltaCutoff.getValue();
     private boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
+    private boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
     private HistoryHeuristic historyHeuristic = null;
 
@@ -121,7 +129,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int negaMaximize(int ply, int depth, Color color,
             int alpha, int beta) {
         nodesVisited++;
-        boolean not_pv = Math.abs(beta - alpha) <= 1;
+        boolean not_pv = abs(beta - alpha) <= 1;
 
         if (searchContext.isRepetition()) {
             return Weights.REPETITION_WEIGHT;
@@ -172,7 +180,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 && depth < 3
                 && not_pv
                 && !areWeInCheck
-                && Math.abs(beta - 1) > ALPHA_START + 100) {
+                && abs(beta - 1) > ALPHA_START + 100) {
             int static_eval = searchContext.eval(color);
 
             int eval_margin = 120 * depth;
@@ -223,7 +231,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 if (val < threshold)
                     return alpha;
             }
-        } // end of razoring code
+        }
+
+        /**************************************************************************
+         *  Decide  if FUTILITY PRUNING  is  applicable. If we are not in check,   *
+         *  not searching for a checkmate and eval is below (alpha - margin), it   *
+         *  might  mean that searching non-tactical moves at low depths is futile  *
+         *  so we set a flag allowing this pruning.                                *
+         **************************************************************************/
+        boolean applyFutilityPruning = false;
+
+        if (depth <= 3
+                && not_pv
+                && !areWeInCheck
+                && abs(alpha) < 9000
+                && searchContext.eval(color) + FUTILITY_MARGIN[depth] <= alpha) {
+            applyFutilityPruning = true;
+        }
 
         int max = alpha;
 
@@ -245,6 +269,21 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                 // skip illegal moves:
                 if (searchContext.isInCheck(color)) {
+                    searchContext.undoMove(moveCursor);
+                    continue;
+                }
+
+                /**********************************************************************
+                 *  When the futility pruning flag is set, prune moves which do not    *
+                 *  give  check and do not change material balance.  Some  programs    *
+                 *  prune insufficient captures as well, but that seems too risky.     *
+                 **********************************************************************/
+
+                if (futilityPruning
+                        && searchedMoves > 0
+                        && !moveCursor.isCapture()
+                        && !moveCursor.isPawnPromotion()
+                        && !searchContext.isInCheck(color.invert())) {
                     searchContext.undoMove(moveCursor);
                     continue;
                 }

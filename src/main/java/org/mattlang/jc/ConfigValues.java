@@ -106,6 +106,9 @@ public class ConfigValues {
             "should razoring be used during search",
             false);
 
+    public final UCICheckOption futilityPruning = pruning.createCheckOpt("futilityPruning",
+            "should futility pruning be used during search",
+            false);
 
     public final UCICheckOption deltaCutoff = pruning.createCheckOpt("deltaCutoff",
             "should delta cutoff be used during quiescence search",
