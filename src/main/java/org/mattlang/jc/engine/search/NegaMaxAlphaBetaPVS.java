@@ -2,8 +2,10 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.util.MoveValidator.enrichPVList;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mattlang.jc.Factory;
@@ -651,7 +653,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
-        return new NegaMaxResult(directScore, pvArray.getPvMoves(),  searchContext, nodesVisited, quiescenceNodesVisited);
+        List<Integer> pvMoves = enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth);
+//        List<Integer> pvMoves =pvArray.getPvMoves();
+
+        return new NegaMaxResult(directScore,
+                pvMoves, searchContext, nodesVisited,
+                quiescenceNodesVisited);
 
     }
 
