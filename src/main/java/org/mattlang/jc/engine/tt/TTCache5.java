@@ -83,7 +83,14 @@ public final class TTCache5 implements TTCacheInterface {
         if (tteD == null) {
             mapD[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
             size++;
-        } else if (tteD.depth - currAging <= depth) {
+        } else if (tteD.zobristHash == boardZobristHash && tteD.depth - currAging > depth) {
+            // do not replace lower depth values for the same zobrist key
+            return;
+        } else if (move != 0 && (tteD.depth - currAging < depth
+                || tpe == EXACT_VALUE && tteD.getType() != EXACT_VALUE)) {
+            // replace if depth is higher or an exact value would replace an unexact value;
+            // we do not want to replace entries with no move info here (this is connected to our quiescence tt entry saveing which is anyway a bit weird and should be removed later...)
+
             // try to save an existing in the "always replace table" if the entry is free:
             if (boardZobristHash != tteD.zobristHash && mapA[hashEntry] == null) {
                 mapA[hashEntry] = mapD[hashEntry];
@@ -140,12 +147,12 @@ public final class TTCache5 implements TTCacheInterface {
     }
 
     public void updateAging(BoardRepresentation board) {
-//        currAging = aging.updateAging(board);
+        currAging = aging.updateAging(board);
 
-        currAging++;
-        if (currAging>128){
-            currAging=1;
-        }
+        //        currAging++;
+        //        if (currAging>128){
+        //            currAging=1;
+        //        }
         int hitPercent = 0;
         if (cacheHit + cacheFail != 0) {
             hitPercent = cacheHit * 100 / (cacheHit + cacheFail);
