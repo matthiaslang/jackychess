@@ -35,7 +35,7 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
     }
 
     @Override
-    public E getValue() {
+    public E getInternalValue() {
         return value;
     }
 

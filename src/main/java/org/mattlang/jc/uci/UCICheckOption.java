@@ -28,7 +28,7 @@ public class UCICheckOption extends UCIOption<Boolean> {
     }
 
     @Override
-    public Boolean getValue() {
+    public Boolean getInternalValue() {
         return value;
     }
 

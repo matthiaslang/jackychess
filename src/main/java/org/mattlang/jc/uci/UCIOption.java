@@ -2,12 +2,20 @@ package org.mattlang.jc.uci;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mattlang.jc.AppConfiguration;
+
 import lombok.Getter;
 
 /**
  * Defines an uci option for this engine.
  */
 public abstract class UCIOption<T> {
+
+    private static final Logger LOGGER = Logger.getLogger(UCIOption.class.getName());
 
     @Getter
     private UCIGroup group;
@@ -18,6 +26,9 @@ public abstract class UCIOption<T> {
     @Getter
     private String description;
 
+    @Getter
+    private OptionType type = OptionType.UCI;
+
     public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description) {
         this.group = requireNonNull(group);
         this.name = requireNonNull(name);
@@ -27,7 +38,9 @@ public abstract class UCIOption<T> {
 
     public static void writeOptionsDescriptions(UCIOptions optionBundle) {
         for (UCIOption uciOption : optionBundle.getAllOptions()) {
-            uciOption.writeOptionDeclaration();
+            if (uciOption.type == OptionType.UCI) {
+                uciOption.writeOptionDeclaration();
+            }
         }
     }
 
@@ -47,7 +60,19 @@ public abstract class UCIOption<T> {
 
     public abstract String createOptionDeclaration();
 
-    public abstract T getValue();
+    public final T getValue(){
+
+        Optional<String> optStrVal = AppConfiguration.APPCONFIG.getStringValue("opt." + getName());
+        if (optStrVal.isPresent()) {
+            LOGGER.log(Level.INFO, "Overrider: opt." + getName() + "=" + optStrVal.get());
+            parseAndSetParameter(optStrVal.get());
+        }
+
+        return getInternalValue();
+    }
+
+    protected abstract T getInternalValue();
 
     public abstract void setValue(T newValue);
+
 }

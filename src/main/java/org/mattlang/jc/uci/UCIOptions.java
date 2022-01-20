@@ -31,22 +31,6 @@ public class UCIOptions {
         return group;
     }
 
-    public UCISpinOption createSpinOpt(UCIGroup group, String name, String description, int min, int max,
-            int defaultValue) {
-        return new UCISpinOption(this, group, name, description, min, max, defaultValue);
-    }
-
-    public <E extends Enum> UCIComboOption<E> createComboOpt(UCIGroup group, String name, String description,
-            Class<E> eclass,
-            E defaultValue) {
-        return new UCIComboOption<>(this, group, name, description, eclass, defaultValue);
-    }
-
-    public UCICheckOption createCheckOpt(UCIGroup group, String name, String description,
-            boolean defaultValue) {
-        return new UCICheckOption(this, group, name, description, defaultValue);
-    }
-
     public Collection<UCIOption> getAllOptions() {
         return options.values();
     }

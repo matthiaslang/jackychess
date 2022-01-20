@@ -51,7 +51,7 @@ public class UCISpinOption extends UCIOption<Integer> {
     }
 
     @Override
-    public Integer getValue() {
+    public Integer getInternalValue() {
         return value;
     }
 
