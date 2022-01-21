@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.attic.board.Board3;
+import org.mattlang.jc.CacheImpls;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.MoveListImpls;
@@ -157,8 +158,49 @@ public class EngineTest {
         Move move = engine.go(state, new GameContext());
 
         System.out.println(move.toStr());
-        
+
         assertThat(move.toStr()).isEqualTo("a1b1");
+    }
+
+    @Test
+    public void testEndGameWeirdProblem() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c -> c.timeout.setValue(2000))
+                .config(c -> c.maxDepth.setValue(20))
+                .config(c -> c.useLateMoveReductions.setValue(true))
+                .config(c -> c.deltaCutoff.setValue(true))
+                .config(c -> c.razoring.setValue(true))
+                .config(c -> c.useNullMoves.setValue(true))
+                .config(c -> c.staticNullMove.setValue(true))
+                .config(c -> c.futilityPruning.setValue(true))
+                .config(c -> c.cacheImpls.setValue(CacheImpls.V5))
+                //                .config(c->c.aspiration.setValue(false))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+        // now starting engine:
+        Engine engine = new Engine();
+        GameState state = engine.getBoard()
+                .setFenPosition("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
+
+        System.out.println(engine.getBoard().toUniCodeStr());
+        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        Move move = engine.go(state, gameContext);
+
+        System.out.println(move.toStr());
+
+        // now do the same when tt cache is filled from previous search:
+        state = engine.getBoard()
+                .setFenPosition("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
+
+        System.out.println(engine.getBoard().toUniCodeStr());
+
+        move = engine.go(state, gameContext);
+        System.out.println(move.toStr());
+
     }
 
     @Test
