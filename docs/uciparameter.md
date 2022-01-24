@@ -41,13 +41,6 @@ default value: true
     option name useTTCache type check default true
 ## Search
 Parameter that influence search.
-### searchalg
-the search algorithm to use. Only for development testing.
-
-default value: STABLE
-
-#### Declaration
-    option name searchalg type combo default STABLE var MTDF var STABLE
 ### activatePvsSearch
 should principal variation search be used
 
@@ -58,10 +51,17 @@ default value: true
 ### evaluateFunction
 the evaluation function to use. Only for development testing
 
-default value: MINIMAL_PST
+default value: PARAMETERIZED
 
 #### Declaration
-    option name evaluateFunction type combo default MINIMAL_PST var DEFAULT var MINIMAL_PST var PST2
+    option name evaluateFunction type combo default PARAMETERIZED var DEFAULT var MINIMAL_PST var PARAMETERIZED
+### evalParamSet
+the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing
+
+default value: CURRENT
+
+#### Declaration
+    option name evalParamSet type combo default CURRENT var DEFAULT var CURRENT var EXPERIMENTAL
 ## Pruning
 Parameter influencing the pruning during alpha beta search
 ### aspiration
@@ -74,17 +74,63 @@ default value: true
 ### useNullMoves
 should null move pruning be used during search
 
-default value: false
+default value: true
 
 #### Declaration
-    option name useNullMoves type check default false
+    option name useNullMoves type check default true
+### staticNullMove
+should static null move pruning be used during search
+
+default value: true
+
+#### Declaration
+    option name staticNullMove type check default true
+### razoring
+should razoring be used during search
+
+default value: true
+
+#### Declaration
+    option name razoring type check default true
+### futilityPruning
+should futility pruning be used during search
+
+default value: true
+
+#### Declaration
+    option name futilityPruning type check default true
+### deltaCutoff
+should delta cutoff be used during quiescence search
+
+default value: true
+
+#### Declaration
+    option name deltaCutoff type check default true
 ### useLateMoveReductions
 should late move reductions be used during search
 
+default value: true
+
+#### Declaration
+    option name useLateMoveReductions type check default true
+## Experimental
+Experimental parameter used during development
+### TTCacheImpl
+internally. Only for development testing
+
+default value: STANDARD
+
+#### Declaration
+    option name TTCacheImpl type combo default STANDARD var STANDARD var V2 var V3 var V4 var V5 var BUCKETS
+## Extensions
+Parameter influencing the extension of the search tree
+### useCheckExtension
+on check, extend the search depth
+
 default value: false
 
 #### Declaration
-    option name useLateMoveReductions type check default false
+    option name useCheckExtension type check default false
 ## Limits
 Parameter which limit the search or search time in some way.
 ### thinktime
@@ -100,26 +146,42 @@ default: 15000
 the maximum search depth to use if there is enough search time
 
 min: 3
-max: 50
-default: 20
+max: 80
+default: 40
 
 #### Declaration
-    option name maxdepth type spin default 20 min 3 max 50
+    option name maxdepth type spin default 40 min 3 max 80
 ### quiescence
 the maximum search depth in quiescence
 
 min: 0
-max: 10
+max: 50
 default: 10
 
 #### Declaration
-    option name quiescence type spin default 10 min 0 max 10
-## Common
-Common parameter
+    option name quiescence type spin default 10 min 0 max 50
+
+List of all Options of the engine.
+## Internal
+Internal Test Parameter for Development
+### searchalg
+the search algorithm to use. Only for development testing.
+
+default value: STABLE
+
+#### Declaration
+    You can set a value via Property opt.searchalg
 ### MoveListImpl
 internally. Only for development testing
 
 default value: OPTIMIZED
 
 #### Declaration
-    option name MoveListImpl type combo default OPTIMIZED var OPTIMIZED
+    You can set a value via Property opt.MoveListImpl
+### expandPv
+should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.
+
+default value: true
+
+#### Declaration
+    You can set a value via Property opt.expandPv

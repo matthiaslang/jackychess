@@ -31,6 +31,14 @@ public class UCIOptions {
         return group;
     }
 
+    public UCIGroup createInternalGroup(String name, String descr) {
+        UCIGroup group = new UCIGroup(this, name, descr, OptionType.INTERN);
+        if (groups.put(name, group) != null) {
+            throw new IllegalArgumentException("Duplicate UCI group name " + name);
+        }
+        return group;
+    }
+
     public Collection<UCIOption> getAllOptions() {
         return options.values();
     }
@@ -38,6 +46,20 @@ public class UCIOptions {
     public Map<UCIGroup, List<UCIOption>> getOptionsByGroup() {
         return options.values()
                 .stream()
+                .collect(groupingBy(UCIOption::getGroup, toList()));
+    }
+
+    public Map<UCIGroup, List<UCIOption>> getUCIOptionsByGroup() {
+        return options.values()
+                .stream()
+                .filter(g -> g.getType() == OptionType.UCI)
+                .collect(groupingBy(UCIOption::getGroup, toList()));
+    }
+
+    public Map<UCIGroup, List<UCIOption>> getInternalOptionsByGroup() {
+        return options.values()
+                .stream()
+                .filter(g -> g.getType() == OptionType.INTERN)
                 .collect(groupingBy(UCIOption::getGroup, toList()));
     }
 

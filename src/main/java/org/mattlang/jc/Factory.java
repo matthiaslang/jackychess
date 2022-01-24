@@ -35,17 +35,7 @@ public class Factory {
     }
 
     public static SearchParameter createIterativeDeepeningPVS() {
-        return new SearchParameter()
-                .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(BBMoveGeneratorImpl::new)
-                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
-                .boards.set(BitBoard::new)
-                .searchMethod.set(IterativeDeepeningPVS::new)
-                .config(c -> {
-                    c.maxDepth.setValue(15);
-                    c.maxQuiescence.setValue(2);
-                    c.timeout.setValue(15000);
-                });
+        return createStable();
     }
 
     /**
@@ -53,18 +43,7 @@ public class Factory {
      * @return
      */
     public static SearchParameter createBitboard() {
-        return new SearchParameter()
-                .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(BBMoveGeneratorImpl::new)
-                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
-                .boards.set(BitBoard::new)
-                .checkChecker.set(BBCheckCheckerImpl::new)
-                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
-                .config(c -> {
-                    c.maxDepth.setValue(15);
-                    c.maxQuiescence.setValue(2);
-                    c.timeout.setValue(15000);
-                });
+        return createStable();
     }
 
     public static SearchParameter createStable() {
@@ -76,9 +55,11 @@ public class Factory {
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
                 .config(c -> {
-                    c.maxDepth.setValue(15);
-                    c.maxQuiescence.setValue(2);
+                    c.maxDepth.setValue(40);
+                    c.maxQuiescence.setValue(10);
                     c.timeout.setValue(15000);
+                    c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED);
+                    c.evaluateParamSet.setValue(EvalParameterSet.CURRENT);
                 });
     }
 

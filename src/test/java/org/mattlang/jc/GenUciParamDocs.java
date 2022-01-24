@@ -22,7 +22,15 @@ public class GenUciParamDocs {
 
             bw.write("List of all UCI Options of the engine.");
             bw.newLine();
-            for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getOptionsByGroup().entrySet()) {
+            for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getUCIOptionsByGroup().entrySet()) {
+                writeGroup(bw, entry.getKey(), entry.getValue());
+            }
+
+            bw.newLine();
+
+            bw.write("List of all Options of the engine.");
+            bw.newLine();
+            for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getInternalOptionsByGroup().entrySet()) {
                 writeGroup(bw, entry.getKey(), entry.getValue());
             }
 
@@ -50,11 +58,19 @@ public class GenUciParamDocs {
 
             fw.newLine();
 
-            fw.write("#### Declaration");
-            fw.newLine();
+            if (option.getType() == OptionType.UCI) {
 
-            fw.write("    " + option.createOptionDeclaration());
+                fw.write("#### Declaration");
+                fw.newLine();
 
+                fw.write("    " + option.createOptionDeclaration());
+
+            } else {
+                fw.write("#### Declaration");
+                fw.newLine();
+
+                fw.write("    You can set a value via Property opt." + option.getName());
+            }
             fw.newLine();
         }
     }

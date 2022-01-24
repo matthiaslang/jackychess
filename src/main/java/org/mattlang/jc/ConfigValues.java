@@ -13,6 +13,9 @@ public class ConfigValues {
     public final UCIGroup experimental =
             allOptions.createGroup("Experimental", "Experimental parameter used during development");
 
+    public final UCIGroup internal =
+            allOptions.createInternalGroup("Internal", "Internal Test Parameter for Development");
+
     public final UCIGroup limits =
             allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
 
@@ -37,7 +40,7 @@ public class ConfigValues {
     public final UCIGroup search = allOptions.createGroup("Search", "Parameter that influence search.");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            search.createComboOpt("searchalg",
+            internal.createComboOpt("searchalg",
                     "the search algorithm to use. Only for development testing.",
                     SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
@@ -48,15 +51,15 @@ public class ConfigValues {
     public final UCIComboOption<EvalFunctions> evluateFunctions =
             search.createComboOpt("evaluateFunction",
                     "the evaluation function to use. Only for development testing",
-                    EvalFunctions.class, EvalFunctions.MINIMAL_PST);
+                    EvalFunctions.class, EvalFunctions.PARAMETERIZED);
 
     public final UCIComboOption<EvalParameterSet> evaluateParamSet =
             search.createComboOpt("evalParamSet",
                     "the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing",
-                    EvalParameterSet.class, EvalParameterSet.DEFAULT);
+                    EvalParameterSet.class, EvalParameterSet.CURRENT);
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
-            experimental.createComboOpt("MoveListImpl",
+            internal.createComboOpt("MoveListImpl",
                     "internally. Only for development testing",
                     MoveListImpls.class, MoveListImpls.OPTIMIZED);
 
@@ -84,9 +87,6 @@ public class ConfigValues {
     public final UCIGroup pruning =
             allOptions.createGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
 
-    public final UCIGroup internal =
-            allOptions.createGroup("Internal", "Internal Test Parameter for Development");
-
     public final UCICheckOption expandPv = internal.createCheckOpt("expandPv",
             "should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.",
             true);
@@ -96,28 +96,28 @@ public class ConfigValues {
             true);
     public final UCICheckOption useNullMoves = pruning.createCheckOpt("useNullMoves",
             "should null move pruning be used during search",
-            false);
+            true);
 
     public final UCICheckOption staticNullMove = pruning.createCheckOpt("staticNullMove",
             "should static null move pruning be used during search",
-            false);
+            true);
 
     public final UCICheckOption razoring = pruning.createCheckOpt("razoring",
             "should razoring be used during search",
-            false);
+            true);
 
     public final UCICheckOption futilityPruning = pruning.createCheckOpt("futilityPruning",
             "should futility pruning be used during search",
-            false);
+            true);
 
     public final UCICheckOption deltaCutoff = pruning.createCheckOpt("deltaCutoff",
             "should delta cutoff be used during quiescence search",
-            false);
+            true);
 
     public final UCICheckOption useLateMoveReductions =
             pruning.createCheckOpt("useLateMoveReductions",
                     "should late move reductions be used during search",
-                    false);
+                    true);
 
     public final UCIGroup extensions =
             allOptions.createGroup("Extensions", "Parameter influencing the extension of the search tree");
