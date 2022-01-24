@@ -1,20 +1,20 @@
 # Versions
 
 
-### Version 0.9.17
+### Version 0.9.18
 
 The last versions have been mainly refactorings using now Bitboard and the respective move generation using magic
 bitboards. Not everything in the code is optimized for bitboards, yet, but its an ongoing task.
 
-This Version seems now, after a long time of desperate experiments and stand still the first version after the last offical release 0.9.14
-which is measurable stronger.
+This Version seems now roughly ~200 Elo stronger than the last official release 0.9.14, so the estimate is ~1650 Elo.
 
-It seems this is mainly the case caused by the move ordering BLIND and this seems now to bring also benefits
-on pruning things like LMR, razoring and null move pruning.
-
-- chess extensions (deactivated,does not bring anything so far...)
-- pseudo legal move generation for faster move generation in Alpha Beta Pruning
-- parameterized handcrafted evaluation function (based on CPW) which is slightly better or at least equal than the minimal pst evaluation
+                                                            
+- Late move reductions 
+- Null move pruning and static null move reduction
+- Razoring
+- Delta cut off in quiescence
+- pseudo legal move generation for faster move generation when not all moves are traversed
+- parameterized handcrafted evaluation function (based on CPW) which is slightly better or at least equal than the old pst evaluation
 - move sorting: captures are sorted by BLIND algorithm to find good captures. this seems to improve the pruning
 
      
@@ -32,7 +32,6 @@ on pruning things like LMR, razoring and null move pruning.
 
 move generation and search should therefore a bit faster, overall search should be ~25% faster.
 
-    Stockfisch Level 5 (Elo ~ 1630): 2s move:
 
 
 ### Version 0.9.15.1
