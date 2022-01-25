@@ -5,12 +5,11 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BB.*;
+import static org.mattlang.jc.board.bitboard.Fields.E2;
+import static org.mattlang.jc.board.bitboard.Fields.F1;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
-import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.board.bitboard.MagicBitboards;
+import org.mattlang.jc.board.bitboard.*;
 import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.parameval.functions.KingAttackFun;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
@@ -24,7 +23,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private static final long WHITE_QUEEN_DEVELOPED_MASK = ALL & ~rank1 & ~rank2;
     private static final long BLACK_QUEEN_DEVELOPED_MASK = ALL & ~rank7 & ~rank8;
 
-    public static final long WHITE_BISHOPS_STARTPOS = C1 | F1;
+    public static final long WHITE_BISHOPS_STARTPOS = C1 | BB.F1;
     public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
     public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
     public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
@@ -55,12 +54,22 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     public static final int CONNECTIVITY = 7;
     public static final int POSITIONAL_THEMES = 8;
+    public static final int BLOCKAGES = 9;
 
-    public static final int MAX_TYPE_INDEX = POSITIONAL_THEMES + 1;
+    public static final int MAX_TYPE_INDEX = BLOCKAGES + 1;
 
     private final int rookOpen;
     private final int rookHalf;
     private final int earlyQueenPenalty;
+
+    private final int kingBlocksRookPenalty;
+    private final int blockCentralPawnPenalty;
+    private final int bishopTrappedA7Penalty;
+    private final int bishopTrappedA6Penalty;
+    private final int knightTrappedA8Penalty;
+    private final int knightTrappedA7Penalty;
+    private final int c3KnightPenalty;
+    private final int returningBishop;
     /**
      * splitted results by color, figure type, and mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
@@ -106,6 +115,19 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         rookOpen = config.getPosIntProp("rookOpen");
         rookHalf = config.getPosIntProp("rookHalf");
         earlyQueenPenalty = config.getPosIntProp("earlyQueenPenalty");
+
+        /* trapped and blocked pieces */
+        kingBlocksRookPenalty = config.getPosIntProp("kingBlocksRookPenalty");
+        blockCentralPawnPenalty = config.getPosIntProp("blockCentralPawnPenalty");
+        bishopTrappedA7Penalty = config.getPosIntProp("bishopTrappedA7Penalty");
+        bishopTrappedA6Penalty = config.getPosIntProp("bishopTrappedA6Penalty");
+        knightTrappedA8Penalty = config.getPosIntProp("knightTrappedA8Penalty");
+        knightTrappedA7Penalty = config.getPosIntProp("knightTrappedA7Penalty");
+
+        c3KnightPenalty = config.getPosIntProp("c3KnightPenalty");
+
+        returningBishop = config.getPosIntProp("returningBishop");
+
     }
 
     private void eval(BitBoard bitBoard) {
@@ -359,9 +381,161 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     }
 
+    /******************************************************************************
+     *                             Pattern detection                               *
+     ******************************************************************************/
+
+    void blockedPieces(BitChessBoard bb, Color side) {
+
+        Color oppo = side.invert();
+
+        long ownFigsMask = bb.getColorMask(side);
+        long opponentFigsMask = bb.getColorMask(oppo);
+        long empty = ~ownFigsMask & ~opponentFigsMask;
+        long occupancy = ownFigsMask | opponentFigsMask;
+
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        long pawnBB = bb.getPieceSet(FT_PAWN, side);
+        long pawnOppoBB = bb.getPieceSet(FT_PAWN, oppo);
+        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        long kingBB = bb.getPieceSet(FT_KING, side);
+        long rookBB = bb.getPieceSet(FT_ROOK, side);
+
+        // Fieldwrapper fw=new fieldMapper(side);
+        // fm.c1.isSet(bb)  
+
+        // central pawn blocked, bishop hard to develop
+        if (Fields.C1.isSet(bishopBB, side)
+                && Fields.D2.isSet(pawnBB, side)
+                && Fields.D3.isSet(occupancy, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= blockCentralPawnPenalty;
+
+        if (F1.isSet(bishopBB, side)
+                && E2.isSet(pawnBB, side)
+                && Fields.E3.isSet(occupancy, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= blockCentralPawnPenalty;
+
+        // trapped knight
+        if (Fields.A8.isSet(knightBB, side)
+                && (Fields.A7.isSet(pawnOppoBB, side) || Fields.C7.isSet(pawnOppoBB, side)))
+            detailedResults[side.ordinal()][FT_KNIGHT][BLOCKAGES] -= knightTrappedA8Penalty;
+
+        if (Fields.H8.isSet(knightBB, side)
+                && (Fields.H7.isSet(pawnOppoBB, side) || Fields.F7.isSet(pawnOppoBB, side)))
+            detailedResults[side.ordinal()][FT_KNIGHT][BLOCKAGES] -= knightTrappedA8Penalty;
+
+        if (Fields.A7.isSet(knightBB, side)
+                && Fields.A6.isSet(pawnOppoBB, side)
+                && Fields.B7.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_KNIGHT][BLOCKAGES] -= knightTrappedA7Penalty;
+
+        if (Fields.H7.isSet(knightBB, side)
+                && Fields.H6.isSet(pawnOppoBB, side)
+                && Fields.G7.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_KNIGHT][BLOCKAGES] -= knightTrappedA7Penalty;
+
+        // knight blocking queenside pawns
+        if (Fields.C3.isSet(knightBB, side)
+                && Fields.C2.isSet(pawnBB, side)
+                && Fields.D2.isSet(pawnBB, side)
+                && !Fields.E4.isSet(pawnBB, side))
+            detailedResults[side.ordinal()][FT_KNIGHT][BLOCKAGES] -= c3KnightPenalty;
+
+        //        if (isPiece(side, KNIGHT, REL_SQ(side, C3))
+        //                && isPiece(side, PAWN, REL_SQ(side, C2))
+        //                && isPiece(side, PAWN, REL_SQ(side, D4))
+        //                && !isPiece(side, PAWN, REL_SQ(side, E4)))
+        //            v.blockages[side] -= e.P_C3_KNIGHT;
+
+        // trapped bishop
+        if (Fields.A7.isSet(bishopBB, side)
+                && Fields.B6.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA7Penalty;
+
+        if (Fields.H7.isSet(bishopBB, side)
+                && Fields.G6.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA7Penalty;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, A7))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, B6)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A7;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, H7))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, G6)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A7;
+
+        if (Fields.B8.isSet(bishopBB, side)
+                && Fields.C7.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA7Penalty;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, B8))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, C7)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A7;
+
+        if (Fields.G8.isSet(bishopBB, side)
+                && Fields.F7.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA7Penalty;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, G8))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, F7)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A7;
+
+        if (Fields.A6.isSet(bishopBB, side)
+                && Fields.B5.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA6Penalty;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, A6))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, B5)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A6;
+        if (Fields.H6.isSet(bishopBB, side)
+                && Fields.G5.isSet(pawnOppoBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] -= bishopTrappedA6Penalty;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, H6))
+        //                && isPiece(oppo, PAWN, REL_SQ(side, G5)))
+        //            v.blockages[side] -= e.P_BISHOP_TRAPPED_A6;
+
+        // bishop on initial sqare supporting castled king
+
+        if (Fields.F1.isSet(bishopBB, side)
+                && Fields.G1.isSet(kingBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] += returningBishop;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, BB.F1))
+        //                && isPiece(side, KING, REL_SQ(side, G1)))
+        //            v.positionalThemes[side] += e.RETURNING_BISHOP;
+
+        if (Fields.C1.isSet(bishopBB, side)
+                && Fields.B1.isSet(kingBB, side))
+            detailedResults[side.ordinal()][FT_BISHOP][BLOCKAGES] += returningBishop;
+
+        //        if (isPiece(side, BISHOP, REL_SQ(side, C1))
+        //                && isPiece(side, KING, REL_SQ(side, B1)))
+        //            v.positionalThemes[side] += e.RETURNING_BISHOP;
+
+        // uncastled king blocking own rook
+
+        if ((Fields.F1.isSet(kingBB, side) || Fields.G1.isSet(kingBB, side))
+                && (Fields.H1.isSet(rookBB, side) || Fields.G1.isSet(rookBB, side)))
+            detailedResults[side.ordinal()][FT_KING][BLOCKAGES] -= kingBlocksRookPenalty;
+
+        //        if ((isPiece(side, KING, REL_SQ(side, BB.F1)) || isPiece(side, KING, REL_SQ(side, G1)))
+        //                && (isPiece(side, ROOK, REL_SQ(side, H1)) || isPiece(side, ROOK, REL_SQ(side, G1))))
+        //            v.blockages[side] -= e.P_KING_BLOCKS_ROOK;
+
+        if ((Fields.C1.isSet(kingBB, side) || Fields.B1.isSet(kingBB, side))
+                && (Fields.A1.isSet(rookBB, side) || Fields.B1.isSet(rookBB, side)))
+            detailedResults[side.ordinal()][FT_KING][BLOCKAGES] -= kingBlocksRookPenalty;
+
+        //        if ((isPiece(side, KING, REL_SQ(side, C1)) || isPiece(side, KING, REL_SQ(side, B1)))
+        //                && (isPiece(side, ROOK, REL_SQ(side, A1)) || isPiece(side, ROOK, REL_SQ(side, B1))))
+        //            v.blockages[side] -= e.P_KING_BLOCKS_ROOK;
+    }
+
     /**
      * Weights the distance to the king from -7 to +6.
      * +6 == nearest to the king. -7 fartest from king.
+     *
      * @param sq1
      * @param sq2
      * @return
@@ -396,5 +570,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.result +=
                 (results[IWHITE][POSITIONAL_THEMES] - results[IBLACK][POSITIONAL_THEMES]);
 
+        result.result +=
+                (results[IWHITE][BLOCKAGES] - results[IBLACK][BLOCKAGES]);
     }
 }

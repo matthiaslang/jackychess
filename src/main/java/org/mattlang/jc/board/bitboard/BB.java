@@ -321,4 +321,22 @@ public class BB {
     public static long fileFill(long gen) {
         return nortFill(gen) | southFill(gen);
     }
+
+    /**
+     * Flip a bitboard vertically about the centre ranks.
+     * Rank 1 is mapped to rank 8 and vice versa.
+     *
+     * @param x any bitboard
+     * @return bitboard x flipped vertically
+     */
+    public static long flipVertical(long x) {
+        return ((x << 56)) |
+                ((x << 40) & 0x00ff000000000000L) |
+                ((x << 24) & 0x0000ff0000000000L) |
+                ((x << 8) & 0x000000ff00000000L) |
+                ((x >> 8) & 0x00000000ff000000L) |
+                ((x >> 24) & 0x0000000000ff0000L) |
+                ((x >> 40) & 0x000000000000ff00L) |
+                ((x >> 56));
+    }
 }
