@@ -276,6 +276,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
+        blockedPieces(bb, side);
     }
 
     private void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, Color side) {
