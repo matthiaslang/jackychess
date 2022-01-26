@@ -104,6 +104,8 @@ public final class TTCache5 implements TTCacheInterface {
             if (tteA == null) {
                 mapA[hashEntry] = new TTE(boardZobristHash, eval, tpe, depth + currAging, move);
                 size++;
+            } else if (tteA.zobristHash == boardZobristHash && tteA.depth - currAging > depth) {
+                return;
             } else {
                 tteA.update(boardZobristHash, eval, tpe, depth + currAging, move);
             }
