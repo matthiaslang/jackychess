@@ -15,6 +15,9 @@ public class Window {
 
     private static final Logger LOGGER = Logger.getLogger(Window.class.getSimpleName());
 
+    private static final int WINDOW_MARGIN = 50;
+    private static final int MAX_WIDENING_PHASES = 0;
+
     int alpha;
     int beta;
 
@@ -45,8 +48,8 @@ public class Window {
 
     public void limitWindow(NegaMaxResult rslt) {
         lastScore = rslt.max;
-        alpha = lastScore - 50;
-        beta = lastScore + 50;
+        alpha = lastScore - WINDOW_MARGIN;
+        beta = lastScore + WINDOW_MARGIN;
 
         wideningPhase = 0;
     }
@@ -65,7 +68,7 @@ public class Window {
     }
 
     public void widenWindow(NegaMaxResult rslt) {
-        int delta = wideningPhase++ * 50 + 50;
+        int delta = wideningPhase++ * WINDOW_MARGIN + WINDOW_MARGIN;
 
         int score = rslt.max;
         lastScore = score;
@@ -77,8 +80,8 @@ public class Window {
             }
         } else if (score >= beta) {
             beta = beta + delta + (score - beta);
-            betaWidened=true;
-            if (alphaWidened){
+            betaWidened = true;
+            if (alphaWidened) {
                 /**
                  * a search anomaly: the result of alpha/beta switches between alpha and beta. Normally that should not be the case but can
                  * happen...
@@ -87,10 +90,8 @@ public class Window {
             }
         }
 
-        // after 3 phases, set the full window:
-
-        // todo test: after first limit set it to full window... may be this is better...
-        if (wideningPhase > 0) {
+        // after n phases, set the full window:
+        if (wideningPhase > MAX_WIDENING_PHASES) {
             alpha = ALPHA_START;
             beta = BETA_START;
         }
