@@ -4,6 +4,7 @@
 
 - evaluation: eval some special blockage patterns
 - changed handling of repetitions
+- mate distance pruning
 
 
 ### Version 0.9.18

@@ -52,6 +52,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
     private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
+    private boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
 
     private PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -128,8 +129,26 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private int negaMaximize(int ply, int depth, Color color,
             int alpha, int beta) {
+        int mateValue = KING_WEIGHT - ply;
+
         nodesVisited++;
         boolean not_pv = abs(beta - alpha) <= 1;
+
+        /**************************************************************************
+         * MATE DISTANCE PRUNING, a minor improvement that helps to shave off some *
+         * some nodes when the checkmate is near. Basically it prevents looking    *
+         * for checkmates taking longer than one we have already found. No Elo     *
+         * gain expected, but it's a nice feature. Don't use it at the root,       *
+         * since  this code  doesn't return a move, only a value.                  *
+         **************************************************************************/
+        if (mateDistancePruning && ply != 1) {
+            if (alpha < -mateValue)
+                alpha = -mateValue;
+            if (beta > mateValue - 1)
+                beta = mateValue - 1;
+            if (alpha >= beta)
+                return alpha;
+        }
 
         if (searchContext.isRepetition()) {
             return Weights.REPETITION_WEIGHT;
@@ -137,8 +156,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         boolean areWeInCheck = searchContext.isInCheck(color);
         depth = checkToExtend(areWeInCheck, color, depth);
-
-
 
         TTEntry tte = searchContext.getTTEntry(color);
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
