@@ -557,4 +557,19 @@ public class BitBoard implements BoardRepresentation {
         moveCounter++;
     }
 
+    @Override
+    public boolean isRepetition() {
+        // if we would have infos about the latest move, we could also use this condition first:
+        //        if (!MoveUtil.isQuiet(move) || figure == PAWN) {
+        //            return false;
+        //        }
+        final int moveCountMin = Math.max(0, moveCounter - 50);
+        for (int i = moveCounter - 2; i >= moveCountMin; i -= 2) {
+            if (zobristHash == historyZobrist[i]) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 }

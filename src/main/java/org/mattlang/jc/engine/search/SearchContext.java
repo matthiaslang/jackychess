@@ -64,8 +64,6 @@ public final class SearchContext {
     @Getter
     private final BoardRepresentation board;
 
-    private RepetitionChecker repetitionChecker;
-
     @Getter
     private final boolean openingOrMiddleGame;
 
@@ -86,7 +84,7 @@ public final class SearchContext {
             int targetDepth, int alpha) {
 
         this.board = gameState.getBoard();
-        repetitionChecker = gameState.getRepetitionChecker();
+//        repetitionChecker = gameState.getRepetitionChecker();
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
 
         this.evaluate = evaluate;
@@ -124,18 +122,22 @@ public final class SearchContext {
         }
     }
 
+    /**
+     * Return true, if this position is a repetition in the search path.
+     * We treat this all the time as "draw" (not only after 3 times), means we treat repetitions not as beneficial,
+     * since it means we have chosen this before and it has not made the situation better.
+     * @return
+     */
     public boolean isRepetition() {
-        return repetitionChecker.isRepetition();
+        return board.isRepetition();
     }
 
     public void doMove(MoveCursor moveCursor) {
         moveCursor.move(board);
-        repetitionChecker.push(board);
     }
 
     public void undoMove(MoveCursor moveCursor) {
         moveCursor.undoMove(board);
-        repetitionChecker.pop();
     }
 
     public void undoNullMove() {

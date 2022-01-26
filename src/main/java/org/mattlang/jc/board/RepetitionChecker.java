@@ -3,6 +3,7 @@ package org.mattlang.jc.board;
 /**
  * Tracks state of repetitions during search.
  */
+@Deprecated
 public interface RepetitionChecker {
 
 

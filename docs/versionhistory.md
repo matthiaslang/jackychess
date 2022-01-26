@@ -1,5 +1,10 @@
 # Versions
 
+### Version 0.9.19
+
+- evaluation: eval some special blockage patterns
+- changed handling of repetitions
+
 
 ### Version 0.9.18
 

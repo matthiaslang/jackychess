@@ -76,4 +76,6 @@ public interface BoardRepresentation {
     void undoNullMove();
 
     void doNullMove();
+
+    boolean isRepetition();
 }
