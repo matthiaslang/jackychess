@@ -463,7 +463,16 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public void undo(Move move) {
-        undomove(move.getToIndex(), move.getFromIndex());
+
+        long fromMask = 1L << move.getToIndex();
+        boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
+
+        byte figureType = move.getFigureType();
+        if (move.isPromotion()) {
+            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
+        }
+        board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+
         if (move.getCapturedFigure() != 0) {
             board.set(move.getToIndex(), move.getCapturedFigure());
         }
@@ -478,7 +487,8 @@ public class BitBoard implements BoardRepresentation {
             board.set(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
             CastlingMove castlingMove = move.getCastlingMove();
-            undomove(castlingMove.getToIndex2(), castlingMove.getFromIndex2());
+            board.move(castlingMove.getToIndex2(), castlingMove.getFromIndex2(), FT_ROOK,
+                    isWhiteFigure ? nWhite : nBlack, (byte) 0);
         }
 
         siteToMove = siteToMove.invert();

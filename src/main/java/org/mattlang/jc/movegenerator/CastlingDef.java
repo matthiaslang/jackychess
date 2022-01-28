@@ -56,6 +56,13 @@ public class CastlingDef {
         this.fieldCheckTst = fieldCheckTst;
     }
 
+    /**
+     * Checks if this rochade is allowed on the board.
+     * Old version
+     * @param board
+     * @return
+     */
+    @Deprecated
     public boolean check(BoardRepresentation board) {
         // check if rochade is still allowed:
         if (board.isCastlingAllowed(side, rochadeType)) {
@@ -81,5 +88,29 @@ public class CastlingDef {
             }
         }
         return true;
+    }
+
+    /**
+     * Checks if this rochade is allowed using bitboard stuff.
+     * @param board
+     * @return
+     */
+
+    // todo implement via bitboard comparisons
+    public boolean checkRochade(BitBoard board) {
+        // check if rochade is still allowed:
+        if (board.isCastlingAllowed(side, rochadeType)) {
+            // check that the relevant figures and empty fields are as needs to be for castling:
+            if (checkPos(board)) {
+                // check that king pos and moves are not in check:
+                for (int pos : fieldCheckTst) {
+                    if (BBMoveGeneratorImpl.canFigureCaptured((BitBoard) board, pos, side)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }
