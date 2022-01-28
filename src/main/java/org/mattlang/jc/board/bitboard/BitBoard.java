@@ -268,19 +268,6 @@ public class BitBoard implements BoardRepresentation {
         }
     }
 
-    /**
-     * used during undoing. here we need not to take care about updating zobrist key, as it is reset afterwards
-     * anyway to the old value.
-     *
-     * @param from
-     * @param to
-     */
-    private void undomove(int from, int to) {
-        byte figure = board.get(from);
-        board.set(from, Figure.EMPTY.figureCode);
-        board.set(to, figure);
-    }
-
     @Override
     public void switchSiteToMove() {
         siteToMove = siteToMove.invert();
@@ -449,9 +436,9 @@ public class BitBoard implements BoardRepresentation {
                 move.isEnPassant() ? 0 : move.getCapturedFigure());
 
         if (move.isEnPassant()) {
-            setPos(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+            set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
         } else if (move.isPromotion()) {
-            setPos(move.getToIndex(), move.getPromotedFigureByte());
+            set(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
             CastlingMove castlingMove = move.getCastlingMove();
             move(FT_ROOK, castlingMove.getFromIndex2(), castlingMove.getToIndex2(),
@@ -474,7 +461,7 @@ public class BitBoard implements BoardRepresentation {
         board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
 
         if (move.getCapturedFigure() != 0) {
-            board.set(move.getToIndex(), move.getCapturedFigure());
+            board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
         }
         if (move.isEnPassant()) {
             // override the "default" overrider field with empty..

@@ -138,19 +138,20 @@ public class BitChessBoard {
 
     }
 
-    public void setByMove(int i, byte figureCode) {
+    /**
+     * Set a figure on an EMPTY field.
+     * Note it does not take care to clear the field before, because it assumes it is empty.
+     * the set(..) method on the other hand takes care for that (does a implicit remove of a figure that is on the field
+     * before setting the new figure)
+     * @param i
+     * @param figureCode
+     */
+    public void setOnEmptyField(int i, byte figureCode) {
         long posMask = 1L << i;
-
-        long invPosMask = ~posMask;
-
         int colorIdx = ((figureCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
-        int otherColor = colorIdx == nWhite ? nBlack : nWhite;
         byte figType = (byte) (figureCode & MASK_OUT_COLOR);
         colorBB[colorIdx] |= posMask;
-        colorBB[otherColor] &= invPosMask;
-
         pieceBB[figType] |= posMask;
-
     }
 
     public void cleanPos(int i) {
