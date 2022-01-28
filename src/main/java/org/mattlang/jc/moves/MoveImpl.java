@@ -141,6 +141,7 @@ public final class MoveImpl implements Move {
     }
 
     private MoveImpl(CastlingMove castlingMove) {
+        this.figureType = FT_KING;
         this.type = castlingMove.getType();
         this.fromIndex = castlingMove.getFromIndex();
         this.toIndex = castlingMove.getToIndex();

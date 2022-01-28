@@ -86,7 +86,11 @@ public class FenParser {
         }
 
         // normal move:
-        return new MoveImpl(moveStr);
+
+        Figure fig = board.getFigure(tmp.getFromIndex());
+        Figure target = board.getFigure(tmp.getToIndex());
+        byte captureFig = target==EMPTY? (byte)0: target.figureCode;
+        return new MoveImpl(fig.figureType.figureCode, tmp.getFromIndex(), tmp.getToIndex(), captureFig);
     }
 
     private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
