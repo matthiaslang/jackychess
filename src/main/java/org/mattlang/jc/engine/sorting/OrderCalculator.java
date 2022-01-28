@@ -10,6 +10,9 @@ import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.MoveScore;
 
+import lombok.Getter;
+
+@Getter
 public class OrderCalculator {
 
     public static final int HASHMOVE_SCORE = -1500_000_000;

@@ -134,4 +134,8 @@ public class MoveListImpl implements MoveList {
     public void close() {
         MoveListPool.instance.dispose(this);
     }
+
+    public void addMove(int aMove) {
+        moves.add(aMove);
+    }
 }
