@@ -1,5 +1,6 @@
 package org.mattlang.jc.moves;
 
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.IndexConversion.convert;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
@@ -168,7 +169,7 @@ public final class MoveImpl implements Move {
     }
 
     public final static int createCastlingMove(CastlingMove castlingMove) {
-        return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
+        return longRepresentation(castlingMove.getType(), FT_KING, castlingMove.getFromIndex(),
                 castlingMove.getToIndex(),
                 (byte) 0);
     }

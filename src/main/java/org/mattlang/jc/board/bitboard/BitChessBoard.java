@@ -31,6 +31,10 @@ public class BitChessBoard {
         this.pieceBB = pieceBB;
     }
 
+    public long getPieceSet(int pt) {
+        return pieceBB[pt];
+    }
+
     public long getPieceSet(int pt, int color) {
         return pieceBB[pt] & colorBB[color];
     }
@@ -100,6 +104,10 @@ public class BitChessBoard {
 
     public long getColorMask(Color color) {
         return color == WHITE ? colorBB[nWhite] : colorBB[nBlack];
+    }
+
+    public long getColorMask(int color) {
+        return colorBB[color];
     }
 
     public void set(int i, byte figureCode) {
@@ -219,9 +227,7 @@ public class BitChessBoard {
 
     }
 
-    public void move(int from, int to, byte figureCode, int color, byte capturedPiece) {
-
-        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
+    public void move(int from, int to, byte figType, int color, byte capturedPiece) {
 
         long fromBB = 1L << from;
         long toBB = 1L << to;

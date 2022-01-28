@@ -7,6 +7,8 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import java.util.Objects;
 
@@ -201,91 +203,51 @@ public class BitBoard implements BoardRepresentation {
      * @param from
      * @param to
      */
-    private void move(int from, int to) {
-        byte figure = board.get(from);
-        // remove castling rights when rooks or kings are moved:
-        if (figure == W_KING) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(WHITE, SHORT);
-            castlingRights.retain(WHITE, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        } else if (figure == B_KING) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(BLACK, SHORT);
-            castlingRights.retain(BLACK, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        } else if (figure == W_ROOK && from == 0) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(WHITE, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        } else if (figure == W_ROOK && from == 7) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(WHITE, SHORT);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        } else if (figure == B_ROOK && from == 56) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(BLACK, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        } else if (figure == B_ROOK && from == 63) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            castlingRights.retain(BLACK, SHORT);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        }
-
-        set(from, Figure.EMPTY.figureCode);
-        set(to, figure);
-
-        resetEnPassant();
-
-        // check double pawn move. here we need to mark an possible en passant follow up move:
-        // be careful: we must not set the en passant option by undoing a double pawn move:
-        if (figure == W_PAWN && to - from == 16) {
-            setEnPassantOption((from + to) / 2);
-        } else if (figure == B_PAWN && from - to == 16) {
-            setEnPassantOption((from + to) / 2);
-        }
-
-    }
-
     private void move(byte figType, int from, int to, byte capturedFigure) {
 
+        long fromMask = 1L << from;
+        boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
+
         // remove castling rights when rooks or kings are moved:
-        if (siteToMove == WHITE) {
-            if (figType == FT_KING) {
+        if (figType == FT_KING) {
+            if (isWhiteFigure) {
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                 castlingRights.retain(WHITE, SHORT);
                 castlingRights.retain(WHITE, LONG);
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else if (figType == FT_ROOK && from == 0) {
+            } else {
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(WHITE, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else if (figType == FT_ROOK && from == 7) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(WHITE, SHORT);
+                castlingRights.retain(BLACK, SHORT);
+                castlingRights.retain(BLACK, LONG);
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             }
-        } else {
-
-            if (figType == FT_KING) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, SHORT);
-                castlingRights.retain(BLACK, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else if (figType == FT_ROOK && from == 56) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else if (figType == FT_ROOK && from == 63) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, SHORT);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        } else if (figType == FT_ROOK) {
+            if (isWhiteFigure) {
+                if (from == 0) {
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    castlingRights.retain(WHITE, LONG);
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                } else if (from == 7) {
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    castlingRights.retain(WHITE, SHORT);
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                }
+            } else {
+                if (from == 56) {
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    castlingRights.retain(BLACK, LONG);
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                } else if (from == 63) {
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    castlingRights.retain(BLACK, SHORT);
+                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                }
             }
         }
 
-        board.move(from, to, figType, siteToMove.ordinal(), capturedFigure);
+        board.move(from, to, figType, isWhiteFigure ? nWhite : nBlack, capturedFigure);
 
-        byte figCode = (byte) (figType | (siteToMove == WHITE ? WHITE.code : BLACK.code));
+        byte figCode = (byte) (figType | (isWhiteFigure ? WHITE.code : BLACK.code));
 
         zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
         zobristHash = Zobrist.addFig(zobristHash, to, figCode);
@@ -298,13 +260,12 @@ public class BitBoard implements BoardRepresentation {
         // check double pawn move. here we need to mark an possible en passant follow up move:
         // be careful: we must not set the en passant option by undoing a double pawn move:
         if (figType == FT_PAWN) {
-            if (siteToMove == WHITE && to - from == 16) {
+            if (isWhiteFigure && to - from == 16) {
                 setEnPassantOption((from + to) / 2);
-            } else if (siteToMove == BLACK && from - to == 16) {
+            } else if (!isWhiteFigure && from - to == 16) {
                 setEnPassantOption((from + to) / 2);
             }
         }
-
     }
 
     /**
@@ -484,8 +445,8 @@ public class BitBoard implements BoardRepresentation {
     public void domove(Move move) {
         pushHistory();
 
-//        move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
-        move(move.getFromIndex(), move.getToIndex());
+        move(move.getFigureType(), move.getFromIndex(), move.getToIndex(),
+                move.isEnPassant() ? 0 : move.getCapturedFigure());
 
         if (move.isEnPassant()) {
             setPos(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
@@ -493,7 +454,8 @@ public class BitBoard implements BoardRepresentation {
             setPos(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
             CastlingMove castlingMove = move.getCastlingMove();
-            move(castlingMove.getFromIndex2(), castlingMove.getToIndex2());
+            move(FT_ROOK, castlingMove.getFromIndex2(), castlingMove.getToIndex2(),
+                    (byte) 0);
         }
 
         switchSiteToMove();
