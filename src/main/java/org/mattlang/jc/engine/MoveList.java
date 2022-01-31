@@ -26,15 +26,6 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoClose
     int size();
 
     /**
-     * is this check mate for the current color? this is the case if no legal moves are available.
-     * It may not be the same as size==0 if this is a filtered list.
-     * @return
-     */
-    boolean isCheckMate();
-
-    void setCheckMate(boolean checkMate);
-
-    /**
      * override autoclosable close to not throw any exception.
      */
     void close();

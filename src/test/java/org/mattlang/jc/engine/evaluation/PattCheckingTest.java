@@ -73,7 +73,7 @@ public class PattCheckingTest {
         MoveList moves = generator.generate(engine.getBoard(), Color.BLACK);
        // todo ischecmate would be true if we are in a patt situation!!!!!!!
 
-        System.out.println(moves.isCheckMate());
+        System.out.println(moves.size());
 
     }
 }

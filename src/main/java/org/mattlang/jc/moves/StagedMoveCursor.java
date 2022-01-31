@@ -20,6 +20,7 @@ public class StagedMoveCursor implements MoveCursor {
     enum Stages {
         PV,
         HASH,
+        KILLER,
         CAPTURES,
         QUIET
     }
@@ -168,6 +169,9 @@ public class StagedMoveCursor implements MoveCursor {
             case HASH:
                 initHash();
                 break;
+            case KILLER:
+                initKiller();
+                break;
             case CAPTURES:
                 initCaptures();
                 break;
@@ -183,6 +187,10 @@ public class StagedMoveCursor implements MoveCursor {
         } else {
             stageStatus = StageStatus.FINISHED;
         }
+    }
+
+    private void initKiller() {
+
     }
 
     private void initQuiet() {

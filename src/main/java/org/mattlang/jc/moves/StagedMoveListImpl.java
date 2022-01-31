@@ -98,17 +98,6 @@ public class StagedMoveListImpl implements MoveList {
     }
 
     @Override
-    public boolean isCheckMate() {
-        throw new IllegalStateException("illegal state!");
-        //        return checkMate;
-    }
-
-    public void setCheckMate(boolean checkMate) {
-        throw new IllegalStateException("illegal state!");
-        //        this.checkMate = checkMate;
-    }
-
-    @Override
     public Iterator<MoveCursor> iterator() {
         return new StagedMoveListIteratorImpl(this);
     }

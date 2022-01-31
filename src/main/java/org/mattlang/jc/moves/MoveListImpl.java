@@ -20,7 +20,6 @@ public class MoveListImpl implements MoveList {
     private IntList moves = new IntList();
     private int[] order = new int[200];
 
-    private boolean checkMate = false;
     private boolean sorted = false;
 
     public MoveListImpl() {
@@ -94,15 +93,6 @@ public class MoveListImpl implements MoveList {
     }
 
     @Override
-    public boolean isCheckMate() {
-        return checkMate;
-    }
-
-    public void setCheckMate(boolean checkMate) {
-        this.checkMate = checkMate;
-    }
-
-    @Override
     public Iterator<MoveCursor> iterator() {
         if (sorted) {
             return new LazySortedMoveListIteratorImpl(new LongSorter(moves.getRaw(), moves.size(), order));
@@ -125,8 +115,6 @@ public class MoveListImpl implements MoveList {
 
     public void reset() {
         moves.reset();
-
-        checkMate = false;
         sorted = false;
     }
 

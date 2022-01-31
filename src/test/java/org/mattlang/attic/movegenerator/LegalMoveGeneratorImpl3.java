@@ -33,7 +33,6 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
             }
             moveCursor.undoMove(currBoard);
         }
-        moves.setCheckMate(moves.size() == 0);
         return moves;
     }
 
@@ -62,7 +61,6 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
             }
             moveCursor.undoMove(currBoard);
         }
-        moves.setCheckMate(!atLeastOneLegalMove);
         return moves;
     }
 }

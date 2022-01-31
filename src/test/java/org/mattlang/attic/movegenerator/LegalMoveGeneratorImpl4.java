@@ -66,7 +66,6 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
                 moveCursor.undoMove(currBoard);
             }
         }
-        moves.setCheckMate(moves.size() == 0);
         return moves;
     }
 
