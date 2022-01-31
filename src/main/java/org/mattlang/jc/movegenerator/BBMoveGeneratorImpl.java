@@ -3,6 +3,8 @@ package org.mattlang.jc.movegenerator;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
 import org.mattlang.jc.Factory;
@@ -215,13 +217,15 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
      * @param i
      * @return
      */
-    public static boolean canFigureCaptured(BoardRepresentation board, int i, Color side) {
-        Color xside = side.invert();
+    public static boolean canFigureCaptured(BoardRepresentation board, int i, Color cside) {
+
+        int side = cside.ordinal();
+        int xside = cside.invert().ordinal();
 
         BitBoard bitBoard = (BitBoard) board;
 
         BitChessBoard bb = bitBoard.getBoard();
-        long ownFigsMask = bb.getColorMask(xside.invert());
+        long ownFigsMask = bb.getColorMask(side);
         long opponentFigsMask = bb.getColorMask(xside);
 
         // 1. test bishop and queen diagonal captures
@@ -238,10 +242,10 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
         // 2. test rook and queen vertical/horizontal captures:
         attacks = MagicBitboards.genRookAttacs(i, occupancy);
-        if ((attacks & bb.getPieceSet(FT_ROOK, xside)) != 0) {
+        if ((attacks & otherQueens) != 0) {
             return true;
         }
-        if ((attacks & otherQueens) != 0) {
+        if ((attacks & bb.getPieceSet(FT_ROOK, xside)) != 0) {
             return true;
         }
 
@@ -253,10 +257,10 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
 
         // 4. pawns:
-        long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
+        long otherPawns = bb.getPieceSet(FT_PAWN, xside);
         long figMask = 1L << i;
 
-        if (side == WHITE) {
+        if (side == nWhite) {
             long capturesEast = BB.bPawnWestAttacks(otherPawns);
             if ((figMask & capturesEast) != 0) {
                 return true;
@@ -395,7 +399,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
 
     private void genPawnMoves(BitChessBoard bb, MoveCollector collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
-        long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
+        long empty = ~(bb.getColorMask(nWhite) | bb.getColorMask(nBlack));
 
         if (side == WHITE) {
             long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
