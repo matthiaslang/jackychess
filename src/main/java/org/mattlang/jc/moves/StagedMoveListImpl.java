@@ -14,6 +14,8 @@ import lombok.Getter;
 @Getter
 public class StagedMoveListImpl implements MoveList {
 
+    public final static MoveListPool<StagedMoveListImpl> POOL = new MoveListPool<>(() -> new StagedMoveListImpl());
+
     private IntList moves = new IntList();
     private int[] order = new int[200];
 
@@ -121,6 +123,6 @@ public class StagedMoveListImpl implements MoveList {
 
     @Override
     public void close() {
-        //MoveListPool.instance.dispose(this);
+        POOL.dispose(this);
     }
 }

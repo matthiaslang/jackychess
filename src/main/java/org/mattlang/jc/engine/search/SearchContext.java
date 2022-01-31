@@ -14,6 +14,7 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTEntry;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
@@ -69,9 +70,11 @@ public final class SearchContext {
 
     private final TTCacheInterface ttCache;
 
-//    private final TTCache3 ttc;
+    //    private final TTCache3 ttc;
 
     private final EvaluateFunction evaluate;
+
+    private OrderCalculator orderCalculator;
 
     // null move stuff
     @Getter
@@ -80,14 +83,15 @@ public final class SearchContext {
     private RepetitionChecker repetitionCheckerBeforeNullMove;
 
     public SearchContext(GameState gameState, GameContext context,
-            EvaluateFunction evaluate,
+            OrderCalculator orderCalculator, EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
         this.board = gameState.getBoard();
-//        repetitionChecker = gameState.getRepetitionChecker();
+        //        repetitionChecker = gameState.getRepetitionChecker();
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
 
         this.evaluate = evaluate;
+        this.orderCalculator = orderCalculator;
 
         this.gameState = gameState;
         this.context = context;
@@ -213,7 +217,7 @@ public final class SearchContext {
     }
 
     public MoveList generateMoves(Color color) {
-        return generator.generate(board, color);
+        return generator.generate(context, orderCalculator, board, color);
     }
 
     public int eval(Color color) {

@@ -3,14 +3,22 @@ package org.mattlang.jc;
 import java.util.function.Supplier;
 
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.moves.MoveListPool;
+import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.moves.StagedMoveListImpl;
 
 public enum MoveListImpls {
 
     OPTIMIZED {
         @Override
         public Supplier<MoveList> createSupplier() {
-            return MoveListPool.instance::newOne;
+            return MoveListImpl.POOL::newOne;
+        }
+    },
+
+    STAGED {
+        @Override
+        public Supplier<MoveList> createSupplier() {
+            return StagedMoveListImpl.POOL::newOne;
         }
     };
 

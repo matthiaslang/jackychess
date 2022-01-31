@@ -1,7 +1,6 @@
 package org.mattlang.jc.moves;
 
-import static org.mattlang.jc.moves.StagedMoveCursor.Stages.HASH;
-import static org.mattlang.jc.moves.StagedMoveCursor.Stages.PV;
+import static org.mattlang.jc.moves.StagedMoveCursor.Stages.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveCursor;
@@ -21,8 +20,9 @@ public class StagedMoveCursor implements MoveCursor {
         PV,
         HASH,
         KILLER,
-        CAPTURES,
-        QUIET
+        GOOD_CAPTURES,
+        QUIET,
+        BAD_CAPTURES,
     }
 
     enum StageStatus {
@@ -31,7 +31,7 @@ public class StagedMoveCursor implements MoveCursor {
         FINISHED
     }
 
-    private Stages[] stages = new Stages[] { PV, HASH, Stages.CAPTURES, Stages.QUIET };
+    private Stages[] stages = new Stages[] { PV, HASH, GOOD_CAPTURES, KILLER, QUIET, BAD_CAPTURES };
 
     private int stageIndex = -1;
     private StageStatus stageStatus = StageStatus.NONE;
@@ -67,6 +67,14 @@ public class StagedMoveCursor implements MoveCursor {
             movesOfStage.addMove(aMove);
         }
 
+        public void initSomeMoves(int[] someMoves) {
+            movesOfStage.reset();
+            index = -1;
+            for (int aMove : someMoves) {
+                movesOfStage.addMove(aMove);
+            }
+        }
+
         public void initQuiet() {
             movesOfStage.reset();
             index = -1;
@@ -80,6 +88,7 @@ public class StagedMoveCursor implements MoveCursor {
             stagedGenerator.generate(movelist.getBoard(), movelist.getSide(), movesOfStage,
                     BBMoveGeneratorImpl2.GenTypes.CAPTURES);
         }
+
     }
 
     @Override
@@ -172,9 +181,11 @@ public class StagedMoveCursor implements MoveCursor {
             case KILLER:
                 initKiller();
                 break;
-            case CAPTURES:
+            case GOOD_CAPTURES:
                 initCaptures();
                 break;
+            case BAD_CAPTURES:
+                initBadCaptures();
             case QUIET:
                 initQuiet();
                 break;
@@ -189,8 +200,21 @@ public class StagedMoveCursor implements MoveCursor {
         }
     }
 
-    private void initKiller() {
+    private void initBadCaptures() {
 
+    }
+
+    private void initKiller() {
+        int[] killers = movelist.getGameContext()
+                .getKillerMoves()
+                .getPossibleKillers(movelist.getSide(), movelist.getOrderCalculator().getPly());
+
+        currStageData.initSomeMoves(killers);
+        if (currStageData.hasNext()) {
+            stageStatus = StageStatus.ACTIVE;
+        } else {
+            stageStatus = StageStatus.FINISHED;
+        }
     }
 
     private void initQuiet() {

@@ -137,16 +137,20 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         long attacks = moves & opponentFigsMask;
         long quietMoves = moves & ~attacks;
 
-        while (attacks != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(attacks);
-            collector.genMove(FT_KNIGHT, knight, toIndex, bb.get(toIndex));
-            attacks &= attacks - 1;
+        if (types == GenTypes.CAPTURES || types == GenTypes.ALL) {
+            while (attacks != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(attacks);
+                collector.genMove(FT_KNIGHT, knight, toIndex, bb.get(toIndex));
+                attacks &= attacks - 1;
+            }
         }
 
-        while (quietMoves != 0) {
-            final int toIndex = Long.numberOfTrailingZeros(quietMoves);
-            collector.genMove(FT_KNIGHT, knight, toIndex, (byte) 0);
-            quietMoves &= quietMoves - 1;
+        if (types == GenTypes.QUIET || types == GenTypes.ALL) {
+            while (quietMoves != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(quietMoves);
+                collector.genMove(FT_KNIGHT, knight, toIndex, (byte) 0);
+                quietMoves &= quietMoves - 1;
+            }
         }
 
     }

@@ -14,7 +14,6 @@ import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
-import org.mattlang.jc.moves.MoveListPool;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -31,8 +30,6 @@ public class PerfNewMoveListImplBenchmarkTests {
         UCI.instance.attachStreams();
 
         Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
-
-        Factory.getDefaults().moveList.set(() -> MoveListPool.instance.newOne());
 
         StopWatch measureNew = Benchmarks.benchmark(
                 "new move list impl",

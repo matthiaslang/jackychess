@@ -694,9 +694,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
 
-        searchContext = new SearchContext(gameState, context, evaluate, depth, alpha);
-
         this.orderCalculator = new OrderCalculator(orderHints, depth);
+
+        searchContext = new SearchContext(gameState, context, orderCalculator, evaluate, depth, alpha);
+
+
         this.stopTime = stopTime;
 
         extensionCounter = 0;

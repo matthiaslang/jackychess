@@ -2,26 +2,30 @@ package org.mattlang.jc.moves;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.function.Supplier;
 
-public class MoveListPool {
+import org.mattlang.jc.engine.MoveList;
 
-    private Queue<MoveListImpl> queue = new ArrayDeque<>(200);
+public class MoveListPool<T extends MoveList> {
 
-    private MoveListPool() {
+    private Queue<T> queue = new ArrayDeque<>(200);
+
+    private Supplier<T> creator;
+
+    public MoveListPool(Supplier<T> creator) {
+        this.creator = creator;
     }
 
-    public static MoveListPool instance = new MoveListPool();
-
-    public MoveListImpl newOne() {
-        MoveListImpl moveList = queue.poll();
+    public T newOne() {
+        T moveList = queue.poll();
         if (moveList == null) {
-            return new MoveListImpl();
+            return creator.get();
         } else {
             return moveList;
         }
     }
 
-    public void dispose(MoveListImpl moveList) {
+    public void dispose(T moveList) {
         moveList.reset();
         queue.offer(moveList);
     }

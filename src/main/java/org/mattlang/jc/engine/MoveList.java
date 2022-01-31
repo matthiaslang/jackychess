@@ -46,4 +46,6 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoClose
         l1.sort(Comparator.comparingInt(MoveImpl::toInt));
         return l1;
     }
+
+    void reset();
 }

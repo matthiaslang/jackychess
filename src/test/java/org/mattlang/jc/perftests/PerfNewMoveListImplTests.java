@@ -11,7 +11,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveListImpl;
-import org.mattlang.jc.moves.MoveListPool;
 
 /**
  * PerfTests
@@ -27,7 +26,6 @@ public class PerfNewMoveListImplTests {
         Board3 board = new Board3();
         board.setStartPosition();
         Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
-        Factory.getDefaults().moveList.set(() -> MoveListPool.instance.newOne());
         LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
 
         perftInitialPosition(board, generator);
