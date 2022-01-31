@@ -62,8 +62,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int nodesVisited = 0;
     private int quiescenceNodesVisited = 0;
 
-    private int nodes;
-
     private int extensionCounter = 0;
 
     private OrderCalculator orderCalculator;
@@ -117,7 +115,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public void resetStatistics() {
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
-        nodes = 0;
         cutOff = 0;
         extensionsInfo = new ExtensionsInfo();
     }
@@ -277,8 +274,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         try (MoveList moves = searchContext.generateMoves(color)) {
 
             sortMoves(ply, depth, color, moves, searchContext.getBoard());
-
-            nodes += moves.size();
 
             boolean firstChild = true;
 
@@ -517,7 +512,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         Color opponent=color.invert();
 
         try (MoveList moves = searchContext.generateMoves(color)) {
-            nodes += moves.size();
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
@@ -727,29 +721,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return nodesVisited;
     }
 
-    public int getNodes() {
-        return nodes;
-    }
-
     @Override
     public void collectStatistics(Map stats) {
-        if (nodes > 0) {
-            Map rslts = new LinkedHashMap();
-            stats.put("negamax alpha/beta", rslts);
-            if (nodes != 0) {
-                rslts.put("visited/all Nodes", nodesVisited * 100 / nodes + "%");
-            }
-            rslts.put("nodesVisited", nodesVisited);
-            rslts.put("nodes", nodes);
-            if (maxQuiescenceDepth > 0) {
-                rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
-            }
-            rslts.put("cutoff", cutOff);
 
-            Map searchstatsMap = new LinkedHashMap();
-            searchContext.collectStatistics(searchstatsMap);
-            rslts.put("search", searchstatsMap);
+        Map rslts = new LinkedHashMap();
+        stats.put("negamax alpha/beta", rslts);
+
+        rslts.put("nodesVisited", nodesVisited);
+
+        if (maxQuiescenceDepth > 0) {
+            rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
         }
+        rslts.put("cutoff", cutOff);
+
+        Map searchstatsMap = new LinkedHashMap();
+        searchContext.collectStatistics(searchstatsMap);
+        rslts.put("search", searchstatsMap);
+
     }
 
     public NegaMaxAlphaBetaPVS setDoPVSSearch(boolean doPVSSearch) {
