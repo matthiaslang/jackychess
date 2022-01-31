@@ -52,7 +52,7 @@ public class AlgebraicNotation {
             String fromSpec) {
         LegalMoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
         List<MoveImpl> allMoves =
-                legalMoveGenerator.generateNonQuietMoves(board, color).extractList();
+                legalMoveGenerator.generate(board, color).extractList();
 
         List<MoveImpl> matching = allMoves.stream()
                 .filter(m -> m.getFigureType() == figureType.figureCode && m.getToIndex() == toidx)

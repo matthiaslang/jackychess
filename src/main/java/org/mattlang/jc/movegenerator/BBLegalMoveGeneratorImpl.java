@@ -33,33 +33,4 @@ public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
         return moves;
     }
 
-    @Override
-    public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {
-        MoveList moves = generator.generate(board, side);
-        MoveList legalMoves = filterLegalNonQuietMoves(board, moves, side);
-        return legalMoves;
-    }
-
-    private MoveList filterLegalNonQuietMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
-
-        Color opponent = side.invert();
-
-        boolean atLeastOneLegalMove = false;
-        for (MoveCursor moveCursor : moves) {
-            moveCursor.move(currBoard);
-
-            if (checkChecker.isInChess(currBoard, side)) {
-                moveCursor.remove();
-            } else if (!moveCursor.isCapture() && !moveCursor.isPawnPromotion() && !checkChecker.isInChess(currBoard,
-                    opponent)) {
-                moveCursor.remove();
-                atLeastOneLegalMove = true;
-            } else {
-                atLeastOneLegalMove = true;
-            }
-            moveCursor.undoMove(currBoard);
-        }
-        return moves;
-    }
-
 }

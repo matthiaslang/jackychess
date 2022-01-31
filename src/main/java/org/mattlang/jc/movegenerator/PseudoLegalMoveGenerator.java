@@ -18,16 +18,4 @@ public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
         MoveList moves = generator.generate(board, side);
         return moves;
     }
-
-    @Override
-    public MoveList generateNonQuietMoves(BoardRepresentation board, Color side) {
-        MoveList moves = generator.generate(board, side);
-        MoveList legalMoves = filterLegalNonQuietMoves(board, moves, side);
-        return legalMoves;
-    }
-
-    private MoveList filterLegalNonQuietMoves(BoardRepresentation currBoard, MoveList moves, Color side) {
-        throw new IllegalStateException("not implemented, since its pseudo legal move generator!");
-    }
-
 }

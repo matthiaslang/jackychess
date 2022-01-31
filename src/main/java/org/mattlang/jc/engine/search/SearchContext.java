@@ -216,10 +216,6 @@ public final class SearchContext {
         return generator.generate(board, color);
     }
 
-    public MoveList generateNonQuietMoves(Color color) {
-        return generator.generateNonQuietMoves(board, color);
-    }
-
     public int eval(Color color) {
         return evaluate.eval(board, color);
     }
