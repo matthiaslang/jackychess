@@ -96,6 +96,7 @@ public class FenParser {
     private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
         Move parsed = new MoveImpl(moveStr);
         Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? wProm : bProm;
+        // todo not correct: we do not care about capture during promotion...!!
         return MoveImpl.createPromotion(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
     }
 

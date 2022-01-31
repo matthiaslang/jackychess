@@ -108,6 +108,8 @@ public final class MoveImpl implements Move {
         fromLongEncoded(l);
     }
 
+    // todo refactore this: this is not a valid initialized move! it contains only from/to!!
+    // either delete this or create a helper class or something else...
     public MoveImpl(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
