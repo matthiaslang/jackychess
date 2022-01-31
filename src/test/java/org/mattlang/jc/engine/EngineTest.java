@@ -163,6 +163,32 @@ public class EngineTest {
     }
 
     @Test
+    public void testMoveDoUndoProblem() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c->c.timeout.setValue(18000000))
+                .config(c->c.maxDepth.setValue(18))
+                //                .config(c->c.aspiration.setValue(false))
+                .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+        // now starting engine:
+        Engine engine = new Engine();
+        //GameState state = engine.getBoard().setFenPosition("position startpos moves d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8 f1e2 e7e5 e1g1 b8c6 d4d5 c6e7 d1b3 ");
+          GameState state = engine.getBoard().setFenPosition("position startpos moves d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8      ");
+
+        System.out.println(engine.getBoard().toUniCodeStr());
+        Move move = engine.go(state, new GameContext());
+
+        System.out.println(move.toStr());
+
+        assertThat(move.toStr()).isEqualTo("a1b1");
+    }
+
+
+    @Test
     public void testEndGameWeirdProblem() throws IOException {
 
         initLogging();

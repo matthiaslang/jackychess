@@ -1,5 +1,6 @@
 package org.mattlang.jc.moves;
 
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.IndexConversion.convert;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
@@ -107,6 +108,8 @@ public final class MoveImpl implements Move {
         fromLongEncoded(l);
     }
 
+    // todo refactore this: this is not a valid initialized move! it contains only from/to!!
+    // either delete this or create a helper class or something else...
     public MoveImpl(String moveStr) {
         fromIndex = parsePos(moveStr.substring(0, 2));
         toIndex = parsePos((moveStr.substring(2, 4)));
@@ -140,6 +143,7 @@ public final class MoveImpl implements Move {
     }
 
     private MoveImpl(CastlingMove castlingMove) {
+        this.figureType = FT_KING;
         this.type = castlingMove.getType();
         this.fromIndex = castlingMove.getFromIndex();
         this.toIndex = castlingMove.getToIndex();
@@ -168,7 +172,7 @@ public final class MoveImpl implements Move {
     }
 
     public final static int createCastlingMove(CastlingMove castlingMove) {
-        return longRepresentation(castlingMove.getType(), (byte) 0, castlingMove.getFromIndex(),
+        return longRepresentation(castlingMove.getType(), FT_KING, castlingMove.getFromIndex(),
                 castlingMove.getToIndex(),
                 (byte) 0);
     }

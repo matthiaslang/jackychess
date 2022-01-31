@@ -86,12 +86,17 @@ public class FenParser {
         }
 
         // normal move:
-        return new MoveImpl(moveStr);
+
+        Figure fig = board.getFigure(tmp.getFromIndex());
+        Figure target = board.getFigure(tmp.getToIndex());
+        byte captureFig = target==EMPTY? (byte)0: target.figureCode;
+        return new MoveImpl(fig.figureType.figureCode, tmp.getFromIndex(), tmp.getToIndex(), captureFig);
     }
 
     private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
         Move parsed = new MoveImpl(moveStr);
         Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? wProm : bProm;
+        // todo not correct: we do not care about capture during promotion...!!
         return MoveImpl.createPromotion(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
     }
 

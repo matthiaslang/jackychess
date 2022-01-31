@@ -40,7 +40,7 @@ public class EvalResult {
      * @return
      */
     public int calcCompleteScore(BitBoard bitBoard) {
-        int score = (int) scaleByPhase(bitBoard, midGame, endGame) + result;
+        int score = (int) scaleByPhase(bitBoard.getBoard(), midGame, endGame) + result;
         return score;
     }
 }

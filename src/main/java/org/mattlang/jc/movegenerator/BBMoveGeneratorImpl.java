@@ -84,7 +84,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         final int king = Long.numberOfTrailingZeros(kingBB);
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask);
 
-        generateRochade(board, side, collector);
+        generateRochade(bitBoard, side, collector);
     }
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
@@ -288,21 +288,21 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         return false;
     }
 
-    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
+    private void generateRochade(BitBoard board, Color side, MoveCollector collector) {
         switch (side) {
         case WHITE:
-            if (ROCHADE_L_WHITE.check(board)) {
+            if (ROCHADE_L_WHITE.checkRochade(board)) {
                 collector.addRochadeLongWhite();
             }
-            if (ROCHADE_S_WHITE.check(board)) {
+            if (ROCHADE_S_WHITE.checkRochade(board)) {
                 collector.addRochadeShortWhite();
             }
             break;
         case BLACK:
-            if (ROCHADE_S_BLACK.check(board)) {
+            if (ROCHADE_S_BLACK.checkRochade(board)) {
                 collector.addRochadeShortBlack();
             }
-            if (ROCHADE_L_BLACK.check(board)) {
+            if (ROCHADE_L_BLACK.checkRochade(board)) {
                 collector.addRochadeLongBlack();
             }
             break;

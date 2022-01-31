@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.evaluation;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.PieceList;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
@@ -28,21 +28,7 @@ public class PhaseCalculator {
     }
 
     public static double calcPhaseFactor(BoardRepresentation currBoard) {
-        PieceList wp = currBoard.getWhitePieces();
-        PieceList bp = currBoard.getBlackPieces();
-        return calcPhaseFactor(wp, bp);
-    }
-
-    public static double calcPhaseFactor(PieceList wp, PieceList bp) {
-        int phase = 0;
-
-        phase += (wp.getKnights().size() + bp.getKnights().size()) * PV_KNIGHT +
-                (wp.getBishops().size() + bp.getBishops().size()) * PV_BISHOP +
-                (wp.getRooks().size() + bp.getRooks().size()) * PV_ROOK +
-                (wp.getQueens().size() + bp.getQueens().size()) * PV_QUEEN;
-
-        double factor = Linstep(Endgame, Midgame, phase);
-        return factor;
+        return calcPhaseFactor(((BitBoard) currBoard).getBoard());
     }
 
     public static double calcPhaseFactor(BitChessBoard bb) {
@@ -57,20 +43,9 @@ public class PhaseCalculator {
         return factor;
     }
 
-    public static double scaleByPhase(BoardRepresentation currBoard, int midGame, int endGame) {
-        double factor = calcPhaseFactor(currBoard);
-        double score = factor * midGame + (1 - factor) * endGame;
-        return score;
-    }
 
     public static double scaleByPhase(BitChessBoard bb, int midGame, int endGame) {
         double factor = calcPhaseFactor(bb);
-        double score = factor * midGame + (1 - factor) * endGame;
-        return score;
-    }
-
-    public static double scaleByPhase(PieceList wp, PieceList bp, int midGame, int endGame) {
-        double factor = calcPhaseFactor(wp, bp);
         double score = factor * midGame + (1 - factor) * endGame;
         return score;
     }

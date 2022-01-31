@@ -1,5 +1,10 @@
 # Versions
 
+### Version 0.9.20
+
+- some bb move do/undo opts saving some time and giving some strength
+- 
+
 ### Version 0.9.19
 
 - evaluation: eval some special blockage patterns
