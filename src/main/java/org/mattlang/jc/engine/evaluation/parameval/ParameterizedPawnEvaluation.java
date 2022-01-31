@@ -69,18 +69,18 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         long protectedWhitePawns = whitePawns & whitePawnAttacs;
         long protectedBlackPawns = blackPawns & blackPawnAttacs;
 
-        long attackedWhitePawns = whitePawns & blackPawnAttacs;
-        long attackedBlackPawns = blackPawns & whitePawnAttacs;
+//        long attackedWhitePawns = whitePawns & blackPawnAttacs;
+//        long attackedBlackPawns = blackPawns & whitePawnAttacs;
 
         // blocked rammed pawns:
-        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
-        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
+//        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
+//        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
 
         long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
         long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 
-        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
-        long blackProtectedPassers = protectedBlackPawns & blackPassers;
+//        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
+//        long blackProtectedPassers = protectedBlackPawns & blackPassers;
 
         if (color == WHITE) {
             long pawns = whitePawns;
