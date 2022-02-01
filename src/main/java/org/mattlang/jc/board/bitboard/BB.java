@@ -339,4 +339,9 @@ public class BB {
                 ((x >>> 40) & 0x000000000000ff00L) |
                 ((x >>> 56));
     }
+
+    public static long least_significant_square_bb(long bb) {
+        long least_significant = bb & -bb;
+        return least_significant;
+    }
 }

@@ -249,4 +249,8 @@ public class BitChessBoard {
     private int opponentColor(int color) {
         return color == nWhite ? nBlack : nWhite;
     }
+
+    public long getPieces() {
+        return colorBB[0] | colorBB[1];
+    }
 }

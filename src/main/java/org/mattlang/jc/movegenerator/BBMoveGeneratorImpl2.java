@@ -3,6 +3,10 @@ package org.mattlang.jc.movegenerator;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BB.getKingAttacs;
+import static org.mattlang.jc.board.bitboard.BB.getKnightAttacs;
+import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
+import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
 import org.mattlang.jc.Factory;
@@ -12,7 +16,6 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -105,7 +108,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, GenTypes types) {
-        long kingAttack = BB.getKingAttacs(kingPos);
+        long kingAttack = getKingAttacs(kingPos);
 
         long moves = kingAttack & ~ownFigsMask;
         long attacks = moves & opponentFigsMask;
@@ -131,7 +134,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
     private void genKnightMoves(BitChessBoard bb, int knight, MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, GenTypes types) {
-        long knightAttack = BB.getKnightAttacs(knight);
+        long knightAttack = getKnightAttacs(knight);
 
         long moves = knightAttack & ~ownFigsMask;
         long attacks = moves & opponentFigsMask;
@@ -159,8 +162,8 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty, GenTypes types) {
         long occupancy = ownFigsMask | opponentFigsMask;
-        long attacksRook = MagicBitboards.genRookAttacs(queen, occupancy);
-        long attacksBishop = MagicBitboards.genBishopAttacs(queen, occupancy);
+        long attacksRook = genRookAttacs(queen, occupancy);
+        long attacksBishop = genBishopAttacs(queen, occupancy);
         long attacks = attacksRook | attacksBishop;
 
         generateBBMoves(attacks, bb, queen, FT_QUEEN, collector, opponentFigsMask, empty, types);
@@ -171,7 +174,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             MoveCollector collector, long ownFigsMask,
             long opponentFigsMask, long empty, GenTypes types) {
         long occupancy = ownFigsMask | opponentFigsMask;
-        long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
+        long attacks = genRookAttacs(rook, occupancy);
 
         generateBBMoves(attacks, bb, rook, FT_ROOK, collector, opponentFigsMask, empty, types);
     }
@@ -181,7 +184,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             long opponentFigsMask, long empty, GenTypes types) {
         long occupancy = ownFigsMask | opponentFigsMask;
 
-        long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
+        long attacks = genBishopAttacs(bishop, occupancy);
 
         generateBBMoves(attacks, bb, bishop, FT_BISHOP, collector, opponentFigsMask, empty, types);
     }
@@ -255,7 +258,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         // 1. test bishop and queen diagonal captures
         long occupancy = ownFigsMask | opponentFigsMask;
 
-        long attacks = MagicBitboards.genBishopAttacs(i, occupancy);
+        long attacks = genBishopAttacs(i, occupancy);
         if ((attacks & bb.getPieceSet(FT_BISHOP, xside)) != 0) {
             return true;
         }
@@ -265,7 +268,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
 
         // 2. test rook and queen vertical/horizontal captures:
-        attacks = MagicBitboards.genRookAttacs(i, occupancy);
+        attacks = genRookAttacs(i, occupancy);
         if ((attacks & bb.getPieceSet(FT_ROOK, xside)) != 0) {
             return true;
         }
@@ -274,7 +277,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
 
         // 3. test knight
-        attacks = BB.getKnightAttacs(i);
+        attacks = getKnightAttacs(i);
         if ((attacks & bb.getPieceSet(FT_KNIGHT, xside)) != 0) {
             return true;
 
@@ -308,7 +311,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
 
         // 5. test king
-        attacks = BB.getKingAttacs(i);
+        attacks = getKingAttacs(i);
         if ((attacks & bb.getPieceSet(FT_KING, xside)) != 0) {
             return true;
         }
@@ -462,5 +465,52 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
     public boolean isvalidmove(int aMove) {
         // todo implement!
         return false;
+    }
+
+    /**
+     * Generates pawn attacs used in see algorithm for a specific square. We need only to take care about regular pawn attacks,
+     * not en passant, as en passant can only happen on a pawn-non-capture-move before.
+     *
+     * @param bitBoard
+     * @param s
+     * @param side
+     * @return
+     */
+    private long genPawnAttacs(BitBoard bitBoard, int s, Color side) {
+
+        long sMask = 1L << s;
+        BitChessBoard bb = bitBoard.getBoard();
+        long pawns = bb.getPieceSet(FT_PAWN, side);
+
+        long otherPieces = sMask;
+
+        long allAttacks = 0L;
+
+        if (side == WHITE) {
+            long capturesEast = pawns & BB.bPawnWestAttacks(otherPieces);
+            long capturesWest = pawns & BB.bPawnEastAttacks(otherPieces);
+            allAttacks = capturesEast | capturesWest;
+
+        } else {
+            long capturesEast = pawns & BB.wPawnWestAttacks(otherPieces);
+            long capturesWest = pawns & BB.wPawnEastAttacks(otherPieces);
+            allAttacks = capturesEast | capturesWest;
+        }
+
+        return allAttacks;
+    }
+
+    /// Position::attackers_to() computes a bitboard of all pieces which attack a
+    /// given square. Slider attacks use the occupied bitboard to indicate occupancy.
+
+    public long attackersTo(int s, long occupied, BitBoard bitBoard) {
+
+        BitChessBoard bb = bitBoard.getBoard();
+        return (genPawnAttacs(bitBoard, s, WHITE))
+                | (genPawnAttacs(bitBoard, s, BLACK))
+                | (getKnightAttacs(s) & bb.getPieceSet(FT_KNIGHT))
+                | (genRookAttacs(s, occupied) & (bb.getPieceSet(FT_ROOK) | bb.getPieceSet(FT_QUEEN)))
+                | (genBishopAttacs(s, occupied) & (bb.getPieceSet(FT_BISHOP) | bb.getPieceSet(FT_QUEEN)))
+                | (getKingAttacs(s) & bb.getPieceSet(FT_KING));
     }
 }
