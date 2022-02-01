@@ -64,6 +64,13 @@ public class SEE {
     /// SEE value of move is greater or equal to the given threshold. We'll use an
     /// algorithm similar to alpha-beta pruning with a null window.
 
+    /**
+     * see algorithm adapted from stockfish. Not fully implemented, and not well tested, yet.
+     * @param bitBoard
+     * @param m
+     * @param threshold
+     * @return
+     */
     public boolean see_ge(BitBoard bitBoard, Move m, int threshold) {
 
         //        assert(is_ok(m));

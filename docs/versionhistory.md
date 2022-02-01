@@ -1,5 +1,14 @@
 # Versions
 
+
+### Version 0.9.22
+
+- move ordering of captures uses see instead of blind
+
+### Version 0.9.21
+
+- some bitboard code optimizations saving some time
+
 ### Version 0.9.20
 
 - some bb move do/undo opts saving some time and giving some strength

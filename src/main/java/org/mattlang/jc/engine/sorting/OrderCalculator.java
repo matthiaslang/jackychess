@@ -6,9 +6,11 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.MoveScore;
+import org.mattlang.jc.engine.see.SEE;
 
 import lombok.Getter;
 
@@ -39,12 +41,14 @@ public class OrderCalculator {
     private final boolean useMvvLva;
     private final Boolean usePvSorting;
 
-    private  HashMap<Integer, Integer> scores;
+    private HashMap<Integer, Integer> scores;
     private final int targetDepth;
     private final OrderHints orderHints;
 
     private int hashMove;
     private BoardRepresentation board;
+
+    private static SEE see = new SEE();
 
     public OrderCalculator(OrderHints orderHints, int targetDepth) {
         this.orderHints = orderHints;
@@ -115,8 +119,8 @@ public class OrderCalculator {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
 
             if (m.isCapture()) {
-                // find out good moves (currently via simple blind algorithm)
-                if (MvvLva.blind(board, m)) {
+                // find out good moves (via see)
+                if (see.see_ge((BitBoard) board, m, 0)) {
                     return -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
                     return -mvvLva;
