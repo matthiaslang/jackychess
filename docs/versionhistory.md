@@ -1,5 +1,8 @@
 # Versions
 
+### Version 0.9.23
+
+- move reduction in quiescence by see
 
 ### Version 0.9.22
 

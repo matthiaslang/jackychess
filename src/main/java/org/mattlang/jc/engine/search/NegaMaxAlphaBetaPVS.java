@@ -11,12 +11,17 @@ import java.util.Map;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.Weights;
+import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTEntry;
@@ -32,7 +37,14 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
-    int[] FUTILITY_MARGIN = { 0, 200, 300, 500 };
+    private static final SEE see = new SEE();
+
+    /**
+     * wrapper move.
+     */
+    private MoveImpl move = new MoveImpl("a1a2");
+
+    private static final int[] FUTILITY_MARGIN = { 0, 200, 300, 500 };
 
     /**
      * number of searched moves to start LMR if activated.
@@ -542,31 +554,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                     if (deltaCutOff
                             && !moveCursor.isPawnPromotion()
-                            && x + pieceValue[moveCursor.getCapturedFigure()] + 200 < alpha
+                            && x + see.pieceVal(moveCursor.getCapturedFigure()) + 200 < alpha
                             && searchContext.isOpeningOrMiddleGame()
                     ) {
                         searchContext.undoMove(moveCursor);
                         continue;
                     }
 
-                    /*
-                    if ( ( stand_pat + e.PIECE_VALUE[ movelist[i].piece_cap ] + 200 < alpha )
-                            &&   ( b.piece_material[!b.stm] - e.PIECE_VALUE[movelist[i].piece_cap] > e.ENDGAME_MAT )
-                            &&   ( !move_isprom(movelist[i]) ) )
+                    //Do not search moves with negative SEE values
+                    move.fromLongEncoded(moveCursor.getMoveInt());
+                    if (x > ALPHA_START
+                            && !see.see_ge2((BitBoard) searchContext.getBoard(), move, 0)) {
+                        searchContext.undoMove(moveCursor);
                         continue;
-                    */
-                    /**********************************************************************
-                     *  badCapture() replaces a cutoff based on the Static Exchange Evalu- *
-                     *  ation, marking the place where it ought to be coded. Despite being *
-                     *  just a hack, it saves quite a few nodes.                           *
-                     **********************************************************************/
-
-                    /*
-                    if ( badCapture( movelist[i] )
-                            &&  !move_canSimplify( movelist[i] )
-                            &&  !move_isprom( movelist[i] ) )
-                        continue;
-                      */
+                    }
 
                     x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
                     if (x > alpha) {
@@ -591,79 +592,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         return alpha;
     }
-
-    private static int[] pieceValue = new int[128];
-    static {
-        pieceValue[FigureType.Pawn.figureCode] = 100;
-        pieceValue[Figure.B_Pawn.figureCode] = 100;
-        pieceValue[Figure.W_Pawn.figureCode] = 100;
-
-        pieceValue[FigureType.Knight.figureCode] = 300;
-        pieceValue[Figure.B_Knight.figureCode] = 300;
-        pieceValue[Figure.W_Knight.figureCode] = 300;
-
-        pieceValue[FigureType.Bishop.figureCode] = 330;
-        pieceValue[Figure.B_Bishop.figureCode] = 330;
-        pieceValue[Figure.W_Bishop.figureCode] = 330;
-
-        pieceValue[FigureType.Rook.figureCode] = 500;
-        pieceValue[Figure.B_Rook.figureCode] = 500;
-        pieceValue[Figure.W_Rook.figureCode] = 500;
-
-        pieceValue[FigureType.Queen.figureCode] = 900;
-        pieceValue[Figure.B_Queen.figureCode] = 900;
-        pieceValue[Figure.W_Queen.figureCode] = 900;
-
-        pieceValue[FigureType.King.figureCode] = 32000;
-        pieceValue[Figure.B_King.figureCode] = 32000;
-        pieceValue[Figure.W_King.figureCode] = 32000;
-
-    }
-
-    //
-    //    e.ENDGAME_MAT = 1300;
-
-        boolean badCapture(MoveCursor move) {
-
-            /* captures by pawn do not lose material */
-            if (move.getFigureType() == FigureConstants.FT_PAWN ) return false;
-
-            /* Captures "lower takes higher" (as well as BxN) are good by definition. */
-            if ( pieceValue[move.getCapturedFigure()] >= pieceValue[move.getFigureType()] - 50 )
-                return false;
-
-            /**************************************************************************
-             *   When the enemy piece is defended by a pawn, in the quiescence search  *
-             *   we  will  accept rook takes minor, but not minor takes pawn. ( More   *
-             *   exact  version  should accept B/N x P if (a) the pawn  is  the  sole  *
-             *   defender and (b) there is more than one attacker.                     *
-             **************************************************************************/
-//
-//            if (b.pawn_ctrl[b.color[move.from] ^ 1][move.to]
-//                    && e.PIECE_VALUE[move.piece_cap] + 200 < e.PIECE_VALUE[move.piece_from])
-//                return 1;
-//
-//            if (pieceValue[move.getCapturedFigure()] + 500 < pieceValue[move.getFigureType()]) {
-//                if (leaperAttack(b.color[move.from] ^ 1, move.to, KNIGHT)) return 1;
-//                if (bishAttack(b.color[move.from] ^ 1, move.to, NE)) return 1;
-//                if (bishAttack(b.color[move.from] ^ 1, move.to, NW)) return 1;
-//                if (bishAttack(b.color[move.from] ^ 1, move.to, SE)) return 1;
-//                if (bishAttack(b.color[move.from] ^ 1, move.to, SW)) return 1;
-//            }
-
-            /* if a capture is not processed, it cannot be considered bad */
-            return false;
-        }
-
-
-//
-//        int move_canSimplify(smove m) {
-//            if ( m.piece_cap == PAWN
-//                    ||   b.piece_material[!b.stm] - e.PIECE_VALUE[m.piece_cap] > e.ENDGAME_MAT )
-//                return 0;
-//            else
-//                return 1;
-//        }
 
     /**
      * Sorts the move list by calculating the move order first.
