@@ -4,6 +4,7 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * The Material of one Side: a int holding as decimal the material of one color.
@@ -14,6 +15,7 @@ import lombok.Getter;
 
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class Material {
 
@@ -41,5 +43,17 @@ public class Material {
 
         int pieceMat = 10 * knights + 100 * bishops + 1000 * rooks + 10000 * queens;
         return new Material(pawns, pieceMat);
+    }
+
+    public static void fromBoard(Material material, BitChessBoard bb, int color) {
+        int pawns = bb.getPawnsCount(color);
+        int knights = bb.getKnightsCount(color);
+        int bishops = bb.getBishopsCount(color);
+        int rooks = bb.getRooksCount(color);
+        int queens = bb.getQueensCount(color);
+
+        int pieceMat = 10 * knights + 100 * bishops + 1000 * rooks + 10000 * queens;
+        material.pawns = pawns;
+        material.pieceMat = pieceMat;
     }
 }

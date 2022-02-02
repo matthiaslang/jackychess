@@ -14,6 +14,9 @@ public class ParameterizedMaterialCorrectionEvaluation {
 
     private final List<MaterialCorrectionRule> rules;
 
+    private Material matWeaker = new Material();
+    private Material matStronger = new Material();
+
     public ParameterizedMaterialCorrectionEvaluation(EvalConfig config) {
         rules = config.parseMaterialRules();
     }
@@ -34,8 +37,8 @@ public class ParameterizedMaterialCorrectionEvaluation {
             weaker = nWhite;
         }
 
-        Material matWeaker = Material.fromBoard(bb, weaker);
-        Material matStronger = Material.fromBoard(bb, stronger);
+        Material.fromBoard(matWeaker, bb, weaker);
+        Material.fromBoard(matStronger, bb, stronger);
 
         for (MaterialCorrectionRule rule : rules) {
             if (rule.matches(matStronger, matWeaker)) {
