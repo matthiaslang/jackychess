@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static java.lang.Math.abs;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.uci.GameContext.MAX_PLY;
 import static org.mattlang.jc.util.MoveValidator.enrichPVList;
 
 import java.util.LinkedHashMap;
@@ -36,6 +37,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
+
+    public static final int VALUE_TB_WIN_IN_MAX_PLY = KING_WEIGHT - 2 * MAX_PLY;
+    public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 
     private static final SEE see = new SEE();
 
@@ -563,7 +567,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                     //Do not search moves with negative SEE values
                     move.fromLongEncoded(moveCursor.getMoveInt());
-                    if (x > ALPHA_START
+                    if (x > VALUE_TB_LOSS_IN_MAX_PLY
+                            && !moveCursor.isPawnPromotion()
+                            && searchContext.isOpeningOrMiddleGame()
                             && !see.see_ge2((BitBoard) searchContext.getBoard(), move, 0)) {
                         searchContext.undoMove(moveCursor);
                         continue;
