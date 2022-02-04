@@ -2,7 +2,7 @@
 
 ### Version 0.9.23
 
-- move reduction in quiescence by see
+- refine static Eval during search for some pruning things (seems to bring some elos)
 
 ### Version 0.9.22
 

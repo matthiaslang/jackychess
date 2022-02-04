@@ -1,21 +1,21 @@
 # Jacky Chess
 
-A simple UCI chess engine written in Java.
+A simple UCI chess engine written in Java named by my dog "Jacky"!
+                                                  
+The engine is written from scratch as an educational project to learn chess programming.
+It started as a simple proof of concept weekend experiment, but is now derived to a rather stable UCI engine.
 
-This project is mainly a self educational project to 
-learn about various algorithms around chess programming. 
-Inspiration was mainly given by the great chess programming wiki
-https://www.chessprogramming.org/ where you can get a good overview about all used
-algorithms, but also by many great open source engines by studying the sources.
+I got a lot of inspiration from other open source engines and sources in the web, mainly the https://www.chessprogramming.org/
+and to name just a few of the engines: cpw, stockfish, fruit, chess22k.
+
 
 ## Goals of the engine
 
 - educational purpose: main focus is to learn about chess programming
 - the code is simple and clear since the main purpose is to understand the algorithms.
-- the code should be exchangeable: the different implementations for search algorithms and
-  related implementations are implemented by interfaces and exchangeable. This is needed to compare the algorithms, too.
+- the code should be flexible: it uses interfaces and configurations to exchange different implementations for testing.
 - the evaluation function is configurable to switch parameters for experimentation
-- the engine should be at least so good that it can defeat me (a mediocre amateur chess player, I hope.. :)
+- the engine should be at least so good that it can defeat me (well, this goal is already reached...)
 - having fun to program it :)
 
 ## Requirements
@@ -65,7 +65,7 @@ The chess engine uses following technics/algorithms
 - null move pruning and static null move pruning
 - razoring
 - late move reduction
-- Move sorting by PV Moves, killer moves, history heuristic, captures sorted by BLIND
+- Move sorting by PV Moves, killer moves, history heuristic, captures sorted by SEE
 - Transposition Table using zobrist hashing to cache Scores
 - basic quiescence search with delta cut off
 

@@ -16,7 +16,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -43,11 +42,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private static final SEE see = new SEE();
 
-    /**
-     * wrapper move.
-     */
-    private MoveImpl move = new MoveImpl("a1a2");
-
     private static final int[] FUTILITY_MARGIN = { 0, 200, 300, 500 };
 
     /**
@@ -58,6 +52,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      * number of additional searched moves to do a higher reduction for LMR.
      */
     private static final int LMR_N_MOVES_REDUCE_MORE = 6;
+
+    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
+    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 1000000;
 
     private EvaluateFunction evaluate;
 
@@ -202,85 +199,86 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
         checkTimeout();
 
-        /**************************************************************************
-         * EVAL PRUNING / STATIC NULL MOVE                                         *
-         **************************************************************************/
-
-        if (staticNullMove
-                && depth < 3
-                && not_pv
-                && !areWeInCheck
-                && abs(beta - 1) > ALPHA_START + 100) {
-            int static_eval = searchContext.eval(color);
-
-            int eval_margin = 120 * depth;
-            if (static_eval - eval_margin >= beta)
-                return static_eval - eval_margin;
-        }
-
-        /**
-         * null move reduction:
-         * only, for non pv nodes,
-         * and no null move has already been chosen in this row
-         * and we are not in end game (because of zugzwang issues)
-         * and we are not in check (also for zugzwang)
-         */
-        if (useNullMoves &&
-                depth > 2 &&
-                not_pv &&
-                searchContext.getNullMoveCounter() == 0 &&
-                !areWeInCheck &&
-                searchContext.isOpeningOrMiddleGame()
-        ) {
-            int R = (depth > 6) ? 3 : 2;
-
-            searchContext.doPrepareNullMove();
-            int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1);
-            searchContext.undoNullMove();
-
-            if (eval >= beta) {
-                return eval;
-            }
-        }
-
-        /**************************************************************************
-         *  RAZORING - if a node is close to the leaf and its static score is low, *
-         *  we drop directly to the quiescence search.                             *
-         **************************************************************************/
-
-        if (razoring
-                && not_pv
-                && !areWeInCheck
-                && tte == null
-                && searchContext.getNullMoveCounter() == 0
-                //	&&  !(bbPc(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-                && depth <= 3) {
-            int threshold = alpha - 300 - (depth - 1) * 60;
-            if (searchContext.eval(color) < threshold) {
-                int val = quiesce(ply + 1, -1, color, alpha, beta);
-                if (val < threshold)
-                    return alpha;
-            }
-        }
-
-        /**************************************************************************
-         *  Decide  if FUTILITY PRUNING  is  applicable. If we are not in check,   *
-         *  not searching for a checkmate and eval is below (alpha - margin), it   *
-         *  might  mean that searching non-tactical moves at low depths is futile  *
-         *  so we set a flag allowing this pruning.                                *
-         **************************************************************************/
         boolean applyFutilityPruning = false;
 
-        if (futilityPruning &&
-//                ply > 3 &&
-                depth <= 3
-                && not_pv
-                && !areWeInCheck
-                && abs(alpha) < 9000
-                && searchContext.eval(color) + FUTILITY_MARGIN[depth] <= alpha) {
-            applyFutilityPruning = true;
-        }
+        if (not_pv && !areWeInCheck) {
 
+            int staticEval = searchContext.eval(color);
+
+            // use tt value as eval if possible
+            if (canRefineEval(tte, staticEval)) {
+                staticEval = tte.getValue();
+            }
+
+            /**************************************************************************
+             * EVAL PRUNING / STATIC NULL MOVE                                         *
+             **************************************************************************/
+
+            if (staticNullMove
+                    && depth < 3
+                    && abs(beta - 1) > ALPHA_START + 100) {
+
+                int eval_margin = 120 * depth;
+                if (staticEval - eval_margin >= beta)
+                    return staticEval - eval_margin;
+            }
+
+            /**
+             * null move reduction:
+             * only, for non pv nodes,
+             * and no null move has already been chosen in this row
+             * and we are not in end game (because of zugzwang issues)
+             * and we are not in check (also for zugzwang)
+             */
+            if (useNullMoves &&
+                    depth > 2 &&
+                    searchContext.getNullMoveCounter() == 0 &&
+                    searchContext.isOpeningOrMiddleGame()
+            ) {
+                int R = (depth > 6) ? 3 : 2;
+
+                searchContext.doPrepareNullMove();
+                int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1);
+                searchContext.undoNullMove();
+
+                if (eval >= beta) {
+                    return eval;
+                }
+            }
+
+            /**************************************************************************
+             *  RAZORING - if a node is close to the leaf and its static score is low, *
+             *  we drop directly to the quiescence search.                             *
+             **************************************************************************/
+
+            if (razoring
+                    && tte == null
+                    && searchContext.getNullMoveCounter() == 0
+                    //	&&  !(bbPc(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
+                    && depth <= 3) {
+                int threshold = alpha - 300 - (depth - 1) * 60;
+                if (staticEval < threshold) {
+                    int val = quiesce(ply + 1, -1, color, alpha, beta);
+                    if (val < threshold)
+                        return alpha;
+                }
+            }
+
+            /**************************************************************************
+             *  Decide  if FUTILITY PRUNING  is  applicable. If we are not in check,   *
+             *  not searching for a checkmate and eval is below (alpha - margin), it   *
+             *  might  mean that searching non-tactical moves at low depths is futile  *
+             *  so we set a flag allowing this pruning.                                *
+             **************************************************************************/
+
+            if (futilityPruning &&
+                    //                ply > 3 &&
+                    depth <= 3
+                    && abs(alpha) < 9000
+                    && staticEval + FUTILITY_MARGIN[depth] <= alpha) {
+                applyFutilityPruning = true;
+            }
+        }
         int max = alpha;
 
         int bestMove = 0;
@@ -523,9 +521,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (x > alpha)
             alpha = x;
 
+        int alphaStart = alpha;
+
         boolean areWeInCheck = searchContext.isInCheck(color);
 
-        Color opponent=color.invert();
+        Color opponent = color.invert();
 
         try (MoveList moves = searchContext.generateMoves(color)) {
             quiescenceNodesVisited++;
@@ -566,14 +566,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     }
 
                     //Do not search moves with negative SEE values
-                    move.fromLongEncoded(moveCursor.getMoveInt());
-                    if (x > VALUE_TB_LOSS_IN_MAX_PLY
-                            && !moveCursor.isPawnPromotion()
-                            && searchContext.isOpeningOrMiddleGame()
-                            && !see.see_ge2((BitBoard) searchContext.getBoard(), move, 0)) {
-                        searchContext.undoMove(moveCursor);
-                        continue;
-                    }
+                    //                    boolean seeGood =
+                    //                            moveCursor.getOrder() >= GOOD_CAPT_LOWER && moveCursor.getOrder() <= GOOD_CAPT_UPPER;
+                    //                    if (x > alphaStart
+                    //                            && !moveCursor.isPawnPromotion()
+                    //                            && searchContext.isOpeningOrMiddleGame()
+                    //                            && !seeGood) {
+                    //                        searchContext.undoMove(moveCursor);
+                    //                        continue;
+                    //                    }
 
                     x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
                     if (x > alpha) {
@@ -689,5 +690,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     @Override
     public void resetCaches() {
         //ttCache = new TTCache();
+    }
+
+    public static boolean canRefineEval(final TTEntry tte, final int eval) {
+        if (tte != null) {
+            int score = tte.getValue();
+            if (tte.isExact() || tte.isUpperBound() && score < eval || tte.isLowerBound() && score > eval) {
+                return true;
+            }
+        }
+        return false;
     }
 }
