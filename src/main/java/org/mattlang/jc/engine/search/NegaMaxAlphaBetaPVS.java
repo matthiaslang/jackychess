@@ -12,10 +12,7 @@ import java.util.Map;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -179,21 +176,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 return adjustScore(tte.getValue(), ply); // if lowerbound surpasses upperbound
         }
 
-         /*
-        long tte = searchContext.getTTEntry(color);
-        if (tte != 0 && ply != 1 && TTCache3.getDepth(tte) >= depth) {
-            int tteScore = TTCache3.getScore(tte);
-            int tteType = TTCache3.getFlag(tte);
-            if (tteType == TTEntry.EXACT_VALUE) // stored value is exact
-                return adjustScore(tteScore, ply);
-            if (tteType == TTEntry.LOWERBOUND && tteScore > alpha)
-                alpha = adjustScore(tteScore, ply); // update lowerbound alpha if needed
-            else if (tteType == TTEntry.UPPERBOUND && tteScore < beta)
-                beta = adjustScore(tteScore, ply); // update upperbound beta if needed
-            if (alpha >= beta)
-                return adjustScore(tteScore, ply); // if lowerbound surpasses upperbound
-        }
-        */
         if (depth == 0) {
             return quiesce(ply + 1, -1, color, alpha, beta);
         }
@@ -521,7 +503,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (x > alpha)
             alpha = x;
 
-        int alphaStart = alpha;
+//        int alphaStart = alpha;
 
         boolean areWeInCheck = searchContext.isInCheck(color);
 
@@ -544,6 +526,14 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     searchContext.undoMove(moveCursor);
                     continue;
                 }
+
+                // skip low promotions
+                if (moveCursor.isPawnPromotion()
+                        && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
+                    searchContext.undoMove(moveCursor);
+                    continue;
+                }
+
                 searchedMoves++;
 
                 if (moveCursor.isCapture()

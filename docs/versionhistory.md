@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.9.24
+               
+- skip low promotions in quiescence. seem to bring some elos compared to previous version....
+
 ### Version 0.9.23
 
 - refine static Eval during search for some pruning things (seems to bring some elos)
