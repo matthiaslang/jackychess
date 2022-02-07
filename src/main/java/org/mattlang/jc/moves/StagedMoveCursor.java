@@ -3,6 +3,7 @@ package org.mattlang.jc.moves;
 import static org.mattlang.jc.moves.StagedMoveCursor.Stages.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
 
@@ -135,6 +136,11 @@ public class StagedMoveCursor implements MoveCursor {
     @Override
     public byte getCapturedFigure() {
         return currMoveObj.getCapturedFigure();
+    }
+
+    @Override
+    public Figure getPromotedFigure() {
+        return currMoveObj.getPromotedFigure();
     }
 
     @Override

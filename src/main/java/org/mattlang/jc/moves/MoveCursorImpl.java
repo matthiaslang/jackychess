@@ -1,6 +1,7 @@
 package org.mattlang.jc.moves;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
 
 public final class MoveCursorImpl implements MoveCursor {
@@ -65,6 +66,11 @@ public final class MoveCursorImpl implements MoveCursor {
     @Override
     public byte getCapturedFigure() {
         return currMoveObj.getCapturedFigure();
+    }
+
+    @Override
+    public Figure getPromotedFigure() {
+        return currMoveObj.getPromotedFigure();
     }
 
     @Override
