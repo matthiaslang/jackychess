@@ -283,6 +283,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     continue;
                 }
 
+                if (moveCursor.getOrder() > OrderCalculator.HISTORY_SCORE + 1000) {
+                    /* late move pruning */
+                    if (depth <= 4
+                            && searchedMoves >= depth * 3 + 3
+                            && !moveCursor.isCapture()
+                            && !moveCursor.isPawnPromotion()
+                            //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
+                            && !searchContext.isInCheck(color.invert())
+                    ) {
+                        searchContext.undoMove(moveCursor);
+                        continue;
+                    }
+                }
+
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
                  *  give  check and do not change material balance.  Some  programs    *

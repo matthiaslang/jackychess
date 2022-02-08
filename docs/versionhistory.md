@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.9.25
+
+- late move pruning. seem to bring some elos compared to previous version...
+
 ### Version 0.9.24
                
 - skip low promotions in quiescence. seem to bring some elos compared to previous version....
