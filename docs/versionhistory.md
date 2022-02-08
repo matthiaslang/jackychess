@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.9.26
+
+- static search thread context holding move list instances for preparation for multi threading
+
 ### Version 0.9.25
 
 - late move pruning. seem to bring some elos compared to previous version...

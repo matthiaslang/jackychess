@@ -56,12 +56,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
+        SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(0);
+
         LOGGER.info("iterative search on " + gameState.getFenStr());
 
         StopWatch watch = new StopWatch();
         watch.start();
-
-        SearchThreadContext stc = new SearchThreadContext();
 
         long stopTime = System.currentTimeMillis() + timeout;
 
@@ -72,6 +72,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
+
                 IterativeRoundResult irr =
                         searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;

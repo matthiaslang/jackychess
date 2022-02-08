@@ -111,7 +111,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         assert depth > 0;
         reset();
 
-        searchWithScore(new SearchThreadContext(), gameState, context, depth,
+        searchWithScore(SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
                 ALPHA_START, BETA_START,
                 stopTime, OrderHints.NO_HINTS);
         return new MoveImpl(searchContext.getSavedMove());
