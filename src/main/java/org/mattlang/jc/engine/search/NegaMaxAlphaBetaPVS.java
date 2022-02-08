@@ -111,9 +111,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         assert depth > 0;
         reset();
 
-        searchWithScore(gameState, context, depth,
-                        ALPHA_START, BETA_START,
-                        stopTime, OrderHints.NO_HINTS);
+        searchWithScore(new SearchThreadContext(), gameState, context, depth,
+                ALPHA_START, BETA_START,
+                stopTime, OrderHints.NO_HINTS);
         return new MoveImpl(searchContext.getSavedMove());
     }
 
@@ -267,7 +267,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         pvArray.reset(ply);
 
-        try (MoveList moves = searchContext.generateMoves(color)) {
+        try (MoveList moves = searchContext.generateMoves(ply, color)) {
 
             sortMoves(ply, depth, color, moves, searchContext.getBoard());
 
@@ -523,7 +523,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         Color opponent = color.invert();
 
-        try (MoveList moves = searchContext.generateMoves(color)) {
+        try (MoveList moves = searchContext.generateMoves(ply, color)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
@@ -628,15 +628,14 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     @Override
-    public NegaMaxResult searchWithScore(GameState gameState,
+    public NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState,
             GameContext context,
             int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
 
         this.orderCalculator = new OrderCalculator(orderHints, depth);
 
-        searchContext = new SearchContext(gameState, context, orderCalculator, evaluate, depth, alpha);
-
+        searchContext = new SearchContext(stc, gameState, context, orderCalculator, evaluate, depth, alpha);
 
         this.stopTime = stopTime;
 

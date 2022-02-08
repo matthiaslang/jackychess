@@ -22,8 +22,6 @@ public class MoveListImpl implements MoveList {
 
     private boolean sorted = false;
 
-    public final static MoveListPool<MoveListImpl> POOL = new MoveListPool<>(() -> new MoveListImpl());
-
     public MoveListImpl() {
     }
 
@@ -122,7 +120,7 @@ public class MoveListImpl implements MoveList {
 
     @Override
     public void close() {
-        POOL.dispose(this);
+
     }
 
     public void addMove(int aMove) {

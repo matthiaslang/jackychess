@@ -8,7 +8,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.RepetitionChecker;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -70,8 +69,6 @@ public final class SearchContext {
 
     private final TTCacheInterface ttCache;
 
-    //    private final TTCache3 ttc;
-
     private final EvaluateFunction evaluate;
 
     private OrderCalculator orderCalculator;
@@ -79,15 +76,17 @@ public final class SearchContext {
     // null move stuff
     @Getter
     private int nullMoveCounter;
-    private int enPassantBeforeNullMove;
-    private RepetitionChecker repetitionCheckerBeforeNullMove;
 
-    public SearchContext(GameState gameState, GameContext context,
+    private SearchThreadContext stc;
+
+    public SearchContext(SearchThreadContext stc, GameState gameState,
+            GameContext context,
             OrderCalculator orderCalculator, EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
+        this.stc=stc;
         this.board = gameState.getBoard();
-        //        repetitionChecker = gameState.getRepetitionChecker();
+
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
 
         this.evaluate = evaluate;
@@ -102,7 +101,6 @@ public final class SearchContext {
         savedMove = 0;
 
         ttCache = context.getTtCache();
-        //ttc = context.getTtc();
     }
 
     public void adjustSelDepth(int depth) {
@@ -147,15 +145,11 @@ public final class SearchContext {
     public void undoNullMove() {
         nullMoveCounter--;
         board.undoNullMove();
-
-        //        repetitionChecker = repetitionCheckerBeforeNullMove;
     }
 
     public void doPrepareNullMove() {
         nullMoveCounter++;
         board.doNullMove();
-//        repetitionCheckerBeforeNullMove = repetitionChecker;
-//        repetitionChecker = new SimpleRepetitionChecker();
     }
 
     public boolean isInCheck(Color color) {
@@ -164,12 +158,7 @@ public final class SearchContext {
 
     public void storeTT(Color color, int max, int alpha, int beta, int depth,
             int move) {
-        // TESTSETSETET
-//        if (color==Color.BLACK){
-//            return;
-//        }
         if (doCaching) {
-//            ttc.addValue(board.getZobristHash(), max, depth, TTCache3.toFlag(max, alpha, beta),0);
             ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
         }
     }
@@ -179,15 +168,6 @@ public final class SearchContext {
             return ttCache.getTTEntry(board, color);
         } else {
             return null;
-        }
-    }
-    public long getTTEEntry(Color color) {
-        if (doCaching) {
-//            return ttc.getValue(board.getZobristHash());
-            return 0;
-            //            return ttCache.getTTEntry(board, color);
-        } else {
-            return 0;
         }
     }
 
@@ -216,8 +196,10 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateMoves(Color color) {
-        return generator.generate(context, orderCalculator, board, color);
+    public MoveList generateMoves(int ply, Color color) {
+        MoveList moveList=stc.getCleanedMoveList(ply);
+        generator.generate(context, orderCalculator, board, color, moveList);
+        return moveList;
     }
 
     public int eval(Color color) {

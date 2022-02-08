@@ -6,8 +6,10 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.uci.GameContext;
 
 public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
 
@@ -20,6 +22,13 @@ public class LegalMoveGeneratorImpl3 implements LegalMoveGenerator {
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, checkChecker, moves, side);
         return legalMoves;
+    }
+
+    @Override
+    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, MoveList moveList) {
+        generator.generate(board, side, moveList);
+        filterLegalMoves(board, checkChecker, moveList, side);
     }
 
     public static MoveList filterLegalMoves(BoardRepresentation currBoard, CheckChecker checkChecker, MoveList moves,

@@ -3,6 +3,8 @@ package org.mattlang.jc.movegenerator;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.uci.GameContext;
 
 /**
  * a "pseude legal" move generator, means, not really a legal move generator by definition, but the contrary.
@@ -18,4 +20,11 @@ public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
         MoveList moves = generator.generate(board, side);
         return moves;
     }
+
+    @Override
+    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, MoveList moveList) {
+        generator.generate(board, side, moveList);
+    }
+
 }

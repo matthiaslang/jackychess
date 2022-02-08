@@ -61,6 +61,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         StopWatch watch = new StopWatch();
         watch.start();
 
+        SearchThreadContext stc = new SearchThreadContext();
+
         long stopTime = System.currentTimeMillis() + timeout;
 
         gameContext.initNewMoveSearch(gameState);
@@ -70,7 +72,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
-                IterativeRoundResult irr = searchRound(watch, lastResults, gameState, gameContext, currdepth, stopTime);
+                IterativeRoundResult irr =
+                        searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
                 rounds.add(irr);
 
@@ -110,11 +113,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         private final StopWatch roundWatch;
 
         public boolean isCheckMate() {
-            return Math.abs(Math.abs(rslt.directScore)- Weights.KING_WEIGHT)<100;
+            return Math.abs(Math.abs(rslt.directScore) - Weights.KING_WEIGHT) < 100;
         }
     }
 
-    private IterativeRoundResult searchRound(StopWatch watch, IterativeRoundResult lastRoundResults,
+    private IterativeRoundResult searchRound(SearchThreadContext stc, StopWatch watch,
+            IterativeRoundResult lastRoundResults,
             GameState gameState, GameContext gameContext, int currdepth,
             long stopTime) {
 
@@ -129,12 +133,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         if (useAspirationWindow && currdepth >= 3) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
-            rslt = searchWithAspirationWindow(aspWindow, gameState, gameContext, stopTime,
+            rslt = searchWithAspirationWindow(stc, aspWindow, gameState, gameContext, stopTime,
                     lastRoundResults.getOrderHints(),
                     currdepth);
 
         } else {
-            rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+            rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime, lastRoundResults.getOrderHints());
@@ -172,13 +176,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         return new IterativeRoundResult(rslt, orderHints, roundWatch);
     }
 
-
-    private NegaMaxResult searchWithAspirationWindow(Window aspWindow, GameState gameState, GameContext gameContext,
+    private NegaMaxResult searchWithAspirationWindow(SearchThreadContext stc,
+            Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, OrderHints orderHints, int currdepth) {
 
         LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
 
-        NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+        NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                 currdepth,
                 aspWindow.getAlpha(), aspWindow.getBeta(),
                 stopTime, orderHints);
@@ -186,7 +190,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
             LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
-            rslt = negaMaxAlphaBeta.searchWithScore(gameState, gameContext,
+            rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime, orderHints);

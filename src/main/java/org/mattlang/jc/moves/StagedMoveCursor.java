@@ -164,18 +164,23 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     public boolean hasNext() {
-        if (stageStatus == StageStatus.NONE || stageStatus == StageStatus.FINISHED) {
+        if (stageStatus != StageStatus.ACTIVE) {
             nextStage();
             return currStageData.hasNext();
         }
-        if (stageStatus == StageStatus.FINISHED) {
-            return false;
+        if (stageStatus == StageStatus.ACTIVE) {
+            if (currStageData.hasNext()) {
+                return true;
+            } else {
+                nextStage();
+                return currStageData.hasNext();
+            }
         }
-        throw new IllegalArgumentException();
+        return false;
     }
 
     private void nextStage() {
-        if (stageIndex < stages.length) {
+        while (stageIndex+1 < stages.length) {
             stageIndex++;
             switch (stages[stageIndex]) {
             case PV:
@@ -198,29 +203,29 @@ public class StagedMoveCursor implements MoveCursor {
             default:
             }
             // the next chosen stage is itself empty, so choose the next stage recursively
-            if (stageStatus == StageStatus.FINISHED) {
-                nextStage();
+            if (stageStatus == StageStatus.ACTIVE) {
+                return;
             }
-        } else {
-            stageStatus = StageStatus.FINISHED;
         }
+            stageStatus = StageStatus.FINISHED;
+
     }
 
     private void initBadCaptures() {
-
+        stageStatus = StageStatus.FINISHED;
     }
 
     private void initKiller() {
-        int[] killers = movelist.getGameContext()
-                .getKillerMoves()
-                .getPossibleKillers(movelist.getSide(), movelist.getOrderCalculator().getPly());
-
-        currStageData.initSomeMoves(killers);
-        if (currStageData.hasNext()) {
-            stageStatus = StageStatus.ACTIVE;
-        } else {
-            stageStatus = StageStatus.FINISHED;
-        }
+        //        int[] killers = movelist.getGameContext()
+        //                .getKillerMoves()
+        //                .getPossibleKillers(movelist.getSide(), movelist.getOrderCalculator().getPly());
+        //
+        //        currStageData.initSomeMoves(killers);
+        //        if (currStageData.hasNext()) {
+        //            stageStatus = StageStatus.ACTIVE;
+        //        } else {
+        stageStatus = StageStatus.FINISHED;
+        //        }
     }
 
     private void initQuiet() {
@@ -265,7 +270,9 @@ public class StagedMoveCursor implements MoveCursor {
 
     public void next() {
         if (stageStatus == StageStatus.NONE || stageStatus == StageStatus.FINISHED) {
-            nextStage();
+            throw new IllegalStateException("!!!");
+        } else {
+//            nextStage();
             currMove = currStageData.next();
             orderOfCurrentMove = currStageData.getOrder();
             currMoveObj.fromLongEncoded(currMove);
@@ -273,8 +280,8 @@ public class StagedMoveCursor implements MoveCursor {
                 stageStatus = StageStatus.FINISHED;
             }
         }
-        if (stageStatus == StageStatus.FINISHED) {
-            throw new IllegalArgumentException();
-        }
+//        if (stageStatus == StageStatus.FINISHED) {
+//            throw new IllegalArgumentException();
+//        }
     }
 }

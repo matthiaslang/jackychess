@@ -9,9 +9,11 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.uci.GameContext;
 
 /**
  * Experimental legal move generator with some optimizations.
@@ -31,6 +33,13 @@ public class LegalMoveGeneratorImpl4 implements LegalMoveGenerator {
         MoveList moves = generator.generate(board, side);
         MoveList legalMoves = filterLegalMoves(board, moves, side);
         return legalMoves;
+    }
+
+    @Override
+    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, MoveList moveList) {
+        generator.generate(board, side, moveList);
+        filterLegalMoves(board, moveList, side);
     }
 
     private MoveList filterLegalMoves(BoardRepresentation currBoard, MoveList moves, Color side) {

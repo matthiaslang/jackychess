@@ -28,4 +28,13 @@ public class StagedLegalMoveGenerator implements LegalMoveGenerator {
         ml.init(gameContext, orderCalculator, board, side);
         return ml;
     }
+
+    @Override
+    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, MoveList moveList) {
+        if (!(moveList instanceof StagedMoveListImpl)) {
+            throw new IllegalStateException("needs StagedMoveListImpl!");
+        }
+        ((StagedMoveListImpl) moveList).init(gameContext, orderCalculator, board, side);
+    }
 }

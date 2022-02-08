@@ -11,7 +11,7 @@ public enum MoveListImpls {
     OPTIMIZED {
         @Override
         public Supplier<MoveList> createSupplier() {
-            return MoveListImpl.POOL::newOne;
+            return MoveListImpl::new;
         }
     },
 
