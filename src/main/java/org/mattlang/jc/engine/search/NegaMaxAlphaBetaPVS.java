@@ -117,9 +117,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return new MoveImpl(searchContext.getSavedMove());
     }
 
-    private void initContext(GameContext context) {
-          killerMoves = context.getKillerMoves();
-          historyHeuristic = context.getHistoryHeuristic();
+    private void initContext(SearchThreadContext stc) {
+          killerMoves = stc.getKillerMoves();
+          historyHeuristic = stc.getHistoryHeuristic();
     }
 
     public void resetStatistics() {
@@ -643,7 +643,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         pvArray.reset();
 
-        initContext(context);
+        initContext(stc);
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 

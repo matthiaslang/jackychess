@@ -4,6 +4,8 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.uci.GameContext;
 
+import lombok.Getter;
+
 /**
  * Holds variables used during a search for one thread which is used for all nested iterative deepening and negamax
  * search.
@@ -17,6 +19,13 @@ public class SearchThreadContext {
     /** Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
      * which are always reused during recursive search. */
     private MoveList[] movelists = new MoveList[GameContext.MAX_PLY];
+
+    @Getter
+    private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
+
+    @Getter
+    private KillerMoves killerMoves = new KillerMoves();
+
 
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {

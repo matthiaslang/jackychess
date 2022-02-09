@@ -4,7 +4,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.SimpleRepetitionChecker;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
 
@@ -34,7 +33,7 @@ public class Engine {
 
     @Deprecated
     public Move go() {
-        return searchMethod.search(new GameState(board, new SimpleRepetitionChecker(), null), new GameContext(), depth);
+        return searchMethod.search(new GameState(board, null), new GameContext(), depth);
     }
 
     public Move go(GameState gameState, GameContext gameContext) {

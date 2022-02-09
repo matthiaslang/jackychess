@@ -31,6 +31,17 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
+    /**
+     * worker number if this iterative deepening is running inside a worker thread.
+     */
+    private int workerNumber;
+
+    /**
+     * true if this is running in a worker thread; false if running as main thread. The main thread
+     * is responsible to deliver UCI information and delivers the result.
+     */
+    private boolean isWorker = false;
+
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
@@ -40,6 +51,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     private boolean useAspirationWindow = Factory.getDefaults().getConfig().aspiration.getValue();
 
     private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
+
+    public IterativeDeepeningPVS(int workerNumber) {
+        this.workerNumber = workerNumber;
+        isWorker = workerNumber > 0;
+    }
 
     public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
@@ -56,7 +72,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
-        SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(0);
+        SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(workerNumber);
 
         LOGGER.info("iterative search on " + gameState.getFenStr());
 
@@ -69,9 +85,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         ebf.clear();
         ArrayList<IterativeRoundResult> rounds = new ArrayList<>();
 
+        int startDepth = workerNumber == 0 ? 1 : 2;
+        int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
+
         IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
         try {
-            for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
+            for (int currdepth = startDepth; currdepth <= maxDepth; currdepth++) {
 
                 IterativeRoundResult irr =
                         searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
@@ -83,8 +102,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
                 }
             }
         } catch (TimeoutException te) {
+
             String ebfReport = format("EBF: %s", ebf.report());
-            UCILogger.log(ebfReport);
+            if (!isWorker) {
+                UCILogger.log(ebfReport);
+            }
             IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
             logIsr(isr);
             return isr;
@@ -93,8 +115,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         }
 
         String ebfReport = format("EBF: %s", ebf.report());
-        UCILogger.log(ebfReport);
-        LOGGER.info(ebfReport);
+        if (!isWorker) {
+            UCILogger.log(ebfReport);
+            LOGGER.info(ebfReport);
+        }
 
         IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
         logIsr(isr);
@@ -102,7 +126,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     }
 
     private void logIsr(IterativeSearchResult isr) {
-        LOGGER.info("best move: " + isr.getSavedMove() + " " + isr.getRslt().toLogString());
+        if (!isWorker) {
+            LOGGER.info("best move: " + isr.getSavedMove() + " " + isr.getRslt().toLogString());
+        }
     }
 
     @AllArgsConstructor
@@ -125,8 +151,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         StopWatch roundWatch = new StopWatch();
 
-        UCI.instance.putCommand("info depth " + currdepth);
-
+        if (!isWorker) {
+            UCI.instance.putCommand("info depth " + currdepth);
+        }
         roundWatch.start();
         Window aspWindow = new Window(ALPHA_START, BETA_START);
 
@@ -173,7 +200,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         // which is not useful
         negaMaxAlphaBeta.resetCaches();
 
-        OrderHints orderHints = new OrderHints(rslt, gameContext, useMvvLvaSorting);
+        OrderHints orderHints = new OrderHints(rslt, stc, useMvvLvaSorting);
         return new IterativeRoundResult(rslt, orderHints, roundWatch);
     }
 
@@ -200,25 +227,27 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         return rslt;
     }
 
-    public static void printRoundInfo(
+    private void printRoundInfo(
             GameContext gameContext,
             NegaMaxResult rslt,
             StopWatch watch,
             AlphaBetaSearchMethod negaMaxAlphaBeta) {
-        long nodes = negaMaxAlphaBeta.getNodesVisited();
-        long duration = watch.getCurrDuration();
-        long nps = duration == 0 ? nodes : nodes * 1000 / duration;
+        if (!isWorker) {
+            long nodes = negaMaxAlphaBeta.getNodesVisited();
+            long duration = watch.getCurrDuration();
+            long nps = duration == 0 ? nodes : nodes * 1000 / duration;
 
-        long hashfull = gameContext.ttCache.calcHashFull();
-//        long hashfull = gameContext.ttc.getUsagePercentage();
-        UCI.instance.putCommand("info depth " + rslt.targetDepth +
-                " seldepth " + rslt.selDepth +
-                " score cp " + rslt.max + " nodes " + nodes
-                + " hashfull " + hashfull
-                + " nps " + nps
-                + " time " + duration
-                + " pv " + rslt.pvList.toPvStr());
-        UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
+            long hashfull = gameContext.ttCache.calcHashFull();
+            //        long hashfull = gameContext.ttc.getUsagePercentage();
+            UCI.instance.putCommand("info depth " + rslt.targetDepth +
+                    " seldepth " + rslt.selDepth +
+                    " score cp " + rslt.max + " nodes " + nodes
+                    + " hashfull " + hashfull
+                    + " nps " + nps
+                    + " time " + duration
+                    + " pv " + rslt.pvList.toPvStr());
+            UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
+        }
     }
 
     private Map stats = new LinkedHashMap();

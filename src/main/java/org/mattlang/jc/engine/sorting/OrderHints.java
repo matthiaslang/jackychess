@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.sorting;
 import java.util.List;
 
 import org.mattlang.jc.engine.search.*;
-import org.mattlang.jc.uci.GameContext;
 
 import lombok.AllArgsConstructor;
 
@@ -33,12 +32,12 @@ public class OrderHints {
 
     public OrderHints(
             NegaMaxResult negaMaxResult,
-            GameContext gameContext,
+            SearchThreadContext stc ,
             boolean useMvvLvaSorting) {
         this.prevPvlist = negaMaxResult.pvList;
         this.moveScores = negaMaxResult.moveScores;
-        this.historyHeuristic = gameContext.getHistoryHeuristic();
-        this.killerMoves = gameContext.getKillerMoves();
+        this.historyHeuristic = stc.getHistoryHeuristic();
+        this.killerMoves = stc.getKillerMoves();
         this.useMvvLvaSorting = useMvvLvaSorting;
     }
 }

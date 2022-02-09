@@ -12,6 +12,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.SearchException;
+import org.mattlang.jc.engine.search.SearchThreadContexts;
 
 public class UciProcessor {
 
@@ -91,6 +92,7 @@ public class UciProcessor {
 
     private GameContext createNewGameContext() {
         LOGGER.info("start new game");
+        SearchThreadContexts.CONTEXTS.reset();
         return new GameContext(configValues);
     }
 

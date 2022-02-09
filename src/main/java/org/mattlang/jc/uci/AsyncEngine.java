@@ -28,7 +28,7 @@ public class AsyncEngine {
      */
     private Future<Move> future;
 
-    public static ExecutorService executorService = Executors.newFixedThreadPool(4);
+    public static ExecutorService executorService = Executors.newFixedThreadPool(16);
 
     public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
         GoParameter goParams = new GoParameter();

@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.search.HistoryHeuristic;
-import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 
@@ -21,12 +19,6 @@ public class GameContext {
 
     /** max ply used to setup array structures. */
     public static final int MAX_PLY = 64;
-
-    @Getter
-    private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
-
-    @Getter
-    private KillerMoves killerMoves = new KillerMoves();
 
     @Getter
     public TTCacheInterface ttCache;

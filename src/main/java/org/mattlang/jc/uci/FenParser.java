@@ -18,7 +18,6 @@ public class FenParser {
         if (!positionStr.startsWith("position")) {
             throw new IllegalStateException("Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
-        RepetitionChecker repetitionChecker = new SimpleRepetitionChecker();
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
         int movesSection = 2;
@@ -41,18 +40,17 @@ public class FenParser {
         } else {
             throw new IllegalArgumentException("fen position wrong: no 'position startpos' nor 'position fen' found!");
         }
-        repetitionChecker.push(board);
+
         if (splitted.length > movesSection) {
             if ("moves".equals(splitted[movesSection])) {
                 for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
                     String moveStr = splitted[moveIndex];
                     Move move = parseMove(board, moveStr);
                     board.domove(move);
-                    repetitionChecker.push(board);
                 }
             }
         }
-        return new GameState(board, repetitionChecker, positionStr);
+        return new GameState(board, positionStr);
     }
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
