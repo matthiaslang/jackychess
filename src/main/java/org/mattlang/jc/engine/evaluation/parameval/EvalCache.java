@@ -2,6 +2,9 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import org.mattlang.jc.board.Color;
 
+/**
+ * A thread safe eval cache.
+ */
 public class EvalCache {
 
     public static final int bitSize = 24;
@@ -20,8 +23,11 @@ public class EvalCache {
 
     public int find(long zobristHash, Color who2Move) {
         int index = h0(zobristHash);
-        if (zobrists[index] == zobristHash) {
-            return scores[index];
+        long xorKey =   zobrists[index];
+        int score = scores[index];
+
+        if ((xorKey ^ score) == zobristHash) {
+            return score;
         }
 
         return NORESULT;
@@ -34,7 +40,7 @@ public class EvalCache {
     public void save(long zobristHash, Color who2Move, int score) {
         int index = h0(zobristHash);
 
-        zobrists[index] = zobristHash;
+        zobrists[index] = zobristHash ^ score;
         scores[index] = score;
 
     }

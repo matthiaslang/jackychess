@@ -10,6 +10,8 @@ import org.mattlang.jc.board.Color;
 
 /**
  * Experimentell cache using only a long array to be faster and more memory efficient.
+ * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
+ *
  */
 public final class TTCache3 implements TTCacheInterface {
 
@@ -217,5 +219,10 @@ public final class TTCache3 implements TTCacheInterface {
 	@Override
 	public long calcHashFull() {
 		return getUsagePercentage();
+	}
+
+	@Override
+	public boolean isUsableForLazySmp() {
+		return true;
 	}
 }

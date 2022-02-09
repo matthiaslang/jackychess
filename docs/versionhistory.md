@@ -1,12 +1,16 @@
 # Versions
 
+### Version 0.9.27
+
+- refactoring: eval cache is now thread safe
+
 ### Version 0.9.26
 
 - static search thread context holding move list instances for preparation for multi threading
 
 ### Version 0.9.25
 
-- late move pruning. seem to bring some elos compared to previous version...
+- late move pruning. but does not seem to bring any benefit in elos or is nearly not measurable.
 
 ### Version 0.9.24
                

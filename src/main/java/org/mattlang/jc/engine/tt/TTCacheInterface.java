@@ -14,4 +14,13 @@ public interface TTCacheInterface extends StatisticsCollector {
     void updateAging(BoardRepresentation board);
 
     long calcHashFull();
+
+    /**
+     * Is this Cache "thread safe" and usable within a lazy smp search?
+     *
+     * @return
+     */
+    default boolean isUsableForLazySmp() {
+        return false;
+    }
 }
