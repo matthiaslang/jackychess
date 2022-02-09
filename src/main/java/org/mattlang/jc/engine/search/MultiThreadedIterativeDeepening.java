@@ -19,11 +19,9 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private static final Logger LOGGER = Logger.getLogger(MultiThreadedIterativeDeepening.class.getSimpleName());
 
-    private static final int MAX_THREADS = 2;
-
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
 
-    private int maxThreads = MAX_THREADS;
+    private int maxThreads = Factory.getDefaults().getConfig().maxThreads.getValue();
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {

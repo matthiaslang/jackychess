@@ -43,7 +43,7 @@ public class BitBoardNegaMaxBenchmark {
                         .boards.set(() -> new BitBoard())
                         .moveGenerator.set(() -> new BBMoveGeneratorImpl())
                         .legalMoveGenerator.set(() -> new BBLegalMoveGeneratorImpl())
-                        .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.BITBOARD)));
+                        .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.STABLE)));
 
 
         // normal with all opts
@@ -53,7 +53,7 @@ public class BitBoardNegaMaxBenchmark {
         runner.benchmarkExecute(allOptsOn()  .boards.set(() -> new BitBoard())
                 .moveGenerator.set(() -> new BBMoveGeneratorImpl())
                 .legalMoveGenerator.set(() -> new BBLegalMoveGeneratorImpl())
-                .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.BITBOARD)));
+                .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.STABLE)));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());

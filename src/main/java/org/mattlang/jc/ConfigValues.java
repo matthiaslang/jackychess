@@ -30,6 +30,10 @@ public class ConfigValues {
                     "the maximum search depth in quiescence",
                     0, 50, 10);
 
+    public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
+            "the maximum search threads when multi threading search is activated",
+            1, 8, 4);
+
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
 
@@ -40,8 +44,8 @@ public class ConfigValues {
     public final UCIGroup search = allOptions.createGroup("Search", "Parameter that influence search.");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            internal.createComboOpt("searchalg",
-                    "the search algorithm to use. Only for development testing.",
+            search.createComboOpt("searchalg",
+                    "the search algorithm to use.",
                     SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
     public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",

@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.9.28
+
+- Lazy SMP
+
 ### Version 0.9.27
 
 - refactoring: eval cache is now thread safe

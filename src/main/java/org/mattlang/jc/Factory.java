@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
@@ -54,6 +55,24 @@ public class Factory {
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
+                .config(c -> {
+                    c.maxDepth.setValue(40);
+                    c.maxQuiescence.setValue(10);
+                    c.timeout.setValue(15000);
+                    c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED);
+                    c.evaluateParamSet.setValue(EvalParameterSet.CURRENT);
+                });
+    }
+
+
+    public static SearchParameter createMultiThread() {
+        return new SearchParameter()
+                .evaluateFunction.set(MinimalPstEvaluation::new)
+                .moveGenerator.set(BBMoveGeneratorImpl::new)
+                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
+                .boards.set(BitBoard::new)
+                .checkChecker.set(BBCheckCheckerImpl::new)
+                .searchMethod.set(()->new MultiThreadedIterativeDeepening())
                 .config(c -> {
                     c.maxDepth.setValue(40);
                     c.maxQuiescence.setValue(10);

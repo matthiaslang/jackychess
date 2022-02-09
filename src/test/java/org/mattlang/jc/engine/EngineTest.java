@@ -78,13 +78,15 @@ public class EngineTest {
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.maxDepth.setValue(9))
+                .config(c -> c.maxDepth.setValue(11))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
+        GameContext gameContext=new GameContext(Factory.getDefaults().getConfig());
+
+        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
 
@@ -105,7 +107,8 @@ public class EngineTest {
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
                 .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.maxDepth.setValue(9))
+                .config(c -> c.maxDepth.setValue(11))
+                .config(c -> c.maxThreads.setValue(4))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();

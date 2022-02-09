@@ -8,10 +8,10 @@ public enum SearchAlgorithms {
             return Factory.createStable();
         }
     },
-    BITBOARD {
+    MULTITHREAD {
         @Override
         public SearchParameter createSearchParameter() {
-            return Factory.createBitboard();
+            return Factory.createMultiThread();
         }
     };
 
