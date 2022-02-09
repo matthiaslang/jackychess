@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
 import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
@@ -15,10 +16,10 @@ import org.mattlang.jc.MoveListImpls;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.SimpleRepetitionChecker;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
@@ -36,7 +37,7 @@ public class EngineTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
         board.switchSiteToMove();
-        Move move = searchMethod.search(new GameState(board, new SimpleRepetitionChecker(), null), new GameContext(), 6);
+        Move move = searchMethod.search(new GameState(board, null), new GameContext(), 6);
         System.out.println(board.toUniCodeStr());
 
         System.out.println(move.toStr());
@@ -70,13 +71,14 @@ public class EngineTest {
     @Ignore
     public void testProfilingParamEvaluation() throws IOException {
 
+        System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createBitboard()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
-                        .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .config(c->c.timeout.setValue(18000000))
-                .config(c->c.maxDepth.setValue(9))
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c -> c.timeout.setValue(36000000))
+                .config(c -> c.maxDepth.setValue(9))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();
@@ -90,6 +92,34 @@ public class EngineTest {
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
+    @Test
+    @Ignore
+    public void testLazySMP() throws IOException {
+
+        System.setProperty(LOGGING_ACTIVATE, "false");
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createBitboard()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
+                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+                .config(c -> c.timeout.setValue(36000000))
+                .config(c -> c.maxDepth.setValue(9))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        GameContext gameContext=new GameContext(Factory.getDefaults().getConfig());
+
+        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
 
     @Test
     public void testIterativeDeepeningPVS() throws IOException {
@@ -97,8 +127,8 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createIterativeDeepeningPVS()
-                .config(c->c.timeout.setValue(60000))
-                .config(c->c.maxDepth.setValue(8)));
+                .config(c -> c.timeout.setValue(60000))
+                .config(c -> c.maxDepth.setValue(8)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -170,8 +200,8 @@ public class EngineTest {
         Factory.setDefaults(Factory.createBitboard()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .config(c->c.timeout.setValue(18000000))
-                .config(c->c.maxDepth.setValue(18))
+                .config(c -> c.timeout.setValue(18000000))
+                .config(c -> c.maxDepth.setValue(9))
                 //                .config(c->c.aspiration.setValue(false))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
