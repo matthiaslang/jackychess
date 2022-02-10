@@ -2,7 +2,7 @@
 
 ### Version 0.9.28
 
-- Lazy SMP
+- Experimental Lazy SMP
 
 ### Version 0.9.27
 
@@ -16,7 +16,7 @@
 
 - late move pruning. but does not seem to bring any benefit in elos or is nearly not measurable.
 
-### Version 0.9.24
+### Version 0.9.24  0.10.0.RC02
                
 - skip low promotions in quiescence. seem to bring some elos compared to previous version....
 
@@ -24,7 +24,7 @@
 
 - refine static Eval during search for some pruning things (seems to bring some elos)
 
-### Version 0.9.22
+### Version 0.9.22  0.10.0.RC01
 
 - move ordering of captures uses see instead of blind
 
