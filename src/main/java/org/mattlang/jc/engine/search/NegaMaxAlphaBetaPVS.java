@@ -4,7 +4,6 @@ import static java.lang.Math.abs;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.uci.GameContext.MAX_PLY;
-import static org.mattlang.jc.util.MoveValidator.enrichPVList;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +23,7 @@ import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTEntry;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
+import org.mattlang.jc.util.MoveValidator;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -96,6 +96,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private SearchContext searchContext;
 
     private boolean debug=true;
+
+    private MoveValidator moveValidator=new MoveValidator();
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -648,7 +650,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
         List<Integer> pvMoves = expandPv
-                ? enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth)
+                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth)
                 : pvArray.getPvMoves();
 
         return new NegaMaxResult(directScore,

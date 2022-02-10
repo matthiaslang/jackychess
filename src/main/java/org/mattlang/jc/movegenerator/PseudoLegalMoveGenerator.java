@@ -22,6 +22,11 @@ public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
     }
 
     @Override
+    public void generate(BoardRepresentation board, Color side, MoveList moveList) {
+        generator.generate(board, side, moveList);
+    }
+
+    @Override
     public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
             Color side, MoveList moveList) {
         generator.generate(board, side, moveList);
