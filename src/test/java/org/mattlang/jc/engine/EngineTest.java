@@ -66,10 +66,20 @@ public class EngineTest {
         assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
-
+    /**
+     * todo analyze: the pv is only properly delivered when ttcache is disabled.
+     * with ttcache we are currently not able to reconstruct it via the cache.
+     * why?
+     * - have we problems with out replacement strategy?
+     * - do we have issues with the zobrist keys? with the distribution into the bucket index?
+     * - do we need a separate tt cache for pvs?
+     * - is our pv array handling wrong?
+     *
+     * @throws IOException
+     */
     @Test
     @Ignore
-    public void testProfilingParamEvaluation() throws IOException {
+    public void testNoSMP() throws IOException {
 
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
@@ -77,7 +87,9 @@ public class EngineTest {
         Factory.setDefaults(Factory.createBitboard()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
+//                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
+                .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:

@@ -2,7 +2,8 @@
 
 ### Version 0.9.28
 
-- Experimental Lazy SMP
+- Experimental Lazy SMP. Doesn bring anything so far. Seems we have anyway weird problems with tt caching (e.g ttcach3)
+  and pv extraction. This seems also to case SMP to bring no benefits.
 
 ### Version 0.9.27
 
@@ -10,11 +11,13 @@
 
 ### Version 0.9.26
 
-- static search thread context holding move list instances for preparation for multi threading
+- static search thread context holding move list instances for preparation for multi threading. therefore slightly faster
+  than 0.9.25.
 
 ### Version 0.9.25
 
-- late move pruning. but does not seem to bring any benefit in elos or is nearly not measurable.
+- late move pruning. but does not seem to bring any benefit in elos or is nearly not measurable. Seem to be worse.
+  so we should disable it for now...
 
 ### Version 0.9.24  0.10.0.RC02
                
