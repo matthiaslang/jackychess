@@ -52,6 +52,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
+    private MoveValidator moveValidator = new MoveValidator();
+
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
         isWorker = workerNumber > 0;
@@ -174,7 +176,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         if (rslt.savedMove != null) {
             printRoundInfo(gameContext, rslt, watch, negaMaxAlphaBeta);
-            MoveValidator.validate(gameState, rslt);
+            moveValidator.validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...
             // we need to further analyze this situation.

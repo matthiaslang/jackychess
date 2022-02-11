@@ -3,6 +3,7 @@ package org.mattlang.jc.util;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -25,9 +26,12 @@ public class MoveValidator {
 
     private static final Logger LOGGER = Logger.getLogger(MoveValidator.class.getSimpleName());
 
-    private static BBLegalMoveGeneratorImpl legalMoveGen = new BBLegalMoveGeneratorImpl();
+    private BBLegalMoveGeneratorImpl legalMoveGen = new BBLegalMoveGeneratorImpl();
 
-    public static void validate(GameState gameState, NegaMaxResult rslt) {
+    /** reused movelist. */
+    private MoveList moveList= Factory.getDefaults().moveList.create();
+
+    public void validate(GameState gameState, NegaMaxResult rslt) {
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
@@ -52,17 +56,17 @@ public class MoveValidator {
         }
     }
 
-    private static boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
+    private boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
         return isLegalMove(board, move.toInt(), who2Move);
     }
 
-    private static boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
+    private boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
-        MoveList legalMoves =
-                legalMoveGen.generate(board, who2Move);
+        moveList.reset();
+        legalMoveGen.generate(board, who2Move, moveList);
 
         // todo clean up and make nicer way to check this...
-        for (MoveCursor legalMove : legalMoves) {
+        for (MoveCursor legalMove : moveList) {
             if (legalMove.getMoveInt() == move) {
                 return true;
             }
@@ -87,7 +91,7 @@ public class MoveValidator {
      * @return
      */
 
-    public static List<Integer> enrichPVList(List<Integer> pvs, GameState gameState, TTCacheInterface ttCache,
+    public List<Integer> enrichPVList(List<Integer> pvs, GameState gameState, TTCacheInterface ttCache,
             int depth) {
 
         if (pvs.size() == depth) {

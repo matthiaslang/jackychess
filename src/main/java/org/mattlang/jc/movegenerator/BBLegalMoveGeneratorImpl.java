@@ -22,6 +22,12 @@ public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
     }
 
     @Override
+    public void generate(BoardRepresentation board, Color side, MoveList moveList) {
+        generator.generate(board, side, moveList);
+        filterLegalMoves(board, checkChecker, moveList, side);
+    }
+
+    @Override
     public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
             Color side, MoveList moveList) {
         generator.generate(board, side, moveList);
