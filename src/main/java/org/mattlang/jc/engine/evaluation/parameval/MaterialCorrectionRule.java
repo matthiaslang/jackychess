@@ -34,6 +34,10 @@ public class MaterialCorrectionRule {
 
     private ReductionRule reductionRule;
 
+    public static MaterialCorrectionRule rule(String ruleName, String strongerDescr, String weakerDescr) {
+        return new MaterialCorrectionRule(ruleName, parseDescr(strongerDescr), parseDescr(weakerDescr), null);
+    }
+
     public static MaterialCorrectionRule parse(String ruleName, String ruleStr) {
         String[] split = ruleStr.split(" vs ");
         String strongerStr = split[0];

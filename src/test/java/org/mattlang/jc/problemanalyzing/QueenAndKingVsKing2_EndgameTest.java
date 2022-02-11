@@ -6,11 +6,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.EvalFunctions;
+import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
@@ -18,7 +21,7 @@ import org.mattlang.jc.uci.UCI;
 
 public class QueenAndKingVsKing2_EndgameTest {
 
-    int maxDepth = 6;
+    int maxDepth = 10;
 
     @Test
     public void queen_and_king_vs_king() throws IOException {
@@ -28,8 +31,13 @@ public class QueenAndKingVsKing2_EndgameTest {
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.useTTCache.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
-                .config(c -> c.timeout.setValue(600)));
+//                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
+
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
+
+                .config(c -> c.timeout.setValue(6000000)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 4k3/8/1Q6/4K3/8/8/8/8 w - - 0 0 ");
@@ -43,9 +51,10 @@ public class QueenAndKingVsKing2_EndgameTest {
 
         // execute moves on board of pv:
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {
+            Color siteToMove = gameState.getBoard().getSiteToMove();
             gameState.getBoard().domove(move);
 
-            System.out.println(move.toStr());
+            System.out.println(siteToMove + ": " + move.toStr());
             System.out.println(gameState.getBoard().toUniCodeStr());
         }
 

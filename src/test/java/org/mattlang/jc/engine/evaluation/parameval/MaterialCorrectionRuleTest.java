@@ -34,21 +34,21 @@ public class MaterialCorrectionRuleTest {
         ParameterizedMaterialCorrectionEvaluation matCorr = new ParameterizedMaterialCorrectionEvaluation(
                 rules);
 
-        assertThat(matCorr.correct(board.getBoard(), 500)).isEqualTo(0);
+        assertThat(matCorr.correct(board, 500)).isEqualTo(0);
 
         board = new BitBoard();
         board.setFenPosition("position fen k7/4pn2/8/8/4K3/8/8/R7 w - - 2 17 ");
 
-        assertThat(matCorr.correct(board.getBoard(), 500)).isEqualTo(250);
+        assertThat(matCorr.correct(board, 500)).isEqualTo(250);
 
         board = new BitBoard();
         board.setFenPosition("position fen k7/4pr2/8/8/4K3/8/8/RB6 w - - 2 17 ");
 
-        assertThat(matCorr.correct(board.getBoard(), 500)).isEqualTo(250);
+        assertThat(matCorr.correct(board, 500)).isEqualTo(250);
 
         board = new BitBoard();
         board.setFenPosition("position fen k7/4pr2/8/8/4K3/8/8/RBP5 w - - 2 17 ");
 
-        assertThat(matCorr.correct(board.getBoard(), 500)).isEqualTo(500);
+        assertThat(matCorr.correct(board, 500)).isEqualTo(500);
     }
 }

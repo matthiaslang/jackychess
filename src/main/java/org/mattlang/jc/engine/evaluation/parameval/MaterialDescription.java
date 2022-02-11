@@ -83,6 +83,7 @@ public class MaterialDescription {
     private static final HashMap<Character, Integer> PIECE_VALS = new HashMap<>();
 
     static {
+        PIECE_VALS.put('0', 0);
         PIECE_VALS.put(FigureType.Knight.figureChar, 10);
         PIECE_VALS.put(FigureType.Bishop.figureChar, 100);
         PIECE_VALS.put(FigureType.Rook.figureChar, 1000);

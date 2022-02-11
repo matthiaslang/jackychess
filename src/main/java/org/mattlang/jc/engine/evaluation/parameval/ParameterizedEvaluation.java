@@ -74,7 +74,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         int score = result.calcCompleteScore(bitBoard);
 
-        score = matCorrection.correct(bitBoard.getBoard(), score);
+        score = matCorrection.correct(bitBoard, score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;

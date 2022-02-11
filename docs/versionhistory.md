@@ -2,8 +2,9 @@
 
 ### Version 0.9.28
 
-- Experimental Lazy SMP. Doesn bring anything so far. Seems we have anyway weird problems with tt caching (e.g ttcach3)
-  and pv extraction. This seems also to case SMP to bring no benefits.
+- Experimental Lazy SMP disabled by default. Doesnt bring anything so far. Seems we have anyway weird problems with tt caching (e.g ttcach3)
+  and pv extraction. This seems also the reason why SMP doesnt speed up search.
+- material based end game evaluation: one first rule for KX vs K.                                            
 
 ### Version 0.9.27
 
@@ -13,6 +14,7 @@
 
 - static search thread context holding move list instances for preparation for multi threading. therefore slightly faster
   than 0.9.25.
+- disabled late move pruning from 0.9.25 as it makes it worser
 
 ### Version 0.9.25
 
