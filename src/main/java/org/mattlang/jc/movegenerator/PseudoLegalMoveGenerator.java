@@ -14,6 +14,7 @@ import org.mattlang.jc.uci.GameContext;
 public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
 
     BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
+    BBMoveGeneratorImpl2 generator2 = new BBMoveGeneratorImpl2();
 
     @Override
     public MoveList generate(BoardRepresentation board, Color side) {
@@ -27,9 +28,22 @@ public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
     }
 
     @Override
-    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+    public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator,
+            BoardRepresentation board,
             Color side, MoveList moveList) {
+
         generator.generate(board, side, moveList);
+
+//        switch (mode) {
+//        case NORMAL:
+//            generator.generate(board, side, moveList);
+//            break;
+//        case QUIESCENCE:
+//            generator2.generate(board, side, moveList, BBMoveGeneratorImpl2.GenTypes.CAPTURES);
+//            generator2.genPawnMoves(((BitBoard) board).getBoard(), moveList, side, true);
+//            break;
+//        }
+
     }
 
 }

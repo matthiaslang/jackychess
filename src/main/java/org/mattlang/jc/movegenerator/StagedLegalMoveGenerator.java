@@ -22,7 +22,7 @@ public class StagedLegalMoveGenerator implements LegalMoveGenerator {
     }
 
     @Override
-    public void generate(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+    public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
             Color side, MoveList moveList) {
         if (!(moveList instanceof StagedMoveListImpl)) {
             throw new IllegalStateException("needs StagedMoveListImpl!");

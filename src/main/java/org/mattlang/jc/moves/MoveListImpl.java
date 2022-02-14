@@ -29,15 +29,17 @@ public class MoveListImpl implements MoveList {
         moves.add(createNormalMove(figureType, from, to, capturedFigure));
     }
 
+    public static final boolean isOnLastLine(Color side, int to) {
+        if (side == WHITE) {
+            return to >= 56 && to <= 63;
+        } else {
+            return to >= 0 && to <= 7;
+        }
+    }
+
     public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
 
-        boolean isOnLastLine = false;
-        if (side == WHITE) {
-            isOnLastLine = to >= 56 && to <= 63;
-        } else {
-            isOnLastLine = to >= 0 && to <= 7;
-        }
-        if (isOnLastLine) {
+        if (isOnLastLine(side, to)) {
             moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
             moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
             moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));

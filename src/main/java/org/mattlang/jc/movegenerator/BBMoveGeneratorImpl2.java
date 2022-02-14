@@ -17,6 +17,7 @@ import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.moves.MoveListImpl;
 
 /**
  * see https://www.chessprogramming.org/10x12_Board
@@ -66,7 +67,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             genPawnCaptureMoves(bitBoard, collector, side);
         }
         if (types == GenTypes.QUIET || types == GenTypes.ALL) {
-            genPawnMoves(bb, collector, side);
+            genPawnMoves(bb, collector, side, false);
         }
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
@@ -424,41 +425,62 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
     }
 
-    private void genPawnMoves(BitChessBoard bb, MoveCollector collector, Color side) {
+    public void genPawnMoves(BitChessBoard bb, MoveCollector collector, Color side, boolean onlyPromotions) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
         long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
 
         if (side == WHITE) {
             long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
 
-            while (singlePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
-                singlePushTargets &= singlePushTargets - 1;
-            }
+            if (onlyPromotions) {
+                while (singlePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                    if (MoveListImpl.isOnLastLine(side, toIndex)) {
+                        collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
+                    }
+                    singlePushTargets &= singlePushTargets - 1;
+                }
+            } else {
+                while (singlePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                    collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
+                    singlePushTargets &= singlePushTargets - 1;
+                }
 
-            long doublePushTargets = BB.wDblPushTargets(pawns, empty);
-            while (doublePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                collector.genPawnMove(toIndex - 16, toIndex, side, (byte) 0);
-                doublePushTargets &= doublePushTargets - 1;
+                long doublePushTargets = BB.wDblPushTargets(pawns, empty);
+                while (doublePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
+                    collector.genPawnMove(toIndex - 16, toIndex, side, (byte) 0);
+                    doublePushTargets &= doublePushTargets - 1;
+                }
             }
 
         } else {
             long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
 
-            while (singlePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
-                singlePushTargets &= singlePushTargets - 1;
+            if (onlyPromotions) {
+                while (singlePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                    if (MoveListImpl.isOnLastLine(side, toIndex)) {
+                        collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
+                    }
+                    singlePushTargets &= singlePushTargets - 1;
+                }
+            } else {
+                while (singlePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                    collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
+                    singlePushTargets &= singlePushTargets - 1;
+                }
+
+                long doublePushTargets = BB.bDoublePushTargets(pawns, empty);
+                while (doublePushTargets != 0) {
+                    final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
+                    collector.genPawnMove(toIndex + 16, toIndex, side, (byte) 0);
+                    doublePushTargets &= doublePushTargets - 1;
+                }
             }
 
-            long doublePushTargets = BB.bDoublePushTargets(pawns, empty);
-            while (doublePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                collector.genPawnMove(toIndex + 16, toIndex, side, (byte) 0);
-                doublePushTargets &= doublePushTargets - 1;
-            }
         }
     }
 

@@ -11,7 +11,12 @@ import org.mattlang.jc.uci.GameContext;
  */
 public interface LegalMoveGenerator extends PositionBasedGenerator<MoveList> {
 
-    void generate(GameContext gameContext,
+    public enum GenMode{
+        NORMAL,
+        QUIESCENCE
+    }
+
+    void generate(GenMode mode, GameContext gameContext,
             OrderCalculator orderCalculator,
             BoardRepresentation board,
             Color side,
