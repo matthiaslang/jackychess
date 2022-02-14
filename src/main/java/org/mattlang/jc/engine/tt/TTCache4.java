@@ -32,6 +32,19 @@ public final class TTCache4 implements TTCacheInterface {
     private final TTEntry leightweightEntry = new TTEntry(0L, 0, (byte) 0, 0, (byte) 0, 0);
 
     @Override
+    public boolean findEntry(TTResult result, BoardRepresentation board) {
+        TTEntry entry = getTTEntry(board, null);
+        if (entry != null) {
+            result.setDepth(entry.getDepth());
+            result.setType(entry.getType());
+            result.setScore(entry.getValue());
+            result.setMove(entry.getMove());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         TTE tte = getInternalTTEntry(board);
         if (tte == null) {

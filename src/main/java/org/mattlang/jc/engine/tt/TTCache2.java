@@ -39,6 +39,20 @@ public final class TTCache2 implements TTCacheInterface {
     private TTEntry[] whitemap = new TTEntry[CAPACITY + BUCKETS];
     private TTEntry[] blackmap = new TTEntry[CAPACITY + BUCKETS];
 
+
+    @Override
+    public boolean findEntry(TTResult result, BoardRepresentation board) {
+        TTEntry entry = getTTEntry(board, null);
+        if (entry != null) {
+            result.setDepth(entry.getDepth());
+            result.setType(entry.getType());
+            result.setScore(entry.getValue());
+            result.setMove(entry.getMove());
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();

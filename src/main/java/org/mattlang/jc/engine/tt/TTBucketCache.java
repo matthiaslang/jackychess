@@ -35,6 +35,19 @@ public final class TTBucketCache implements TTCacheInterface {
 
     }
 
+    @Override
+    public boolean findEntry(TTResult result, BoardRepresentation board) {
+        TTEntry entry = getTTEntry(board, null);
+        if (entry != null) {
+            result.setDepth(entry.getDepth());
+            result.setType(entry.getType());
+            result.setScore(entry.getValue());
+            result.setMove(entry.getMove());
+            return true;
+        }
+        return false;
+    }
+
     public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
 

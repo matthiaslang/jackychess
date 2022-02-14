@@ -170,17 +170,6 @@ public final class TTCache3 implements TTCacheInterface {
 		return usage;
 	}
 
-	public static boolean canRefineEval(final long ttValue, final int eval, final int score) {
-		if (ttValue != 0) {
-			if (getFlag(ttValue) == TTEntry.EXACT_VALUE
-					|| getFlag(ttValue) == TTEntry.UPPERBOUND && score < eval
-					|| getFlag(ttValue) == TTEntry.LOWERBOUND && score > eval) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	@Override
 	public void resetStatistics() {
 
@@ -192,6 +181,19 @@ public final class TTCache3 implements TTCacheInterface {
 	}
 
 	private final TTEntry leightweightEntry = new TTEntry(0L, 0, (byte) 0, 0, (byte) 0, 0);
+
+	@Override
+	public boolean findEntry(TTResult result, BoardRepresentation board) {
+		long v = getValue(board.getZobristHash());
+		if (v != 0) {
+			result.setDepth(getDepth(v));
+			result.setType((byte) getFlag(v));
+			result.setScore(getScore(v));
+			result.setMove(getMove(v));
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public TTEntry getTTEntry(BoardRepresentation board, Color side) {
