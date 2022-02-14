@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 
 /**
  * Paremeterized Low Material Correction.
@@ -52,10 +51,11 @@ public class ParameterizedMaterialCorrectionEvaluation {
         }
 
         // apply end game evaluations if available:
-        EndGameRules rule = EndGameRules.findRule(matStronger, matWeaker);
-        if (rule != null) {
-            return  rule.getEndgameFunction().evaluate(board, stronger, weaker);
-        }
+        // todo need to test if this really brings anything...
+//        EndGameRules rule = EndGameRules.findRule(matStronger, matWeaker);
+//        if (rule != null) {
+//            return  rule.getEndgameFunction().evaluate(board, stronger, weaker);
+//        }
 
         return result;
     }
