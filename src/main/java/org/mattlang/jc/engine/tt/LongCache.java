@@ -21,6 +21,12 @@ public final class LongCache {
         scores = new long[capacity];
     }
 
+    public long getSlotValue(long zobristHash) {
+        int index = h0(zobristHash);
+        long score = scores[index];
+        return score;
+    }
+
     public long find(long zobristHash) {
         int index = h0(zobristHash);
         long xorKey = zobrists[index];
@@ -35,6 +41,10 @@ public final class LongCache {
 
     private int h0(long key) {
         return (int) (key & (capacity - 1));
+    }
+
+    private int h1(long key) {
+        return (int) ((key >> 32) & (capacity - 1));
     }
 
     public void save(long zobristHash, long score) {
@@ -54,8 +64,8 @@ public final class LongCache {
         return (int) ((value & 0x3ff) - DEPTH_OFFSET);
     }
 
-    public static int getFlag(final long value) {
-        return (int) (value >>> FLAG & 3);
+    public static byte getFlag(final long value) {
+        return (byte) (value >>> FLAG & 3);
     }
 
     public static int getMove(final long value) {
@@ -83,4 +93,14 @@ public final class LongCache {
     private static final int FLAG = 10; // 2
     private static final int MOVE = 12; // 22
     private static final int SCORE = 48; // 16
+
+    public long getUsagePercentage() {
+        int usage = 0;
+        for (int i = 0; i < 1000; i++) {
+            if (zobrists[i] != 0L) {
+                usage++;
+            }
+        }
+        return usage;
+    }
 }
