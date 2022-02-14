@@ -21,6 +21,7 @@ public final class TTEntry {
     @Getter
     private short value;
 
+    @Getter
     private byte type;
 
     @Getter
