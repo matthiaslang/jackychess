@@ -11,8 +11,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.engine.tt.TTCacheInterface;
-import org.mattlang.jc.engine.tt.TTEntry;
+import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -91,7 +90,7 @@ public class MoveValidator {
      * @return
      */
 
-    public List<Integer> enrichPVList(List<Integer> pvs, GameState gameState, TTCacheInterface ttCache,
+    public List<Integer> enrichPVList(List<Integer> pvs, GameState gameState, IntCache pvCache,
             int depth) {
 
         if (pvs.size() == depth) {
@@ -118,14 +117,14 @@ public class MoveValidator {
         // now enrich the missing ones:
         int size = pvs.size();
         for (int d = size; d < depth; d++) {
-            TTEntry tte = ttCache.getTTEntry(board, who2Move);
-            if (tte != null && tte.getMove() != 0) {
-                Move move = new MoveImpl(tte.getMove());
+            int tte = pvCache.find(board.getZobristHash());
+            if (tte != IntCache.NORESULT) {
+                Move move = new MoveImpl(tte);
                 boolean legal = isLegalMove(board, move, who2Move);
 
                 if (legal) {
                     board.domove(move);
-                    pvs.add(tte.getMove());
+                    pvs.add(tte);
                 } else {
                     // old or weird entry... stop here
                     break;

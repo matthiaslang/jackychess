@@ -15,7 +15,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
-import org.mattlang.jc.engine.tt.TTEntry;
+import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -79,12 +79,14 @@ public final class SearchContext {
 
     private SearchThreadContext stc;
 
+    private TTResult ttResult = new TTResult();
+
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
             OrderCalculator orderCalculator, EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
-        this.stc=stc;
+        this.stc = stc;
         this.board = gameState.getBoard();
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
@@ -163,21 +165,17 @@ public final class SearchContext {
         }
     }
 
-    public TTEntry getTTEntry(Color color) {
-        if (doCaching) {
-            return ttCache.getTTEntry(board, color);
-        } else {
-            return null;
+    public TTResult getTTEntry() {
+        if (doCaching && ttCache.findEntry(ttResult, board)) {
+            return ttResult;
         }
+        return null;
     }
 
     public int probeTTHashMove(Color color, int depth) {
         if (doCaching) {
-            TTEntry entry = ttCache.getTTEntry(board, color);
-            // todo should the depth influence the search of the hash move?
-            // any hash move may be better than no hash move...?
-            if (entry != null) {
-                return entry.getMove();
+            if (ttCache.findEntry(ttResult, board)){
+                return ttResult.getMove();
             }
         }
         return 0;
@@ -191,18 +189,22 @@ public final class SearchContext {
         rslts.put("savedMove", new MoveImpl(getSavedMove()));
         rslts.put("savedMoveScore", getSavedMoveScore());
         Map ttcacheMap = new LinkedHashMap();
-//        ttCache.collectStatistics(ttcacheMap);
+        //        ttCache.collectStatistics(ttcacheMap);
         rslts.put("ttcache", ttcacheMap);
 
     }
 
-    public MoveList generateMoves(int ply, Color color) {
-        MoveList moveList=stc.getCleanedMoveList(ply);
-        generator.generate(context, orderCalculator, board, color, moveList);
+    public MoveList generateMoves(LegalMoveGenerator.GenMode mode, int ply, Color color) {
+        MoveList moveList = stc.getCleanedMoveList(ply);
+        generator.generate(mode, context, orderCalculator, board, color, moveList);
         return moveList;
     }
 
     public int eval(Color color) {
         return evaluate.eval(board, color);
+    }
+
+    public void savePv(int bestMove, int ply) {
+        context.getPvCache().save(board.getZobristHash(), bestMove);
     }
 }

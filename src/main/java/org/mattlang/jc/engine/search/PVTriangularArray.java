@@ -67,9 +67,9 @@ public class PVTriangularArray {
      * @param ply
      */
     public void reset(int ply) {
-        int index = ply - 1;
-        int[] rowForPly = array[index];
-        // mark as empty:
-        rowForPly[0] = 0;
+//        int index = ply - 1;
+//        int[] rowForPly = array[index];
+//        // mark as empty:
+//        rowForPly[0] = 0;
     }
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 
@@ -17,24 +18,24 @@ import lombok.Getter;
  */
 public class GameContext {
 
-    /** max ply used to setup array structures. */
+    /**
+     * max ply used to setup array structures.
+     */
     public static final int MAX_PLY = 64;
 
     @Getter
     public TTCacheInterface ttCache;
 
-//    @Getter
-//    public TTCache3 ttc = new TTCache3();
-
     private HashMap<String, Object> context = new HashMap<>();
 
+    @Getter
+    private IntCache pvCache = new IntCache(16);
+
     public GameContext() {
-//        ttc.clearValues();
         ttCache = new TTCache();
     }
 
     public GameContext(ConfigValues configValues) {
-//        ttc.clearValues();
         ttCache = configValues.cacheImpls.getValue().createSupplier().get();
     }
 

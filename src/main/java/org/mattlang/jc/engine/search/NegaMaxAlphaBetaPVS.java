@@ -3,6 +3,8 @@ package org.mattlang.jc.engine.search;
 import static java.lang.Math.abs;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.QUIESCENCE;
 import static org.mattlang.jc.uci.GameContext.MAX_PLY;
 
 import java.util.LinkedHashMap;
@@ -20,7 +22,7 @@ import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
-import org.mattlang.jc.engine.tt.TTEntry;
+import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
@@ -166,18 +168,17 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         boolean areWeInCheck = searchContext.isInCheck(color);
         depth = checkToExtend(areWeInCheck, color, depth);
 
-        TTEntry tte = searchContext.getTTEntry(color);
+        TTResult tte = searchContext.getTTEntry();
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
             if (tte.isExact()) // stored value is exact
-                return adjustScore(tte.getValue(), ply);
-            if (tte.isLowerBound() && tte.getValue() > alpha)
-                alpha = adjustScore(tte.getValue(), ply); // update lowerbound alpha if needed
-            else if (tte.isUpperBound() && tte.getValue() < beta)
-                beta = adjustScore(tte.getValue(), ply); // update upperbound beta if needed
+                return adjustScore(tte.getScore(), ply);
+            if (tte.isLowerBound() && tte.getScore() > alpha)
+                alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
+            else if (tte.isUpperBound() && tte.getScore() < beta)
+                beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
             if (alpha >= beta)
-                return adjustScore(tte.getValue(), ply); // if lowerbound surpasses upperbound
+                return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
         }
-
         if (depth == 0) {
             return quiesce(ply + 1, -1, color, alpha, beta);
         }
@@ -191,7 +192,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             // use tt value as eval if possible
             if (canRefineEval(tte, staticEval)) {
-                staticEval = tte.getValue();
+                staticEval = tte.getScore();
             }
 
             /**************************************************************************
@@ -269,7 +270,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         pvArray.reset(ply);
 
-        try (MoveList moves = searchContext.generateMoves(ply, color)) {
+        try (MoveList moves = searchContext.generateMoves(NORMAL, ply, color)) {
 
             sortMoves(ply, depth, color, moves, searchContext.getBoard());
 
@@ -372,6 +373,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 //                    }
 
                     pvArray.set(bestMove, ply);
+                    searchContext.savePv(bestMove, ply);
                     searchContext.updateRootBestMove(depth, bestMove, score);
 
                     if (max >= beta) {
@@ -508,6 +510,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (depth < -maxQuiescenceDepth) {
             // todo should we store values from quiescence? and with what depth?
             searchContext.storeTT(color, eval, alpha, beta, depth, 0);
+//            searchContext.clearTT(depth);
             return eval;
         }
 
@@ -526,7 +529,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         Color opponent = color.invert();
 
-        try (MoveList moves = searchContext.generateMoves(ply, color)) {
+        try (MoveList moves = searchContext.generateMoves(QUIESCENCE, ply, color)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
@@ -603,6 +606,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         // todo store values from quiescence? and if so, with what depth?
         searchContext.storeTT(color, x, alpha, beta, depth, 0);
+//        searchContext.clearTT(depth);
 
         return alpha;
     }
@@ -651,7 +655,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
         List<Integer> pvMoves = expandPv
-                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, context.getTtCache(), depth)
+                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, context.getPvCache(), depth)
                 : pvArray.getPvMoves();
 
         return new NegaMaxResult(directScore,
@@ -698,9 +702,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         //ttCache = new TTCache();
     }
 
-    public static boolean canRefineEval(final TTEntry tte, final int eval) {
+    public static boolean canRefineEval(final TTResult tte, final int eval) {
         if (tte != null) {
-            int score = tte.getValue();
+            int score = tte.getScore();
             if (tte.isExact() || tte.isUpperBound() && score < eval || tte.isLowerBound() && score > eval) {
                 return true;
             }
