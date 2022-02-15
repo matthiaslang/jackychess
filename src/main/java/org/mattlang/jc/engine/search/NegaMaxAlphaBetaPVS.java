@@ -23,6 +23,7 @@ import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTResult;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
@@ -529,7 +530,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         Color opponent = color.invert();
 
-        try (MoveList moves = searchContext.generateMoves(QUIESCENCE, ply, color)) {
+        // todo: we have no "evations" mode in move generation for now. therefore we must distinquish
+        // if we are in check and then use the normal mode instead of only capture generation:
+        LegalMoveGenerator.GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
+
+        try (MoveList moves = searchContext.generateMoves(moveGenMode, ply, color)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
@@ -597,10 +602,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                 searchContext.undoMove(moveCursor);
             }
-
-            if (searchedMoves == 0) {
-                return determineCheckMateOrPatt(ply, areWeInCheck);
-            }
+            
         }
 
         // todo store values from quiescence? and if so, with what depth?
