@@ -28,6 +28,9 @@ import org.mattlang.jc.moves.MoveListImpl;
  */
 public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
+    /**
+     * Generation types.
+     */
     public enum GenTypes {
         CAPTURES,
         QUIET,
@@ -194,7 +197,6 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             MoveCollector collector,
             long opponentFigsMask, long empty, GenTypes types) {
 
-        long quiet = attacks & empty;
 
         if (types == GenTypes.CAPTURES || types == GenTypes.ALL) {
             long captures = attacks & opponentFigsMask;
@@ -206,6 +208,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
 
         if (types == GenTypes.QUIET || types == GenTypes.ALL) {
+            long quiet = attacks & empty;
             while (quiet != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(quiet);
                 collector.genMove(figType, figPos, toIndex, (byte) 0);
