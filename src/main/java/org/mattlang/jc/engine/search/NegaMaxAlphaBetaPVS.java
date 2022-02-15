@@ -557,8 +557,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 searchedMoves++;
 
                 if (moveCursor.isCapture()
-                        || moveCursor.isPawnPromotion()
-                        || searchContext.isInCheck(opponent)) {
+                        || moveCursor.isPawnPromotion()) {
 
                     /**********************************************************************
                      *  Delta cutoff - a move guarentees the score well below alpha, so    *
