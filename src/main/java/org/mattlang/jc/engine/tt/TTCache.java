@@ -109,4 +109,9 @@ public final class TTCache implements TTCacheInterface {
     public long getUsagePercentage() {
         return cache.getUsagePercentage();
     }
+
+    @Override
+    public boolean isUsableForLazySmp() {
+        return true;
+    }
 }
