@@ -2,6 +2,7 @@ package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.uci.GameContext;
@@ -32,17 +33,19 @@ public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
             BoardRepresentation board,
             Color side, MoveList moveList) {
 
-        generator.generate(board, side, moveList);
+//        generator.generate(board, side, moveList);
 
-//        switch (mode) {
-//        case NORMAL:
-//            generator.generate(board, side, moveList);
-//            break;
-//        case QUIESCENCE:
-//            generator2.generate(board, side, moveList, BBMoveGeneratorImpl2.GenTypes.CAPTURES);
-//            generator2.genPawnMoves(((BitBoard) board).getBoard(), moveList, side, true);
-//            break;
-//        }
+        switch (mode) {
+        case NORMAL:
+            generator.generate(board, side, moveList);
+            break;
+        case QUIESCENCE:
+//            generator2.generate(board, side, moveList);
+
+            generator2.generate(board, side, moveList, BBMoveGeneratorImpl2.GenTypes.CAPTURES);
+            generator2.genPawnMoves(((BitBoard) board).getBoard(), moveList, side, true);
+            break;
+        }
 
     }
 
