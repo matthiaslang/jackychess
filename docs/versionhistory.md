@@ -1,5 +1,14 @@
 # Versions
 
+### Version 0.9.30
+
+- move generation in quiescence to only generate captures
+
+### Version 0.9.29
+
+- reworked tt cache
+- cleaned up quiescence
+
 ### Version 0.9.28
 
 - Experimental Lazy SMP disabled by default. Doesnt bring anything so far. Seems we have anyway weird problems with tt caching (e.g ttcach3)
@@ -10,7 +19,7 @@
 
 - refactoring: eval cache is now thread safe
 
-### Version 0.9.26
+### Version 0.9.26  0.9.26.02 0.10.0.RC03
 
 - static search thread context holding move list instances for preparation for multi threading. therefore slightly faster
   than 0.9.25.
@@ -92,7 +101,7 @@ move generation and search should therefore a bit faster, overall search should 
 
 - cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
 
-### Version 0.9.14
+### Version 0.9.14  first official stable release
 
 - fixed issue when running engine within a batch file: uci quit has not exit process (because of other threads still running)
 - log files are by default not written, but only if java property jacky.logging.activate is set to true.
