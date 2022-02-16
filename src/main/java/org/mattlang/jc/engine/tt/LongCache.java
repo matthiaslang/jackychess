@@ -107,10 +107,10 @@ public final class LongCache {
     }
 
     public static final byte toFlag(int max, int alpha, int beta) {
-        if (max <= alpha) // a lowerbound value
-            return LOWERBOUND;
-        else if (max >= beta) // an upperbound value
+        if (max <= alpha) // value below alpha, so we can only use it as an upper bound
             return UPPERBOUND;
+        else if (max >= beta) // higher beta, so we can only use it as an lower bound
+            return LOWERBOUND;
         else // a true minimax value
             return EXACT_VALUE;
     }

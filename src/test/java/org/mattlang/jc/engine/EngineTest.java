@@ -89,7 +89,7 @@ public class EngineTest {
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.useTTCache.setValue(false))
+                .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
@@ -117,7 +117,7 @@ public class EngineTest {
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
-                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+//                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c -> c.maxThreads.setValue(4))

@@ -397,7 +397,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         // save score and best move info in tt:
-        searchContext.storeTT(color, max, max, beta, depth, bestMove);
+        searchContext.storeTT(color, max, alpha, beta, depth, bestMove);
 
         return max;
     }
@@ -509,9 +509,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
-            // todo should we store values from quiescence? and with what depth?
-            searchContext.storeTT(color, eval, alpha, beta, depth, 0);
-//            searchContext.clearTT(depth);
             return eval;
         }
 
@@ -604,10 +601,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             }
             
         }
-
-        // todo store values from quiescence? and if so, with what depth?
-        searchContext.storeTT(color, x, alpha, beta, depth, 0);
-//        searchContext.clearTT(depth);
 
         return alpha;
     }

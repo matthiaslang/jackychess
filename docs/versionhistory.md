@@ -1,5 +1,13 @@
 # Versions
 
+### Version 0.9.31
+
+- fixed tt cache upper/lower bounds issue
+  - fixed lower/upper bound flag mistake
+  - fixed saving of exact values
+  - dont save tt values in quiescence
+
+
 ### Version 0.9.30
 
 - move generation in quiescence to only generate captures

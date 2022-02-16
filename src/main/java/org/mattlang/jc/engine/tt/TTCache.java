@@ -49,7 +49,7 @@ public final class TTCache implements TTCacheInterface {
 
         if (existing == 0L) {
             cache.save(boardZobristHash, LongCache.createValue(eval, move, tpe, depth));
-        } else if (existingDepth > depth) {
+        } else if (existingDepth < depth) {
             cache.save(boardZobristHash, LongCache.createValue(eval, move, tpe, depth));
         }
     }
