@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.tt;
 
 import static java.lang.String.format;
-import static org.mattlang.jc.engine.tt.TTEntry.*;
+import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Map;
 
@@ -100,13 +100,7 @@ public final class TTCache4 implements TTCacheInterface {
     @Override
     public final void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
             int depth, int move) {
-        if (max <= alpha) // a lowerbound value
-            storeTTEntry(currBoard, max, LOWERBOUND, depth, move);
-        else if (max >= beta) // an upperbound value
-            storeTTEntry(currBoard, max, UPPERBOUND, depth, move);
-        else // a true minimax value
-            storeTTEntry(currBoard, max, EXACT_VALUE, depth, move);
-
+            storeTTEntry(currBoard, max, toFlag(max, alpha, beta), depth, move);
     }
 
     @Override

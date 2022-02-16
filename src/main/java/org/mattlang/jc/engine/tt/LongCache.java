@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.tt;
 
+import static org.mattlang.jc.engine.tt.TTEntry.*;
+
 /**
  * A thread safe tt cache with a long as payload.
  * todo refactor other caches to use this (e.g. TTCache3)
@@ -102,5 +104,14 @@ public final class LongCache {
             }
         }
         return usage;
+    }
+
+    public static final byte toFlag(int max, int alpha, int beta) {
+        if (max <= alpha) // a lowerbound value
+            return LOWERBOUND;
+        else if (max >= beta) // an upperbound value
+            return UPPERBOUND;
+        else // a true minimax value
+            return EXACT_VALUE;
     }
 }

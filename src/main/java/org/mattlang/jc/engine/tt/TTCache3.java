@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
-import static org.mattlang.jc.engine.tt.TTEntry.*;
+import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -79,14 +79,7 @@ public final class TTCache3 implements TTCacheInterface {
 		return (int) (key >>> keyShifts) << 1;
 	}
 
-	public static final int toFlag(int max, int alpha, int beta) {
-		if (max <= alpha) // a lowerbound value
-			return LOWERBOUND;
-		else if (max >= beta) // an upperbound value
-			return UPPERBOUND;
-		else // a true minimax value
-			return EXACT_VALUE;
-	}
+
 
 	public void addValue(final long key, int score, final int depth, final int flag, final int move) {
 

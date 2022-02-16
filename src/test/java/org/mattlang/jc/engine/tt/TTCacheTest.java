@@ -33,7 +33,7 @@ public class TTCacheTest {
         BoardRepresentation board = new Board3();
         board.setStartPosition();
 
-        cache.addValue(board.getZobristHash(), 500, 5, TTEntry.EXACT_VALUE, 400000);
+        cache.addValue(board.getZobristHash(), -500, -5, TTEntry.EXACT_VALUE, 400000);
 
         board.switchSiteToMove();
         assertThat(cache.getValue(board.getZobristHash())).isEqualTo(0L);
@@ -43,9 +43,9 @@ public class TTCacheTest {
 
         assertThat(entry).isNotEqualTo(0L);
 
-        assertThat(cache.getDepth(entry)).isEqualTo(5);
+        assertThat(cache.getDepth(entry)).isEqualTo(-5);
         assertThat(TTCache3.getFlag(entry)).isEqualTo(TTEntry.EXACT_VALUE);
-        assertThat(TTCache3.getScore(entry)).isEqualTo(500);
+        assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
         assertThat(TTCache3.getMove(entry)).isEqualTo(400000);
 
     }

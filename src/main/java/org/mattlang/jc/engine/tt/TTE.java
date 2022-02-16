@@ -10,10 +10,6 @@ import lombok.Getter;
 @Getter
 public final class TTE {
 
-    public static final byte EXACT_VALUE = 1;
-    public static final byte LOWERBOUND = 2;
-    public static final byte UPPERBOUND = 3;
-
     /**
      * zobrist hash.
      */
