@@ -205,6 +205,6 @@ public final class SearchContext {
     }
 
     public void savePv(int bestMove, int ply) {
-        context.getPvCache().save(board.getZobristHash(), bestMove);
+        stc.getPvCache().save(board.getZobristHash(), bestMove);
     }
 }

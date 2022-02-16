@@ -4,6 +4,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.tt.IntCache;
 
 /**
  * Another experimental evaluation.
@@ -32,7 +33,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private boolean caching=false;
 
-    private EvalCache evalCache=EvalCache.instance;
+    private IntCache evalCache = EvalCache.instance;
 
 
 
@@ -55,9 +56,9 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 
-        if (caching){
-            int cachedResult=evalCache.find(currBoard.getZobristHash(), who2Move);
-            if (cachedResult != EvalCache.NORESULT) {
+        if (caching) {
+            int cachedResult = evalCache.find(currBoard.getZobristHash());
+            if (cachedResult != IntCache.NORESULT) {
                 return cachedResult;
             }
         }
@@ -80,7 +81,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         score = score * who2mov;
 
         if (caching){
-            evalCache.save(currBoard.getZobristHash(), who2Move, score);
+            evalCache.save(currBoard.getZobristHash(), score);
         }
 
         return score;

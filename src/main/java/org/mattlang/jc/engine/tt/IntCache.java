@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.tt;
 
 /**
  * A thread safe tt cache with an int as payload.
- * todo refactor eval cache to use this cache.
  */
 public final class IntCache {
 

@@ -649,7 +649,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
         List<Integer> pvMoves = expandPv
-                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, context.getPvCache(), depth)
+                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, stc.getPvCache(), depth)
                 : pvArray.getPvMoves();
 
         return new NegaMaxResult(directScore,

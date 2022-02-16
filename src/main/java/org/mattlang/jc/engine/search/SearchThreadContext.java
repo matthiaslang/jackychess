@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.uci.GameContext;
 
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Getter;
 /**
  * Holds variables used during a search for one thread which is used for all nested iterative deepening and negamax
  * search.
- * Mainly it is reused movelists.
+ * This includes movelist and all heuristical data like killer heuristic, history heuristic, pv cache, etc.
  *
  * All structures which are needed by one search thread should be refactored in this class finally.
  * Once this is done we could think of implementing multi threaded Lazy SMP search.
@@ -26,6 +27,8 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
+    @Getter
+    private IntCache pvCache = new IntCache(16);
 
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {

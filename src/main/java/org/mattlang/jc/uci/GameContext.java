@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 
@@ -27,9 +26,6 @@ public class GameContext {
     public TTCacheInterface ttCache;
 
     private HashMap<String, Object> context = new HashMap<>();
-
-    @Getter
-    private IntCache pvCache = new IntCache(16);
 
     public GameContext() {
         ttCache = new TTCache();
