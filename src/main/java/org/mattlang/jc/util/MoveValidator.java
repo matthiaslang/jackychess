@@ -55,18 +55,20 @@ public class MoveValidator {
         }
     }
 
-    private boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
+    public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
         return isLegalMove(board, move.toInt(), who2Move);
     }
 
-    private boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
+    public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
         moveList.reset();
         legalMoveGen.generate(board, who2Move, moveList);
 
         // todo clean up and make nicer way to check this...
-        for (MoveCursor legalMove : moveList) {
-            if (legalMove.getMoveInt() == move) {
+        MoveCursor cursor = moveList.iterate();
+        while (cursor.hasNext()) {
+            cursor.next();
+            if (cursor.getMoveInt() == move) {
                 return true;
             }
         }

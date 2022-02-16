@@ -163,6 +163,7 @@ public class StagedMoveCursor implements MoveCursor {
         throw new IllegalStateException("remove not supported!");
     }
 
+    @Override
     public boolean hasNext() {
         if (stageStatus != StageStatus.ACTIVE) {
             nextStage();
@@ -268,6 +269,7 @@ public class StagedMoveCursor implements MoveCursor {
         stageStatus = StageStatus.FINISHED;
     }
 
+    @Override
     public void next() {
         if (stageStatus == StageStatus.NONE || stageStatus == StageStatus.FINISHED) {
             throw new IllegalStateException("!!!");

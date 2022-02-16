@@ -71,7 +71,9 @@ public class Perft {
         }
 
         MoveList moves = generator.generate(board, color);
-        for (MoveCursor moveCursor : moves) {
+        MoveCursor moveCursor = moves.iterate();
+        while (moveCursor.hasNext()) {
+            moveCursor.next();
 
             if (depth == 1) {
                 if (moveCursor.isCapture()) {

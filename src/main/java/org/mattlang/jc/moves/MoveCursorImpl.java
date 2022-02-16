@@ -95,6 +95,7 @@ public final class MoveCursorImpl implements MoveCursor {
         iterCurser--;
     }
 
+    @Override
     public void next() {
 
         iterCurser++;
@@ -103,6 +104,7 @@ public final class MoveCursorImpl implements MoveCursor {
         currMoveObj.fromLongEncoded(currMove);
     }
 
+    @Override
     public boolean hasNext() {
         return iterCurser + 1 < size;
     }

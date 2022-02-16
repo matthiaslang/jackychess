@@ -8,7 +8,7 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.MoveImpl;
 
-public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoCloseable {
+public interface MoveList extends MoveCollector, AutoCloseable {
 
     /**
      * sort the list with usage of a order calculator.
@@ -40,7 +40,9 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoClose
      */
     default List<MoveImpl> extractList() {
         ArrayList<MoveImpl> l1 = new ArrayList<>();
-        for (MoveCursor moveCursor : this) {
+        MoveCursor moveCursor=iterate();
+        while (moveCursor.hasNext()) {
+            moveCursor.next();
             l1.add(new MoveImpl(moveCursor.getMoveInt()));
         }
         l1.sort(Comparator.comparingInt(MoveImpl::toInt));
@@ -48,4 +50,13 @@ public interface MoveList extends Iterable<MoveCursor>, MoveCollector, AutoClose
     }
 
     void reset();
+
+    /**
+     * Returns a cursor initialized for iteration.
+     * Note: due ot performance and memory usage, there is only one cursor associated with a move list.
+     * So the caller can not use more than one iteration at one time.
+     *
+     * @return
+     */
+    MoveCursor iterate();
 }

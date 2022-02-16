@@ -90,7 +90,7 @@ public class EngineTest {
 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.maxDepth.setValue(11))
+                .config(c -> c.maxDepth.setValue(25))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();

@@ -1,7 +1,5 @@
 package org.mattlang.jc.moves;
 
-import java.util.Iterator;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
@@ -99,11 +97,6 @@ public class StagedMoveListImpl implements MoveList {
         //        return moves.size();
     }
 
-    @Override
-    public Iterator<MoveCursor> iterator() {
-        return new StagedMoveListIteratorImpl(this);
-    }
-
     public void reset() {
         moves.reset();
 
@@ -112,6 +105,11 @@ public class StagedMoveListImpl implements MoveList {
         orderCalculator = null;
         board = null;
         side = null;
+    }
+
+    @Override
+    public MoveCursor iterate() {
+        throw new IllegalStateException("not yet implemented!");
     }
 
     public void init(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board, Color side) {

@@ -6,7 +6,6 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,10 +37,10 @@ public class MoveGeneratorTest {
         MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
-        List<Move> wMoves = createMoveList(whiteMoves);
+        List<MoveImpl> wMoves = whiteMoves.extractList();
         // 8 king moves + 4 promotion moves
         assertThat(wMoves.size()).isEqualTo(12);
-        List<Move> bMoves = createMoveList(blackMoves);
+        List<MoveImpl> bMoves = blackMoves.extractList();
         // 8 king moves + 4 promotion moves
         assertThat(bMoves.size()).isEqualTo(12);
 
@@ -80,7 +79,7 @@ public class MoveGeneratorTest {
         MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
-        Move a7PawnMove = createMoveList(whiteMoves).stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
+        Move a7PawnMove = whiteMoves.extractList().stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
 
         board.domove(a7PawnMove);
 
@@ -94,7 +93,7 @@ public class MoveGeneratorTest {
 
         MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
-        Move a2PawnMove = createMoveList(blackMoves).stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
+        Move a2PawnMove = blackMoves.extractList().stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
 
         board.domove(a2PawnMove);
 
@@ -114,7 +113,7 @@ public class MoveGeneratorTest {
         MoveGenerator moveGenerator = new MoveGeneratorImpl3();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
-        List<Move> mmoves = createMoveList(moves);
+        List<MoveImpl> mmoves = moves.extractList();
 
         assertThat(mmoves)
                 .flatExtracting((Function<? super Move, ?>) m -> m.toStr())
@@ -143,20 +142,6 @@ public class MoveGeneratorTest {
 
     }
 
-    /**
-     * Helper method to create a list of individual move objects for tests to better inspect the results.
-     *
-     * @param moves
-     * @return
-     */
-    private List<Move> createMoveList(MoveList moves) {
-        ArrayList<Move> result = new ArrayList<>();
-        for (MoveCursor move : moves) {
-            result.add(new MoveImpl(move.getMoveInt()));
-        }
-        return result;
-    }
-
     @Test
     public void testRochade() {
 
@@ -171,7 +156,7 @@ public class MoveGeneratorTest {
         MoveGenerator moveGenerator = new BBMoveGeneratorImpl();
         MoveList moves = moveGenerator.generate(board, WHITE);
         // find white rochade moves:
-        List<Move> rochMoves = createMoveList(moves).stream()
+        List<Move> rochMoves = moves.extractList().stream()
                 .filter(m -> m.toStr().equals("e1c1") || m.toStr().equals("e1g1"))
                 .collect(toList());
         assertThat(rochMoves.size()).isEqualTo(2);
@@ -201,10 +186,10 @@ public class MoveGeneratorTest {
         MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        List<Move> wMoves = createMoveList(whiteMoves);
+        List<MoveImpl> wMoves = whiteMoves.extractList();
         // 4 moves + 3 king moves
         assertThat(wMoves.size()).isEqualTo(7);
-        Optional<Move> wPawnDoubleMove = wMoves.stream().filter(m -> m.toStr().equals("d2d4")).findFirst();
+        Optional<MoveImpl> wPawnDoubleMove = wMoves.stream().filter(m -> m.toStr().equals("d2d4")).findFirst();
         assertThat(wPawnDoubleMove).isNotEmpty();
 
         // execute the double move:
@@ -216,9 +201,9 @@ public class MoveGeneratorTest {
         // 6 moves + 3 king moves
         assertThat(blackMoves.size()).isEqualTo(9);
 
-        Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
+        Optional<MoveImpl> epMove1 = blackMoves.extractList().stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
 
-        Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
+        Optional<MoveImpl> epMove2 = blackMoves.extractList().stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
 
         board.domove(epMove1.get());
 
@@ -246,9 +231,9 @@ public class MoveGeneratorTest {
         // 6 moves + 3 king moves
         assertThat(blackMoves.size()).isEqualTo(9);
 
-        Optional<Move> epMove1 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
+        Optional<MoveImpl> epMove1 = blackMoves.extractList().stream().filter(m -> m.toStr().equals("e4d3")).findFirst();
 
-        Optional<Move> epMove2 = createMoveList(blackMoves).stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
+        Optional<MoveImpl> epMove2 = blackMoves.extractList().stream().filter(m -> m.toStr().equals("c4d3")).findFirst();
 
         board.domove(epMove1.get());
 

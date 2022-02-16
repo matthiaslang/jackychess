@@ -18,9 +18,16 @@ public class LongSorter {
     private boolean alreadyFullySorted = false;
 
     public LongSorter(int[] objects, int size, int[] orders) {
+        init(objects, size, orders);
+    }
+
+    public void init(int[] objects, int size, int[] orders) {
         this.objects = objects;
         this.orders = orders;
         this.size = size;
+        start = 0;
+        swapCounter = 0;
+        alreadyFullySorted = false;
     }
 
     public static void sort(int[] data, int size, int[] order) {

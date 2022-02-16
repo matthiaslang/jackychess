@@ -5,7 +5,6 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.EvalFunctions;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -13,14 +12,12 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
-import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.MoveValidator;
 
 /**
  * PV Moves returned seem to be invalid. looks like the last pv ist invalid (sometimes)...
@@ -61,11 +58,13 @@ public class PVMovesAreWrongTest {
 
         System.out.println("board after search" + board.toUniCodeStr());
 
+        MoveValidator moveValidator = new MoveValidator();
+
         Color who2Move = gameState.getWho2Move();
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
-            boolean legal = isLegalMove(board, move, who2Move);
+            boolean legal = moveValidator.isLegalMove(board, move, who2Move);
 
             if (legal) {
                 board.domove(move);
@@ -117,11 +116,13 @@ public class PVMovesAreWrongTest {
 
         System.out.println("board after search" + board.toUniCodeStr());
 
+        MoveValidator moveValidator = new MoveValidator();
+
         Color who2Move = gameState.getWho2Move();
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
-            boolean legal = isLegalMove(board, move, who2Move);
+            boolean legal = moveValidator.isLegalMove(board, move, who2Move);
 
             if (legal) {
                 board.domove(move);
@@ -141,26 +142,4 @@ public class PVMovesAreWrongTest {
         Factory.setDefaults(Factory.createDefaultParameter());
     }
 
-
-
-    public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
-        LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
-        MoveList legalMoves =
-                legalMoveGen.generate(board, who2Move);
-
-        // todo clean up and make nicer way to check this...
-        for (MoveCursor legalMove : legalMoves) {
-            if (legalMove.getMoveInt() == move.toInt()) {
-                return true;
-            }
-        }
-        String moves = "";
-        for (MoveCursor legalMove : legalMoves) {
-            moves += new MoveImpl(legalMove.getMoveInt()).toStr();
-            moves += ",";
-
-        }
-        System.out.println("move " + move.toStr() + " is not within the legal moves: " + moves);
-        return false;
-    }
 }

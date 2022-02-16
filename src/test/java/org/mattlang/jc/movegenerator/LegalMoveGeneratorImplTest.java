@@ -7,6 +7,7 @@ import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -27,14 +28,20 @@ public class LegalMoveGeneratorImplTest {
          */
 
         assertThat(rslt.size()).isEqualTo(1);
-        assertThat(new MoveImpl(rslt.iterator().next().getMoveInt()).toStr()).isEqualTo("e5e4");
+        assertThat(getFirstMove(rslt).toStr()).isEqualTo("e5e4");
 
         // try the same with scnd impl:
         legalMoveGenerator = new BBLegalMoveGeneratorImpl();
         rslt = legalMoveGenerator.generate(board, Color.WHITE);
 
         assertThat(rslt.size()).isEqualTo(1);
-        assertThat(new MoveImpl(rslt.iterator().next().getMoveInt()).toStr()).isEqualTo("e5e4");
+        assertThat(getFirstMove(rslt).toStr()).isEqualTo("e5e4");
 
+    }
+
+    private MoveImpl getFirstMove(MoveList moveList) {
+        MoveCursor cursor = moveList.iterate();
+        cursor.next();
+        return new MoveImpl(cursor.getMoveInt());
     }
 }

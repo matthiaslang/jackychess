@@ -286,7 +286,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             boolean firstChild = true;
 
             int searchedMoves = 0;
-            for (MoveCursor moveCursor : moves) {
+
+            MoveCursor moveCursor = moves.iterate();
+            while (moveCursor.hasNext()) {
+                moveCursor.next();
                 searchContext.doMove(moveCursor);
 
                 parentMoves[ply] = moveCursor.getMoveInt();
@@ -555,7 +558,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
             int searchedMoves = 0;
             /* loop through the capture moves */
-            for (MoveCursor moveCursor : moves) {
+
+            MoveCursor moveCursor = moves.iterate();
+            while (moveCursor.hasNext()) {
+                moveCursor.next();
+                
                 searchContext.doMove(moveCursor);
 
                 // skip illegal moves:

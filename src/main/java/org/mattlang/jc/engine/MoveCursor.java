@@ -35,4 +35,8 @@ public interface MoveCursor {
     int getToIndex();
 
     void remove();
+
+    void next();
+
+    boolean hasNext();
 }

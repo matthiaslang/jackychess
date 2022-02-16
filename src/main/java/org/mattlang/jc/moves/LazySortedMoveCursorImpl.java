@@ -14,13 +14,17 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 
+    public LazySortedMoveCursorImpl() {
+
+    }
+
     public LazySortedMoveCursorImpl(LongSorter longSorter) {
         this.longSorter = longSorter;
     }
 
     @Override
     public void move(BoardRepresentation board) {
-       board.domove(currMoveObj);
+        board.domove(currMoveObj);
     }
 
     @Override
@@ -86,6 +90,14 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     @Override
     public void remove() {
         throw new IllegalStateException("not allowed in a lazy sorted move cursor impl!");
+    }
+
+    public void init(int[] moves, int size, int[] order) {
+        if (longSorter == null) {
+            longSorter = new LongSorter(moves, size, order);
+        } else {
+            longSorter.init(moves, size, order);
+        }
     }
 
     public void next() {

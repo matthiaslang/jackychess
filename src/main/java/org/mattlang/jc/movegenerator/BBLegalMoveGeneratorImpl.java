@@ -3,9 +3,10 @@ package org.mattlang.jc.movegenerator;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.moves.MoveCursorImpl;
+import org.mattlang.jc.moves.MoveListImpl;
 import org.mattlang.jc.uci.GameContext;
 
 public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
@@ -37,7 +38,10 @@ public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
     public static MoveList filterLegalMoves(BoardRepresentation currBoard, CheckChecker checkChecker, MoveList moves,
             Color side) {
 
-        for (MoveCursor moveCursor : moves) {
+        MoveCursorImpl moveCursor = new MoveCursorImpl(((MoveListImpl) moves));
+        while (moveCursor.hasNext()) {
+            moveCursor.next();
+
             moveCursor.move(currBoard);
 
             if (checkChecker.isInChess(currBoard, side)) {

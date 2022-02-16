@@ -6,13 +6,10 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
-import java.util.Iterator;
-
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.sorting.LongSorter;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 public class MoveListImpl implements MoveList {
@@ -20,7 +17,7 @@ public class MoveListImpl implements MoveList {
     private IntList moves = new IntList();
     private int[] order = new int[200];
 
-    private boolean sorted = false;
+    private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
 
     public MoveListImpl() {
     }
@@ -80,13 +77,14 @@ public class MoveListImpl implements MoveList {
         moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_LONG));
     }
 
+    private MoveImpl moveWrapper = new MoveImpl("a1a2");
+
     public void sort(OrderCalculator orderCalculator) {
-        MoveImpl move = new MoveImpl("a1a2");
+
         for (int i = 0; i < moves.size(); i++) {
-            move.fromLongEncoded(moves.get(i));
-            order[i] = orderCalculator.calcOrder(move);
+            moveWrapper.fromLongEncoded(moves.get(i));
+            order[i] = orderCalculator.calcOrder(moveWrapper);
         }
-        sorted = true;
     }
 
     @Override
@@ -95,12 +93,9 @@ public class MoveListImpl implements MoveList {
     }
 
     @Override
-    public Iterator<MoveCursor> iterator() {
-        if (sorted) {
-            return new LazySortedMoveListIteratorImpl(new LongSorter(moves.getRaw(), moves.size(), order));
-        } else {
-            return new MoveListIteratorImpl(this);
-        }
+    public MoveCursor iterate() {
+        moveCursor.init(moves.getRaw(), moves.size(), order);
+        return moveCursor;
     }
 
     public final int get(int i) {
@@ -117,7 +112,6 @@ public class MoveListImpl implements MoveList {
 
     public void reset() {
         moves.reset();
-        sorted = false;
     }
 
     @Override
