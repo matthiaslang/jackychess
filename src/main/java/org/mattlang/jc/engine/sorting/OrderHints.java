@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class OrderHints {
 
-    public static final OrderHints NO_HINTS = new OrderHints(null, null, null, null, false);
+    public static final OrderHints NO_HINTS = new OrderHints(null, null, null, null, null, false);
 
     /**
      * an optional previous pv list of the last round. Could be null. If set, it should be used for move ordering.
@@ -28,16 +28,19 @@ public class OrderHints {
 
     public final KillerMoves killerMoves;
 
+    public final CounterMoveHeuristic counterMoveHeuristic;
+
     public final boolean useMvvLvaSorting;
 
     public OrderHints(
             NegaMaxResult negaMaxResult,
-            SearchThreadContext stc ,
+            SearchThreadContext stc,
             boolean useMvvLvaSorting) {
         this.prevPvlist = negaMaxResult.pvList;
         this.moveScores = negaMaxResult.moveScores;
         this.historyHeuristic = stc.getHistoryHeuristic();
         this.killerMoves = stc.getKillerMoves();
+        this.counterMoveHeuristic = stc.getCounterMoveHeuristic();
         this.useMvvLvaSorting = useMvvLvaSorting;
     }
 }

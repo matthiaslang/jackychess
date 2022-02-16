@@ -7,6 +7,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.MoveScore;
@@ -22,6 +23,9 @@ public class OrderCalculator {
     public static final int GOOD_CAPTURES_SCORE = -100_000_000;
 
     public static final int KILLER_SCORE = -10_000_000;
+
+    public static final int COUNTER_MOVE_SCORE = -5_000_000;
+
     public static final int HISTORY_SCORE = -1_000_000;
 
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
@@ -34,6 +38,7 @@ public class OrderCalculator {
     private int pvMove;
     private final HistoryHeuristic historyHeuristic;
     private final KillerMoves killerMoves;
+    private final CounterMoveHeuristic counterMoveHeuristic;
     private Color color;
 
     private int depth;
@@ -46,6 +51,8 @@ public class OrderCalculator {
     private final OrderHints orderHints;
 
     private int hashMove;
+    private int parentMove;
+
     private BoardRepresentation board;
 
     private static SEE see = new SEE();
@@ -55,14 +62,16 @@ public class OrderCalculator {
         this.targetDepth = targetDepth;
         this.historyHeuristic = orderHints.historyHeuristic;
         this.killerMoves = orderHints.killerMoves;
+        this.counterMoveHeuristic = orderHints.counterMoveHeuristic;
         this.useMvvLva = orderHints.useMvvLvaSorting;
         this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
 
-    public void prepareOrder(Color color, final int hashMove, final int ply, final int depth,
+    public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply, final int depth,
             BoardRepresentation board) {
 
         this.hashMove = hashMove;
+        this.parentMove = parentMove;
         int index = ply - 1;
         // if we are at the root and have scores from a previous run, lets take them:
         if (index == 0 && orderHints.moveScores != null) {
@@ -128,6 +137,9 @@ public class OrderCalculator {
 
             } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
                 return KILLER_SCORE;
+            } else if (counterMoveHeuristic != null
+                    && counterMoveHeuristic.getCounter(color.ordinal(), parentMove) == moveInt) {
+                return COUNTER_MOVE_SCORE;
             } else if (historyHeuristic != null) {
                 // history heuristic
                 int heuristic = historyHeuristic.calcValue(m, color);

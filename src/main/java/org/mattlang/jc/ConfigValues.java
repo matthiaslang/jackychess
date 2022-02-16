@@ -81,6 +81,8 @@ public class ConfigValues {
                     true);
     public final UCICheckOption useKillerMoves = moveOrder.createCheckOpt("useKillerMoves",
             "should killer moves heuristic be used for move ordering", true);
+    public final UCICheckOption useCounterMoves = moveOrder.createCheckOpt("useCounterMoves",
+            "should counter moves heuristic be used for move ordering", true);
     public final UCICheckOption useMvvLvaSorting = moveOrder.createCheckOpt("useMvvLvaSorting",
             "should mvv lva sorting be used for move ordering",
             true);

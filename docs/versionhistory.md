@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.9.32
+
+- counter move heuristic
+
 ### Version 0.9.31
 
 - fixed tt cache upper/lower bounds issue

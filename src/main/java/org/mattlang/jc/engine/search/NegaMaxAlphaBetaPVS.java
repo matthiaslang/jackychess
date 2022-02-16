@@ -62,6 +62,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
     private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
+    private boolean useCounterMove = Factory.getDefaults().getConfig().useCounterMoves.getValue();
 
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
     private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
@@ -94,13 +95,17 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private KillerMoves killerMoves = null;
 
+    private CounterMoveHeuristic counterMoveHeuristic = null;
+
+    private int[] parentMoves=new int[MAX_PLY];
+
     private ExtensionsInfo extensionsInfo = new ExtensionsInfo();
 
     private SearchContext searchContext;
 
-    private boolean debug=true;
+    private boolean debug = true;
 
-    private MoveValidator moveValidator=new MoveValidator();
+    private MoveValidator moveValidator = new MoveValidator();
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -123,8 +128,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     }
 
     private void initContext(SearchThreadContext stc) {
-          killerMoves = stc.getKillerMoves();
-          historyHeuristic = stc.getHistoryHeuristic();
+        killerMoves = stc.getKillerMoves();
+        historyHeuristic = stc.getHistoryHeuristic();
+        counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
     public void resetStatistics() {
@@ -271,15 +277,19 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         pvArray.reset(ply);
 
+        int parentMove = ply <= 1 ? 0: parentMoves[ply-1];
+
         try (MoveList moves = searchContext.generateMoves(NORMAL, ply, color)) {
 
-            sortMoves(ply, depth, color, moves, searchContext.getBoard());
+            sortMoves(ply, depth, color, parentMove, moves, searchContext.getBoard());
 
             boolean firstChild = true;
 
             int searchedMoves = 0;
             for (MoveCursor moveCursor : moves) {
                 searchContext.doMove(moveCursor);
+
+                parentMoves[ply] = moveCursor.getMoveInt();
 
                 // skip illegal moves:
                 if (searchContext.isInCheck(color)) {
@@ -379,7 +389,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
                     if (max >= beta) {
 //                        if (!areWeInCheck) {
-                            updateCutOffHeuristics(ply, depth, color, bestMove, moveCursor);
+                            updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
                         //                        }
                         cutOff++;
                         break;
@@ -408,13 +418,18 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
     }
 
-    private void updateCutOffHeuristics(int ply, int depth, Color color, int bestMove, MoveCursor moveCursor) {
+    // todo test that not in check because those heuristics make only for quiet pos sense...?
+    private void updateCutOffHeuristics(int ply, int depth, Color color, int parentMove, int bestMove, MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
             if (useHistoryHeuristic) {
                 historyHeuristic.update(color, moveCursor, depth);
             }
             if (useKillerMoves) {
                 killerMoves.addKiller(color, bestMove, ply);
+            }
+
+            if (useCounterMove) {
+                counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
             }
         }
     }
@@ -535,8 +550,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
-            // sort just by MMV-LVA, as we have no pv infos currently in quiescence...
-            sortMoves(ply, depth, color, moves, searchContext.getBoard());
+            // sort just by see, as we have no pv infos currently in quiescence...
+            sortMoves(ply, depth, color, 0, moves, searchContext.getBoard());
 
             int searchedMoves = 0;
             /* loop through the capture moves */
@@ -612,10 +627,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      * @param moves
      * @param board
      */
-    private void sortMoves(int ply, int depth, Color color, MoveList moves,
+    private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves,
             BoardRepresentation board) {
         int hashMove = searchContext.probeTTHashMove(color, depth);
-        orderCalculator.prepareOrder(color, hashMove, ply, depth, board);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
         moves.sort(orderCalculator);
     }
 

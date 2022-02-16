@@ -344,6 +344,10 @@ public final class MoveImpl implements Move {
         return (byte)  (byte) (move >>> OFFSET_FROMINDEX & MASK_7);
     }
 
+    public static byte getToIndex(int move){
+        return (byte)  (byte) (move >>> OFFSET_TOINDEX & MASK_7);
+    }
+
     public static boolean isCapture(int move) {
         return getCapturedFigure(move) != 0;
     }

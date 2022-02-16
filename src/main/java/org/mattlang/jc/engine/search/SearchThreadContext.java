@@ -17,12 +17,17 @@ import lombok.Getter;
  */
 public class SearchThreadContext {
 
-    /** Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
-     * which are always reused during recursive search. */
+    /**
+     * Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
+     * which are always reused during recursive search.
+     */
     private MoveList[] movelists = new MoveList[GameContext.MAX_PLY];
 
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
+
+    @Getter
+    private CounterMoveHeuristic counterMoveHeuristic = new CounterMoveHeuristic();
 
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
