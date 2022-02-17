@@ -1,10 +1,15 @@
 # Versions
 
+### Version 0.9.33
+
+- move list iteration clean up
+- tt cache probe in quiescence
+
 ### Version 0.9.32
 
 - counter move heuristic
 
-### Version 0.9.31
+### Version 0.9.31    0.10.0.RC04
 
 - fixed tt cache upper/lower bounds issue
   - fixed lower/upper bound flag mistake

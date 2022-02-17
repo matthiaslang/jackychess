@@ -175,6 +175,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         boolean areWeInCheck = searchContext.isInCheck(color);
         depth = checkToExtend(areWeInCheck, color, depth);
 
+        if (depth == 0) {
+            return quiesce(ply + 1, -1, color, alpha, beta);
+        }
+
         TTResult tte = searchContext.getTTEntry();
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
             if (tte.isExact()) // stored value is exact
@@ -186,9 +190,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             if (alpha >= beta)
                 return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
         }
-        if (depth == 0) {
-            return quiesce(ply + 1, -1, color, alpha, beta);
-        }
+
         checkTimeout();
 
         boolean applyFutilityPruning = false;
@@ -521,6 +523,18 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         if (searchContext.isRepetition()) {
             return Weights.REPETITION_WEIGHT;
+        }
+
+        TTResult tte = searchContext.getTTEntry();
+        if (tte != null && tte.getDepth() >= depth && ply != 1) {
+            if (tte.isExact()) // stored value is exact
+                return adjustScore(tte.getScore(), ply);
+            if (tte.isLowerBound() && tte.getScore() > alpha)
+                alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
+            else if (tte.isUpperBound() && tte.getScore() < beta)
+                beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
+            if (alpha >= beta)
+                return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
         }
 
         int eval = searchContext.eval(color);
