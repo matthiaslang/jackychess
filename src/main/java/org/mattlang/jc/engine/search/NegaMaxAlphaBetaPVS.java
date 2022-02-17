@@ -688,10 +688,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, stc.getPvCache(), depth)
                 : pvArray.getPvMoves();
 
-        return new NegaMaxResult(directScore,
+        NegaMaxResult rslt = new NegaMaxResult(directScore,
                 pvMoves, searchContext, nodesVisited,
                 quiescenceNodesVisited);
 
+        stc.setOrderHints(new OrderHints(rslt, stc,true));
+
+        return rslt;
     }
 
     public int getNodesVisited() {

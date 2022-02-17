@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.uci.GameContext;
 
@@ -34,6 +35,7 @@ public class SearchThreadContext {
 
     @Getter
     private IntCache pvCache = new IntCache(16);
+    private OrderHints orderHints = OrderHints.NO_HINTS;
 
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {
@@ -45,5 +47,13 @@ public class SearchThreadContext {
         MoveList moveList = movelists[ply];
         moveList.reset();
         return moveList;
+    }
+
+    public void setOrderHints(OrderHints orderHints) {
+        this.orderHints = orderHints;
+    }
+
+    public OrderHints getOrderHints() {
+        return orderHints;
     }
 }
