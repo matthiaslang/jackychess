@@ -1,5 +1,11 @@
 # Versions
 
+### Version 0.10.0
+
+Official release. It plays ~1850 elos.
+
+- cleaned up Uci options.
+
 ### Version 0.9.33
 
 - move list iteration clean up
