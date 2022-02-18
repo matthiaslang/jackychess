@@ -20,7 +20,7 @@ public class GenUciParamDocs {
             bw.write("# UCI Options");
             bw.newLine();
 
-            bw.write("List of all UCI Options of the engine.");
+            bw.write("List of all UCI options of the engine.");
             bw.newLine();
             for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getUCIOptionsByGroup().entrySet()) {
                 writeGroup(bw, entry.getKey(), entry.getValue());
@@ -28,7 +28,7 @@ public class GenUciParamDocs {
 
             bw.newLine();
 
-            bw.write("List of all Options of the engine.");
+            bw.write("# internal options of the engine.\n\n These options is mainly only for testing and development. These options can be set via system properties or a configuration property file");
             bw.newLine();
             for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getInternalOptionsByGroup().entrySet()) {
                 writeGroup(bw, entry.getKey(), entry.getValue());
@@ -39,14 +39,14 @@ public class GenUciParamDocs {
     }
 
     private void writeGroup(BufferedWriter fw, UCIGroup group, List<UCIOption> options) throws IOException {
-        fw.write("## " + group.getName());
+        fw.write("## Group " + group.getName());
         fw.newLine();
         fw.write(group.getDescription());
 
         fw.newLine();
 
         for (UCIOption option : options) {
-            fw.write("### " + option.getName());
+            fw.write("### Option " + option.getName());
             fw.newLine();
 
             fw.write(option.getDescription());

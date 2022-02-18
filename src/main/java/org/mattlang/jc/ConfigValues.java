@@ -1,5 +1,7 @@
 package org.mattlang.jc;
 
+import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+
 import org.mattlang.jc.uci.*;
 
 import lombok.Getter;
@@ -7,11 +9,11 @@ import lombok.Getter;
 public class ConfigValues {
 
     @Getter
-    private UCIOptions allOptions = new UCIOptions();
+    private final UCIOptions allOptions = new UCIOptions();
 
     public final UCIGroup common = allOptions.createGroup("Common", "Common parameter");
     public final UCIGroup experimental =
-            allOptions.createGroup("Experimental", "Experimental parameter used during development");
+            allOptions.createInternalGroup("Experimental", "Experimental parameter used during development");
 
     public final UCIGroup internal =
             allOptions.createInternalGroup("Internal", "Internal Test Parameter for Development");
@@ -23,25 +25,25 @@ public class ConfigValues {
 
     public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
-            3, 80, 40);
+            3, MAX_PLY, 40);
 
     public final UCISpinOption maxQuiescence =
             limits.createSpinOpt("quiescence",
                     "the maximum search depth in quiescence",
                     0, 50, 10);
 
-    public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
+    public final UCISpinOption maxThreads = internal.createSpinOpt("maxThreads",
             "the maximum search threads when multi threading search is activated",
             1, 8, 4);
 
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
 
-    public final UCICheckOption useTTCache = caching.createCheckOpt("useTTCache",
+    public final UCICheckOption useTTCache = internal.createCheckOpt("useTTCache",
             "Flag, if the tt cache to store scores should be activated",
             true);
 
-    public final UCIGroup search = allOptions.createGroup("Search", "Parameter that influence search.");
+    public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
             search.createComboOpt("searchalg",
@@ -73,7 +75,7 @@ public class ConfigValues {
                     CacheImpls.class, CacheImpls.STANDARD);
 
     public final UCIGroup moveOrder =
-            allOptions.createGroup("Move Order", "Parameter influencing the move order in alpha beta search");
+            allOptions.createInternalGroup("Move Order", "Parameter influencing the move order in alpha beta search");
 
     public final UCICheckOption useHistoryHeuristic =
             moveOrder.createCheckOpt("useHistoryHeuristic",
@@ -91,7 +93,7 @@ public class ConfigValues {
             true);
 
     public final UCIGroup pruning =
-            allOptions.createGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
+            allOptions.createInternalGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
 
     public final UCICheckOption expandPv = internal.createCheckOpt("expandPv",
             "should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.",
@@ -130,7 +132,7 @@ public class ConfigValues {
                     true);
 
     public final UCIGroup extensions =
-            allOptions.createGroup("Extensions", "Parameter influencing the extension of the search tree");
+            allOptions.createInternalGroup("Extensions", "Parameter influencing the extension of the search tree");
 
     public final UCICheckOption chessExtension =
             extensions.createCheckOpt("useCheckExtension",
