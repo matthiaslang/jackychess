@@ -34,6 +34,10 @@ public class ConfigValues {
             "the maximum search threads when multi threading search is activated",
             1, 8, 4);
 
+    public final UCISpinOption hash = limits.createSpinOpt("Hash",
+            "TT Hash Size in MB",
+            1, 2048, 128);
+
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
 

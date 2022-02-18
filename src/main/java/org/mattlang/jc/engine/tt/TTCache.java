@@ -4,10 +4,14 @@ import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Map;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
 public final class TTCache implements TTCacheInterface {
+
+    /** Slotsize is 16 for two long values */
+    public static final int SLOT_SIZE = 8 * 2;
 
     private int cacheHit;
     private int cacheFail;
@@ -20,7 +24,22 @@ public final class TTCache implements TTCacheInterface {
 
     private TTAging aging = new TTAging();
 
-    private LongCache cache = new LongCache(23);
+    private LongCache cache = new LongCache(determineBitSizeFromConfig());
+
+    private int determineBitSizeFromConfig() {
+        Integer mb = Factory.getDefaults().getConfig().hash.getValue();
+
+        if (mb == null) {
+            mb = 128;
+        }
+        return determineCacheBitSizeFromMb(mb, SLOT_SIZE);
+    }
+
+    public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
+        int slots = mb * 1024 * 1024 / sizeOfSlot;
+        int bits = (int) (Math.log(slots) / Math.log(2));
+        return bits;
+    }
 
     @Override
     public boolean findEntry(TTResult result, BoardRepresentation board) {
