@@ -103,5 +103,5 @@ see [Version History](docs/versionhistory.md)
 - tt cache optimization
 - make end-game stronger with special end game evaluations
 - lazy staged move generation
-- 
+- Multithreading with Lazy SMP
 

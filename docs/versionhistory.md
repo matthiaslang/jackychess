@@ -2,7 +2,7 @@
 
 ### Version 0.10.0
 
-Official release. It plays ~1850 elos.
+Official release. It plays ~2000 elos.
 
 - cleaned up Uci options.
 
