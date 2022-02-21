@@ -13,7 +13,10 @@ import java.util.Map;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -77,8 +80,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int quiescenceNodesVisited = 0;
 
     private int extensionCounter = 0;
-
-    private OrderCalculator orderCalculator;
 
     private int cutOff;
 
@@ -269,9 +270,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int parentMove = ply <= 1 ? 0: parentMoves[ply-1];
 
-        try (MoveList moves = searchContext.generateMoves(NORMAL, ply, color)) {
-
-            sortMoves(ply, depth, color, parentMove, moves, searchContext.getBoard());
+        try (MoveList moves = searchContext.generateSortedMoves(NORMAL, ply, depth, color, parentMove)) {
 
             boolean firstChild = true;
 
@@ -525,14 +524,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         // if we are in check and then use the normal mode instead of only capture generation:
         LegalMoveGenerator.GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
 
-        try (MoveList moves = searchContext.generateMoves(moveGenMode, ply, color)) {
+        try (MoveList moves = searchContext.generateSortedMoves(moveGenMode, ply, depth, color, 0)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
-            // sort just by see, as we have no pv infos currently in quiescence...
-            sortMoves(ply, depth, color, 0, moves, searchContext.getBoard());
-
-            //            int searchedMoves = 0;
+            int searchedMoves = 0;
             /* loop through the capture moves */
 
             MoveCursor moveCursor = moves.iterate();
@@ -603,20 +599,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return alpha;
     }
 
-    /**
-     * Sorts the move list by calculating the move order first.
-     *  @param depth
-     * @param color
-     * @param moves
-     * @param board
-     */
-    private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves,
-            BoardRepresentation board) {
-        int hashMove = searchContext.probeTTHashMove();
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
-        moves.sort(orderCalculator);
-    }
-
     private int checkToExtend(boolean areWeInCheck, Color color, int currDepth) {
         if (doChessExtension) {
             if (areWeInCheck) {
@@ -632,9 +614,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
 
-        this.orderCalculator = new OrderCalculator(orderHints, depth);
-
-        searchContext = new SearchContext(stc, gameState, context, orderCalculator, evaluate, depth, alpha);
+        searchContext = new SearchContext(stc, gameState, context, orderHints, evaluate, depth, alpha);
 
         this.stopTime = stopTime;
 

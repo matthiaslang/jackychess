@@ -14,6 +14,7 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
@@ -93,16 +94,17 @@ public final class SearchContext {
 
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
-            OrderCalculator orderCalculator, EvaluateFunction evaluate,
+            OrderHints orderHints, EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
         this.stc = stc;
         this.board = gameState.getBoard();
 
+        this.orderCalculator = new OrderCalculator(orderHints, targetDepth);
+
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
 
         this.evaluate = evaluate;
-        this.orderCalculator = orderCalculator;
 
         this.gameState = gameState;
         this.context = context;
@@ -188,7 +190,7 @@ public final class SearchContext {
 
     public int probeTTHashMove() {
         if (doCaching) {
-            if (ttCache.findEntry(ttResult, board)){
+            if (ttCache.findEntry(ttResult, board)) {
                 return ttResult.getMove();
             }
         }
@@ -208,10 +210,33 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateMoves(LegalMoveGenerator.GenMode mode, int ply, Color color) {
+    public MoveList generateSortedMoves(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
+            int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
         generator.generate(mode, context, orderCalculator, board, color, moveList);
+        sortMoves(ply, depth, color, parentMove, moveList);
+
         return moveList;
+    }
+
+//    public MoveBoardIterator genSortedMovesIterator(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
+//            int parentMove){
+//        MoveList moveList=generateSortedMoves(mode,ply, depth, color, parentMove);
+//        moveBoardIterator.init(moveList.iterate(), board, checkChecker);
+//        return moveBoardIterator;
+//    }
+
+    /**
+     * Sorts the move list by calculating the move order first.
+     *
+     * @param depth
+     * @param color
+     * @param moves
+     */
+    private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves) {
+        int hashMove = probeTTHashMove(color, depth);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
+        moves.sort(orderCalculator);
     }
 
     public int eval(Color color) {
