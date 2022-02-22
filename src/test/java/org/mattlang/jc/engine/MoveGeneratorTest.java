@@ -25,16 +25,16 @@ public class MoveGeneratorTest {
 
     @Test
     public void testPawnPromotionAndUndoing1() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen 8/P7/8/2K5/5k2/8/p7/8 b k - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        MoveGenerator generator2 = new MoveGeneratorImpl3();
+        MoveGenerator generator2 = new BBMoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
@@ -44,8 +44,8 @@ public class MoveGeneratorTest {
         // 8 king moves + 4 promotion moves
         assertThat(bMoves.size()).isEqualTo(12);
 
-        Move wQPromotion = wMoves.stream().filter(m -> m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
-        Move bQPromotion = bMoves.stream().filter(m -> m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
+        Move wQPromotion = wMoves.stream().filter(m -> m.isPromotion() && m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
+        Move bQPromotion = bMoves.stream().filter(m -> m.isPromotion() && m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
 
         board.domove(wQPromotion);
         board.domove(bQPromotion);

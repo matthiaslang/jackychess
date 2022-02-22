@@ -9,8 +9,8 @@ public class BenchmarkResults<T> {
 
     private final Boolean aspiration;
     private final Boolean useNullMoves;
-    private final String testName;
-    private final String testExpectedBestMove;
+    private String testName;
+    private String testExpectedBestMove;
     private final Boolean staticNullMove;
     private final Boolean razoring;
     private final Boolean useLateMoveReductions;
@@ -22,7 +22,7 @@ public class BenchmarkResults<T> {
 
     private final long duration;
     private final String formattedDuration;
-    private final String fenposition;
+    private String fenposition;
     Map stats;
     private int depth;
 
@@ -44,10 +44,11 @@ public class BenchmarkResults<T> {
         this.duration = watch.getDuration();
         this.formattedDuration = watch.getFormattedDuration();
         this.stats = stats;
-        this.fenposition = testPosition.getFen();
-        this.testName=testPosition.getName();
-        this.testExpectedBestMove=testPosition.getExpectedBestMove();
-
+        if (testPosition != null) {
+            this.fenposition = testPosition.getFen();
+            this.testName = testPosition.getName();
+            this.testExpectedBestMove = testPosition.getExpectedBestMove();
+        }
         ConfigValues config = Factory.getDefaults().getConfig();
         this.depth = config.maxDepth.getValue();
         this.evaluateFunction = config.evluateFunctions.getValue().name();

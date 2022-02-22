@@ -18,7 +18,8 @@ public class TTCacheTest {
 
         cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
 
-        TTEntry entry = cache.getTTEntry(board, Color.WHITE);
+        TTResult entry=new TTResult();
+        assertThat(cache.findEntry(entry, board)).isTrue();
         assertThat(entry).isNotNull();
 
         assertThat(entry.getDepth()).isEqualTo(7);
