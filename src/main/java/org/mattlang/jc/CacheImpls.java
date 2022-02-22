@@ -13,13 +13,6 @@ public enum CacheImpls {
         }
     },
 
-    V2 {
-        @Override
-        public Supplier<TTCacheInterface> createSupplier() {
-            return TTCache2::new;
-        }
-    },
-
     V3 {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
@@ -38,12 +31,6 @@ public enum CacheImpls {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
             return TTCache5::new;
-        }
-    },
-    BUCKETS {
-        @Override
-        public Supplier<TTCacheInterface> createSupplier() {
-            return TTBucketCache::new;
         }
     };
 

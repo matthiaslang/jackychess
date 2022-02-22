@@ -408,6 +408,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
                 && Fields.G7.isSet(pawnOppoBB, side))
             results[side.ordinal()][BLOCKAGES] -= knightTrappedA7Penalty;
 
+        // todo this stmt seems not to be symmetric...?   But the test seem to be wrong with mirroring the game queenside/kingside...
         // knight blocking queenside pawns
         if (Fields.C3.isSet(knightBB, side)
                 && Fields.C2.isSet(pawnBB, side)
