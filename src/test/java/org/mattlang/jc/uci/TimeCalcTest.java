@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.uci.TimeCalc.determineTime;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class TimeCalcTest {
 
     @Test
     public void testProblem() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         GameState gameState = new GameState(board);
@@ -35,7 +35,7 @@ public class TimeCalcTest {
 
     @Test
     public void spendABitMoreTimeOnOpeningAndMiddleGame() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         GameState gameState = new GameState(board);
@@ -53,7 +53,7 @@ public class TimeCalcTest {
 
     @Test
     public void spendABitMoreTimeIfWeHaveMoreTimeThanOpponent() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         GameState gameState = new GameState(board);
@@ -70,7 +70,7 @@ public class TimeCalcTest {
 
     @Test
     public void dontSpendMoreTimeThanWeHaveDependingOnExpectedFutureMoves() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         GameState gameState = new GameState(board);
@@ -87,7 +87,7 @@ public class TimeCalcTest {
 
     @Test
     public void dontSpendMoreTimeThanWeHaveDependingOnExpectedFutureMovesEvenIfOpponentHasMuchLessTime() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         GameState gameState = new GameState(board);

@@ -79,7 +79,11 @@ public class MoveGeneratorTest {
         MoveGenerator generator = new MoveGeneratorImpl3();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
-        Move a7PawnMove = whiteMoves.extractList().stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
+        Move a7PawnMove = whiteMoves.extractList()
+                .stream()
+                .filter(m -> m.toStr().startsWith("a7") && m.isPromotion() && m.getPromotedFigure() == Figure.W_Queen)
+                .findAny()
+                .get();
 
         board.domove(a7PawnMove);
 
@@ -93,7 +97,11 @@ public class MoveGeneratorTest {
 
         MoveGenerator generator2 = new MoveGeneratorImpl3();
         MoveList blackMoves = generator2.generate(board, BLACK);
-        Move a2PawnMove = blackMoves.extractList().stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
+        Move a2PawnMove = blackMoves.extractList()
+                .stream()
+                .filter(m -> m.toStr().startsWith("a2") && m.isPromotion() && m.getPromotedFigure() == Figure.B_Queen)
+                .findAny()
+                .get();
 
         board.domove(a2PawnMove);
 
