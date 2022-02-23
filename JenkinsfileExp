@@ -1,0 +1,75 @@
+/**
+ * Runs a small regression test via cutechess against the latest stable version to get a overview of experimental changes.
+ * Uses the docker container from our cutechess test project.
+ */
+
+pipeline {
+    agent {
+        dockerfile {
+            args '-v /root/.m2:/root/.m2'
+        }
+    }
+    triggers { pollSCM('*/30 * * * *') }
+
+    stages {
+
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests -Dmaven.source.skip '
+            }
+
+            post {
+                always {
+                    archiveArtifacts 'target/*.jar'
+                }
+            }
+        }
+
+        stage('Exp Test') {
+            agent {
+                docker {
+                    image 'chesstest:01'
+                    // Run the container on the node specified at the top-level of the Pipeline, in the same workspace, rather than on a new node entirely:
+                    reuseNode true
+                }
+            }
+
+            steps {
+                catchError/*(buildResult: 'SUCCESS', stageResult: 'FAILURE')*/ {
+                    sh 'JARFILE=$(ls target/*.jar)'
+                    sh """
+       cat << EOF > engines.json
+[
+  {
+    "workingDirectory" : "/jackychess",
+    "command" : "java -Djacky.logging.activate=false -Duser.home=/logs -jar /jackychess/jackychess-0.10.0.jar",
+    "name" : "jcRef",
+    "protocol": "uci",
+    "options" : [
+    ]
+  },
+   {
+    "workingDirectory" : "/jackychess",
+    "command" : "java -Djacky.logging.activate=false -Duser.home=/logs -jar /jackychess/$JARFILE",
+    "name" : "jcExp",
+    "protocol": "uci",
+    "options" : [
+    ]
+  },
+]
+EOF
+"""
+
+                    sh '/cutechess/projects/cli/./cutechess-cli -engine jcExp jcRef -each tc=/15+0.5 -games 2 -rounds 3 -repeat 2 -maxmoves 200 -concurrency 4 -wait 100 -recover -resultformat wide2 -ratinginterval 5 -openings file=/jackychess/openings.pgn | tee cutechess.log '
+                }
+            }
+
+            post {
+                always {
+                    junit testResults: 'cutechess.log'
+                }
+            }
+        }
+    }
+}
