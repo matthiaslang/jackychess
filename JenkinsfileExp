@@ -68,12 +68,12 @@ EOF
                 sh 'ls /'
                 sh 'ls '
 //                sh 'cd target && /cutechess/projects/cli/./cutechess-cli -engines  '
-                sh 'cd target && /cutechess/projects/cli/./cutechess-cli -engine conf=jcExp -engine conf=jcRef -each tc=/5+0.5 -games 2 -rounds 10 -repeat 2 -maxmoves 200 -concurrency 4 -wait 100 -recover -resultformat wide2 -ratinginterval 5 -openings file=/jackychess/openings.pgn | tee cutechess.log '
+                sh 'cd target && /cutechess/projects/cli/./cutechess-cli -engine conf=jcExp -engine conf=jcRef -each tc=/5+0.5 -games 2 -rounds 20 -repeat 2 -maxmoves 200 -concurrency 4 -wait 100 -recover -resultformat wide2 -ratinginterval 5 -openings file=/jackychess/openings.pgn | tee cutechess.log '
 
             }
             post {
                 always {
-                    junit testResults: 'cutechess.log'
+                    junit testResults: 'target/cutechess.log'
                 }
             }
         }
