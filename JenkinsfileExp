@@ -37,12 +37,13 @@ pipeline {
 
             steps {
                 sh 'cp target/*.jar target/jackychessExp.jar'
+                sh 'cp target/jackychessExp.jar /jackychess/jackychessExp.jar'
 
 //                    JARFILE = sh(returnStdout: true, script: 'ls target/*.jar')
 
 //                    sh 'JARFILE=$(ls target/*.jar)'
                 sh """
-       cat << EOF > /engines.json
+       cat << EOF > target/engines.json
 [
   {
     "workingDirectory" : "/jackychess",
@@ -53,8 +54,8 @@ pipeline {
     ]
   },
    {
-    "workingDirectory" : "target",
-    "command" : "java -Djacky.logging.activate=false -Duser.home=/logs -jar target/jackychessExp.jar",
+    "workingDirectory" : "/jackychess",
+    "command" : "java -Djacky.logging.activate=false -Duser.home=/logs -jar /jackychess/jackychessExp.jar",
     "name" : "jcExp",
     "protocol": "uci",
     "options" : [
@@ -66,7 +67,8 @@ EOF
 
                 sh 'ls /'
                 sh 'ls '
-                sh '/cutechess/projects/cli/./cutechess-cli -engine jcExp -engine jcRef -each tc=/15+0.5 -games 2 -rounds 3 -repeat 2 -maxmoves 200 -concurrency 4 -wait 100 -recover -resultformat wide2 -ratinginterval 5 -openings file=/jackychess/openings.pgn | tee cutechess.log '
+//                sh 'cd target && /cutechess/projects/cli/./cutechess-cli -engines  '
+                sh 'cd target && /cutechess/projects/cli/./cutechess-cli -engine conf=jcExp -engine conf=jcRef -each tc=/5+0.5 -games 2 -rounds 10 -repeat 2 -maxmoves 200 -concurrency 4 -wait 100 -recover -resultformat wide2 -ratinginterval 5 -openings file=/jackychess/openings.pgn | tee cutechess.log '
 
             }
             post {
