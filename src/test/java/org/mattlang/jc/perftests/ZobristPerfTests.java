@@ -129,8 +129,8 @@ public class ZobristPerfTests {
         HashMap<Long, Set<String>> collisionMap = new HashMap<>();
         perftReset();
         perft(new LegalMoveGeneratorImpl3(), board, WHITE, depth, (visitedBoard, c, d) -> {
-            BitBoard visitedBoard1 = (BitBoard) visitedBoard;
-            long zobristHash = visitedBoard1.getZobristHash();
+
+            long zobristHash = visitedBoard.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);
             assertThat(zobristHash).isEqualTo(zobristFromScratch);
 

@@ -5,10 +5,7 @@ import static org.mattlang.jc.board.bitboard.BB.least_significant_square_bb;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
@@ -62,7 +59,7 @@ public class SEE {
      * @param threshold
      * @return
      */
-    public boolean see_ge(BitBoard bitBoard, Move m, int threshold) {
+    public boolean see_ge(BoardRepresentation bitBoard, Move m, int threshold) {
 
         //        assert(is_ok(m));
 

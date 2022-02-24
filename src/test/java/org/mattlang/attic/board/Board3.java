@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
@@ -466,5 +467,10 @@ public class Board3 implements BoardRepresentation {
         }
         return false;
 
+    }
+
+    @Override
+    public BitChessBoard getBoard() {
+        throw new IllegalStateException("not implemented! This is no bitboard implementation");
     }
 }

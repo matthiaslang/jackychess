@@ -57,17 +57,16 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
     public void generate(BoardRepresentation board, Color side, MoveCollector collector, GenTypes types) {
 
-        BitBoard bitBoard = (BitBoard) board;
-        BitChessBoard bb = bitBoard.getBoard();
+        BitChessBoard bb = board.getBoard();
 
         Color xside = side.invert();  /* the side not to move */
 
-        long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
-        long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
+        long ownFigsMask = bb.getColorMask(xside.invert());
+        long opponentFigsMask = bb.getColorMask(xside);
         long empty = ~ownFigsMask & ~opponentFigsMask;
 
         if (types == GenTypes.CAPTURES || types == GenTypes.ALL) {
-            genPawnCaptureMoves(bitBoard, collector, side);
+            genPawnCaptureMoves(board, collector, side);
         }
         if (types == GenTypes.QUIET || types == GenTypes.ALL) {
             genPawnMoves(bb, collector, side, false);
@@ -253,9 +252,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
     public static boolean canFigureCaptured(BoardRepresentation board, int i, Color side) {
         Color xside = side.invert();
 
-        BitBoard bitBoard = (BitBoard) board;
-
-        BitChessBoard bb = bitBoard.getBoard();
+        BitChessBoard bb = board.getBoard();
         long ownFigsMask = bb.getColorMask(xside.invert());
         long opponentFigsMask = bb.getColorMask(xside);
 
@@ -344,7 +341,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
     }
 
-    private void genPawnCaptureMoves(BitBoard bitBoard, MoveCollector collector, Color side) {
+    private void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {
         BitChessBoard bb = bitBoard.getBoard();
         long pawns = bb.getPieceSet(FT_PAWN, side);
 
@@ -501,7 +498,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
      * @param side
      * @return
      */
-    private long genPawnAttacs(BitBoard bitBoard, int s, Color side) {
+    private long genPawnAttacs(BoardRepresentation bitBoard, int s, Color side) {
 
         long sMask = 1L << s;
         BitChessBoard bb = bitBoard.getBoard();
@@ -528,7 +525,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
     /// Position::attackers_to() computes a bitboard of all pieces which attack a
     /// given square. Slider attacks use the occupied bitboard to indicate occupancy.
 
-    public long attackersTo(int s, long occupied, BitBoard bitBoard) {
+    public long attackersTo(int s, long occupied, BoardRepresentation bitBoard) {
 
         BitChessBoard bb = bitBoard.getBoard();
         return (genPawnAttacs(bitBoard, s, WHITE))

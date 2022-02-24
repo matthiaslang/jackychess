@@ -12,7 +12,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BB;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.MoveList;
@@ -42,16 +41,15 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
      */
     public void generate(BoardRepresentation board, Color side, MoveCollector collector) {
 
-        BitBoard bitBoard = (BitBoard) board;
-        BitChessBoard bb = bitBoard.getBoard();
+        BitChessBoard bb = board.getBoard();
 
         Color xside = side.invert();  /* the side not to move */
 
-        long ownFigsMask = bitBoard.getBoard().getColorMask(xside.invert());
-        long opponentFigsMask = bitBoard.getBoard().getColorMask(xside);
+        long ownFigsMask = bb.getColorMask(xside.invert());
+        long opponentFigsMask = bb.getColorMask(xside);
         long empty = ~ownFigsMask & ~opponentFigsMask;
 
-        genPawnCaptureMoves(bitBoard, collector, side);
+        genPawnCaptureMoves(board, collector, side);
         genPawnMoves(bb, collector, side);
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
@@ -86,7 +84,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         final int king = Long.numberOfTrailingZeros(kingBB);
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask);
 
-        generateRochade(bitBoard, side, collector);
+        generateRochade(board, side, collector);
     }
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
@@ -201,7 +199,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         return canFigureCaptured(board, i, side);
     }
 
-    public static boolean canKingCaptured(BitBoard bitBoard, Color side) {
+    public static boolean canKingCaptured(BoardRepresentation bitBoard, Color side) {
         long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side);
         int kingPos = Long.numberOfTrailingZeros(kingBB);
         return canFigureCaptured(bitBoard, kingPos, side);
@@ -222,9 +220,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         int side = cside.ordinal();
         int xside = cside.invert().ordinal();
 
-        BitBoard bitBoard = (BitBoard) board;
-
-        BitChessBoard bb = bitBoard.getBoard();
+        BitChessBoard bb = board.getBoard();
         long ownFigsMask = bb.getColorMask(side);
         long opponentFigsMask = bb.getColorMask(xside);
 
@@ -292,7 +288,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         return false;
     }
 
-    private void generateRochade(BitBoard board, Color side, MoveCollector collector) {
+    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
         switch (side) {
         case WHITE:
             if (ROCHADE_L_WHITE.checkRochade(board)) {
@@ -313,7 +309,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         }
     }
 
-    private void genPawnCaptureMoves(BitBoard bitBoard, MoveCollector collector, Color side) {
+    private void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {
         BitChessBoard bb = bitBoard.getBoard();
         long pawns = bb.getPieceSet(FT_PAWN, side);
 

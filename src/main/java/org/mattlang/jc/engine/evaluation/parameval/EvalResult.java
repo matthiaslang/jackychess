@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 
 import lombok.Getter;
 
@@ -39,7 +39,7 @@ public class EvalResult {
      * @param bitBoard
      * @return
      */
-    public int calcCompleteScore(BitBoard bitBoard) {
+    public int calcCompleteScore(BoardRepresentation bitBoard) {
         int score = (int) scaleByPhase(bitBoard.getBoard(), midGame, endGame) + result;
         return score;
     }

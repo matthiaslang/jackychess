@@ -4,7 +4,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
@@ -43,7 +43,7 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard) {
+    public void eval(EvalResult result, BoardRepresentation bitBoard) {
         BitChessBoard bb = bitBoard.getBoard();
 
         result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +

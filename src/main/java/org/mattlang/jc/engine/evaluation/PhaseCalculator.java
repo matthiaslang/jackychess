@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.evaluation;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
@@ -28,7 +27,7 @@ public class PhaseCalculator {
     }
 
     public static double calcPhaseFactor(BoardRepresentation currBoard) {
-        return calcPhaseFactor(((BitBoard) currBoard).getBoard());
+        return calcPhaseFactor((currBoard).getBoard());
     }
 
     public static double calcPhaseFactor(BitChessBoard bb) {

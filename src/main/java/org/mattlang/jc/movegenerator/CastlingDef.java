@@ -8,7 +8,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.RochadeType;
-import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class CastlingDef {
 
@@ -70,7 +69,7 @@ public class CastlingDef {
             if (checkPos(board)) {
                 // check that king pos and moves are not in check:
                 for (int pos : fieldCheckTst) {
-                    if (BBMoveGeneratorImpl.canFigureCaptured((BitBoard) board, pos, side)) {
+                    if (BBMoveGeneratorImpl.canFigureCaptured(board, pos, side)) {
                         return false;
                     }
                 }
@@ -92,19 +91,20 @@ public class CastlingDef {
 
     /**
      * Checks if this rochade is allowed using bitboard stuff.
+     *
      * @param board
      * @return
      */
 
     // todo implement via bitboard comparisons
-    public boolean checkRochade(BitBoard board) {
+    public boolean checkRochade(BoardRepresentation board) {
         // check if rochade is still allowed:
         if (board.isCastlingAllowed(side, rochadeType)) {
             // check that the relevant figures and empty fields are as needs to be for castling:
             if (checkPos(board)) {
                 // check that king pos and moves are not in check:
                 for (int pos : fieldCheckTst) {
-                    if (BBMoveGeneratorImpl.canFigureCaptured((BitBoard) board, pos, side)) {
+                    if (BBMoveGeneratorImpl.canFigureCaptured(board, pos, side)) {
                         return false;
                     }
                 }

@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import java.util.List;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
@@ -26,7 +26,7 @@ public class ParameterizedMaterialCorrectionEvaluation {
         this.rules = rules;
     }
 
-    public int correct(BitBoard board, int result) {
+    public int correct(BoardRepresentation board, int result) {
 
         BitChessBoard bb = board.getBoard();
 

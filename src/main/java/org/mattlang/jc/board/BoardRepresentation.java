@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import org.mattlang.jc.board.bitboard.BitChessBoard;
+
 public interface BoardRepresentation {
     void setStartPosition();
 
@@ -78,4 +80,10 @@ public interface BoardRepresentation {
     void doNullMove();
 
     boolean isRepetition();
+
+    /**
+     * Returns the inner bitboard representation.
+     * @return
+     */
+    BitChessBoard getBoard();
 }

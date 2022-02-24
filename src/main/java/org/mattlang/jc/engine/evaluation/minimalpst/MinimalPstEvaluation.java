@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
@@ -155,10 +154,6 @@ public class MinimalPstEvaluation implements EvaluateFunction {
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
-        return evalBitboard((BitBoard) currBoard, who2Move);
-    }
-
-    private int evalBitboard(BitBoard currBoard, Color who2Move) {
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         BitChessBoard bb = currBoard.getBoard();
 
