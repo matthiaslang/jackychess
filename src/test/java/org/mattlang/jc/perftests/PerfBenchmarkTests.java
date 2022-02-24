@@ -7,8 +7,6 @@ import static org.mattlang.jc.perftests.Perft.*;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.BenchmarkResults;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -46,8 +44,8 @@ public class PerfBenchmarkTests {
                     Factory.setDefaults(Factory.createStable());
                     BoardRepresentation board = new BitBoard();
                     board.setStartPosition();
-                    Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
-                    LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
+                    Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
+                    LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
                     perftInitialPosition(board, generator);
                 }));
@@ -98,8 +96,8 @@ public class PerfBenchmarkTests {
                     BitBoard board = new BitBoard();
                     board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
 //                    System.out.println(board.toUniCodeStr());
-                    Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
-                    LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
+                    Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
+                    BBLegalMoveGeneratorImpl generator = new BBLegalMoveGeneratorImpl();
                     perftPosition2(board, generator);
                 }));
 
@@ -148,8 +146,8 @@ public class PerfBenchmarkTests {
                     BitBoard board = new BitBoard();
                     board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
 //                    System.out.println(board.toUniCodeStr());
-                    Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
-                    LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
+                    Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
+                    LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
                     perftPos3(board, generator);
                 }));
@@ -199,9 +197,9 @@ public class PerfBenchmarkTests {
                     board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
                     System.out.println(board.toUniCodeStr());
 
-                    Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
+                    Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
 
-                    LegalMoveGeneratorImpl3 generator = new LegalMoveGeneratorImpl3();
+                    BBLegalMoveGeneratorImpl generator = new BBLegalMoveGeneratorImpl();
 
                     perftPos4(board, generator);
                 }));

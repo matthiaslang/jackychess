@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
@@ -75,7 +74,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = whiteMoves.extractList()
@@ -94,7 +93,7 @@ public class MoveGeneratorTest {
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new MoveGeneratorImpl3();
+        MoveGenerator generator2 = new BBMoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
         Move a2PawnMove = blackMoves.extractList()
                 .stream()
@@ -117,7 +116,7 @@ public class MoveGeneratorTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl3();
+        MoveGenerator moveGenerator = new BBMoveGeneratorImpl();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
         List<MoveImpl> mmoves = moves.extractList();
@@ -190,7 +189,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
@@ -230,7 +229,7 @@ public class MoveGeneratorTest {
         BoardRepresentation copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);

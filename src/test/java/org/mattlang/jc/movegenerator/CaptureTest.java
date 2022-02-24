@@ -3,7 +3,6 @@ package org.mattlang.jc.movegenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -19,7 +18,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -37,7 +36,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -55,7 +54,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -72,7 +71,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -88,7 +87,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isFalse();
 
@@ -105,7 +104,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 
@@ -123,7 +122,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGeneratorImpl3 generator = new MoveGeneratorImpl3();
+        BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
         int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
         assertThat(generator.canFigureCaptured(board, kingPos)).isTrue();
 

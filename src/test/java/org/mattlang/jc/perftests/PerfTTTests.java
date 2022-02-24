@@ -10,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
+import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
@@ -56,7 +56,7 @@ public class PerfTTTests {
     }
 
     public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
-        LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
+        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
         StopWatch fillWatch = new StopWatch();
         perftReset();
 
