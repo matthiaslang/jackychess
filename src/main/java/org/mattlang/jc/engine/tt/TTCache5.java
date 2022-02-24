@@ -65,8 +65,8 @@ public final class TTCache5 implements TTCacheInterface {
         return false;
     }
 
-    @Override
-    public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
+
+    private final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         long boardZobristHash = board.getZobristHash();
         int hashEntry = h0(boardZobristHash);
 
