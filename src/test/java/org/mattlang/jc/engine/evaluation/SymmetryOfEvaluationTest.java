@@ -34,8 +34,6 @@ public class SymmetryOfEvaluationTest {
 
     /**
      * Tests Symmetry of Evaluation: Evaluation for white must be equal to evaluation for black for a flipped board.
-     * currently fails for 3 tests, (Blockage of knight blocking queen pawns), but that seems to be a test issue
-     * because of wrong flipping the board. We need a mirroring, to have same queenside/kingside behaviour.
      *
      */
     @Test
@@ -55,7 +53,7 @@ public class SymmetryOfEvaluationTest {
 
         int scoreWhite = evaluation.eval(board, Color.WHITE);
 
-        String flippedFen = fenflip.flipFen(testPosition.getFenPosition());
+        String flippedFen = fenflip.mirrorHorizontalFen(testPosition.getFenPosition());
         System.out.println("flippedFen=" + flippedFen);
 
         board.setFenPosition(flippedFen);
