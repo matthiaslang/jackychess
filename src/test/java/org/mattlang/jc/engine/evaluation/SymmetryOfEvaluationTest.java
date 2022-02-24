@@ -15,7 +15,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.util.FenFlip;
+import org.mattlang.jc.tools.FenFlip;
 
 @RunWith(Parameterized.class)
 public class SymmetryOfEvaluationTest {

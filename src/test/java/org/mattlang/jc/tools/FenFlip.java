@@ -1,4 +1,4 @@
-package org.mattlang.jc.util;
+package org.mattlang.jc.tools;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
