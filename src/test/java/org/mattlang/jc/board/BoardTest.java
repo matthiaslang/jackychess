@@ -2,21 +2,21 @@ package org.mattlang.jc.board;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.moves.MoveImpl;
 
 public class BoardTest {
 
     @Test
     public void testStartPosition() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         System.out.println(board.toUniCodeStr());
     }
 
     @Test
     public void testStartPositionWithMoves() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         board.domove(new MoveImpl("e2e4"));
@@ -27,7 +27,7 @@ public class BoardTest {
 
     @Test
     public void testUndoingMoves() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         System.out.println("doing moves...");
@@ -46,7 +46,7 @@ public class BoardTest {
 
         System.out.println(board.toUniCodeStr());
 
-        BoardRepresentation cmpboard = new Board3();
+        BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setStartPosition();
         Assertions.assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }

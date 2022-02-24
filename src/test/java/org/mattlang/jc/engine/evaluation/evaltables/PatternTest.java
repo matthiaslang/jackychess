@@ -5,8 +5,8 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.PieceList;
+import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class PatternTest {
 
@@ -23,7 +23,7 @@ public class PatternTest {
                 3, 0, 50, 115, 100, 0, 0, 9,
         });
 
-        Board3 board = new Board3();
+        BitBoard board = new BitBoard();
         board.setStartPosition();
 
         int rslt = test.calcScore(board.getWhitePieces().getBishops(), board.getBlackPieces().getBishops(), 1);

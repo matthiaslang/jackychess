@@ -5,11 +5,11 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.UCI;
@@ -31,7 +31,7 @@ public class EngineBenchmarkTest {
                             }));
 
                     // now starting engine:
-                    Engine engine = new Engine(new Board3());
+                    Engine engine = new Engine(new BitBoard());
 
                     engine.getBoard().setStartPosition();
                     Move move = engine.go();
@@ -50,7 +50,7 @@ public class EngineBenchmarkTest {
 
                             .config(c -> c.maxDepth.setValue(7)));
                     // now starting engine:
-                    Engine engine = new Engine(new Board3());
+                    Engine engine = new Engine(new BitBoard());
 
                     engine.getBoard().setStartPosition();
                     Move move = engine.go();
@@ -77,7 +77,7 @@ public class EngineBenchmarkTest {
                                 c.maxDepth.setValue(7);
                             }));
                     // now starting engine:
-                    Engine engine = new Engine(new Board3());
+                    Engine engine = new Engine(new BitBoard());
                     engine.getBoard().setFenPosition("position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
                     Move move = engine.go();
 
@@ -95,7 +95,7 @@ public class EngineBenchmarkTest {
 
                             .config(c -> c.maxDepth.setValue(7)));
                     // now starting engine:
-                    Engine engine = new Engine(new Board3());
+                    Engine engine = new Engine(new BitBoard());
                     engine.getBoard().setFenPosition("position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
                     Move move = engine.go();
 

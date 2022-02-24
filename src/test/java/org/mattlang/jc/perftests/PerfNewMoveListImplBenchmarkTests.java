@@ -7,12 +7,12 @@ import static org.mattlang.jc.perftests.Perft.assertPerft;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.uci.UCI;
 
@@ -42,7 +42,7 @@ public class PerfNewMoveListImplBenchmarkTests {
     }
 
     public void runPosition3() {
-        Board3 board = new Board3();
+        BitBoard board = new BitBoard();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
         System.out.println(board.toUniCodeStr());
 

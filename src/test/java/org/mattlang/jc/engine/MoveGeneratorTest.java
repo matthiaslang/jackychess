@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
@@ -60,7 +59,7 @@ public class MoveGeneratorTest {
         board.undo(wQPromotion);
 
         System.out.println(board.toUniCodeStr());
-        BoardRepresentation cmpboard = new Board3();
+        BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setFenPosition(fen);
 
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
@@ -70,7 +69,7 @@ public class MoveGeneratorTest {
     @Test
     public void testPawnPromotionAndUndoing2() {
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -91,7 +90,7 @@ public class MoveGeneratorTest {
         // undoing:
         board.undo(a7PawnMove);
 
-        BoardRepresentation cmpboard = new Board3();
+        BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
@@ -115,7 +114,7 @@ public class MoveGeneratorTest {
     @Test
     public void testMoveGenFromStartWhite() {
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         MoveGenerator moveGenerator = new MoveGeneratorImpl3();
@@ -183,7 +182,7 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassant() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen k7/3p4/8/2P1P3/2p1p3/8/3P4/K7 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -224,7 +223,7 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassantFromFEN() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen k7/3p4/8/2P1P3/2pPp3/8/8/K7 b k d3 2 17 ";
         board.setFenPosition(fen);
 

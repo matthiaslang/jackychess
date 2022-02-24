@@ -4,7 +4,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.perftests.Perft.assertPerft;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.attic.movegenerator.CheckCheckerImpl;
 import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
 import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
@@ -30,7 +29,7 @@ public class PerfTests {
     public void initialPositionPerformanceLegalMoves() {
         Factory.setDefaults(Factory.createStable());
         Factory.getDefaults().checkChecker.set(() -> new CheckCheckerImpl());
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
         LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
