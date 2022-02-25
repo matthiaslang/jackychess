@@ -32,7 +32,7 @@ public class ConfigValues {
                     "the maximum search depth in quiescence",
                     0, 50, 10);
 
-    public final UCISpinOption maxThreads = internal.createSpinOpt("maxThreads",
+    public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
             "the maximum search threads when multi threading search is activated",
             1, 8, 4);
 
