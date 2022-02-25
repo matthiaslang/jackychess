@@ -50,7 +50,7 @@ public class ConfigValues {
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
 
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            search.createComboOpt("searchalg",
+            limits.createComboOpt("searchalg",
                     "the search algorithm to use.",
                     SearchAlgorithms.class, SearchAlgorithms.STABLE);
 
