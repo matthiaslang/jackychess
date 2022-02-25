@@ -44,8 +44,7 @@ public final class TTCache4 implements TTCacheInterface {
         return false;
     }
 
-    @Override
-    public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
+    private final TTEntry getTTEntry(BoardRepresentation board, Color side) {
         TTE tte = getInternalTTEntry(board);
         if (tte == null) {
             return null;

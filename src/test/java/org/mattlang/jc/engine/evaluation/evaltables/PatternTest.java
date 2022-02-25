@@ -3,10 +3,12 @@ package org.mattlang.jc.engine.evaluation.evaltables;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
-import org.mattlang.jc.board.PieceList;
+import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 public class PatternTest {
 
@@ -23,31 +25,31 @@ public class PatternTest {
                 3, 0, 50, 115, 100, 0, 0, 9,
         });
 
-        Board3 board = new Board3();
+        BitBoard board = new BitBoard();
         board.setStartPosition();
 
-        int rslt = test.calcScore(board.getWhitePieces().getBishops(), board.getBlackPieces().getBishops(), 1);
+        BitChessBoard bb = board.getBoard();
+        int rslt = test.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), 1);
         assertThat(rslt).isEqualTo(0);
 
-        PieceList.Array empty = new PieceList.Array(1);
-        rslt = test.calcScore(board.getWhitePieces().getBishops(), empty, 1);
+        rslt = test.calcScore(bb.getBishops(nWhite), 0L, 1);
         assertThat(rslt).isEqualTo(50);
 
-        rslt = test.calcScore(empty, board.getBlackPieces().getBishops(), 1);
+        rslt = test.calcScore(0L, bb.getBishops(nBlack), 1);
         assertThat(rslt).isEqualTo(-50);
-        
+
         // king test:
-        rslt = test.calcScore(board.getWhitePieces().getKing(), board.getBlackPieces().getKing(), 1);
+        rslt = test.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), 1);
         assertThat(rslt).isEqualTo(0);
 
         // queen test:
-        rslt = test.calcScore(board.getWhitePieces().getQueens(), board.getBlackPieces().getQueens(), 1);
+        rslt = test.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), 1);
         assertThat(rslt).isEqualTo(0);
 
-        rslt = test.calcScore(board.getWhitePieces().getQueens(), empty, 1);
+        rslt = test.calcScore(bb.getQueens(nWhite), 0L, 1);
         assertThat(rslt).isEqualTo(115);
 
-        rslt = test.calcScore(empty, board.getBlackPieces().getQueens(), 1);
+        rslt = test.calcScore(0L, bb.getQueens(nBlack), 1);
         assertThat(rslt).isEqualTo(-115);
 
         Pattern loadedPattern = Pattern.load("testpattern.csv");

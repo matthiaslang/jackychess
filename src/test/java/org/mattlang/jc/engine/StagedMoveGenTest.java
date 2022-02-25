@@ -5,6 +5,7 @@ import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
@@ -17,6 +18,7 @@ import org.mattlang.jc.uci.UCI;
 public class StagedMoveGenTest {
 
     @Test
+    @Ignore
     public void testStagedMoveGen() throws IOException {
 
         initLogging();

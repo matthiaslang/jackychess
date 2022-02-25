@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.tt.IntCache;
 
@@ -63,19 +62,17 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        BitBoard bitBoard = (BitBoard) currBoard;
-
         result.clear();
 
-        matEvaluation.eval(result, bitBoard);
-        pstEvaluation.eval(result, bitBoard);
-        mobEvaluation.eval(result, bitBoard);
-        pawnEvaluation.eval(result, bitBoard);
-        result.result += adjustments.adjust(bitBoard.getBoard(), who2Move);
+        matEvaluation.eval(result, currBoard);
+        pstEvaluation.eval(result, currBoard);
+        mobEvaluation.eval(result, currBoard);
+        pawnEvaluation.eval(result, currBoard);
+        result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
-        int score = result.calcCompleteScore(bitBoard);
+        int score = result.calcCompleteScore(currBoard);
 
-        score = matCorrection.correct(bitBoard, score);
+        score = matCorrection.correct(currBoard, score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;

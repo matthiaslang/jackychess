@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
@@ -25,16 +23,16 @@ public class MoveGeneratorTest {
 
     @Test
     public void testPawnPromotionAndUndoing1() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen 8/P7/8/2K5/5k2/8/p7/8 b k - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
-        MoveGenerator generator2 = new MoveGeneratorImpl3();
+        MoveGenerator generator2 = new BBMoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
@@ -44,8 +42,8 @@ public class MoveGeneratorTest {
         // 8 king moves + 4 promotion moves
         assertThat(bMoves.size()).isEqualTo(12);
 
-        Move wQPromotion = wMoves.stream().filter(m -> m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
-        Move bQPromotion = bMoves.stream().filter(m -> m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
+        Move wQPromotion = wMoves.stream().filter(m -> m.isPromotion() && m.getPromotedFigure() == Figure.W_Queen).findFirst().get();
+        Move bQPromotion = bMoves.stream().filter(m -> m.isPromotion() && m.getPromotedFigure() == Figure.B_Queen).findFirst().get();
 
         board.domove(wQPromotion);
         board.domove(bQPromotion);
@@ -60,7 +58,7 @@ public class MoveGeneratorTest {
         board.undo(wQPromotion);
 
         System.out.println(board.toUniCodeStr());
-        BoardRepresentation cmpboard = new Board3();
+        BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setFenPosition(fen);
 
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
@@ -70,16 +68,20 @@ public class MoveGeneratorTest {
     @Test
     public void testPawnPromotionAndUndoing2() {
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
-        Move a7PawnMove = whiteMoves.extractList().stream().filter(m -> m.toStr().startsWith("a7")).findAny().get();
+        Move a7PawnMove = whiteMoves.extractList()
+                .stream()
+                .filter(m -> m.toStr().startsWith("a7") && m.isPromotion() && m.getPromotedFigure() == Figure.W_Queen)
+                .findAny()
+                .get();
 
         board.domove(a7PawnMove);
 
@@ -87,13 +89,17 @@ public class MoveGeneratorTest {
         // undoing:
         board.undo(a7PawnMove);
 
-        BoardRepresentation cmpboard = new Board3();
+        BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new MoveGeneratorImpl3();
+        MoveGenerator generator2 = new BBMoveGeneratorImpl();
         MoveList blackMoves = generator2.generate(board, BLACK);
-        Move a2PawnMove = blackMoves.extractList().stream().filter(m -> m.toStr().startsWith("a2")).findAny().get();
+        Move a2PawnMove = blackMoves.extractList()
+                .stream()
+                .filter(m -> m.toStr().startsWith("a2") && m.isPromotion() && m.getPromotedFigure() == Figure.B_Queen)
+                .findAny()
+                .get();
 
         board.domove(a2PawnMove);
 
@@ -107,10 +113,10 @@ public class MoveGeneratorTest {
     @Test
     public void testMoveGenFromStartWhite() {
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new MoveGeneratorImpl3();
+        MoveGenerator moveGenerator = new BBMoveGeneratorImpl();
         MoveList moves = moveGenerator.generate(board, WHITE);
 
         List<MoveImpl> mmoves = moves.extractList();
@@ -175,7 +181,7 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassant() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen k7/3p4/8/2P1P3/2p1p3/8/3P4/K7 b k - 2 17 ";
         board.setFenPosition(fen);
 
@@ -183,7 +189,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
         MoveList whiteMoves = generator.generate(board, WHITE);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
@@ -216,14 +222,14 @@ public class MoveGeneratorTest {
 
     @Test
     public void enPassantFromFEN() {
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         String fen = "position fen k7/3p4/8/2P1P3/2pPp3/8/8/K7 b k d3 2 17 ";
         board.setFenPosition(fen);
 
         BoardRepresentation copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new MoveGeneratorImpl3();
+        MoveGenerator generator = new BBMoveGeneratorImpl();
 
         // now black moves should have two en passant moves:
         MoveList blackMoves = generator.generate(board, BLACK);

@@ -173,8 +173,6 @@ public final class TTCache3 implements TTCacheInterface {
 
 	}
 
-	private final TTEntry leightweightEntry = new TTEntry(0L, 0, (byte) 0, 0, (byte) 0, 0);
-
 	@Override
 	public boolean findEntry(TTResult result, BoardRepresentation board) {
 		long v = getValue(board.getZobristHash());
@@ -186,18 +184,6 @@ public final class TTCache3 implements TTCacheInterface {
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public TTEntry getTTEntry(BoardRepresentation board, Color side) {
-		long v = getValue(board.getZobristHash());
-		if (v != 0) {
-			leightweightEntry.update(board.getZobristHash(), getScore(v), (byte) getFlag(v), getDepth(v), (byte) 0,
-					getMove(v));
-			return leightweightEntry;
-		} else {
-			return null;
-		}
 	}
 
 	@Override

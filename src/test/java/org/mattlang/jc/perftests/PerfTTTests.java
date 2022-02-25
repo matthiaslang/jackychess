@@ -10,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
-import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.tt.*;
+import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.TTCacheInterface;
+import org.mattlang.jc.engine.tt.TTResult;
+import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
@@ -35,34 +35,10 @@ public class PerfTTTests {
         testCache(new TTCache(), 5);
     }
 
-    @Test
-    public void ttTest2() throws IOException {
-        initLogging();
-        UCI.instance.attachStreams();
-
-        testCache(new TTCache2(), 5);
-    }
-
-    @Test
-    public void ttDoubleHashTest() throws IOException {
-        initLogging();
-        UCI.instance.attachStreams();
-
-        testCache(new TTDoubleHashingCache(), 5);
-    }
-
-    @Test
-    public void ttBucketTest() throws IOException {
-        initLogging();
-        UCI.instance.attachStreams();
-
-        testCache(new TTBucketCache(),5);
-    }
-
     public void testCache(TTCacheInterface ttCache, int depth) {
-        Board3 board = new Board3();
+        BitBoard board = new BitBoard();
         board.setStartPosition();
-        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
+        //        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
 
         testCacheWithPosition(board, ttCache, depth);
 
@@ -79,8 +55,8 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
     }
 
-    public void testCacheWithPosition(Board3 board, TTCacheInterface ttCache, int depth) {
-        LegalMoveGenerator generator = new LegalMoveGeneratorImpl3();
+    public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
+        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
         StopWatch fillWatch = new StopWatch();
         perftReset();
 
@@ -97,9 +73,9 @@ public class PerfTTTests {
         // read from cache:
         StopWatch readWatch = new StopWatch();
         readWatch.start();
+        TTResult entry = new TTResult();
         perft(generator, board, WHITE, depth, (visitedBoard, color, d) -> {
-            TTEntry foundEntry = ttCache.getTTEntry(visitedBoard, color);
-            if (foundEntry != null) {
+            if (ttCache.findEntry(entry, visitedBoard)) {
                 hits[0]++;
             }
 

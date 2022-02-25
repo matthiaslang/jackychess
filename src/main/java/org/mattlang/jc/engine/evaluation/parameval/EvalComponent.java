@@ -1,8 +1,8 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 
 public interface EvalComponent {
 
-    void eval(EvalResult result, BitBoard bitBoard);
+    void eval(EvalResult result, BoardRepresentation bitBoard);
 }

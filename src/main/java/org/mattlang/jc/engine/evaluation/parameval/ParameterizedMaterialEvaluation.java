@@ -3,7 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
@@ -48,7 +48,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard) {
+    public void eval(EvalResult result, BoardRepresentation bitBoard) {
         if (deactivated) {
             return;
         }

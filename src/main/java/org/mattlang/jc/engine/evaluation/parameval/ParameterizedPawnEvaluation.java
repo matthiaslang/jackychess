@@ -5,9 +5,9 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
@@ -43,7 +43,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard) {
+    public void eval(EvalResult result, BoardRepresentation bitBoard) {
 
         int wKingShield = calcWhiteKingShield(bitBoard.getBoard());
         int bKingShield = calcBlackKingShield(bitBoard.getBoard());
@@ -56,7 +56,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         result.result += (pawnResultWhite - pawnResultBlack);
     }
 
-    private int evalPawns(BitBoard bitBoard, Color color) {
+    private int evalPawns(BoardRepresentation bitBoard, Color color) {
         int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();

@@ -5,8 +5,8 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.*;
+import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -125,7 +125,7 @@ public class MoveOrderingBenchmark {
                 .config(c -> c.useMvvLvaSorting.setValue(false))
                 .config(c -> c.usePvSorting.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
-                .boards.set(() -> new Board3());
+                .boards.set(() -> new BitBoard());
 
         return searchParameter;
     }

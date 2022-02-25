@@ -59,9 +59,14 @@ public class BitChessBoard {
         return Long.bitCount(pieceBB[FT_QUEEN]);
     }
 
+    public int getPawnsCount() {
+        return Long.bitCount(pieceBB[FT_PAWN]);
+    }
+
     public int getKnightsCount(int color) {
         return Long.bitCount(getPieceSet(FT_KNIGHT, color));
     }
+
     public int getPawnsCount(int color) {
         return Long.bitCount(getPieceSet(FT_PAWN, color));
     }

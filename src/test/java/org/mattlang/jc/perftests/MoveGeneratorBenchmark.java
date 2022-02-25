@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.LegalMoveGeneratorImpl3;
-import org.mattlang.attic.movegenerator.MoveGeneratorImpl3;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Color;
@@ -43,12 +41,12 @@ public class MoveGeneratorBenchmark {
 
                     engine.getBoard().setStartPosition();
 
-                    Perft.perft(new MoveGeneratorImpl3(), engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
+                    Perft.perft(new BBMoveGeneratorImpl(), engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
                     });
                 });
 
         Map itTT = Factory.getDefaults().collectStatistics();
-        LegalMoveGeneratorImpl3 legalMoveGen = new LegalMoveGeneratorImpl3();
+        LegalMoveGenerator legalMoveGen = new BBLegalMoveGeneratorImpl();
         StopWatch measureLegalMove = benchmark(
                 "legal move gen",
                 () -> {

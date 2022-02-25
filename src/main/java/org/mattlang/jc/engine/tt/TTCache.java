@@ -54,11 +54,6 @@ public final class TTCache implements TTCacheInterface {
         return false;
     }
 
-    @Override
-    public final TTEntry getTTEntry(BoardRepresentation board, Color side) {
-        throw new IllegalStateException("unsupported!");
-    }
-
     private final void storeTTEntry(BoardRepresentation board, int eval, byte tpe, int depth, int move) {
         long boardZobristHash = board.getZobristHash();
 

@@ -15,9 +15,6 @@ public interface TTCacheInterface extends StatisticsCollector {
      */
     boolean findEntry(TTResult result, BoardRepresentation board);
 
-    @Deprecated
-    TTEntry getTTEntry(BoardRepresentation board, Color side);
-
     void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
             int depth, int move);
 

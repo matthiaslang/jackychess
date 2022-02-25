@@ -8,8 +8,12 @@ import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.board.bitboard.Fields.E2;
 import static org.mattlang.jc.board.bitboard.Fields.F1;
 
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.*;
+import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.Fields;
+import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.parameval.functions.KingAttackFun;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
@@ -125,7 +129,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     }
 
-    private void eval(BitBoard bitBoard) {
+    private void eval(BoardRepresentation bitBoard) {
 
         clear();
 
@@ -407,7 +411,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
                 && Fields.H6.isSet(pawnOppoBB, side)
                 && Fields.G7.isSet(pawnOppoBB, side))
             results[side.ordinal()][BLOCKAGES] -= knightTrappedA7Penalty;
-
+        
         // knight blocking queenside pawns
         if (Fields.C3.isSet(knightBB, side)
                 && Fields.C2.isSet(pawnBB, side)
@@ -473,7 +477,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BitBoard bitBoard) {
+    public void eval(EvalResult result, BoardRepresentation bitBoard) {
         eval(bitBoard);
 
         result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]);

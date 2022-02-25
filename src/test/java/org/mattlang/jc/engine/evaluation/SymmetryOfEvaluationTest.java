@@ -15,7 +15,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.util.FenFlip;
+import org.mattlang.jc.tools.FenFlip;
 
 @RunWith(Parameterized.class)
 public class SymmetryOfEvaluationTest {
@@ -34,6 +34,7 @@ public class SymmetryOfEvaluationTest {
 
     /**
      * Tests Symmetry of Evaluation: Evaluation for white must be equal to evaluation for black for a flipped board.
+     *
      */
     @Test
     public void testSymmetry() {
@@ -52,7 +53,7 @@ public class SymmetryOfEvaluationTest {
 
         int scoreWhite = evaluation.eval(board, Color.WHITE);
 
-        String flippedFen = fenflip.flipFen(testPosition.getFenPosition());
+        String flippedFen = fenflip.mirrorHorizontalFen(testPosition.getFenPosition());
         System.out.println("flippedFen=" + flippedFen);
 
         board.setFenPosition(flippedFen);

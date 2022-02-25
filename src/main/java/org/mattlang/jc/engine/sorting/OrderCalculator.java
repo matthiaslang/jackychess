@@ -6,7 +6,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
@@ -129,7 +128,7 @@ public class OrderCalculator {
 
             if (m.isCapture()) {
                 // find out good moves (via see)
-                if (see.see_ge((BitBoard) board, m, 0)) {
+                if (see.see_ge(board, m, 0)) {
                     return -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
                     return -mvvLva;

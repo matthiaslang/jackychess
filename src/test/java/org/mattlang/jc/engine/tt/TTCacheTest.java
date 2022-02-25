@@ -3,9 +3,9 @@ package org.mattlang.jc.engine.tt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mattlang.attic.board.Board3;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class TTCacheTest {
 
@@ -13,12 +13,12 @@ public class TTCacheTest {
     public void test() {
         TTCache cache = new TTCache();
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
 
-        TTResult entry = new TTResult();
+        TTResult entry=new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
         assertThat(entry).isNotNull();
 
@@ -31,7 +31,7 @@ public class TTCacheTest {
     public void test2() {
         TTCache3 cache = new TTCache3();
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         cache.addValue(board.getZobristHash(), -500, -5, TTEntry.EXACT_VALUE, 400000);
@@ -55,7 +55,7 @@ public class TTCacheTest {
     public void test3() {
         TTCache3 cache = new TTCache3();
 
-        BoardRepresentation board = new Board3();
+        BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
         cache.addValue(board.getZobristHash(), -500, -5, TTEntry.EXACT_VALUE, 0);
@@ -71,6 +71,32 @@ public class TTCacheTest {
         assertThat(cache.getDepth(entry)).isEqualTo(-5);
         assertThat(TTCache3.getFlag(entry)).isEqualTo(TTEntry.EXACT_VALUE);
         assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
+
+    }
+
+    @Test
+    public void testIntCaches() {
+
+        IntCache intCache=new IntCache(20);
+        IntIntCache intIntCache=new IntIntCache(20);
+
+
+        BoardRepresentation board = new BitBoard();
+        board.setStartPosition();
+
+        intCache.save(board.getZobristHash(), -500);
+        intIntCache.save(board.getZobristHash(), -500);
+
+        board.switchSiteToMove();
+        assertThat(intCache.find(board.getZobristHash())).isEqualTo(IntCache.NORESULT);
+        assertThat(intIntCache.find(board.getZobristHash())).isEqualTo(IntIntCache.NORESULT);
+        board.switchSiteToMove();
+
+        int entry = intCache.find(board.getZobristHash());
+        assertThat(entry).isEqualTo(-500);
+
+         entry = intIntCache.find(board.getZobristHash());
+        assertThat(entry).isEqualTo(-500);
 
     }
     @Test
