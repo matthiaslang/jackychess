@@ -1,7 +1,10 @@
 package org.mattlang.jc.engine.tt;
 
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 /**
  * Keeps track of the aging parameter for tt caches.
@@ -46,30 +49,17 @@ public class TTAging {
     }
 
     private long createPawnMask(BoardRepresentation board) {
-        long mask = 0L;
-
-        for (int pawn : board.getWhitePieces().getPawns().getArr()) {
-            mask |= (1L << pawn);
-        }
-        for (int pawn : board.getBlackPieces().getPawns().getArr()) {
-            mask |= (1L << pawn);
-        }
-
-        return mask;
+        return board.getBoard().getPieceSet(FT_PAWN);
     }
 
     private int figureCount(BoardRepresentation board) {
+        BitChessBoard bb = board.getBoard();
 
-        return board.getWhitePieces().getPawns().size()
-                + board.getWhitePieces().getKnights().size()
-                + board.getWhitePieces().getBishops().size()
-                + board.getWhitePieces().getRooks().size()
-                + board.getWhitePieces().getQueens().size()
-                + board.getBlackPieces().getPawns().size()
-                + board.getBlackPieces().getKnights().size()
-                + board.getBlackPieces().getBishops().size()
-                + board.getBlackPieces().getRooks().size()
-                + board.getBlackPieces().getQueens().size();
+        return bb.getPawnsCount() +
+                bb.getKnightsCount() +
+                bb.getBishopsCount() +
+                bb.getRooksCount() +
+                bb.getQueensCount();
 
     }
 }

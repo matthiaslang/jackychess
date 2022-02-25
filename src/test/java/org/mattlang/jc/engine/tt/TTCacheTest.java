@@ -73,4 +73,30 @@ public class TTCacheTest {
         assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
 
     }
+
+    @Test
+    public void testIntCaches() {
+
+        IntCache intCache=new IntCache(20);
+        IntIntCache intIntCache=new IntIntCache(20);
+
+
+        BoardRepresentation board = new BitBoard();
+        board.setStartPosition();
+
+        intCache.save(board.getZobristHash(), -500);
+        intIntCache.save(board.getZobristHash(), -500);
+
+        board.switchSiteToMove();
+        assertThat(intCache.find(board.getZobristHash())).isEqualTo(IntCache.NORESULT);
+        assertThat(intIntCache.find(board.getZobristHash())).isEqualTo(IntIntCache.NORESULT);
+        board.switchSiteToMove();
+
+        int entry = intCache.find(board.getZobristHash());
+        assertThat(entry).isEqualTo(-500);
+
+         entry = intIntCache.find(board.getZobristHash());
+        assertThat(entry).isEqualTo(-500);
+
+    }
 }
