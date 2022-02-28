@@ -63,7 +63,7 @@ public final class LongCache {
     }
 
     public static int getDepth(final long value) {
-        return (int) ((value & 0x3ff) - DEPTH_OFFSET);
+        return (int) ((value & 0x3ff));
     }
 
     public static byte getFlag(final long value) {
@@ -76,7 +76,7 @@ public final class LongCache {
 
     // SCORE,HALF_MOVE_COUNTER,MOVE,FLAG,DEPTH
     public static long createValue(final long score, final long move, final long flag, final int depth) {
-        return score << SCORE | move << MOVE | flag << FLAG | (depth + DEPTH_OFFSET);
+        return score << SCORE | move << MOVE | flag << FLAG | (depth);
     }
 
     /**
@@ -85,11 +85,6 @@ public final class LongCache {
      * 16+32 = 48: move
      *
      * */
-
-    /**
-     * offset to deal correctly with negative values. todo how to impl this with real unsigned arithmetic?
-     */
-    private static final int DEPTH_OFFSET = 512;
 
     // ///////////////////// DEPTH //10 bits
     private static final int FLAG = 10; // 2

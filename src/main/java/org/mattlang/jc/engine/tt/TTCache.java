@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.tt;
 import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -10,7 +11,11 @@ import org.mattlang.jc.board.Color;
 
 public final class TTCache implements TTCacheInterface {
 
-    /** Slotsize is 16 for two long values */
+    private static final Logger LOGGER = Logger.getLogger(TTCache.class.getSimpleName());
+
+    /**
+     * Slotsize is 16 for two long values
+     */
     public static final int SLOT_SIZE = 8 * 2;
 
     private int cacheHit;
@@ -38,6 +43,7 @@ public final class TTCache implements TTCacheInterface {
     public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
         int slots = mb * 1024 * 1024 / sizeOfSlot;
         int bits = (int) (Math.log(slots) / Math.log(2));
+        LOGGER.info("cache of " + mb + "MB: setting cache to " + slots + " slots, " + bits + " bits");
         return bits;
     }
 

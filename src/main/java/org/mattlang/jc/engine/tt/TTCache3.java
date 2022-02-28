@@ -4,18 +4,21 @@ import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
 /**
  * Experimentell cache using only a long array to be faster and more memory efficient.
  * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
- *
  */
 public final class TTCache3 implements TTCacheInterface {
 
-	private static final int POWER_2_TT_ENTRIES = 22;
+	private static final Logger LOGGER = Logger.getLogger(TTCache3.class.getSimpleName());
+
+	private static int POWER_2_TT_ENTRIES = 22;
 	private static final int BUCKET_SIZE = 3;
 
 	private int keyShifts;
@@ -34,11 +37,6 @@ public final class TTCache3 implements TTCacheInterface {
 	 *
 	 * */
 
-	/**
-	 * offset to deal correctly with negative values. todo how to impl this with real unsigned arithmetic?
-	 */
-	private static final int DEPTH_OFFSET = 512;
-
 	// ///////////////////// DEPTH //10 bits
 	private static final int FLAG = 10; // 2
 	private static final int MOVE = 12; // 22
@@ -47,9 +45,29 @@ public final class TTCache3 implements TTCacheInterface {
 	private long cacheHits = 0;
 	private long cacheMisses = 0;
 
+	private int determineBitSizeFromConfig() {
+		Integer mb = Factory.getDefaults().getConfig().hash.getValue();
+
+		if (mb == null) {
+			mb = 128;
+		}
+		return determineCacheBitSizeFromMb(mb, 16);
+	}
+
+	public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
+		int slots = mb * 1024 * 1024 / sizeOfSlot;
+		int bits = (int) (Math.log(slots) / Math.log(2));
+		LOGGER.info("cache of " + mb + "MB: setting cache to " + slots + " slots, " + bits + " bits");
+		return bits;
+	}
+
 	public TTCache3() {
+		int bitSize = determineBitSizeFromConfig();
+		POWER_2_TT_ENTRIES = bitSize - BUCKET_SIZE + 1;
+
 		keyShifts = 64 - POWER_2_TT_ENTRIES;
 		int maxEntries = (int) (1L << POWER_2_TT_ENTRIES + BUCKET_SIZE - 1) * 2;
+		LOGGER.info("allocating " + maxEntries + " longs;");
 
 		keys = new long[maxEntries];
 	}
@@ -113,12 +131,6 @@ public final class TTCache3 implements TTCacheInterface {
 		}
 
 		final long value = createValue(score, move, flag, depth);
-		//TESTTESTTESTTEST
-		if (getScore(value) != score) {
-			throw new IllegalStateException(
-					"score problem with " + score + " move:" + move + " flag:" + flag + " depth:" + depth
-							+ " halfmovecounter:" + halfMoveCounter);
-		}
 
 		keys[replaceIndex] = key ^ value;
 		keys[replaceIndex + 1] = value;
@@ -130,7 +142,7 @@ public final class TTCache3 implements TTCacheInterface {
 	}
 
 	public int getDepth(final long value) {
-		return (int) ((value & 0x3ff) - DEPTH_OFFSET - halfMoveCounter);
+		return (int) ((value & 0x3ff) - halfMoveCounter);
 	}
 
 	public static int getFlag(final long value) {
@@ -143,7 +155,7 @@ public final class TTCache3 implements TTCacheInterface {
 
 	// SCORE,HALF_MOVE_COUNTER,MOVE,FLAG,DEPTH
 	public long createValue(final long score, final long move, final long flag, final int depth) {
-		return score << SCORE | move << MOVE | flag << FLAG | (depth + DEPTH_OFFSET + halfMoveCounter);
+		return score << SCORE | move << MOVE | flag << FLAG | (depth + halfMoveCounter);
 	}
 
 	public String toString(long ttValue) {
@@ -194,7 +206,11 @@ public final class TTCache3 implements TTCacheInterface {
 
 	@Override
 	public void updateAging(BoardRepresentation board) {
+		LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
 		halfMoveCounter = aging.updateAging(board);
+//		if (halfMoveCounter>512){
+//			halfMoveCounter=0;
+//		}
 	}
 
 	@Override
