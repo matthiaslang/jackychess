@@ -36,12 +36,14 @@ public class ConfigValues {
             "the maximum search threads when multi threading search is activated",
             1, 8, 4);
 
-    public final UCISpinOption hash = limits.createSpinOpt("Hash",
+    public final UCIGroup caching =
+            allOptions.createGroup("Caching", "Parameter for caching of information during search.");
+
+    public final UCISpinOption hash = caching.createSpinOpt("Hash",
             "TT Hash Size in MB",
             1, 2048, 128);
 
-    public final UCIGroup caching =
-            allOptions.createGroup("Caching", "Parameter for caching of information during search.");
+
 
     public final UCICheckOption useTTCache = internal.createCheckOpt("useTTCache",
             "Flag, if the tt cache to store scores should be activated",
@@ -74,7 +76,7 @@ public class ConfigValues {
                     MoveListImpls.class, MoveListImpls.OPTIMIZED);
 
     public final UCIComboOption<CacheImpls> cacheImpls =
-            experimental.createComboOpt("TTCacheImpl",
+            caching.createComboOpt("TTCacheImpl",
                     "internally. Only for development testing",
                     CacheImpls.class, CacheImpls.STANDARD);
 
