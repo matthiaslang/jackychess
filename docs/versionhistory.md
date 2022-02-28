@@ -1,4 +1,9 @@
 # Versions
+              
+### Version 0.11.1
+
+- experimental tighter aspiration window.
+
 
 ### Version 0.10.0
 
