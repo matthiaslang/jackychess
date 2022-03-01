@@ -19,6 +19,9 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     private boolean moveDone = false;
 
+    public MoveBoardIterator() {
+    }
+
     public MoveBoardIterator(MoveCursor moveCursor, BoardRepresentation board, CheckChecker checkChecker) {
         this.moveCursor = moveCursor;
         this.board = board;
@@ -147,6 +150,8 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     @Override
     public void close() {
         // undo a currently done move on the board
-        undoMove();
+        if (moveDone) {
+            undoMove();
+        }
     }
 }

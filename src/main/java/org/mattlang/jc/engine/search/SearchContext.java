@@ -10,7 +10,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -18,6 +17,7 @@ import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 
@@ -152,14 +152,6 @@ public final class SearchContext {
         return board.isRepetition();
     }
 
-    public void doMove(MoveCursor moveCursor) {
-        moveCursor.move(board);
-    }
-
-    public void undoMove(MoveCursor moveCursor) {
-        moveCursor.undoMove(board);
-    }
-
     public void undoNullMove() {
         nullMoveCounter--;
         board.undoNullMove();
@@ -219,12 +211,11 @@ public final class SearchContext {
         return moveList;
     }
 
-//    public MoveBoardIterator genSortedMovesIterator(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
-//            int parentMove){
-//        MoveList moveList=generateSortedMoves(mode,ply, depth, color, parentMove);
-//        moveBoardIterator.init(moveList.iterate(), board, checkChecker);
-//        return moveBoardIterator;
-//    }
+    public MoveBoardIterator genSortedMovesIterator(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
+            int parentMove) {
+        MoveList moveList = generateSortedMoves(mode, ply, depth, color, parentMove);
+        return moveList.iterateMoves(board, checkChecker);
+    }
 
     /**
      * Sorts the move list by calculating the move order first.

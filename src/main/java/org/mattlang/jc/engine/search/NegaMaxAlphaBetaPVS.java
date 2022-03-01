@@ -20,13 +20,13 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
@@ -268,41 +268,33 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         pvArray.reset(ply);
 
-        int parentMove = ply <= 1 ? 0: parentMoves[ply-1];
+        int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
 
-        try (MoveList moves = searchContext.generateSortedMoves(NORMAL, ply, depth, color, parentMove)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, depth, color,
+                parentMove)) {
 
             boolean firstChild = true;
 
             int searchedMoves = 0;
 
-            MoveCursor moveCursor = moves.iterate();
-            while (moveCursor.hasNext()) {
-                moveCursor.next();
-                searchContext.doMove(moveCursor);
+            while (moveCursor.doNextMove()) {
 
                 parentMoves[ply] = moveCursor.getMoveInt();
 
-                // skip illegal moves:
-                if (searchContext.isInCheck(color)) {
-                    searchContext.undoMove(moveCursor);
-                    continue;
-                }
-
                 // late move pruning does not bring any benefit so far...
-//                if (applyFutilityPruning && moveCursor.getOrder() > OrderCalculator.HISTORY_SCORE + 1000) {
-//                    /* late move pruning */
-//                    if (depth <= 4
-//                            && searchedMoves >= depth * 4 + 3
-//                            && !moveCursor.isCapture()
-//                            && !moveCursor.isPawnPromotion()
-//                            //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
-//                            && !searchContext.isInCheck(color.invert())
-//                    ) {
-//                        searchContext.undoMove(moveCursor);
-//                        continue;
-//                    }
-//                }
+                //                if (applyFutilityPruning && moveCursor.getOrder() > OrderCalculator.HISTORY_SCORE + 1000) {
+                //                    /* late move pruning */
+                //                    if (depth <= 4
+                //                            && searchedMoves >= depth * 4 + 3
+                //                            && !moveCursor.isCapture()
+                //                            && !moveCursor.isPawnPromotion()
+                //                            //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
+                //                            && !searchContext.isInCheck(color.invert())
+                //                    ) {
+                //                        searchContext.undoMove(moveCursor);
+                //                        continue;
+                //                    }
+                //                }
 
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
@@ -316,7 +308,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                         && !moveCursor.isPawnPromotion()
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         && !searchContext.isInCheck(color.invert())) {
-                    searchContext.undoMove(moveCursor);
                     continue;
                 }
 
@@ -365,7 +356,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 /** save score for all root moves: */
                 searchContext.updateRootMoveScore(depth, moveCursor.getMoveInt(), score);
 
-                searchContext.undoMove(moveCursor);
                 if (score > max) {
                     max = score;
 
@@ -524,29 +514,18 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         // if we are in check and then use the normal mode instead of only capture generation:
         LegalMoveGenerator.GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
 
-        try (MoveList moves = searchContext.generateSortedMoves(moveGenMode, ply, depth, color, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(moveGenMode, ply, depth, color, 0)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
             int searchedMoves = 0;
             /* loop through the capture moves */
 
-            MoveCursor moveCursor = moves.iterate();
-            while (moveCursor.hasNext()) {
-                moveCursor.next();
-                
-                searchContext.doMove(moveCursor);
-
-                // skip illegal moves:
-                if (searchContext.isInCheck(color)) {
-                    searchContext.undoMove(moveCursor);
-                    continue;
-                }
+            while (moveCursor.doNextMove()) {
 
                 // skip low promotions
                 if (moveCursor.isPawnPromotion()
                         && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
-                    searchContext.undoMove(moveCursor);
                     continue;
                 }
 
@@ -566,7 +545,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                             && x + see.pieceVal(moveCursor.getCapturedFigure()) + 200 < alpha
                             && searchContext.isOpeningOrMiddleGame()
                     ) {
-                        searchContext.undoMove(moveCursor);
                         continue;
                     }
 
@@ -584,14 +562,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
                     if (x > alpha) {
                         if (x >= beta) {
-                            searchContext.undoMove(moveCursor);
                             return beta;
                         }
                         alpha = x;
                     }
                 }
 
-                searchContext.undoMove(moveCursor);
             }
             
         }

@@ -18,7 +18,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepeningV2;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
@@ -71,7 +71,7 @@ public class EngineTest {
 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.maxDepth.setValue(25))
+                .config(c -> c.maxDepth.setValue(11))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:
         Engine engine = new Engine();
@@ -97,8 +97,9 @@ public class EngineTest {
         Factory.setDefaults(Factory.createBitboard()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
-//                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+                .searchMethod.set(() -> new MultiThreadedIterativeDeepeningV2())
+                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+                .config(c -> c.hash.setValue(512))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c -> c.maxThreads.setValue(4))

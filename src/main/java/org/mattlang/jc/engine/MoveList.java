@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
+import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
 public interface MoveList extends MoveCollector, AutoCloseable {
@@ -59,4 +61,16 @@ public interface MoveList extends MoveCollector, AutoCloseable {
      * @return
      */
     MoveCursor iterate();
+
+    /**
+     * Returns a cursor doing/undoing moves on a board. Only legal moves will be iterated, illegal moves are skipped
+     * by this iterator.
+     * Note: due ot performance and memory usage, there is only one cursor and MoveBoardIterator associated with a move list.
+     * So the caller can not use more than one iteration at one time.
+     *
+     * @param board
+     * @param checkChecker
+     * @return
+     */
+    MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker);
 }

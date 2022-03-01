@@ -7,8 +7,10 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -19,6 +21,8 @@ public class MoveListImpl implements MoveList {
     private int[] order = new int[MAX_MOVES];
 
     private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
+
+    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     public MoveListImpl() {
     }
@@ -97,6 +101,13 @@ public class MoveListImpl implements MoveList {
     public MoveCursor iterate() {
         moveCursor.init(moves.getRaw(), moves.size(), order);
         return moveCursor;
+    }
+
+    @Override
+    public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
+        MoveCursor moveCursor = iterate();
+        moveBoardIterator.init(moveCursor, board, checkChecker);
+        return moveBoardIterator;
     }
 
     public final int get(int i) {

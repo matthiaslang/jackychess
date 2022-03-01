@@ -2,6 +2,7 @@ package org.mattlang.jc.moves;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -109,6 +110,11 @@ public class StagedMoveListImpl implements MoveList {
 
     @Override
     public MoveCursor iterate() {
+        throw new IllegalStateException("not yet implemented!");
+    }
+
+    @Override
+    public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
         throw new IllegalStateException("not yet implemented!");
     }
 
