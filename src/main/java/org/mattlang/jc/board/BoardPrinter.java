@@ -100,6 +100,6 @@ public class BoardPrinter {
         for (int i = 0; i < 8; i++) {
             b.append("-+");
         }
-        b.append("+\n");
+        b.append("-+\n");
     }
 }
