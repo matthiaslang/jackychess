@@ -1,5 +1,6 @@
 package org.mattlang.jc.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,7 +42,8 @@ public class MoveValidator {
             if (legal) {
                 board.domove(move);
             } else {
-                LOGGER.warning("Illegal PV Move " + move.toStr());
+                LOGGER.warning("depth: "+ rslt.targetDepth+ " Illegal PV Move " + move.toStr() + " in " + rslt.toLogString());
+                break;
 
             }
             who2Move = who2Move.invert();
@@ -72,22 +74,15 @@ public class MoveValidator {
                 return true;
             }
         }
-        //        String moves = "";
-        //        for (MoveCursor legalMove : legalMoves) {
-        //            moves += new MoveImpl(legalMove.getMoveInt()).toStr();
-        //            moves += ",";
-        //
-        //        }
         return false;
     }
 
     /**
      * Since the pv list extracted from the triangular may be shortened if tt cach hits have been used,
-     * we try to fill missing entries via entries from the tt cache.
+     * we try to fill missing entries via entries from the tt cache if they exist.
      *
-     * It is of course a good questions if this is the best method. We could of course reconstruct the pv list all the
-     * time
-     * from the tt cache, but this may also not work always, if entries get overridden.
+     * The pv array as well as the pv cache might not fully contain the relevant pv moves so the enrichment could
+     * be incomplete.
      *
      * @return
      */
@@ -96,6 +91,7 @@ public class MoveValidator {
             int depth) {
 
         if (pvs.size() == depth) {
+            LOGGER.fine("pv == expected depth. everything ok");
             return pvs; // nothing to enrich
         }
 
@@ -103,21 +99,37 @@ public class MoveValidator {
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
+        ArrayList<Integer> validatedPvs=new ArrayList<>();
+
         for (int moveI : pvs) {
 
             boolean legal = isLegalMove(board, moveI, who2Move);
             MoveImpl move = new MoveImpl(moveI);
             if (legal) {
                 board.domove(move);
+                validatedPvs.add(moveI);
             } else {
-                LOGGER.warning("Illegal PV Move " + move.toStr());
-                return pvs;
+                LOGGER.fine("Illegal PV Move encountered during pv enrichment " + move.toStr());
+                break;
             }
             who2Move = who2Move.invert();
         }
 
+        enrichWithPVCache(validatedPvs, pvCache, depth, board, who2Move);
+
+        if (validatedPvs.size() == depth) {
+            LOGGER.fine("pv enrichment successful");
+        } else {
+            LOGGER.info("could not enrich pv with pv cache!");
+        }
+
+        return validatedPvs;
+    }
+
+    private void enrichWithPVCache(List<Integer> pvs, IntCache pvCache, int depth, BoardRepresentation board, Color who2Move) {
         // now enrich the missing ones:
         int size = pvs.size();
+        int extended=0;
         for (int d = size; d < depth; d++) {
             int tte = pvCache.find(board.getZobristHash());
             if (tte != IntCache.NORESULT) {
@@ -127,17 +139,20 @@ public class MoveValidator {
                 if (legal) {
                     board.domove(move);
                     pvs.add(tte);
+                    extended++;
                 } else {
                     // old or weird entry... stop here
+                    LOGGER.fine("stopped extending pv: found non legal pv cache move! extended " + extended + " of " + (
+                            depth -size));
                     break;
 
                 }
                 who2Move = who2Move.invert();
             } else {
+                LOGGER.fine("stopped extending pv: no pv cache entry found! extended " + extended + " of " + (depth -size));
                 break; // stop here...
             }
 
         }
-        return pvs;
     }
 }

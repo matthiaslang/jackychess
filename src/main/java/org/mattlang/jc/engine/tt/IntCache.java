@@ -8,7 +8,7 @@ public final class IntCache {
     private int bitSize;
     private int capacity;
 
-    public static final int NORESULT = 1000000;
+    public static final int NORESULT = Integer.MAX_VALUE;
 
     private long[] zobrists;
     private int[] scores;
