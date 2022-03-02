@@ -1,4 +1,6 @@
-package org.mattlang.jc.board;
+package org.mattlang.attic;
+
+import org.mattlang.jc.board.BoardRepresentation;
 
 /**
  * Tracks state of repetitions during search.

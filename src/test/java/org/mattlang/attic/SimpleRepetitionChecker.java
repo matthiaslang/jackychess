@@ -1,8 +1,10 @@
-package org.mattlang.jc.board;
+package org.mattlang.attic;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+
+import org.mattlang.jc.board.BoardRepresentation;
 
 public class SimpleRepetitionChecker implements RepetitionChecker {
 
