@@ -1,8 +1,14 @@
 # Versions
-              
+
+### Version 0.11.2
+
+- cache size as UCI option
+- illegal pvs are now corrected (again)
+- multi threading test version: lazy SMP with 4 threads seem to bring benefits with 4x bigger cache.
+
 ### Version 0.11.1
 
-- experimental tighter aspiration window.
+- using smaller aspiration windows and more increments. Seem to bring some small benefits (~7 Elos).
 
 
 ### Version 0.10.0
