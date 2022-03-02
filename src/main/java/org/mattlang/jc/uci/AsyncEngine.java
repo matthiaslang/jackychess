@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -50,7 +49,6 @@ public class AsyncEngine {
 
         }
         Factory.setDefaults(searchParams);
-        UCILogger.log("site to move:" + gameState.getWho2Move());
 
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged")==null) {
