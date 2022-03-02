@@ -184,7 +184,7 @@ public class EngineTest {
                 .config(c -> c.useNullMoves.setValue(true))
                 .config(c -> c.staticNullMove.setValue(true))
                 .config(c -> c.futilityPruning.setValue(true))
-                .config(c -> c.cacheImpls.setValue(CacheImpls.V5))
+                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 //                .config(c->c.aspiration.setValue(false))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
         // now starting engine:

@@ -2,7 +2,9 @@ package org.mattlang.jc;
 
 import java.util.function.Supplier;
 
-import org.mattlang.jc.engine.tt.*;
+import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.TTCache3;
+import org.mattlang.jc.engine.tt.TTCacheInterface;
 
 public enum CacheImpls {
 
@@ -17,20 +19,6 @@ public enum CacheImpls {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
             return TTCache3::new;
-        }
-    },
-
-    V4 {
-        @Override
-        public Supplier<TTCacheInterface> createSupplier() {
-            return TTCache4::new;
-        }
-    },
-
-    V5 {
-        @Override
-        public Supplier<TTCacheInterface> createSupplier() {
-            return TTCache5::new;
         }
     };
 
