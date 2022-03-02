@@ -15,8 +15,8 @@ public class Window {
 
     private static final Logger LOGGER = Logger.getLogger(Window.class.getSimpleName());
 
-    private static final int WINDOW_MARGIN = 50;
-    private static final int MAX_WIDENING_PHASES = 0;
+    private static final int WINDOW_MARGIN = 25;
+    private static final int MAX_WIDENING_PHASES = 3;
 
     int alpha;
     int beta;
@@ -68,13 +68,14 @@ public class Window {
     }
 
     public void widenWindow(NegaMaxResult rslt) {
-        int delta = wideningPhase++ * WINDOW_MARGIN + WINDOW_MARGIN;
+        wideningPhase++;
+        int delta = wideningPhase * wideningPhase * WINDOW_MARGIN + WINDOW_MARGIN;
 
         int score = rslt.max;
         lastScore = score;
         if (score <= alpha) {
             alpha = alpha - delta - (alpha - score);
-            alphaWidened=true;
+            alphaWidened = true;
             if (betaWidened) {
                 LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
             }
