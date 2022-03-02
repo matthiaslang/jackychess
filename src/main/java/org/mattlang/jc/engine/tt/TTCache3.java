@@ -13,6 +13,8 @@ import org.mattlang.jc.board.Color;
 /**
  * Experimentell cache using only a long array to be faster and more memory efficient.
  * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
+ * It combines a "always save" with replace "lowest depth" in a multi bucket cache.
+ *
  */
 public final class TTCache3 implements TTCacheInterface {
 
@@ -45,13 +47,21 @@ public final class TTCache3 implements TTCacheInterface {
 	private long cacheHits = 0;
 	private long cacheMisses = 0;
 
+	private int mbSize = 128;
+
 	private int determineBitSizeFromConfig() {
+		int mb = getConfiguredMbSize();
+		mbSize = mb;
+		return determineCacheBitSizeFromMb(mb, 16);
+	}
+
+	private int getConfiguredMbSize() {
 		Integer mb = Factory.getDefaults().getConfig().hash.getValue();
 
 		if (mb == null) {
-			mb = 128;
+			return 128;
 		}
-		return determineCacheBitSizeFromMb(mb, 16);
+		return mb.intValue();
 	}
 
 	public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
@@ -62,6 +72,10 @@ public final class TTCache3 implements TTCacheInterface {
 	}
 
 	public TTCache3() {
+		initCache();
+	}
+
+	private void initCache() {
 		int bitSize = determineBitSizeFromConfig();
 		POWER_2_TT_ENTRIES = bitSize - BUCKET_SIZE + 1;
 
@@ -206,11 +220,19 @@ public final class TTCache3 implements TTCacheInterface {
 
 	@Override
 	public void updateAging(BoardRepresentation board) {
+		checkUpdateCacheSize();
+
 		LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
 		halfMoveCounter = aging.updateAging(board);
-//		if (halfMoveCounter>512){
-//			halfMoveCounter=0;
-//		}
+		//		if (halfMoveCounter>512){
+		//			halfMoveCounter=0;
+		//		}
+	}
+
+	private void checkUpdateCacheSize() {
+		if (getConfiguredMbSize() != mbSize) {
+			initCache();
+		}
 	}
 
 	@Override

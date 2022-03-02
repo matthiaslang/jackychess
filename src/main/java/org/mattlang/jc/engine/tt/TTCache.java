@@ -31,13 +31,21 @@ public final class TTCache implements TTCacheInterface {
 
     private LongCache cache = new LongCache(determineBitSizeFromConfig());
 
+    private int mbSize=128;
+
     private int determineBitSizeFromConfig() {
+        int mb = getConfiguredMbSize();
+        mbSize=mb;
+        return determineCacheBitSizeFromMb(mb, SLOT_SIZE);
+    }
+
+    private int getConfiguredMbSize() {
         Integer mb = Factory.getDefaults().getConfig().hash.getValue();
 
         if (mb == null) {
-            mb = 128;
+            return 128;
         }
-        return determineCacheBitSizeFromMb(mb, SLOT_SIZE);
+        return mb.intValue();
     }
 
     public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
@@ -100,6 +108,7 @@ public final class TTCache implements TTCacheInterface {
     }
 
     public void updateAging(BoardRepresentation board) {
+        checkUpdateCacheSize();
         //        currAging = aging.updateAging(board);
 
         //        int hitPercent = 0;
@@ -109,6 +118,12 @@ public final class TTCache implements TTCacheInterface {
         //        UCILogger.log(format("TTCache: size: %s hits: %s fails: %s %s pct collisions: %s",
         //                size, cacheHit, cacheFail, hitPercent, colission));
 
+    }
+
+    private void checkUpdateCacheSize() {
+        if (getConfiguredMbSize() != mbSize) {
+            cache = new LongCache(determineBitSizeFromConfig());
+        }
     }
 
     /**
