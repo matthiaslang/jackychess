@@ -7,7 +7,7 @@ import java.util.Properties;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepeningV2;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
@@ -72,7 +72,7 @@ public class Factory {
                 .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
-                .searchMethod.set(()->new MultiThreadedIterativeDeepeningV2())
+                .searchMethod.set(()->new MultiThreadedIterativeDeepening())
                 .config(c -> {
                     c.maxDepth.setValue(40);
                     c.maxQuiescence.setValue(10);
