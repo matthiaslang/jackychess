@@ -1,6 +1,8 @@
-package org.mattlang.jc.board;
+package org.mattlang.attic.board;
 
 import java.util.Arrays;
+
+import org.mattlang.jc.board.FigureConstants;
 
 public class PieceList {
 

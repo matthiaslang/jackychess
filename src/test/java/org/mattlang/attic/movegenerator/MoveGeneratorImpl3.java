@@ -4,8 +4,10 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
+import org.mattlang.attic.board.PieceList;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.movegenerator.MoveGenerator;
@@ -88,7 +90,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
 
         Color xside = side.invert();  /* the side not to move */
 
-        PieceList pieces = side == WHITE ? board.getWhitePieces() : board.getBlackPieces();
+        PieceList pieces = createPieceList(board.getBoard(), side);
 
         for (int pawn : pieces.getPawns().getArr()) {
             genPawnMoves(board, collector, pawn, side);
@@ -290,4 +292,50 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
         }
     }
 
+
+    private PieceList createPieceList(BitChessBoard bb, Color side) {
+        PieceList pieceList = new PieceList();
+
+
+        long pawnBB = bb.getPieceSet(FT_PAWN, side);
+        while (pawnBB != 0) {
+            final int pawn = Long.numberOfTrailingZeros(pawnBB);
+            pieceList.set(pawn, FT_PAWN);
+            pawnBB &= pawnBB - 1;
+        }
+
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        while (bishopBB != 0) {
+            final int bishop = Long.numberOfTrailingZeros(bishopBB);
+            pieceList.set(bishop, FT_BISHOP);
+            bishopBB &= bishopBB - 1;
+        }
+
+        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        while (knightBB != 0) {
+            final int knight = Long.numberOfTrailingZeros(knightBB);
+            pieceList.set(knight, FT_KNIGHT);
+            knightBB &= knightBB - 1;
+        }
+
+        long rookBB = bb.getPieceSet(FT_ROOK, side);
+        while (rookBB != 0) {
+            final int rook = Long.numberOfTrailingZeros(rookBB);
+            pieceList.set(rook, FT_ROOK);
+            rookBB &= rookBB - 1;
+        }
+
+        long queenBB = bb.getPieceSet(FT_QUEEN, side);
+        while (queenBB != 0) {
+            final int queen = Long.numberOfTrailingZeros(queenBB);
+            pieceList.set(queen, FT_QUEEN);
+            queenBB &= queenBB - 1;
+        }
+
+        long kingBB = bb.getPieceSet(FT_KING, side);
+        final int king = Long.numberOfTrailingZeros(kingBB);
+        pieceList.setKing(king);
+
+        return pieceList;
+    }
 }

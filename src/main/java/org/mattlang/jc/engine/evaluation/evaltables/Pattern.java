@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.PieceList;
 
 /**
  * A board pattern with evaluations per field.
@@ -51,18 +50,6 @@ public final class Pattern {
         }
     }
 
-    public final int calcScore(PieceList.Array whiteFigures, PieceList.Array blackFigures, int who2mov) {
-        int w = 0;
-        int b = 0;
-        for (int figure : whiteFigures.getArr()) {
-            w += flippedPattern[figure];
-        }
-        for (int figure : blackFigures.getArr()) {
-            b += boardPattern[figure];
-        }
-        return (w - b) * who2mov;
-    }
-
     public final int calcScore(long whiteFigures, long blackFigures, int who2mov) {
         int w = dotProduct(whiteFigures, WHITE);
         int b = dotProduct(blackFigures, BLACK);
@@ -73,15 +60,6 @@ public final class Pattern {
         int w = dotProduct(whiteFigures, WHITE);
         int b = dotProduct(blackFigures, BLACK);
         return w - b;
-    }
-
-    public final int calcScore(int whiteFigure, int blackFigure, int who2mov) {
-        int w = 0;
-        int b = 0;
-        w += flippedPattern[whiteFigure];
-        b += boardPattern[blackFigure];
-
-        return (w - b) * who2mov;
     }
 
     public final int getVal(int pos, Color color) {

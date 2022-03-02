@@ -65,10 +65,6 @@ public interface BoardRepresentation {
 
     byte getCastlingRights();
 
-    PieceList getBlackPieces();
-
-    PieceList getWhitePieces();
-
     long getZobristHash();
 
     void domove(Move move);

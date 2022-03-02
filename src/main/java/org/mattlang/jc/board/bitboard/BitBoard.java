@@ -352,60 +352,6 @@ public class BitBoard implements BoardRepresentation {
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
     }
 
-    public PieceList getBlackPieces() {
-        return createPieceList(BLACK);
-    }
-
-    public PieceList getWhitePieces() {
-        return createPieceList(WHITE);
-    }
-
-    private PieceList createPieceList(Color side) {
-        PieceList pieceList = new PieceList();
-        BitChessBoard bb = board;
-
-        long pawnBB = bb.getPieceSet(FT_PAWN, side);
-        while (pawnBB != 0) {
-            final int pawn = Long.numberOfTrailingZeros(pawnBB);
-            pieceList.set(pawn, FT_PAWN);
-            pawnBB &= pawnBB - 1;
-        }
-
-        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
-        while (bishopBB != 0) {
-            final int bishop = Long.numberOfTrailingZeros(bishopBB);
-            pieceList.set(bishop, FT_BISHOP);
-            bishopBB &= bishopBB - 1;
-        }
-
-        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
-        while (knightBB != 0) {
-            final int knight = Long.numberOfTrailingZeros(knightBB);
-            pieceList.set(knight, FT_KNIGHT);
-            knightBB &= knightBB - 1;
-        }
-
-        long rookBB = bb.getPieceSet(FT_ROOK, side);
-        while (rookBB != 0) {
-            final int rook = Long.numberOfTrailingZeros(rookBB);
-            pieceList.set(rook, FT_ROOK);
-            rookBB &= rookBB - 1;
-        }
-
-        long queenBB = bb.getPieceSet(FT_QUEEN, side);
-        while (queenBB != 0) {
-            final int queen = Long.numberOfTrailingZeros(queenBB);
-            pieceList.set(queen, FT_QUEEN);
-            queenBB &= queenBB - 1;
-        }
-
-        long kingBB = bb.getPieceSet(FT_KING, side);
-        final int king = Long.numberOfTrailingZeros(kingBB);
-        pieceList.setKing(king);
-
-        return pieceList;
-    }
-
     @Override
     public boolean isCastlingAllowed(Color color, RochadeType type) {
         return castlingRights.isAllowed(color, type);
