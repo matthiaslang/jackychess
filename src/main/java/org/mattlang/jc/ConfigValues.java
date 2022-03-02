@@ -34,7 +34,7 @@ public class ConfigValues {
 
     public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
             "the maximum search threads when multi threading search is activated",
-            1, 8, 4);
+            1, 8, 1);
 
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
