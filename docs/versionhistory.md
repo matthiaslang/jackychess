@@ -1,5 +1,11 @@
 # Versions
 
+### Version 0.11.3
+
+- experimental worker adjusting depth in multithread mode....
+- some refactorings
+
+
 ### Version 0.11.2
 
 - cache size as UCI option

@@ -31,10 +31,20 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
+    // Laser based SMP skip
+    private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
+    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
+    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
+
     /**
      * worker number if this iterative deepening is running inside a worker thread.
      */
     private int workerNumber;
+
+    /**
+     * Cycle index, if run as worker thread.
+     */
+    private int cycleIndex;
 
     /**
      * true if this is running in a worker thread; false if running as main thread. The main thread
@@ -56,6 +66,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
+        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
         isWorker = workerNumber > 0;
     }
 
@@ -92,7 +103,16 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
         try {
-            for (int currdepth = startDepth; currdepth <= maxDepth; currdepth++) {
+            int currdepth = startDepth;
+
+            while (currdepth <= maxDepth) {
+                currdepth++;
+                if (isWorker) {
+                    currdepth = adjustDepthForWorker(currdepth);
+                    if (currdepth > maxDepth) {
+                        break;
+                    }
+                }
 
                 IterativeRoundResult irr =
                         searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
@@ -125,6 +145,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
         logIsr(isr);
         return isr;
+    }
+
+    private int adjustDepthForWorker(int currDepth) {
+        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
+            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+        }
+        return currDepth;
     }
 
     private void logIsr(IterativeSearchResult isr) {
