@@ -1,5 +1,6 @@
 package org.mattlang.jc.moves;
 
+import static org.mattlang.jc.Constants.MAX_MOVES;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
@@ -14,8 +15,8 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 public class MoveListImpl implements MoveList {
 
-    private IntList moves = new IntList();
-    private int[] order = new int[200];
+    private IntList moves = new IntList(MAX_MOVES);
+    private int[] order = new int[MAX_MOVES];
 
     private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
 

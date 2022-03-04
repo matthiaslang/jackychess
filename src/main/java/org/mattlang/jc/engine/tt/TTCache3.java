@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
+import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
 import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Arrays;
@@ -11,7 +12,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
 /**
- * Experimentell cache using only a long array to be faster and more memory efficient.
+ * Cache using only a long array to be faster and more memory efficient.
  * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
  * It combines a "always save" with replace "lowest depth" in a multi bucket cache.
  *
@@ -47,7 +48,7 @@ public final class TTCache3 implements TTCacheInterface {
 	private long cacheHits = 0;
 	private long cacheMisses = 0;
 
-	private int mbSize = 128;
+	private int mbSize = DEFAULT_CACHE_SIZE_MB;
 
 	private int determineBitSizeFromConfig() {
 		int mb = getConfiguredMbSize();
@@ -59,7 +60,7 @@ public final class TTCache3 implements TTCacheInterface {
 		Integer mb = Factory.getDefaults().getConfig().hash.getValue();
 
 		if (mb == null) {
-			return 128;
+			return DEFAULT_CACHE_SIZE_MB;
 		}
 		return mb.intValue();
 	}

@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
+import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
 import static org.mattlang.jc.engine.tt.LongCache.toFlag;
 
 import java.util.Map;
@@ -31,7 +32,7 @@ public final class TTCache implements TTCacheInterface {
 
     private LongCache cache = new LongCache(determineBitSizeFromConfig());
 
-    private int mbSize=128;
+    private int mbSize = DEFAULT_CACHE_SIZE_MB;
 
     private int determineBitSizeFromConfig() {
         int mb = getConfiguredMbSize();
@@ -43,7 +44,7 @@ public final class TTCache implements TTCacheInterface {
         Integer mb = Factory.getDefaults().getConfig().hash.getValue();
 
         if (mb == null) {
-            return 128;
+            return DEFAULT_CACHE_SIZE_MB;
         }
         return mb.intValue();
     }

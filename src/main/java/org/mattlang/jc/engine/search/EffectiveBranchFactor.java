@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY;
 
 import lombok.AllArgsConstructor;
 

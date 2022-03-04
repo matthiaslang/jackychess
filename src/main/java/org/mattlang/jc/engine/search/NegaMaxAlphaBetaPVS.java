@@ -1,11 +1,11 @@
 package org.mattlang.jc.engine.search;
 
 import static java.lang.Math.abs;
+import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.QUIESCENCE;
-import static org.mattlang.jc.uci.GameContext.MAX_PLY;
 
 import java.util.LinkedHashMap;
 import java.util.List;

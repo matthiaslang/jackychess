@@ -1,6 +1,6 @@
 package org.mattlang.jc;
 
-import static org.mattlang.jc.uci.GameContext.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY;
 
 import org.mattlang.jc.uci.*;
 
@@ -25,7 +25,7 @@ public class ConfigValues {
 
     public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
-            3, MAX_PLY, 40);
+            3, MAX_PLY, MAX_PLY);
 
     public final UCISpinOption maxQuiescence =
             limits.createSpinOpt("quiescence",
@@ -54,7 +54,7 @@ public class ConfigValues {
     public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
             limits.createComboOpt("searchalg",
                     "the search algorithm to use.",
-                    SearchAlgorithms.class, SearchAlgorithms.STABLE);
+                    SearchAlgorithms.class, SearchAlgorithms.MULTITHREAD);
 
     public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",
             "should principal variation search be used",

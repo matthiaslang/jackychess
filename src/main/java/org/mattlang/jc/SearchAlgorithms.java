@@ -2,7 +2,7 @@ package org.mattlang.jc;
 
 public enum SearchAlgorithms {
 
-    STABLE {
+    SINGLETHREAD {
         @Override
         public SearchParameter createSearchParameter() {
             return Factory.createStable();

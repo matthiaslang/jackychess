@@ -8,14 +8,14 @@ import org.mattlang.jc.engine.tt.TTCacheInterface;
 
 public enum CacheImpls {
 
-    STANDARD {
+    OLD_STANDARD {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
             return TTCache::new;
         }
     },
 
-    V3 {
+    STANDARD {
         @Override
         public Supplier<TTCacheInterface> createSupplier() {
             return TTCache3::new;
