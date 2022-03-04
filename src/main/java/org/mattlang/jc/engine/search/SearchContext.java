@@ -34,6 +34,10 @@ public final class SearchContext {
 
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 
+    private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
+    private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
+    private boolean useCounterMove = Factory.getDefaults().getConfig().useCounterMoves.getValue();
+
     private GameState gameState;
     private GameContext context;
 
@@ -81,6 +85,12 @@ public final class SearchContext {
 
     private TTResult ttResult = new TTResult();
 
+    private HistoryHeuristic historyHeuristic = null;
+
+    private KillerMoves killerMoves = null;
+
+    private CounterMoveHeuristic counterMoveHeuristic = null;
+
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
             OrderCalculator orderCalculator, EvaluateFunction evaluate,
@@ -103,6 +113,10 @@ public final class SearchContext {
         savedMove = 0;
 
         ttCache = context.getTtCache();
+
+        killerMoves = stc.getKillerMoves();
+        historyHeuristic = stc.getHistoryHeuristic();
+        counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
     public void adjustSelDepth(int depth) {
@@ -172,7 +186,7 @@ public final class SearchContext {
         return null;
     }
 
-    public int probeTTHashMove(Color color, int depth) {
+    public int probeTTHashMove() {
         if (doCaching) {
             if (ttCache.findEntry(ttResult, board)){
                 return ttResult.getMove();
@@ -204,7 +218,30 @@ public final class SearchContext {
         return evaluate.eval(board, color);
     }
 
-    public void savePv(int bestMove, int ply) {
+    public void savePv(int bestMove) {
         stc.getPvCache().save(board.getZobristHash(), bestMove);
+    }
+
+    // todo test that not in check because those heuristics make only for quiet pos sense...?
+    public void updateCutOffHeuristics(int ply, int depth, Color color, int parentMove, int bestMove,
+            MoveCursor moveCursor) {
+        if (!moveCursor.isCapture()) {
+            if (useHistoryHeuristic) {
+                historyHeuristic.update(color, moveCursor, depth);
+            }
+            if (useKillerMoves) {
+                killerMoves.addKiller(color, bestMove, ply);
+            }
+
+            if (useCounterMove) {
+                counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
+            }
+        }
+    }
+
+    public void updateBadHeuristic(int depth, Color color, MoveCursor moveCursor) {
+        if (useHistoryHeuristic && !moveCursor.isCapture()) {
+            historyHeuristic.updateBad(color, moveCursor, depth);
+        }
     }
 }

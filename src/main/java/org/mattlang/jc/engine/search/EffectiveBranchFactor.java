@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+
+import java.util.Arrays;
 
 import lombok.AllArgsConstructor;
 
@@ -18,7 +20,7 @@ public class EffectiveBranchFactor {
         double factor;
     }
 
-    private EBF[] ebfs = new EBF[MAX_PLY];
+    private EBF[] ebfs = new EBF[MAX_PLY_INDEX];
 
     public void update(int currdepth, long duration, int nodesVisited) {
         double factor;
@@ -31,14 +33,12 @@ public class EffectiveBranchFactor {
     }
 
     public void clear() {
-        for (int i = 0; i < MAX_PLY; i++) {
-            ebfs[i] = null;
-        }
+        Arrays.fill(ebfs, null);
     }
 
     public String report() {
         StringBuilder b = new StringBuilder();
-        for (int i = 1; i < MAX_PLY; i++) {
+        for (int i = 1; i < ebfs.length; i++) {
             if (ebfs[i] != null) {
                 report(b, i, ebfs[i]);
             } else {

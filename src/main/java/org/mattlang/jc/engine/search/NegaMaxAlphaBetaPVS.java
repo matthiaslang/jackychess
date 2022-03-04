@@ -91,12 +91,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
     private boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
-    private HistoryHeuristic historyHeuristic = null;
-
-    private KillerMoves killerMoves = null;
-
-    private CounterMoveHeuristic counterMoveHeuristic = null;
-
     private int[] parentMoves=new int[MAX_PLY];
 
     private ExtensionsInfo extensionsInfo = new ExtensionsInfo();
@@ -125,12 +119,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 ALPHA_START, BETA_START,
                 stopTime, OrderHints.NO_HINTS);
         return new MoveImpl(searchContext.getSavedMove());
-    }
-
-    private void initContext(SearchThreadContext stc) {
-        killerMoves = stc.getKillerMoves();
-        historyHeuristic = stc.getHistoryHeuristic();
-        counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
     public void resetStatistics() {
@@ -389,12 +377,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 //                    }
 
                     pvArray.set(bestMove, ply);
-                    searchContext.savePv(bestMove, ply);
+                    searchContext.savePv(bestMove);
                     searchContext.updateRootBestMove(depth, bestMove, score);
 
                     if (max >= beta) {
 //                        if (!areWeInCheck) {
-                            updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
+                            searchContext.updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
                         //                        }
                         cutOff++;
                         break;
@@ -403,7 +391,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 }
 
                 // update "bad" heuristic
-                updateBadHeuristic(depth, color, moveCursor);
+                searchContext.updateBadHeuristic(depth, color, moveCursor);
             }
 
             if (searchedMoves == 0) {
@@ -415,28 +403,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         searchContext.storeTT(color, max, alpha, beta, depth, bestMove);
 
         return max;
-    }
-
-    private void updateBadHeuristic(int depth, Color color, MoveCursor moveCursor) {
-        if (useHistoryHeuristic && !moveCursor.isCapture()) {
-            historyHeuristic.updateBad(color, moveCursor, depth);
-        }
-    }
-
-    // todo test that not in check because those heuristics make only for quiet pos sense...?
-    private void updateCutOffHeuristics(int ply, int depth, Color color, int parentMove, int bestMove, MoveCursor moveCursor) {
-        if (!moveCursor.isCapture()) {
-            if (useHistoryHeuristic) {
-                historyHeuristic.update(color, moveCursor, depth);
-            }
-            if (useKillerMoves) {
-                killerMoves.addKiller(color, bestMove, ply);
-            }
-
-            if (useCounterMove) {
-                counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
-            }
-        }
     }
 
     /**
@@ -650,7 +616,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      */
     private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves,
             BoardRepresentation board) {
-        int hashMove = searchContext.probeTTHashMove(color, depth);
+        int hashMove = searchContext.probeTTHashMove();
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
         moves.sort(orderCalculator);
     }
@@ -679,8 +645,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         extensionCounter = 0;
 
         pvArray.reset();
-
-        initContext(stc);
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 

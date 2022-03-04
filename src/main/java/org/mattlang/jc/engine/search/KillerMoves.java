@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.search;
 
 
-import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.board.Color;
 
@@ -12,11 +12,11 @@ public class KillerMoves {
 
     public static final int MAX_KILLERS = 2;
 
-    private int[][] killerMovesWhite = new int[MAX_PLY][MAX_KILLERS];
-    private int[][] killerMovesBlack = new int[MAX_PLY][MAX_KILLERS];
+    private int[][] killerMovesWhite = new int[MAX_PLY_INDEX][MAX_KILLERS];
+    private int[][] killerMovesBlack = new int[MAX_PLY_INDEX][MAX_KILLERS];
 
     public void addKiller(Color color, int move, int ply) {
-        if (ply < MAX_PLY) {
+        if (ply < MAX_PLY_INDEX) {
             int[] kmovesList = getOrCreateKillerList(color, ply);
             if (kmovesList[0] != move && kmovesList[1] != move) {
                 kmovesList[1] = kmovesList[0];
@@ -26,7 +26,7 @@ public class KillerMoves {
     }
 
     public boolean isKiller(Color color, int moveInt, int ply) {
-        if (ply > MAX_PLY) {
+        if (ply > MAX_PLY_INDEX) {
             return false;
         }
         int[] kmovesList = getOrCreateKillerList(color, ply);
@@ -36,14 +36,6 @@ public class KillerMoves {
             }
         }
         return false;
-    }
-
-    public int[] getPossibleKillers(Color color,  int ply){
-
-        // todo maybe return a copy ...?
-        int[] kmovesList = getOrCreateKillerList(color, ply);
-        return kmovesList;
-
     }
 
     private int[] getOrCreateKillerList(Color color, int ply) {

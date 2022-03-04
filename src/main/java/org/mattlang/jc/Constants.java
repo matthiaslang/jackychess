@@ -13,7 +13,14 @@ public class Constants {
     public static final int MAX_MOVES = 256;
 
     /**
-     * max ply used to setup array structures.
+     * max ply used for parameters.
      */
     public static final int MAX_PLY = 64;
+
+    /**
+     * max ply used to setup array structures.
+     */
+    public static final int MAX_PLY_INDEX = MAX_PLY + MAX_PLY;
+
+
 }

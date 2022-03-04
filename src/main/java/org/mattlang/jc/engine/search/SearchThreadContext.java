@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
@@ -23,7 +23,7 @@ public class SearchThreadContext {
      * Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
      * which are always reused during recursive search.
      */
-    private MoveList[] movelists = new MoveList[MAX_PLY];
+    private MoveList[] movelists = new MoveList[MAX_PLY_INDEX];
 
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
