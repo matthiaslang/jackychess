@@ -326,7 +326,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 /**
                  * Late move reduction
                  */
-                int R = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
+                int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
 
                 boolean redo = false;
                 int score;
@@ -335,19 +335,19 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                         /**
                          * do full search (for pvs search on the first move, or if pvs search is deactivated)
                          */
-                        score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -beta, -max);
+                        score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
                         if (doPVSSearch) {
                             firstChild = false;
                         }
                     } else {
                         // pvs try 0 window
-                        score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -max - 1, -max);
+                        score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -max - 1, -max);
 
                         /**
                          * do a full window search in pvs search if score is out of our max, beta window:
                          */
                         if (max < score && score < beta) {
-                            score = -negaMaximize(ply + 1, depth - 1 - R, color.invert(), -beta, -max);
+                            score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
                         }
                     }
 
@@ -357,8 +357,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                      *  not certain now, so let's search to the full, unreduced depth.     *
                      **********************************************************************/
                     redo = false;
-                    if (R > 0 && score > max) {
-                        R = 0;
+                    if (r > 0 && score > max) {
+                        r = 0;
                         redo = true;
                     }
                 } while (redo);
@@ -371,10 +371,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     max = score;
 
                     bestMove = moveCursor.getMoveInt();
-
-//                    if (debug) {
-//                        System.out.println("ply:" + ply + " pv:" + new MoveImpl(bestMove).toStr() + " score:" + score);
-//                    }
 
                     pvArray.set(bestMove, ply);
                     searchContext.savePv(bestMove);
@@ -521,9 +517,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
 //        int alphaStart = alpha;
 
-        boolean areWeInCheck = searchContext.isInCheck(color);
+        //        boolean areWeInCheck = searchContext.isInCheck(color);
 
-        Color opponent = color.invert();
+        //        Color opponent = color.invert();
 
         // todo: we have no "evations" mode in move generation for now. therefore we must distinquish
         // if we are in check and then use the normal mode instead of only capture generation:
@@ -536,7 +532,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             // sort just by see, as we have no pv infos currently in quiescence...
             sortMoves(ply, depth, color, 0, moves, searchContext.getBoard());
 
-            int searchedMoves = 0;
+            //            int searchedMoves = 0;
             /* loop through the capture moves */
 
             MoveCursor moveCursor = moves.iterate();
@@ -558,7 +554,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     continue;
                 }
 
-                searchedMoves++;
+                //                searchedMoves++;
 
                 if (moveCursor.isCapture()
                         || moveCursor.isPawnPromotion()) {
@@ -692,11 +688,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public NegaMaxAlphaBetaPVS setDoCaching(boolean doCaching) {
         // todo remove...
         return this;
-    }
-
-    @Override
-    public void resetCaches() {
-        //ttCache = new TTCache();
     }
 
     public static boolean canRefineEval(final TTResult tte, final int eval) {

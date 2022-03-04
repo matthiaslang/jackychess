@@ -197,11 +197,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         stats.put("depth=" + currdepth, statOfDepth);
         negaMaxAlphaBeta.resetStatistics();
 
-        // experiment: !!!
-        // reset cache after each depth, otherwise we would get cache fails with previous lower depth results
-        // which is not useful
-        negaMaxAlphaBeta.resetCaches();
-
         OrderHints orderHints = new OrderHints(rslt, stc, useMvvLvaSorting);
         return new IterativeRoundResult(rslt, orderHints, roundWatch);
     }

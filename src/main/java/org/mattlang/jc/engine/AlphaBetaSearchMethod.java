@@ -11,8 +11,6 @@ public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector
 
     void reset();
 
-    void resetCaches();
-
     int getNodesVisited();
 
     NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState, GameContext context, int currdepth,
