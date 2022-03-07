@@ -33,7 +33,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     // Laser based SMP skip
     private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
-    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
+    private static final int[] SMP_SKIP_AMOUNT = { 0, 1, 0, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
     private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
 
     /**

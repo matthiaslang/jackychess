@@ -1,5 +1,10 @@
 # Versions
 
+
+### Version 0.11.4
+
+- experimental worker adjusting depth in multithread mode (again..).......
+
 ### Version 0.11.3
 
 - experimental worker adjusting depth in multithread mode....
