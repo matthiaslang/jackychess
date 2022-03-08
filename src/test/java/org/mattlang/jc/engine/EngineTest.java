@@ -98,7 +98,7 @@ public class EngineTest {
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepeningV2())
-                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+                .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
                 .config(c -> c.hash.setValue(512))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))

@@ -10,6 +10,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -225,7 +226,7 @@ public final class SearchContext {
      * @param moves
      */
     private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves) {
-        int hashMove = probeTTHashMove(color, depth);
+        int hashMove = probeTTHashMove();
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
         moves.sort(orderCalculator);
     }
