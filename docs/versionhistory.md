@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.11.5
+
+- undo experimental worker adjusting depth
+- refactored code in mobility evaluation
 
 ### Version 0.11.4
 

@@ -1,36 +1,23 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BB.*;
-import static org.mattlang.jc.board.bitboard.Fields.E2;
-import static org.mattlang.jc.board.bitboard.Fields.F1;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.board.bitboard.Fields;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.Tools;
-import org.mattlang.jc.engine.evaluation.parameval.functions.KingAttackFun;
-import org.mattlang.jc.engine.evaluation.parameval.functions.MobLinFun;
-import org.mattlang.jc.engine.evaluation.parameval.functions.TropismFun;
+import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
+import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
 /**
  * Paremeterized Mobility Evaluation.
  */
 public class ParameterizedMobilityEvaluation implements EvalComponent {
-
-    private static final long WHITE_QUEEN_DEVELOPED_MASK = ALL & ~rank1 & ~rank2;
-    private static final long BLACK_QUEEN_DEVELOPED_MASK = ALL & ~rank7 & ~rank8;
-
-    public static final long WHITE_BISHOPS_STARTPOS = C1 | BB.F1;
-    public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
-    public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
-    public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
 
     private static int[] SAFETYTABLE = {
             0, 0, 1, 2, 3, 5, 7, 9, 12, 15,
@@ -45,87 +32,29 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             500, 500, 500, 500, 500, 500, 500, 500, 500, 500
     };
 
-    public static final int IWHITE = Color.WHITE.ordinal();
-    public static final int IBLACK = Color.BLACK.ordinal();
-
-    public static final int MOBILITY_MG = 0;
-    public static final int MOBILITY_EG = 1;
-    public static final int CAPTURES = 2;
-    public static final int KING_ATT_COUNT = 3;
-    public static final int KING_ATT_WEIGHT = 4;
-    public static final int TROPISM_MG = 5;
-    public static final int TROPISM_EG = 6;
-
-    public static final int CONNECTIVITY = 7;
-    public static final int POSITIONAL_THEMES = 8;
-    public static final int BLOCKAGES = 9;
-
-    public static final int MAX_TYPE_INDEX = BLOCKAGES + 1;
-
-    private final int rookOpen;
-    private final int rookHalf;
-    private final int earlyQueenPenalty;
-
-    private final int kingBlocksRookPenalty;
-    private final int blockCentralPawnPenalty;
-    private final int bishopTrappedA7Penalty;
-    private final int bishopTrappedA6Penalty;
-    private final int knightTrappedA8Penalty;
-    private final int knightTrappedA7Penalty;
-    private final int c3KnightPenalty;
-    private final int returningBishop;
     /**
      * splitted results by color, and type of evaluation, e.g. mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
      */
-    public int[][] results = new int[2][MAX_TYPE_INDEX];
+    private MobilityEvalResult wResult;
+    private MobilityEvalResult bResult;
 
-    static class FigParams {
-
-        private MobLinFun mobilityMG;
-        private MobLinFun mobilityEG;
-
-        private TropismFun tropismMG;
-        private TropismFun tropismEG;
-
-        private KingAttackFun kingAtt;
-
-        public FigParams(EvalConfig config, String propBaseName) {
-            mobilityMG = config.parseFun(propBaseName + "MobMG");
-            mobilityEG = config.parseFun(propBaseName + "MobEG");
-
-            tropismMG = config.parseTrFun(propBaseName + "TropismMG");
-            tropismEG = config.parseTrFun(propBaseName + "TropismEG");
-
-            kingAtt = config.parseKAFun(propBaseName + "KingAttack");
-        }
-    }
-
-    private FigParams[] figParams = new FigParams[6];
+    private MobFigParams paramsKnight;
+    private MobFigParams paramsBishop;
+    private MobFigParams paramsRook;
+    private MobFigParams paramsQueen;
+    private MobFigParams paramsKing;
 
     public ParameterizedMobilityEvaluation(EvalConfig config) {
 
-        figParams[FT_KNIGHT] = new FigParams(config, "knight");
-        figParams[FT_BISHOP] = new FigParams(config, "bishop");
-        figParams[FT_ROOK] = new FigParams(config, "rook");
-        figParams[FT_QUEEN] = new FigParams(config, "queen");
-        figParams[FT_KING] = new FigParams(config, "king");
+        paramsKnight = new MobFigParams(config, "knight");
+        paramsBishop = new MobFigParams(config, "bishop");
+        paramsRook = new MobFigParams(config, "rook");
+        paramsQueen = new MobFigParams(config, "queen");
+        paramsKing = new MobFigParams(config, "king");
 
-        rookOpen = config.getPosIntProp("rookOpen");
-        rookHalf = config.getPosIntProp("rookHalf");
-        earlyQueenPenalty = config.getPosIntProp("earlyQueenPenalty");
-
-        /* trapped and blocked pieces */
-        kingBlocksRookPenalty = config.getPosIntProp("kingBlocksRookPenalty");
-        blockCentralPawnPenalty = config.getPosIntProp("blockCentralPawnPenalty");
-        bishopTrappedA7Penalty = config.getPosIntProp("bishopTrappedA7Penalty");
-        bishopTrappedA6Penalty = config.getPosIntProp("bishopTrappedA6Penalty");
-        knightTrappedA8Penalty = config.getPosIntProp("knightTrappedA8Penalty");
-        knightTrappedA7Penalty = config.getPosIntProp("knightTrappedA7Penalty");
-
-        c3KnightPenalty = config.getPosIntProp("c3KnightPenalty");
-
-        returningBishop = config.getPosIntProp("returningBishop");
+        wResult = new MobilityEvalResult(config);
+        bResult = new MobilityEvalResult(config);
 
     }
 
@@ -143,14 +72,13 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     private void clear() {
-        for (int c = 0; c < 2; c++) {
-            for (int t = 0; t < MAX_TYPE_INDEX; t++) {
-                results[c][t] = 0;
-            }
-        }
+        wResult.clear();
+        bResult.clear();
     }
 
     public void eval(BitChessBoard bb, Color side) {
+
+        MobilityEvalResult result = side == WHITE ? wResult : bResult;
 
         Color xside = side.invert();
 
@@ -178,7 +106,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(bishop, oppKingPos);
 
-            countFigureVals(FT_BISHOP, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsBishop, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             bishopBB &= bishopBB - 1;
         }
@@ -196,7 +124,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = knightAttack & ownFigsMask;
             int tropism = getTropism(knight, oppKingPos);
 
-            countFigureVals(FT_KNIGHT, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsKnight, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             knightBB &= knightBB - 1;
         }
@@ -215,9 +143,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long kingZoneAttacs = attacks & oppKingZone;
             int tropism = getTropism(rook, oppKingPos);
 
-            countFigureVals(FT_ROOK, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsRook, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
-            rookOpenFiles(side, rook, oppKingPos, ownPawns, oppPawns);
+            result.rookOpenFiles(rook, oppKingPos, ownPawns, oppPawns);
 
             rookBB &= rookBB - 1;
         }
@@ -235,9 +163,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(queen, oppKingPos);
 
-            countFigureVals(FT_QUEEN, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsQueen, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
-            evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
+            result.evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
 
             queenBB &= queenBB - 1;
         }
@@ -254,61 +182,14 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long connectivity = kingAttack & ownFigsMask;
         int tropism = getTropism(king, oppKingPos);
 
-        countFigureVals(FT_KING, side, mobility, captures, connectivity, kingZoneAttacs, tropism);
+        result.countFigureVals(paramsKing, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
-        blockedPieces(bb, side);
-    }
-
-    private void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, Color side) {
-
-        /**************************************************************************
-         *  A queen should not be developed too early                              *
-         **************************************************************************/
-
-        if (earlyQueenPenalty > 0) {
-            if ((side == WHITE && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
-
-                results[side.ordinal()][POSITIONAL_THEMES] -=
-                        (bitCount(WHITE_BISHOPS_STARTPOS & bishopBB) + bitCount(WHITE_KNIGHT_STARTPOS & knightBB))
-                                * earlyQueenPenalty;
-            } else if ((side == BLACK && (queenBB & BLACK_QUEEN_DEVELOPED_MASK) != 0)) {
-
-                results[side.ordinal()][POSITIONAL_THEMES] -=
-                        (bitCount(BLACK_BISHOPS_STARTPOS & bishopBB) + bitCount(BLACK_KNIGHT_STARTPOS & knightBB))
-                                * earlyQueenPenalty;
-            }
-
-        }
+        result.blockedPieces(bb, side);
     }
 
     public static long createKingZoneMask(long oppKingMask, Color xside) {
         long frontMask = xside == WHITE ? kingAttacks(nortOne(oppKingMask)) : kingAttacks(soutOne(oppKingMask));
         return kingAttacks(oppKingMask) | frontMask;
-    }
-
-    private void rookOpenFiles(Color side, int rook, int otherKing, long ownPawns, long oppPawns) {
-        long rookMask = 1L << rook;
-
-        long fileFilled = BB.fileFill(rookMask);
-        boolean ownPawnOnFile = (fileFilled & ownPawns) != 0;
-        boolean oppPawnOnFile = (fileFilled & oppPawns) != 0;
-
-        // fully open file:
-        if (!ownPawnOnFile && !oppPawnOnFile) {
-            results[side.ordinal()][MOBILITY_MG] += rookOpen;
-            results[side.ordinal()][MOBILITY_EG] += rookOpen;
-            if (Tools.colDistance(rook, otherKing) < 2) {
-                results[side.ordinal()][KING_ATT_WEIGHT] += 1;
-            }
-        } else if (!ownPawnOnFile && oppPawnOnFile) {
-            // half open:
-            results[side.ordinal()][MOBILITY_MG] += rookHalf;
-            results[side.ordinal()][MOBILITY_EG] += rookHalf;
-            if (Tools.colDistance(rook, otherKing) < 2) {
-                results[side.ordinal()][KING_ATT_WEIGHT] += 2;
-            }
-        }
-
     }
 
     /**
@@ -332,138 +213,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
     }
 
-    private void countFigureVals(byte figureType, Color side,
-            long mobility,
-            long captures,
-            long connectivity,
-            long kingZoneAttacs,
-            int tropism) {
-
-        FigParams params = figParams[figureType];
-
-        // mobility count is mobility to empty fields as well as captures of enemy pieces:
-        int mobCount = bitCount(mobility) + bitCount(captures);
-        int kingAttCount = bitCount(kingZoneAttacs);
-
-        int iSide = side.ordinal();
-        results[iSide][MOBILITY_MG] += params.mobilityMG.calc(mobCount);
-        results[iSide][MOBILITY_EG] += params.mobilityEG.calc(mobCount);
-        results[iSide][KING_ATT_COUNT] += kingAttCount;
-        results[iSide][KING_ATT_WEIGHT] += params.kingAtt.calc(kingAttCount);
-
-        results[iSide][TROPISM_MG] += params.tropismMG.calc(tropism);
-        results[iSide][TROPISM_EG] += params.tropismEG.calc(tropism);
-
-        //        detailedResults[side.ordinal()][figureType][CAPTURES] += weights.dotProduct(captures, side) * 2;
-        //        detailedResults[side.ordinal()][figureType][CONNECTIVITY] += weights.dotProduct(connectivity, side) / 2;
-
-    }
-
-    /******************************************************************************
-     *                             Pattern detection                               *
-     ******************************************************************************/
-
-    void blockedPieces(BitChessBoard bb, Color side) {
-
-        Color oppo = side.invert();
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(oppo);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
-        long occupancy = ownFigsMask | opponentFigsMask;
-
-        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
-        long pawnBB = bb.getPieceSet(FT_PAWN, side);
-        long pawnOppoBB = bb.getPieceSet(FT_PAWN, oppo);
-        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
-        long kingBB = bb.getPieceSet(FT_KING, side);
-        long rookBB = bb.getPieceSet(FT_ROOK, side);
-
-        // Fieldwrapper fw=new fieldMapper(side);
-        // fm.c1.isSet(bb)
-
-        // central pawn blocked, bishop hard to develop
-        if (Fields.C1.isSet(bishopBB, side)
-                && Fields.D2.isSet(pawnBB, side)
-                && Fields.D3.isSet(occupancy, side))
-            results[side.ordinal()][BLOCKAGES] -= blockCentralPawnPenalty;
-
-        if (F1.isSet(bishopBB, side)
-                && E2.isSet(pawnBB, side)
-                && Fields.E3.isSet(occupancy, side))
-            results[side.ordinal()][BLOCKAGES] -= blockCentralPawnPenalty;
-
-        // trapped knight
-        if (Fields.A8.isSet(knightBB, side)
-                && (Fields.A7.isSet(pawnOppoBB, side) || Fields.C7.isSet(pawnOppoBB, side)))
-            results[side.ordinal()][BLOCKAGES] -= knightTrappedA8Penalty;
-
-        if (Fields.H8.isSet(knightBB, side)
-                && (Fields.H7.isSet(pawnOppoBB, side) || Fields.F7.isSet(pawnOppoBB, side)))
-            results[side.ordinal()][BLOCKAGES] -= knightTrappedA8Penalty;
-
-        if (Fields.A7.isSet(knightBB, side)
-                && Fields.A6.isSet(pawnOppoBB, side)
-                && Fields.B7.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= knightTrappedA7Penalty;
-
-        if (Fields.H7.isSet(knightBB, side)
-                && Fields.H6.isSet(pawnOppoBB, side)
-                && Fields.G7.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= knightTrappedA7Penalty;
-        
-        // knight blocking queenside pawns
-        if (Fields.C3.isSet(knightBB, side)
-                && Fields.C2.isSet(pawnBB, side)
-                && Fields.D2.isSet(pawnBB, side)
-                && !Fields.E4.isSet(pawnBB, side))
-            results[side.ordinal()][BLOCKAGES] -= c3KnightPenalty;
-
-        // trapped bishop
-        if (Fields.A7.isSet(bishopBB, side)
-                && Fields.B6.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA7Penalty;
-
-        if (Fields.H7.isSet(bishopBB, side)
-                && Fields.G6.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA7Penalty;
-
-        if (Fields.B8.isSet(bishopBB, side)
-                && Fields.C7.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA7Penalty;
-
-        if (Fields.G8.isSet(bishopBB, side)
-                && Fields.F7.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA7Penalty;
-
-        if (Fields.A6.isSet(bishopBB, side)
-                && Fields.B5.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA6Penalty;
-
-        if (Fields.H6.isSet(bishopBB, side)
-                && Fields.G5.isSet(pawnOppoBB, side))
-            results[side.ordinal()][BLOCKAGES] -= bishopTrappedA6Penalty;
-
-        // bishop on initial sqare supporting castled king
-        if (Fields.F1.isSet(bishopBB, side)
-                && Fields.G1.isSet(kingBB, side))
-            results[side.ordinal()][BLOCKAGES] += returningBishop;
-
-        if (Fields.C1.isSet(bishopBB, side)
-                && Fields.B1.isSet(kingBB, side))
-            results[side.ordinal()][BLOCKAGES] += returningBishop;
-
-        // uncastled king blocking own rook
-        if ((Fields.F1.isSet(kingBB, side) || Fields.G1.isSet(kingBB, side))
-                && (Fields.H1.isSet(rookBB, side) || Fields.G1.isSet(rookBB, side)))
-            results[side.ordinal()][BLOCKAGES] -= kingBlocksRookPenalty;
-
-        if ((Fields.C1.isSet(kingBB, side) || Fields.B1.isSet(kingBB, side))
-                && (Fields.A1.isSet(rookBB, side) || Fields.B1.isSet(rookBB, side)))
-            results[side.ordinal()][BLOCKAGES] -= kingBlocksRookPenalty;
-
-    }
-
     /**
      * Weights the distance to the king from -7 to +6.
      * +6 == nearest to the king. -7 fartest from king.
@@ -480,29 +229,26 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         eval(bitBoard);
 
-        result.midGame += (results[IWHITE][MOBILITY_MG] - results[IBLACK][MOBILITY_MG]);
-        result.endGame += (results[IWHITE][MOBILITY_EG] - results[IBLACK][MOBILITY_EG]);
+        result.midGame += (wResult.mobilityMG - bResult.mobilityMG);
+        result.endGame += (wResult.mobilityEG - bResult.mobilityEG);
 
-        result.midGame += (results[IWHITE][TROPISM_MG] - results[IBLACK][TROPISM_MG]);
-        result.endGame += (results[IWHITE][TROPISM_EG] - results[IBLACK][TROPISM_EG]);
+        result.midGame += (wResult.tropismMG - bResult.tropismMG);
+        result.endGame += (wResult.tropismEG - bResult.tropismEG);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
          *  than two attackers or if the attacker has no queen.                    *
          **************************************************************************/
 
-        if (results[IWHITE][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0)
-            results[IWHITE][KING_ATT_WEIGHT] = 0;
-        if (results[IBLACK][KING_ATT_COUNT] < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
-            results[IBLACK][KING_ATT_WEIGHT] = 0;
+        if (wResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0)
+            wResult.kingAttWeight = 0;
+        if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
+            bResult.kingAttWeight = 0;
 
-        result.result +=
-                (SAFETYTABLE[results[IWHITE][KING_ATT_WEIGHT]] - SAFETYTABLE[results[IBLACK][KING_ATT_WEIGHT]]);
+        result.result += (SAFETYTABLE[wResult.kingAttWeight] - SAFETYTABLE[bResult.kingAttWeight]);
 
-        result.result +=
-                (results[IWHITE][POSITIONAL_THEMES] - results[IBLACK][POSITIONAL_THEMES]);
+        result.result += (wResult.positionalThemes - bResult.positionalThemes);
 
-        result.result +=
-                (results[IWHITE][BLOCKAGES] - results[IBLACK][BLOCKAGES]);
+        result.result += (wResult.blockages - bResult.blockages);
     }
 }

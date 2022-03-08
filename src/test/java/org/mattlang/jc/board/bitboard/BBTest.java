@@ -1,6 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation.BLACK_KNIGHT_STARTPOS;
+import static org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult.BLACK_KNIGHT_STARTPOS;
 
 import org.junit.Test;
 import org.mattlang.jc.board.Color;
@@ -60,8 +60,6 @@ public class BBTest {
         long G = 0x4040404040404040L;
         long H = 0x8080808080808080L;
 
-        
-        
         System.out.println("Pattern \n" + BitChessBoard.toStr(BLACK_KNIGHT_STARTPOS));
     }
 
