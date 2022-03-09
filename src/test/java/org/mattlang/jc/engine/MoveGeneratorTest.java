@@ -69,7 +69,7 @@ public class MoveGeneratorTest {
     public void testPawnPromotionAndUndoing2() {
 
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen pp6/P7/8/8/8/8/p7/PP6 b k - 2 17 ";
+        String fen = "position fen pp6/P7/K7/8/8/k7/p7/PP6 b k - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
