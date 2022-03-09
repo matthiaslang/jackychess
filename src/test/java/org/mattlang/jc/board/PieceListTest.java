@@ -14,10 +14,10 @@ public class PieceListTest {
         pieceList.set(10, FigureConstants.FT_PAWN);
         pieceList.set(15, FigureConstants.FT_PAWN);
 
-        assertThat(pieceList.getPawns().getArr()).containsExactly(7, 10, 15, -1, -1, -1, -1, -1);
+        assertThat(pieceList.getPawns().getArr()).containsExactly(7, 10, 15);
 
         pieceList.remove(7, FigureConstants.FT_PAWN);
-        assertThat(pieceList.getPawns().getArr()).containsExactly(10, 15, -1, -1, -1, -1, -1, -1);
+        assertThat(pieceList.getPawns().getArr()).containsExactly(10, 15);
 
 
     }
