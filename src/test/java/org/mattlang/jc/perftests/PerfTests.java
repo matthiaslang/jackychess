@@ -9,7 +9,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 /**
  * PerfTests
@@ -26,7 +26,7 @@ public class PerfTests {
         Factory.setDefaults(Factory.createStable());
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
         perftInitialPosition(board, generator);
 
@@ -36,18 +36,18 @@ public class PerfTests {
     public void initialPositionBitBoardPerformanceLegalMoves() {
         BitBoard board = new BitBoard();
         board.setStartPosition();
-        LegalMoveGenerator generator = initBitBoardMoveGen();
+        MoveGenerator generator = initBitBoardMoveGen();
 
         perftInitialPosition(board, generator);
     }
 
-    private LegalMoveGenerator initBitBoardMoveGen() {
+    private MoveGenerator initBitBoardMoveGen() {
         Factory.getDefaults().checkChecker.set(() -> new BBCheckCheckerImpl());
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
         return generator;
     }
 
-    private void perftInitialPosition(BoardRepresentation board, LegalMoveGenerator generator) {
+    private void perftInitialPosition(BoardRepresentation board, MoveGenerator generator) {
         assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0, 0);
 
         assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0, 0);
@@ -91,7 +91,7 @@ public class PerfTests {
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        LegalMoveGenerator generator = initBitBoardMoveGen();
+        MoveGenerator generator = initBitBoardMoveGen();
 
         assertPerft(generator, board, WHITE, 1, 48, 8, 0, 2, 0);
 
@@ -114,7 +114,7 @@ public class PerfTests {
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
         System.out.println(board.toUniCodeStr());
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
         assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0, 0);
 
@@ -134,7 +134,7 @@ public class PerfTests {
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
         System.out.println(board.toUniCodeStr());
-        LegalMoveGenerator generator = initBitBoardMoveGen();
+        MoveGenerator generator = initBitBoardMoveGen();
 
         assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0, 0);
 
@@ -176,7 +176,7 @@ public class PerfTests {
         board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
         System.out.println(board.toUniCodeStr());
 
-        LegalMoveGenerator generator = initBitBoardMoveGen();
+        MoveGenerator generator = initBitBoardMoveGen();
 
         assertPerft(generator, board, WHITE, 1, 6, 0, 0, 0, 0);
 

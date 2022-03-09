@@ -11,7 +11,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 
@@ -50,7 +50,7 @@ public class AlgebraicNotation {
 
     private String determineMoveStr(BoardRepresentation board, Color color, FigureType figureType, int toidx,
             String fromSpec) {
-        LegalMoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
         List<MoveImpl> allMoves =
                 legalMoveGenerator.generate(board, color).extractList();
 

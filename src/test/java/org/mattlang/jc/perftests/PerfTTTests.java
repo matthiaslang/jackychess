@@ -17,7 +17,7 @@ import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
 
@@ -56,7 +56,7 @@ public class PerfTTTests {
     }
 
     public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
         StopWatch fillWatch = new StopWatch();
         perftReset();
 

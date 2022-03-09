@@ -15,7 +15,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
@@ -45,7 +45,7 @@ public class SimpleNegaMaxEvalTest {
         // since we recognize patts, we avoid moves which make patt:
         board.domove(move);
         // means we should have no patt situation:
-        LegalMoveGenerator moveGenerator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator moveGenerator = new BBLegalMoveGeneratorImpl();
         MoveList whiteMoves = moveGenerator.generate(board, Color.WHITE);
         // so white should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);

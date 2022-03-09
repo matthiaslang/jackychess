@@ -14,7 +14,7 @@ import org.mattlang.jc.uci.GameContext;
  *
  * This is a staged move generator version which creates all moves in different lazily in different stages.
  */
-public class StagedLegalMoveGenerator implements LegalMoveGenerator {
+public class StagedLegalMoveGenerator implements MoveGenerator {
 
     @Override
     public MoveList generate(BoardRepresentation board, Color side) {
@@ -22,7 +22,8 @@ public class StagedLegalMoveGenerator implements LegalMoveGenerator {
     }
 
     @Override
-    public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board,
+    public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator,
+            BoardRepresentation board,
             Color side, MoveList moveList) {
         if (!(moveList instanceof StagedMoveListImpl)) {
             throw new IllegalStateException("needs StagedMoveListImpl!");

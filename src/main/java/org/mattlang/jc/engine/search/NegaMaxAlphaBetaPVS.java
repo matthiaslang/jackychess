@@ -4,8 +4,8 @@ import static java.lang.Math.abs;
 import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.LegalMoveGenerator.GenMode.QUIESCENCE;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -512,7 +512,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         // todo: we have no "evations" mode in move generation for now. therefore we must distinquish
         // if we are in check and then use the normal mode instead of only capture generation:
-        LegalMoveGenerator.GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
+        GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
 
         try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(moveGenMode, ply, depth, color, 0)) {
             quiescenceNodesVisited++;

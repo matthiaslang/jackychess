@@ -17,7 +17,8 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -32,7 +33,7 @@ import lombok.Getter;
 public final class SearchContext {
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
-    private LegalMoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
+    private MoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 
@@ -203,7 +204,7 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateSortedMoves(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
+    public MoveList generateSortedMoves(GenMode mode, int ply, int depth, Color color,
             int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
         generator.generate(mode, context, orderCalculator, board, color, moveList);
@@ -212,7 +213,7 @@ public final class SearchContext {
         return moveList;
     }
 
-    public MoveBoardIterator genSortedMovesIterator(LegalMoveGenerator.GenMode mode, int ply, int depth, Color color,
+    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, int depth, Color color,
             int parentMove) {
         MoveList moveList = generateSortedMoves(mode, ply, depth, color, parentMove);
         return moveList.iterateMoves(board, checkChecker);

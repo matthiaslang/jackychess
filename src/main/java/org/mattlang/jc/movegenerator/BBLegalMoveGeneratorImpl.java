@@ -9,7 +9,7 @@ import org.mattlang.jc.moves.MoveCursorImpl;
 import org.mattlang.jc.moves.MoveListImpl;
 import org.mattlang.jc.uci.GameContext;
 
-public class BBLegalMoveGeneratorImpl implements LegalMoveGenerator {
+public class BBLegalMoveGeneratorImpl implements MoveGenerator {
 
     BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
 

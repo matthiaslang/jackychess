@@ -21,7 +21,7 @@ public class LegalMoveGeneratorImplTest {
 
         System.out.println(BoardPrinter.toUniCodeStr(board));
 
-        LegalMoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
         MoveList rslt = legalMoveGenerator.generate(board, Color.WHITE);
         /**
          * White king can only move down, because other moves would go into chess

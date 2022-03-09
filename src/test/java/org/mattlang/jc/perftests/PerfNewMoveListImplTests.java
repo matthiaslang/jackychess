@@ -8,7 +8,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveListImpl;
 
 /**
@@ -24,13 +24,13 @@ public class PerfNewMoveListImplTests {
     public void initialPositionPerformanceLegalMoves() {
         BitBoard board = new BitBoard();
         board.setStartPosition();
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
         perftInitialPosition(board, generator);
 
     }
 
-    private void perftInitialPosition(BoardRepresentation board, LegalMoveGenerator generator) {
+    private void perftInitialPosition(BoardRepresentation board, MoveGenerator generator) {
         assertPerft(generator, board, WHITE, 1, 20, 0, 0, 0, 0);
 
         assertPerft(generator, board, WHITE, 2, 400, 0, 0, 0, 0);
@@ -77,7 +77,7 @@ public class PerfNewMoveListImplTests {
         System.out.println(board.toUniCodeStr());
         Factory.getDefaults().moveList.set(() -> new MoveListImpl());
 
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
 
         assertPerft(generator, board, WHITE, 1, 14, 1, 0, 0, 0);
 

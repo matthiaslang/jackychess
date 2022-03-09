@@ -3,20 +3,18 @@ package org.mattlang.jc.perftests;
 import org.assertj.core.api.SoftAssertions;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.PositionBasedGenerator;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.moves.MoveBoardIterator;
 
 /**
  * PerfTests Methods
  */
 public class Perft {
 
-
-
-
     private static boolean debug = false;
-
 
     static int nodes = 0;
     static int captures = 0;
@@ -35,16 +33,15 @@ public class Perft {
         start = System.currentTimeMillis();
     }
 
-
-    public static void assertPerft(PositionBasedGenerator<MoveList> generator, BoardRepresentation board, Color color, int depth,
-                            int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions) {
+    public static void assertPerft(MoveGenerator generator, BoardRepresentation board, Color color, int depth,
+            int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions) {
         perftReset();
         perft(generator, board, color, depth, (visitedBoard, color1, depth1) -> {
         });
         long stop = System.currentTimeMillis();
-        long duration = stop-start;
-        if (duration!=0) {
-            long nodesPerSecond = (long)nodes * 1000 / duration;
+        long duration = stop - start;
+        if (duration != 0) {
+            long nodesPerSecond = (long) nodes * 1000 / duration;
             System.out.println("Nodes/s = " + nodesPerSecond);
         }
         SoftAssertions softly = new SoftAssertions();
@@ -56,11 +53,22 @@ public class Perft {
         softly.assertAll();
     }
 
-    public static void perft(PositionBasedGenerator<MoveList> generator,
-                      BoardRepresentation board,
-                      Color color,
-                      int depth,
-                      PerftConsumer nodeConsumer) {
+    public static void perft(MoveGenerator generator,
+            BoardRepresentation board,
+            Color color,
+            int depth,
+            PerftConsumer nodeConsumer) {
+
+        CheckChecker checkChecker = new BBCheckCheckerImpl();
+        perft(generator, board, checkChecker, color, depth, nodeConsumer);
+    }
+
+    public static void perft(MoveGenerator generator,
+            BoardRepresentation board,
+            CheckChecker checkChecker,
+            Color color,
+            int depth,
+            PerftConsumer nodeConsumer) {
 
         if (depth == 0) {
             nodes++;
@@ -71,38 +79,32 @@ public class Perft {
         }
 
         MoveList moves = generator.generate(board, color);
-        MoveCursor moveCursor = moves.iterate();
-        while (moveCursor.hasNext()) {
-            moveCursor.next();
 
-            if (depth == 1) {
-                if (moveCursor.isCapture()) {
-                    captures++;
-                    if (debug == true) {
-                        //System.out.println("color: " + color + ", capture " + captures + ": " + moveCursor.getMove().toStr() + " on board: ");
-                        //System.out.println(board.toUniCodeStr());
+        try (MoveBoardIterator iterator = moves.iterateMoves(board, checkChecker)) {
+            while (iterator.doNextMove()) {
+
+                if (depth == 1) {
+                    if (iterator.isCapture()) {
+                        captures++;
                     }
+                    if (iterator.isEnPassant()) {
+                        ep++;
+                    }
+                    if (iterator.isCastling()) {
+                        castles++;
+                    }
+                    if (iterator.isPawnPromotion()) {
+                        promotion++;
+                    }
+                }
 
-                }
-                if (moveCursor.isEnPassant()) {
-                    ep++;
-                }
-                if (moveCursor.isCastling()) {
-                    castles++;
-                }
-                if (moveCursor.isPawnPromotion()) {
-                    promotion++;
-                }
+                nodeConsumer.accept(board, color, depth);
+
+                perft(generator, board, checkChecker, color.invert(), depth - 1, nodeConsumer);
+
             }
-            moveCursor.move(board);
-
-            nodeConsumer.accept(board, color, depth);
-
-            perft(generator, board, color.invert(), depth - 1, nodeConsumer);
-            moveCursor.undoMove(board);
         }
-//        if (moves instanceof MoveListImpl) {
-//            MoveListPool.instance.dispose((MoveListImpl) moves);
-//        }
+
     }
+
 }

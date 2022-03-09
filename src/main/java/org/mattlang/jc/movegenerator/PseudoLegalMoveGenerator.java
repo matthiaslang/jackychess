@@ -11,7 +11,7 @@ import org.mattlang.jc.uci.GameContext;
  * Since this seems far faster than a real legal move generator, this will probably the future code
  * and we should remove the whole legal move generator interface or use it only for test purpose...
  */
-public class PseudoLegalMoveGenerator implements LegalMoveGenerator {
+public class PseudoLegalMoveGenerator implements MoveGenerator {
 
     BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
     BBMoveGeneratorImpl2 generator2 = new BBMoveGeneratorImpl2();

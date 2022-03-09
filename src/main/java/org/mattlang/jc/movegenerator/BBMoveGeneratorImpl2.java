@@ -51,7 +51,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    public void generate(BoardRepresentation board, Color side, MoveCollector collector) {
+    public void generate(BoardRepresentation board, Color side, MoveList collector) {
         generate(board, side, collector, GenTypes.ALL);
     }
 

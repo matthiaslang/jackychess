@@ -14,7 +14,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.uci.UCI;
 
 /**
@@ -46,7 +46,7 @@ public class MoveGeneratorBenchmark {
                 });
 
         Map itTT = Factory.getDefaults().collectStatistics();
-        LegalMoveGenerator legalMoveGen = new BBLegalMoveGeneratorImpl();
+        MoveGenerator legalMoveGen = new BBLegalMoveGeneratorImpl();
         StopWatch measureLegalMove = benchmark(
                 "legal move gen",
                 () -> {
@@ -54,7 +54,7 @@ public class MoveGeneratorBenchmark {
 
                     engine.getBoard().setStartPosition();
 
-                    Perft.perft(legalMoveGen, engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
+                    Perft.perft(legalMoveGen, engine.getBoard(), Color.WHITE, 5, (visitedBoard, c, d) -> {
                     });
                 });
         Map itNormal = Factory.getDefaults().collectStatistics();
@@ -63,7 +63,7 @@ public class MoveGeneratorBenchmark {
                 "bb legal move gen",
                 () -> {
                     Engine engine = new Engine();
-                    LegalMoveGenerator generator = initBitBoardMoveGen();
+                    MoveGenerator generator = initBitBoardMoveGen();
 
                     engine.getBoard().setStartPosition();
                     Perft.perft(generator, engine.getBoard(), Color.WHITE, 5, (visitedBoard,c,d) -> {
@@ -76,9 +76,9 @@ public class MoveGeneratorBenchmark {
 
     }
 
-    private LegalMoveGenerator initBitBoardMoveGen() {
+    private MoveGenerator initBitBoardMoveGen() {
         Factory.getDefaults().boards.set(() -> new BitBoard());
-        LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
+        MoveGenerator generator = new BBLegalMoveGeneratorImpl();
         return generator;
     }
 }

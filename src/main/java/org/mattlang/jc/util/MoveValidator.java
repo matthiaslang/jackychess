@@ -9,11 +9,13 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.tt.IntCache;
-import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
 /**
@@ -26,10 +28,14 @@ public class MoveValidator {
 
     private static final Logger LOGGER = Logger.getLogger(MoveValidator.class.getSimpleName());
 
-    private BBLegalMoveGeneratorImpl legalMoveGen = new BBLegalMoveGeneratorImpl();
+    private PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
 
-    /** reused movelist. */
-    private MoveList moveList= Factory.getDefaults().moveList.create();
+    private CheckChecker checkChecker = new BBCheckCheckerImpl();
+
+    /**
+     * reused movelist.
+     */
+    private MoveList moveList = Factory.getDefaults().moveList.create();
 
     public void validate(GameState gameState, NegaMaxResult rslt) {
         BoardRepresentation board = gameState.getBoard().copy();
@@ -64,14 +70,13 @@ public class MoveValidator {
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
         moveList.reset();
-        legalMoveGen.generate(board, who2Move, moveList);
+        movegen.generate(board, who2Move, moveList);
 
-        // todo clean up and make nicer way to check this...
-        MoveCursor cursor = moveList.iterate();
-        while (cursor.hasNext()) {
-            cursor.next();
-            if (cursor.getMoveInt() == move) {
-                return true;
+        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+            while (iterator.doNextMove()) {
+                if (iterator.getMoveInt() == move) {
+                    return true;
+                }
             }
         }
         return false;

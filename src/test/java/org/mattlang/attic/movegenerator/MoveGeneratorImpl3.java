@@ -86,7 +86,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
      * @param board current board
      * @param side  the side to move
      */
-    public void generate(BoardRepresentation board, Color side, MoveCollector collector) {
+    public void generate(BoardRepresentation board, Color side, MoveList collector) {
 
         Color xside = side.invert();  /* the side not to move */
 
