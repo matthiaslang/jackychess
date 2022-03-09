@@ -285,8 +285,6 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
                     collector.genPawnMove(i, n, side, target);
                 } else if (board.isEnPassantCapturePossible(n)) {
                     collector.genEnPassant(i, n, side, board.getEnPassantCapturePos());
-                } else if (target == FigureConstants.FT_EMPTY) {
-                    collector.hypotheticalPawnCapture(i, n);
                 }
             }
         }

@@ -58,11 +58,6 @@ public class MoveListImpl implements MoveList {
     }
 
     @Override
-    public void hypotheticalPawnCapture(int from, int to) {
-        // not needed here, since this is only a hypothetical theoretical capture.
-    }
-
-    @Override
     public void addRochadeLongWhite() {
         moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_LONG));
     }

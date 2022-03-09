@@ -52,11 +52,6 @@ public final class CaptureChecker implements MoveCollector {
 
     }
 
-    @Override
-    public void hypotheticalPawnCapture(int from, int to) {
-        // hypothetical pawn captures are no real captures, therefore we do not count this.
-    }
-
     public boolean hasCapturesBy(byte figureCode) {
         return (capturedFigures & (1L << figureCode)) > 0;
     }

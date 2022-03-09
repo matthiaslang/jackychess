@@ -59,12 +59,6 @@ public class StagedMoveListImpl implements MoveList {
     }
 
     @Override
-    public void hypotheticalPawnCapture(int from, int to) {
-        // not needed here, since this is only a hypothetical theoretical capture.
-        throw new IllegalStateException("illegal state!");
-    }
-
-    @Override
     public void addRochadeLongWhite() {
         throw new IllegalStateException("illegal state!");
         //        moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_LONG));

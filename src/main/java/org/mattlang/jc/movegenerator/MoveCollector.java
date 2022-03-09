@@ -21,14 +21,4 @@ public interface MoveCollector {
 
     void genEnPassant(int i, int n, Color side, int enPassantCapturePos);
 
-    /**
-     * hook to get "hypothetical" captures of pawns.
-     * Means a capture move of a pawn, but to an empty field.
-     * This is needed to generate capture statistics and properly recognize patt situations.
-     *
-     * @param from
-     * @param to
-     */
-    void hypotheticalPawnCapture(int from, int to);
-
 }
