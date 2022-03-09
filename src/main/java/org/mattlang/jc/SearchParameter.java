@@ -16,7 +16,9 @@ import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.movegenerator.*;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.LegalMoveGenerator;
+import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -36,9 +38,7 @@ public class SearchParameter {
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
-    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, BBLegalMoveGeneratorImpl::new);
-
-    public final Impl<MoveGenerator> moveGenerator = new Impl<>(this, BBMoveGeneratorImpl::new);
+    public final Impl<LegalMoveGenerator> legalMoveGenerator = new Impl<>(this, PseudoLegalMoveGenerator::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
@@ -67,7 +67,6 @@ public class SearchParameter {
         LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        LOGGER.info("Move Gen: " + moveGenerator.instance().getClass().getSimpleName());
         LOGGER.info("Legal Move Gen: " + legalMoveGenerator.instance().getClass().getSimpleName());
         LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         for (UCIOption option : config.getAllOptions().getAllOptions()) {

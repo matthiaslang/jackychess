@@ -8,11 +8,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Benchmarks;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.LegalMoveGenerator;
 import org.mattlang.jc.uci.UCI;
 
@@ -28,8 +26,6 @@ public class PerfNewMoveListImplBenchmarkTests {
     public void benchmark() throws IOException {
         initLogging();
         UCI.instance.attachStreams();
-
-        Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
 
         StopWatch measureNew = Benchmarks.benchmark(
                 "new move list impl",

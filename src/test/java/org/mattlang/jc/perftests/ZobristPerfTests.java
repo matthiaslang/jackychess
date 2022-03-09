@@ -11,11 +11,9 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
 import org.mattlang.jc.zobrist.Zobrist;
 
 /**
@@ -120,8 +118,6 @@ public class ZobristPerfTests {
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
-
         assertNoCollisions(board, 4);
     }
 
@@ -164,8 +160,6 @@ public class ZobristPerfTests {
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
         System.out.println(board.toUniCodeStr());
-
-        Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
 
         assertNoCollisions(board, 4);
 

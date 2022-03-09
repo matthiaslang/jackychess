@@ -78,7 +78,6 @@ public class MoveGeneratorBenchmark {
 
     private LegalMoveGenerator initBitBoardMoveGen() {
         Factory.getDefaults().boards.set(() -> new BitBoard());
-        Factory.getDefaults().moveGenerator.set(() -> new BBMoveGeneratorImpl());
         LegalMoveGenerator generator = new BBLegalMoveGeneratorImpl();
         return generator;
     }

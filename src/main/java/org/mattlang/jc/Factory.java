@@ -10,7 +10,6 @@ import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
@@ -50,7 +49,6 @@ public class Factory {
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(BBMoveGeneratorImpl::new)
                 .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
@@ -68,7 +66,6 @@ public class Factory {
     public static SearchParameter createMultiThread() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveGenerator.set(BBMoveGeneratorImpl::new)
                 .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
