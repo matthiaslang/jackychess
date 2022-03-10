@@ -5,7 +5,6 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
@@ -39,7 +38,6 @@ public class BitBoardNegaMaxBenchmark {
         runner.benchmarkExecute(
                 normalParams()
                         .boards.set(() -> new BitBoard())
-                        .legalMoveGenerator.set(() -> new BBLegalMoveGeneratorImpl())
                         .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
 
@@ -48,7 +46,6 @@ public class BitBoardNegaMaxBenchmark {
 
         // normal with all opts and bitboards
         runner.benchmarkExecute(allOptsOn()  .boards.set(() -> new BitBoard())
-                .legalMoveGenerator.set(() -> new BBLegalMoveGeneratorImpl())
                 .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
         for (BenchmarkResults result : runner.getResults()) {

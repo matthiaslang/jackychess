@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.mattlang.attic.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.zobrist.Zobrist;
 
 /**
@@ -76,7 +76,7 @@ public class ZobristPerfTests {
             board.setStartPosition();
             perftReset();
 
-                    perft(new BBLegalMoveGeneratorImpl(), board, WHITE, 5, (visitedBoard, c, d) -> {
+                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d) -> {
                         int hash = visitedBoard.hashCode();
                         i[0] = hash;
                     });
@@ -89,7 +89,7 @@ public class ZobristPerfTests {
                     BitBoard board = new BitBoard();
             board.setStartPosition();
             perftReset();
-                    perft(new BBLegalMoveGeneratorImpl(), board, WHITE, 5, (visitedBoard, c, d) -> {
+                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d) -> {
                         long zobristHash = visitedBoard.getZobristHash();
                         l[0] = zobristHash;
                     });
@@ -124,7 +124,7 @@ public class ZobristPerfTests {
     private void assertNoCollisions(BitBoard board, int depth) {
         HashMap<Long, Set<String>> collisionMap = new HashMap<>();
         perftReset();
-        perft(new BBLegalMoveGeneratorImpl(), board, WHITE, depth, (visitedBoard, c, d) -> {
+        perft(new PseudoLegalMoveGenerator(), board, WHITE, depth, (visitedBoard, c, d) -> {
 
             long zobristHash = visitedBoard.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);

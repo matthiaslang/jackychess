@@ -6,12 +6,10 @@ import static org.mattlang.jc.engine.evaluation.Tools.rank;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mattlang.attic.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 
@@ -50,9 +48,9 @@ public class AlgebraicNotation {
 
     private String determineMoveStr(BoardRepresentation board, Color color, FigureType figureType, int toidx,
             String fromSpec) {
-        MoveGenerator legalMoveGenerator = new BBLegalMoveGeneratorImpl();
+
         List<MoveImpl> allMoves =
-                legalMoveGenerator.generate(board, color).extractList();
+                LegalMoves.generateLegalMoves(board, color).extractList();
 
         List<MoveImpl> matching = allMoves.stream()
                 .filter(m -> m.getFigureType() == figureType.figureCode && m.getToIndex() == toidx)
