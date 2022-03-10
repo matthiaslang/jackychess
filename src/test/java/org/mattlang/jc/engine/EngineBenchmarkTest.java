@@ -89,7 +89,7 @@ public class EngineBenchmarkTest {
                 () ->{
                     Factory.setDefaults(Factory.createStable()
                             .config(c ->c.timeout.setValue(600000))
-                            .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoCaching(true).setDoPVSSearch(true)))
+                            .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
                             //                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
                             //                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
 

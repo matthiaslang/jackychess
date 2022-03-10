@@ -63,10 +63,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
-    private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
-    private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
-    private boolean useCounterMove = Factory.getDefaults().getConfig().useCounterMoves.getValue();
-
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
     private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
     private boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
@@ -634,16 +630,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         searchContext.collectStatistics(searchstatsMap);
         rslts.put("search", searchstatsMap);
 
-    }
-
-    public NegaMaxAlphaBetaPVS setDoPVSSearch(boolean doPVSSearch) {
-        this.doPVSSearch = doPVSSearch;
-        return this;
-    }
-
-    public NegaMaxAlphaBetaPVS setDoCaching(boolean doCaching) {
-        // todo remove...
-        return this;
     }
 
     public static boolean canRefineEval(final TTResult tte, final int eval) {

@@ -40,9 +40,10 @@ public class Factory {
                 .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
-                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS().setDoPVSSearch(true)))
+                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
                 .config(c -> {
                     c.maxDepth.setValue(40);
+                    c.activatePvsSearch.setValue(true);
                     c.maxQuiescence.setValue(10);
                     c.timeout.setValue(15000);
                     c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED);
