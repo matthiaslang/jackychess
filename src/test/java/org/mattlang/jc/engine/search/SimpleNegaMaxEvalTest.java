@@ -6,6 +6,7 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.EvalFunctions;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
@@ -14,7 +15,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;

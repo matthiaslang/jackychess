@@ -1,10 +1,13 @@
-package org.mattlang.jc.movegenerator;
+package org.mattlang.attic.movegenerator;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveCursorImpl;
 import org.mattlang.jc.moves.MoveListImpl;
 import org.mattlang.jc.uci.GameContext;

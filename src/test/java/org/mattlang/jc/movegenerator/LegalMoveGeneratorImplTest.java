@@ -3,6 +3,7 @@ package org.mattlang.jc.movegenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.mattlang.attic.movegenerator.BBLegalMoveGeneratorImpl;
 import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
