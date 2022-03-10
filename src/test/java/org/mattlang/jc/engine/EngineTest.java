@@ -131,7 +131,9 @@ public class EngineTest {
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         engine.getBoard().switchSiteToMove();
-        Move move = engine.go();
+        GameContext gameContext=new GameContext(Factory.getDefaults().getConfig());
+
+        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
 
