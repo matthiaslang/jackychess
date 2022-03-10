@@ -57,7 +57,7 @@ public class BitBoardNegaMaxBenchmark {
     }
 
     private SearchParameter normalParams() {
-        SearchParameter searchParameter = Factory.createIterativeDeepeningPVS()
+        SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
@@ -73,7 +73,7 @@ public class BitBoardNegaMaxBenchmark {
         return searchParameter;
     }
     private SearchParameter allOptsOn() {
-        SearchParameter searchParameter = Factory.createIterativeDeepeningPVS()
+        SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(true))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))

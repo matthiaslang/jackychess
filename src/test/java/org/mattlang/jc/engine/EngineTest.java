@@ -65,7 +65,7 @@ public class EngineTest {
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
@@ -94,7 +94,7 @@ public class EngineTest {
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepeningV2())
@@ -123,7 +123,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+        Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(8)));
         // now starting engine:
@@ -151,7 +151,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c->c.timeout.setValue(18000000))
@@ -176,7 +176,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.timeout.setValue(2000))
@@ -217,7 +217,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+        Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(7)));
         // now starting engine:
@@ -287,7 +287,7 @@ public class EngineTest {
     public void testProblemNoBestMoveFound() throws IOException {
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard());
+        Factory.setDefaults(Factory.createStable());
         
         EvaluateFunction eval = new MinimalPstEvaluation();
 

@@ -23,7 +23,7 @@ public class StagedMoveGenTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .moveList.set(MoveListImpls.STAGED.createSupplier())
                 .legalMoveGenerator.set(() -> new StagedLegalMoveGenerator())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())

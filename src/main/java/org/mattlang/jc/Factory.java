@@ -34,18 +34,6 @@ public class Factory {
         return appProps;
     }
 
-    public static SearchParameter createIterativeDeepeningPVS() {
-        return createStable();
-    }
-
-    /**
-     * Same as stable only with Bitboard implementation and bitboard move generator
-     * @return
-     */
-    public static SearchParameter createBitboard() {
-        return createStable();
-    }
-
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
@@ -80,7 +68,7 @@ public class Factory {
     }
 
     public static SearchParameter createDefaultParameter() {
-        return createIterativeDeepeningPVS();
+        return createStable();
     }
 
     private static SearchParameter defaults = createDefaultParameter();

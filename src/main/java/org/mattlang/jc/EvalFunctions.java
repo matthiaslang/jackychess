@@ -10,8 +10,6 @@ import lombok.Getter;
 
 public enum EvalFunctions {
 
-    DEFAULT(MinimalPstEvaluation::new),
-
     MINIMAL_PST(MinimalPstEvaluation::new),
 
     PARAMETERIZED(ParameterizedEvaluation::new);

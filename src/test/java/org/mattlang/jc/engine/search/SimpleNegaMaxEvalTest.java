@@ -27,7 +27,7 @@ public class SimpleNegaMaxEvalTest {
         UCI.instance.attachStreams();
         
 
-        Factory.setDefaults(Factory.createBitboard());
+        Factory.setDefaults(Factory.createStable());
                 Factory.getDefaults().config(c-> c.timeout.setValue(600000));
                 Factory.getDefaults().config(c-> c.maxQuiescence.setValue(0));
                 Factory.getDefaults().config(c-> c.aspiration.setValue(false));

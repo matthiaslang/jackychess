@@ -118,7 +118,7 @@ public class SearchOptsBenchmark {
     }
 
     private SearchParameter everythingOff() {
-        SearchParameter searchParameter = Factory.createBitboard()
+        SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))

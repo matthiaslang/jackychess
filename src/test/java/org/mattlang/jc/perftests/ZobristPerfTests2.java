@@ -43,7 +43,7 @@ public class ZobristPerfTests2 {
         StopWatch ttMeasure = benchmark(
                 "iterative deepening alpha beta TT zobrist",
                 () -> {
-                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                    Factory.setDefaults(Factory.createStable()
                             .boards.set(() -> new BitBoard())
                             .config(c -> c.timeout.setValue(TIMEOUT))
                             .config(c -> c.activatePvsSearch.setValue(true))
@@ -63,7 +63,7 @@ public class ZobristPerfTests2 {
         StopWatch normalMeasure = benchmark(
                 "iterative deepening alpha beta",
                 () -> {
-                    Factory.setDefaults(Factory.createIterativeDeepeningPVS()
+                    Factory.setDefaults(Factory.createStable()
                             .config(c -> c.timeout.setValue(TIMEOUT))
                             .config(c -> c.activatePvsSearch.setValue(true))
                             .config(c -> c.maxDepth.setValue(MAX_DEPTH))

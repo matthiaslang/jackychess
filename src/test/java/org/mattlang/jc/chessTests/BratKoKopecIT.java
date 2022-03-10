@@ -78,7 +78,7 @@ public class BratKoKopecIT {
     @Test
     public void testStable() {
         // create engine
-        Factory.setDefaults(Factory.createBitboard()
+        Factory.setDefaults(Factory.createStable()
                 .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL))
                 .config(c->c.useNullMoves.setValue(true))

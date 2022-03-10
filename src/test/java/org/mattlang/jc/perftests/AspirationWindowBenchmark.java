@@ -65,7 +65,7 @@ public class AspirationWindowBenchmark {
     }
 
     private SearchParameter everythingOn() {
-        SearchParameter searchParameter = Factory.createIterativeDeepeningPVS()
+        SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(true))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
