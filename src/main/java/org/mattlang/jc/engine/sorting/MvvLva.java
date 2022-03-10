@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.sorting;
 
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.movegenerator.BBMoveGeneratorImpl.canFigureCaptured;
+import static org.mattlang.jc.movegenerator.Captures.canFigureCaptured;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;

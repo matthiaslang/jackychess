@@ -69,7 +69,7 @@ public class CastlingDef {
             if (checkPos(board)) {
                 // check that king pos and moves are not in check:
                 for (int pos : fieldCheckTst) {
-                    if (BBMoveGeneratorImpl.canFigureCaptured(board, pos, side)) {
+                    if (Captures.canFigureCaptured(board, pos, side)) {
                         return false;
                     }
                 }
@@ -104,7 +104,7 @@ public class CastlingDef {
             if (checkPos(board)) {
                 // check that king pos and moves are not in check:
                 for (int pos : fieldCheckTst) {
-                    if (BBMoveGeneratorImpl.canFigureCaptured(board, pos, side)) {
+                    if (Captures.canFigureCaptured(board, pos, side)) {
                         return false;
                     }
                 }

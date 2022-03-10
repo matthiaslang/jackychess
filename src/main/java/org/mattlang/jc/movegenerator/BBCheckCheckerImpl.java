@@ -10,6 +10,6 @@ public class BBCheckCheckerImpl implements CheckChecker {
     public boolean isInChess(BoardRepresentation board, Color otherColor) {
 //        PieceList otherPieces = otherColor == Color.WHITE ? board.getWhitePieces() : board.getBlackPieces();
 //        int kingPos = otherPieces.getKing();
-        return BBMoveGeneratorImpl.canKingCaptured(board, otherColor);
+        return Captures.canKingCaptured(board, otherColor);
     }
 }
