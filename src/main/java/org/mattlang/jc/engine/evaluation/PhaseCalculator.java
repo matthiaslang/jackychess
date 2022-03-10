@@ -14,13 +14,10 @@ public class PhaseCalculator {
     private static final int Midgame = 5255;
     private static final int Endgame = 435;
 
-    public static final int PV_PAWN = 0;
     public static final int PV_KNIGHT = 155;
     public static final int PV_BISHOP = 305;
     public static final int PV_ROOK = 405;
     public static final int PV_QUEEN = 1050;
-    public static final int PV_KING = 0;
-    private static final int[] PhaseValues = new int[] { PV_PAWN, PV_KNIGHT, PV_BISHOP, PV_ROOK, PV_QUEEN, PV_KING };
 
     public static double Linstep(double edge0, double edge1, double v) {
         return Math.min(1, Math.max(0, (v - edge0) / (edge1 - edge0)));
