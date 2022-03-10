@@ -11,15 +11,15 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
  */
 public class PhaseCalculator {
 
-    private static final int Midgame = 5255;
-    private static final int Endgame = 435;
+    private static final int MIDGAME = 5255;
+    private static final int ENDGAME = 435;
 
     public static final int PV_KNIGHT = 155;
     public static final int PV_BISHOP = 305;
     public static final int PV_ROOK = 405;
     public static final int PV_QUEEN = 1050;
 
-    public static double Linstep(double edge0, double edge1, double v) {
+    private static double linstep(double edge0, double edge1, double v) {
         return Math.min(1, Math.max(0, (v - edge0) / (edge1 - edge0)));
     }
 
@@ -35,15 +35,13 @@ public class PhaseCalculator {
                 bb.getRooksCount() * PV_ROOK +
                 bb.getQueensCount() * PV_QUEEN;
 
-        double factor = Linstep(Endgame, Midgame, phase);
-        return factor;
+        return linstep(ENDGAME, MIDGAME, phase);
     }
 
 
     public static double scaleByPhase(BitChessBoard bb, int midGame, int endGame) {
         double factor = calcPhaseFactor(bb);
-        double score = factor * midGame + (1 - factor) * endGame;
-        return score;
+        return factor * midGame + (1 - factor) * endGame;
     }
 
     public static boolean isOpeningOrMiddleGame(BoardRepresentation currBoard) {
