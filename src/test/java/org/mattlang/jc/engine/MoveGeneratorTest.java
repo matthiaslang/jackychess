@@ -15,9 +15,8 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.tools.LegalMoves;
 
 public class MoveGeneratorTest {
 
@@ -29,11 +28,9 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new BBMoveGeneratorImpl();
-        MoveList whiteMoves = generator.generate(board, WHITE);
+        MoveList whiteMoves = LegalMoves.generateLegalMoves(board, WHITE);
 
-        MoveGenerator generator2 = new BBMoveGeneratorImpl();
-        MoveList blackMoves = generator2.generate(board, BLACK);
+        MoveList blackMoves = LegalMoves.generateLegalMoves(board, BLACK);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
         // 8 king moves + 4 promotion moves
@@ -74,8 +71,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new BBMoveGeneratorImpl();
-        MoveList whiteMoves = generator.generate(board, WHITE);
+        MoveList whiteMoves = LegalMoves.generateLegalMoves(board, WHITE);
         // we are interested in the pawn at a7 which gets promoted to a queen:
         Move a7PawnMove = whiteMoves.extractList()
                 .stream()
@@ -93,8 +89,7 @@ public class MoveGeneratorTest {
         cmpboard.setFenPosition(fen);
         assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
 
-        MoveGenerator generator2 = new BBMoveGeneratorImpl();
-        MoveList blackMoves = generator2.generate(board, BLACK);
+        MoveList blackMoves = LegalMoves.generateLegalMoves(board, BLACK);
         Move a2PawnMove = blackMoves.extractList()
                 .stream()
                 .filter(m -> m.toStr().startsWith("a2") && m.isPromotion() && m.getPromotedFigure() == Figure.B_Queen)
@@ -116,8 +111,7 @@ public class MoveGeneratorTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        MoveGenerator moveGenerator = new BBMoveGeneratorImpl();
-        MoveList moves = moveGenerator.generate(board, WHITE);
+        MoveList moves = LegalMoves.generateLegalMoves(board, WHITE);
 
         List<MoveImpl> mmoves = moves.extractList();
 
@@ -159,8 +153,7 @@ public class MoveGeneratorTest {
         BoardRepresentation cmpboard = new BitBoard();
         cmpboard.setFenPosition(fen);
 
-        MoveGenerator moveGenerator = new BBMoveGeneratorImpl();
-        MoveList moves = moveGenerator.generate(board, WHITE);
+        MoveList moves = LegalMoves.generateLegalMoves(board, WHITE);
         // find white rochade moves:
         List<Move> rochMoves = moves.extractList().stream()
                 .filter(m -> m.toStr().equals("e1c1") || m.toStr().equals("e1g1"))
@@ -189,8 +182,7 @@ public class MoveGeneratorTest {
 
         System.out.println(board.toUniCodeStr());
 
-        MoveGenerator generator = new BBMoveGeneratorImpl();
-        MoveList whiteMoves = generator.generate(board, WHITE);
+        MoveList whiteMoves = LegalMoves.generateLegalMoves(board, WHITE);
 
         List<MoveImpl> wMoves = whiteMoves.extractList();
         // 4 moves + 3 king moves
@@ -202,7 +194,7 @@ public class MoveGeneratorTest {
         board.domove(wPawnDoubleMove.get());
 
         // now black moves should have two en passant moves:
-        MoveList blackMoves = generator.generate(board, BLACK);
+        MoveList blackMoves = LegalMoves.generateLegalMoves(board, BLACK);
 
         // 6 moves + 3 king moves
         assertThat(blackMoves.size()).isEqualTo(9);
@@ -229,10 +221,9 @@ public class MoveGeneratorTest {
         BoardRepresentation copy = board.copy();
 
         System.out.println(board.toUniCodeStr());
-        MoveGenerator generator = new BBMoveGeneratorImpl();
 
         // now black moves should have two en passant moves:
-        MoveList blackMoves = generator.generate(board, BLACK);
+        MoveList blackMoves = LegalMoves.generateLegalMoves(board, BLACK);
 
         // 6 moves + 3 king moves
         assertThat(blackMoves.size()).isEqualTo(9);

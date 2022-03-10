@@ -17,12 +17,6 @@ public class PseudoLegalMoveGenerator implements MoveGenerator {
     BBMoveGeneratorImpl2 generator2 = new BBMoveGeneratorImpl2();
 
     @Override
-    public MoveList generate(BoardRepresentation board, Color side) {
-        MoveList moves = generator.generate(board, side);
-        return moves;
-    }
-
-    @Override
     public void generate(BoardRepresentation board, Color side, MoveList moveList) {
         generator.generate(board, side, moveList);
     }

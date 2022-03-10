@@ -17,11 +17,6 @@ import org.mattlang.jc.uci.GameContext;
 public class StagedLegalMoveGenerator implements MoveGenerator {
 
     @Override
-    public MoveList generate(BoardRepresentation board, Color side) {
-        throw new IllegalStateException("not supported in staged move generation!");
-    }
-
-    @Override
     public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator,
             BoardRepresentation board,
             Color side, MoveList moveList) {

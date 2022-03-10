@@ -8,6 +8,7 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
+import org.mattlang.jc.moves.MoveListImpl;
 
 /**
  * PerfTests Methods
@@ -78,7 +79,8 @@ public class Perft {
             return;
         }
 
-        MoveList moves = generator.generate(board, color);
+        MoveList moves = new MoveListImpl();
+        generator.generate(board, color, moves);
 
         try (MoveBoardIterator iterator = moves.iterateMoves(board, checkChecker)) {
             while (iterator.doNextMove()) {

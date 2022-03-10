@@ -7,7 +7,6 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -24,15 +23,6 @@ import org.mattlang.jc.engine.MoveList;
  */
 public class BBMoveGeneratorImpl implements MoveGenerator {
 
-    /**
-     * @param board current board
-     * @param side  the side to move
-     */
-    public MoveList generate(BoardRepresentation board, Color side) {
-        MoveList moves = Factory.getDefaults().moveList.create();
-        generate(board, side, moves);
-        return moves;
-    }
 
     /**
      * @param board current board
