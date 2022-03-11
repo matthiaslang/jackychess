@@ -108,6 +108,11 @@ public class ConfigValues {
             "should mate distance pruning be activated?",
             true);
 
+    public final UCICheckOption internalIterativeDeepening = internal.createCheckOpt("iid",
+            "should internal iterative deepening be activated?",
+            true);
+
+
 
     public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",

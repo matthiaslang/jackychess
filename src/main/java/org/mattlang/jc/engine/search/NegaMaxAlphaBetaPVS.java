@@ -66,6 +66,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
     private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
     private boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
+    private boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
 
     private PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -266,6 +267,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
 
+        if (iid) {
+            doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
+        }
+
         try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, depth, color,
                 parentMove)) {
 
@@ -384,6 +389,24 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         searchContext.storeTT(color, max, alpha, beta, depth, bestMove);
 
         return max;
+    }
+
+    private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
+            boolean areWeInCheck) {
+        boolean is_pv = !not_pv;
+        int hashMove = searchContext.probeTTHashMove();
+        boolean hasPvMove = searchContext.hasPvMove(ply);
+        // Internal iterative deepening
+        // When there is no hash move available, it is sometimes worth doing a
+        // shallow search to try and look for one
+        // This is especially true at PV nodes and potential cut nodes
+        if (hashMove == 0 && !hasPvMove && !areWeInCheck
+                && ((is_pv && depth >= 6)
+                || (not_pv && depth >= 8))) {
+            int iidDepth = is_pv ? depth - depth / 4 - 1 : (depth - 5) / 2;
+            negaMaximize(ply, iidDepth, color, alpha, beta);
+
+        }
     }
 
     /**

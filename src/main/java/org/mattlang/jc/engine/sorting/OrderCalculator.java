@@ -91,6 +91,12 @@ public class OrderCalculator {
         this.board = board;
     }
 
+
+    public boolean hasPvMove(int ply){
+        int index=ply-1;
+        return orderHints.prevPvlist != null && orderHints.prevPvlist.getMove(index) != 0;
+    }
+
     /**
      * Calc sort order:
      *

@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.11.6
+
+- internal iterative deepening
+
 ### Version 0.11.5
 
 - undo experimental worker adjusting depth

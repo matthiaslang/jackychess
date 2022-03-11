@@ -262,4 +262,8 @@ public final class SearchContext {
             historyHeuristic.updateBad(color, moveCursor, depth);
         }
     }
+
+    public boolean hasPvMove(int ply) {
+        return orderCalculator.hasPvMove(ply);
+    }
 }
