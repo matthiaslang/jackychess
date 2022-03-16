@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.tt;
 
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 
-import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
@@ -32,7 +31,6 @@ public class TTAging {
                 if (currAging > 120) {
                     currAging = 1;
                 }
-                UCILogger.log("TTCache: updated aging");
             }
         }
         lastBoard = board.copy();
