@@ -1,8 +1,12 @@
 # Versions
 
+### Version 0.11.6.1
+
+- cleaned up sorting a bit; dont use ply 0 move scores for sorting; higher sorting for queen promotion
+
 ### Version 0.11.6
 
-- internal iterative deepening
+- internal iterative deepening (doesnt bring currently anything...)
 
 ### Version 0.11.5
 

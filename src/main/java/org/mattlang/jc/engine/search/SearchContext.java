@@ -131,9 +131,9 @@ public final class SearchContext {
         }
     }
 
-    public void updateRootMoveScore(int depth, int move, int score) {
+    public void updateRootMoveScore(int depth, int move, int score, int numSearchedNodes) {
         if (depth == targetDepth) {
-            moveScores.add(new MoveScore(move, score));
+            moveScores.add(new MoveScore(move, score, numSearchedNodes));
         }
     }
 
