@@ -395,20 +395,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
             boolean areWeInCheck) {
-//        boolean is_pv = !not_pv;
-//        int hashMove = searchContext.probeTTHashMove();
-//        boolean hasPvMove = searchContext.hasPvMove(ply);
-//        // Internal iterative deepening
-//        // When there is no hash move available, it is sometimes worth doing a
-//        // shallow search to try and look for one
-//        // This is especially true at PV nodes and potential cut nodes
-//        if (hashMove == 0 && !hasPvMove && !areWeInCheck
-//                && ((is_pv && depth >= 3)
-//                || (not_pv && depth >= 4))) {
-//            int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
-//            negaMaximize(ply, iidDepth, color, alpha, beta);
-//
-//        }
+        boolean is_pv = !not_pv;
+        int hashMove = searchContext.probeTTHashMove();
+        boolean hasPvMove = searchContext.hasPvMove(ply);
+        // Internal iterative deepening
+        // When there is no hash move available, it is sometimes worth doing a
+        // shallow search to try and look for one
+        // This is especially true at PV nodes and potential cut nodes
+        if (hashMove == 0 && !hasPvMove && !areWeInCheck
+                && ((is_pv && depth >= 3)
+                || (not_pv && depth >= 4))) {
+            int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
+            negaMaximize(ply, iidDepth, color, alpha, beta);
+
+        }
     }
 
     /**
