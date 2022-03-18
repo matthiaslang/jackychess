@@ -249,7 +249,7 @@ public class StagedMoveCursor implements MoveCursor {
 
     private void initHash() {
         if (movelist.getOrderCalculator().getHashMove() != 0) {
-            if (stagedGenerator.isvalidmove(movelist.getOrderCalculator().getHashMove())) {
+            if (movelist.getBoard().isvalidmove(movelist.getOrderCalculator().getHashMove())) {
                 currStageData.initMove(movelist.getOrderCalculator().getHashMove());
                 stageStatus = StageStatus.ACTIVE;
                 return;
@@ -260,7 +260,7 @@ public class StagedMoveCursor implements MoveCursor {
 
     private void initPV() {
         if (movelist.getOrderCalculator().getPvMove() != 0) {
-            if (stagedGenerator.isvalidmove(movelist.getOrderCalculator().getPvMove())) {
+            if (movelist.getBoard().isvalidmove(movelist.getOrderCalculator().getPvMove())) {
                 currStageData.initMove(movelist.getOrderCalculator().getPvMove());
                 stageStatus = StageStatus.ACTIVE;
                 return;

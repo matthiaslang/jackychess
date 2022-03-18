@@ -128,6 +128,8 @@ public class BB {
     private static final long[] kingAttacks = new long[64];
     private static final long[] knightAttacks = new long[64];
 
+    public static final long[][] IN_BETWEEN = new long[64][64];
+
     static {
         // precalculate attacks:
         long sqBB = 1;
@@ -135,8 +137,62 @@ public class BB {
             kingAttacks[sq] = BB.kingAttacks(sqBB);
             knightAttacks[sq] = BB.knightAttacks(sqBB);
         }
+
+        fillInbetweens();
     }
 
+    private static void fillInbetweens() {
+        int i;
+
+        // fill from->to where to > from
+        for (int from = 0; from < 64; from++) {
+            for (int to = from + 1; to < 64; to++) {
+
+                // horizontal
+                if (from / 8 == to / 8) {
+                    i = to - 1;
+                    while (i > from) {
+                        IN_BETWEEN[from][to] |= 1L << i;
+                        i--;
+                    }
+                }
+
+                // vertical
+                if (from % 8 == to % 8) {
+                    i = to - 8;
+                    while (i > from) {
+                        IN_BETWEEN[from][to] |= 1L << i;
+                        i -= 8;
+                    }
+                }
+
+                // diagonal \
+                if ((to - from) % 9 == 0 && to % 8 > from % 8) {
+                    i = to - 9;
+                    while (i > from) {
+                        IN_BETWEEN[from][to] |= 1L << i;
+                        i -= 9;
+                    }
+                }
+
+                // diagonal /
+                if ((to - from) % 7 == 0 && to % 8 < from % 8) {
+                    i = to - 7;
+                    while (i > from) {
+                        IN_BETWEEN[from][to] |= 1L << i;
+                        i -= 7;
+                    }
+                }
+            }
+        }
+
+        // fill from->to where to < from
+        for (int from = 0; from < 64; from++) {
+            for (int to = 0; to < from; to++) {
+                IN_BETWEEN[from][to] = IN_BETWEEN[to][from];
+            }
+        }
+    }
 
     public static final long getKingAttacs(int kingPos){
         return kingAttacks[kingPos] ;

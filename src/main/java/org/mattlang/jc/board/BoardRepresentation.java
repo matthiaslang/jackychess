@@ -84,4 +84,6 @@ public interface BoardRepresentation {
     BitChessBoard getBoard();
 
     boolean isDrawByMaterial();
+
+    boolean isvalidmove(int pvMove);
 }

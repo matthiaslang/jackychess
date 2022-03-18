@@ -76,7 +76,7 @@ public class ZobristPerfTests {
             board.setStartPosition();
             perftReset();
 
-                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d) -> {
+                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d, cursor) -> {
                         int hash = visitedBoard.hashCode();
                         i[0] = hash;
                     });
@@ -89,7 +89,7 @@ public class ZobristPerfTests {
                     BitBoard board = new BitBoard();
             board.setStartPosition();
             perftReset();
-                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d) -> {
+                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d, cursor) -> {
                         long zobristHash = visitedBoard.getZobristHash();
                         l[0] = zobristHash;
                     });
@@ -124,7 +124,7 @@ public class ZobristPerfTests {
     private void assertNoCollisions(BitBoard board, int depth) {
         HashMap<Long, Set<String>> collisionMap = new HashMap<>();
         perftReset();
-        perft(new PseudoLegalMoveGenerator(), board, WHITE, depth, (visitedBoard, c, d) -> {
+        perft(new PseudoLegalMoveGenerator(), board, WHITE, depth, (visitedBoard, c, d, cursor) -> {
 
             long zobristHash = visitedBoard.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);

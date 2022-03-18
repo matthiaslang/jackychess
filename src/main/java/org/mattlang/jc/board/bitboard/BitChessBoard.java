@@ -258,4 +258,21 @@ public class BitChessBoard {
     public long getPieces() {
         return colorBB[0] | colorBB[1];
     }
+
+    public boolean isFigureType(int pos, byte figureType) {
+        long posMask = 1L << pos;
+        return (pieceBB[figureType] & posMask) != 0;
+    }
+
+    public boolean isEmpty(int pos) {
+        long posMask = 1L << pos;
+        return ((colorBB[nWhite] & posMask) == 0 && (colorBB[nBlack] & posMask) == 0);
+    }
+
+    public boolean isDifferentColor(int p1, int p2) {
+        long posMask1 = 1L << p1;
+        long posMask2 = 1L << p2;
+        return ((colorBB[nWhite] & posMask1) != 0 && (colorBB[nBlack] & posMask2) != 0
+                || (colorBB[nWhite] & posMask2) != 0 && (colorBB[nBlack] & posMask1) != 0);
+    }
 }

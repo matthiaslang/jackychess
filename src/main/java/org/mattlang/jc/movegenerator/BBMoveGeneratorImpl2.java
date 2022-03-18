@@ -379,11 +379,6 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         }
     }
 
-    public boolean isvalidmove(int aMove) {
-        // todo implement!
-        return false;
-    }
-
     /**
      * Generates pawn attacs used in see algorithm for a specific square. We need only to take care about regular pawn attacks,
      * not en passant, as en passant can only happen on a pawn-non-capture-move before.

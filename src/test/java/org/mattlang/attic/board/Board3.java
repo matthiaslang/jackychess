@@ -475,6 +475,11 @@ public class Board3 implements BoardRepresentation {
     }
 
     @Override
+    public boolean isvalidmove(int pvMove) {
+        throw new IllegalStateException("not implemented!");
+    }
+
+    @Override
     public boolean isDrawByMaterial() {
         // not implemented, so return always false:
         return false;

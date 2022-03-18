@@ -64,7 +64,7 @@ public class PerfTTTests {
         int[] hits = new int[1];
         // fill cache
         fillWatch.start();
-        perft(generator, board, WHITE, depth, (visitedBoard, color, d) -> {
+        perft(generator, board, WHITE, depth, (visitedBoard, color, d, cursor) -> {
             ttCache.storeTTEntry(visitedBoard, color, 0, 0, 0, d, 0);
             count[0]++;
         });
@@ -74,7 +74,7 @@ public class PerfTTTests {
         StopWatch readWatch = new StopWatch();
         readWatch.start();
         TTResult entry = new TTResult();
-        perft(generator, board, WHITE, depth, (visitedBoard, color, d) -> {
+        perft(generator, board, WHITE, depth, (visitedBoard, color, d, cursor) -> {
             if (ttCache.findEntry(entry, visitedBoard)) {
                 hits[0]++;
             }

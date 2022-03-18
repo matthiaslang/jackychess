@@ -36,9 +36,15 @@ public class Perft {
 
     public static void assertPerft(MoveGenerator generator, BoardRepresentation board, Color color, int depth,
             int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions) {
-        perftReset();
-        perft(generator, board, color, depth, (visitedBoard, color1, depth1) -> {
+        assertPerft(generator, board, color, depth, expectedNodes, expectedCaptures, expectedEP, expectedCastles, expectedPromotions,
+                (visitedBoard, color1, depth1, cursor) -> {
         });
+    }
+
+    public static void assertPerft(MoveGenerator generator, BoardRepresentation board, Color color, int depth,
+            int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions,  PerftConsumer visitor) {
+        perftReset();
+        perft(generator, board, color, depth, visitor);
         long stop = System.currentTimeMillis();
         long duration = stop - start;
         if (duration != 0) {
@@ -83,6 +89,8 @@ public class Perft {
         generator.generate(board, color, moves);
 
         try (MoveBoardIterator iterator = moves.iterateMoves(board, checkChecker)) {
+
+
             while (iterator.doNextMove()) {
 
                 if (depth == 1) {
@@ -100,7 +108,7 @@ public class Perft {
                     }
                 }
 
-                nodeConsumer.accept(board, color, depth);
+                nodeConsumer.accept(board, color, depth, iterator);
 
                 perft(generator, board, checkChecker, color.invert(), depth - 1, nodeConsumer);
 

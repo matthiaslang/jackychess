@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
@@ -30,12 +29,6 @@ public class PerfTests {
 
         perftInitialPosition(board, generator);
 
-    }
-
-    private MoveGenerator initBitBoardMoveGen() {
-        Factory.getDefaults().checkChecker.set(() -> new BBCheckCheckerImpl());
-        MoveGenerator generator = new PseudoLegalMoveGenerator();
-        return generator;
     }
 
     private void perftInitialPosition(BoardRepresentation board, MoveGenerator generator) {

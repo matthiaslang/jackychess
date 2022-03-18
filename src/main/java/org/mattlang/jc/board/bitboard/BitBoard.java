@@ -15,6 +15,7 @@ import java.util.Objects;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
@@ -488,6 +489,56 @@ public class BitBoard implements BoardRepresentation {
         }
         return false;
 
+    }
+
+    private MoveImpl move = new MoveImpl("a1a2");
+
+    @Override
+    public boolean isvalidmove(int aMove) {
+        move.fromLongEncoded(aMove);
+        int from = move.getFromIndex();
+        int to = move.getToIndex();
+
+        if (!board.isFigureType(from, move.getFigureType())) {
+            return false;
+        }
+
+        if (move.isEnPassant()) {
+            if (to != enPassantMoveTargetPos) {
+                return false;
+            }
+        } else if (move.isCastling()) {
+            if (!move.getCastlingMove().getDef().checkRochade(this)) {
+                return false;
+            }
+        } else {
+
+            if (move.isCapture()) {
+                if (board.get(to) != move.getCapturedFigure()) {
+                    return false;
+                }
+                if (!board.isDifferentColor(from, to)) {
+                    return false;
+                }
+
+            } else {
+                if (!board.isEmpty(to)) {
+                    return false;
+                }
+            }
+            long allPieces = board.getColorMask(nWhite) | board.getColorMask(nBlack);
+            if (move.getFigureType() == FigureType.Bishop.figureCode
+                    || move.getFigureType() == FigureType.Rook.figureCode
+                    || move.getFigureType() == FigureType.Queen.figureCode) {
+                if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
+                    return false;
+                }
+            }
+        }
+
+        // todo validate promotions...eps further?
+
+        return true;
     }
 
     @Override
