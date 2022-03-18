@@ -44,6 +44,12 @@ public class StagedMoveCursor implements MoveCursor {
 
     private StageData currStageData = new StageData();
 
+    public void init(){
+        stageIndex=-1;
+        stageStatus=StageStatus.NONE;
+
+    }
+
     class StageData {
 
         MoveListImpl movesOfStage = new MoveListImpl();

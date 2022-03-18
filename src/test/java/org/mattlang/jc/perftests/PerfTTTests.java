@@ -2,8 +2,6 @@ package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.Main.initLogging;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.perftests.Perft.perft;
-import static org.mattlang.jc.perftests.Perft.perftReset;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -58,28 +56,34 @@ public class PerfTTTests {
     public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
         MoveGenerator generator = new PseudoLegalMoveGenerator();
         StopWatch fillWatch = new StopWatch();
-        perftReset();
+        Perft perft = new Perft();
 
         int[] count = new int[1];
         int[] hits = new int[1];
-        // fill cache
-        fillWatch.start();
-        perft(generator, board, WHITE, depth, (visitedBoard, color, d, cursor) -> {
+
+        perft.setVisitor((visitedBoard, color, d, cursor) -> {
             ttCache.storeTTEntry(visitedBoard, color, 0, 0, 0, d, 0);
             count[0]++;
         });
+
+        // fill cache
+        fillWatch.start();
+        perft.perft(generator, board, WHITE, depth);
         fillWatch.stop();
 
         // read from cache:
         StopWatch readWatch = new StopWatch();
         readWatch.start();
+
         TTResult entry = new TTResult();
-        perft(generator, board, WHITE, depth, (visitedBoard, color, d, cursor) -> {
+        perft.setVisitor((visitedBoard, color, d, cursor) -> {
             if (ttCache.findEntry(entry, visitedBoard)) {
                 hits[0]++;
             }
 
         });
+
+        perft.perft(generator, board, WHITE, depth);
         readWatch.stop();
 
         System.out.println("counts " + count[0] + " hits " + hits[0] + "hits: %" + (((long) hits[0]) * 100 / count[0]));

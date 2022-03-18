@@ -3,8 +3,6 @@ package org.mattlang.jc.perftests;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Benchmarks.benchmark;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.perftests.Perft.perft;
-import static org.mattlang.jc.perftests.Perft.perftReset;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,7 +31,6 @@ public class ZobristPerfTests {
                 () -> {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
-                    perftReset();
 
                     for(int j=0; j<100000000; j++)  {
                         int hash = board.hashCode();
@@ -47,7 +44,7 @@ public class ZobristPerfTests {
                 () -> {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
-                    perftReset();
+
                     for(int j=0; j<100000000; j++)  {
                         long zobristHash = board.getZobristHash();
                         l[0] = zobristHash;
@@ -73,27 +70,29 @@ public class ZobristPerfTests {
                 "board2 normal hash",
                 () -> {
                     BitBoard board = new BitBoard();
-            board.setStartPosition();
-            perftReset();
-
-                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d, cursor) -> {
+                    board.setStartPosition();
+                    Perft perft = new Perft();
+                    perft.setVisitor((visitedBoard, c, d, cursor) -> {
                         int hash = visitedBoard.hashCode();
                         i[0] = hash;
                     });
-        });
 
+                    perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, 6);
+                });
 
         StopWatch zobristMeasure = benchmark(
                 "board3 zobrist hash",
                 () -> {
                     BitBoard board = new BitBoard();
-            board.setStartPosition();
-            perftReset();
-                    perft(new PseudoLegalMoveGenerator(), board, WHITE, 5, (visitedBoard, c, d, cursor) -> {
+                    board.setStartPosition();
+                    Perft perft = new Perft();
+                    perft.setVisitor((visitedBoard, c, d, cursor) -> {
                         long zobristHash = visitedBoard.getZobristHash();
                         l[0] = zobristHash;
                     });
-        });
+
+                    perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, 6);
+                });
 
         System.out.println("zobrist time: " + zobristMeasure.toString());
         System.out.println("hash    time: " + hashMeasure.toString());
@@ -123,8 +122,8 @@ public class ZobristPerfTests {
 
     private void assertNoCollisions(BitBoard board, int depth) {
         HashMap<Long, Set<String>> collisionMap = new HashMap<>();
-        perftReset();
-        perft(new PseudoLegalMoveGenerator(), board, WHITE, depth, (visitedBoard, c, d, cursor) -> {
+        Perft perft = new Perft();
+        perft.setVisitor((visitedBoard, c, d, cursor) -> {
 
             long zobristHash = visitedBoard.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);
@@ -140,7 +139,10 @@ public class ZobristPerfTests {
             }
         });
 
-        List<Map.Entry<Long, Set<String>>> collisions = collisionMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
+        perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, depth);
+
+        List<Map.Entry<Long, Set<String>>> collisions =
+                collisionMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
         assertThat(collisions).isEmpty();
     }
 

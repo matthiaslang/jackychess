@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -17,6 +16,7 @@ import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.moves.MoveListImpl;
 
 /**
  * Helper class for debugging.
@@ -35,7 +35,7 @@ public class MoveValidator {
     /**
      * reused movelist.
      */
-    private MoveList moveList = Factory.getDefaults().moveList.create();
+    private MoveList moveList = new MoveListImpl();
 
     public void validate(GameState gameState, NegaMaxResult rslt) {
         BoardRepresentation board = gameState.getBoard().copy();

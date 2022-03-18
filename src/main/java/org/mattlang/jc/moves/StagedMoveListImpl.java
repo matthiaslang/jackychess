@@ -13,7 +13,9 @@ import lombok.Getter;
 @Getter
 public class StagedMoveListImpl implements MoveList {
 
-    public final static MoveListPool<StagedMoveListImpl> POOL = new MoveListPool<>(() -> new StagedMoveListImpl());
+    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+
+    private StagedMoveCursor moveCursor = new StagedMoveCursor(this);
 
     private IntList moves = new IntList();
     private int[] order = new int[200];
@@ -104,12 +106,15 @@ public class StagedMoveListImpl implements MoveList {
 
     @Override
     public MoveCursor iterate() {
-        throw new IllegalStateException("not yet implemented!");
+        moveCursor.init();
+        return moveCursor;
     }
 
     @Override
     public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
-        throw new IllegalStateException("not yet implemented!");
+        MoveCursor moveCursor = iterate();
+        moveBoardIterator.init(moveCursor, board, checkChecker);
+        return moveBoardIterator;
     }
 
     public void init(GameContext gameContext, OrderCalculator orderCalculator, BoardRepresentation board, Color side) {
@@ -117,10 +122,10 @@ public class StagedMoveListImpl implements MoveList {
         this.orderCalculator = orderCalculator;
         this.board = board;
         this.side = side;
+        moveCursor.init();
     }
 
     @Override
     public void close() {
-        POOL.dispose(this);
     }
 }

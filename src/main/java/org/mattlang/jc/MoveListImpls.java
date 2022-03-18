@@ -18,7 +18,7 @@ public enum MoveListImpls {
     STAGED {
         @Override
         public Supplier<MoveList> createSupplier() {
-            return StagedMoveListImpl.POOL::newOne;
+            return StagedMoveListImpl::new;
         }
     };
 
