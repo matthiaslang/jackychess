@@ -133,11 +133,6 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public void remove() {
-        moveCursor.remove();
-    }
-
-    @Override
     public void next() {
         throw new IllegalStateException("use doNextMove!");
     }

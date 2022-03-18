@@ -56,9 +56,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      */
     private static final int LMR_N_MOVES_REDUCE_MORE = 6;
 
-    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
-    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 1000000;
-
     private EvaluateFunction evaluate;
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
@@ -271,12 +268,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
         }
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, depth, color,
-                parentMove)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, color, parentMove)) {
 
             boolean firstChild = true;
 
-            int currSearchedNodes= nodesVisited;
+            int currSearchedNodes = nodesVisited;
 
             int searchedMoves = 0;
 
@@ -535,7 +531,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         // if we are in check and then use the normal mode instead of only capture generation:
         GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(moveGenMode, ply, depth, color, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(moveGenMode, ply, color, 0)) {
             quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 

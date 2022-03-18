@@ -71,7 +71,7 @@ public class ConfigValues {
                     EvalParameterSet.class, EvalParameterSet.CURRENT);
 
     public final UCIComboOption<MoveListImpls> moveListImpls =
-            internal.createComboOpt("MoveListImpl",
+            common.createComboOpt("moveListImpl",
                     "internally. Only for development testing",
                     MoveListImpls.class, MoveListImpls.OPTIMIZED);
 

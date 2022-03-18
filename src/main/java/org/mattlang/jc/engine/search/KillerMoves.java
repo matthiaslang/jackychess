@@ -38,7 +38,7 @@ public class KillerMoves {
         return false;
     }
 
-    private int[] getOrCreateKillerList(Color color, int ply) {
+    public int[] getOrCreateKillerList(Color color, int ply) {
         int[][] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
         return killerMoves[ply];
     }

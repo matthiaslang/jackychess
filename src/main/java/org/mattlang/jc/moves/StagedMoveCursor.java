@@ -1,15 +1,18 @@
 package org.mattlang.jc.moves;
 
-import static org.mattlang.jc.moves.StagedMoveCursor.Stages.*;
+import static org.mattlang.jc.moves.Stage.*;
+
+import java.util.logging.Logger;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 public class StagedMoveCursor implements MoveCursor {
 
-    private static final BBMoveGeneratorImpl2 stagedGenerator = new BBMoveGeneratorImpl2();
+    private static final Logger LOGGER = Logger.getLogger(StagedMoveCursor.class.getSimpleName());
 
     private final StagedMoveListImpl movelist;
 
@@ -17,25 +20,32 @@ public class StagedMoveCursor implements MoveCursor {
         this.movelist = movelist;
     }
 
-    enum Stages {
-        PV,
-        HASH,
-        KILLER,
-        GOOD_CAPTURES,
-        QUIET,
-        BAD_CAPTURES,
-    }
+    // testwise simpler stage config (as someting with the good/bad capture handling does not work..)
+    //
+    private static Stage[] STAGES_NORMAL =
+            new Stage[] { PV, HASH, ALL };
+    private static Stage[] STAGES_QUIESCENCE =
+            new Stage[] { PROMOTIONS, ALL_CAPTURES };
 
-    enum StageStatus {
-        NONE,
-        ACTIVE,
-        FINISHED
-    }
+    //    private static Stage[] STAGES_NORMAL =
+    //            new Stage[] { HASH, PV, KILLER1, KILLER2, COUNTER_MOVE, ALL };
+    //    private static Stage[] STAGES_QUIESCENCE =
+    //            new Stage[] { HASH, PV, ALL_CAPTURES, PROMOTIONS };
 
-    private Stages[] stages = new Stages[] { PV, HASH, GOOD_CAPTURES, KILLER, QUIET, BAD_CAPTURES };
+    //    private static Stage[] STAGES_NORMAL =
+    //            new Stage[] { HASH, PV, ALL_CAPTURES, KILLER1, KILLER2, /*COUNTER_MOVE,*/ QUIET };
+    //    private static Stage[] STAGES_QUIESCENCE =
+    //            new Stage[] { HASH, PV, ALL_CAPTURES, PROMOTIONS };
+
+    //    private static Stage[] STAGES_NORMAL =
+    //            new Stage[] { HASH, PV, GOOD_CAPTURES, KILLER1, KILLER2, QUIET, BAD_CAPTURES };
+    //    private static Stage[] STAGES_QUIESCENCE =
+    //            new Stage[] { HASH, PV, GOOD_CAPTURES, PROMOTIONS, BAD_CAPTURES };
+
+    private Stage[] stages = STAGES_NORMAL;
 
     private int stageIndex = -1;
-    private StageStatus stageStatus = StageStatus.NONE;
+    //    private StageStatus stageStatus = StageStatus.NONE;
 
     private int currMove;
     private int orderOfCurrentMove;
@@ -44,62 +54,34 @@ public class StagedMoveCursor implements MoveCursor {
 
     private StageData currStageData = new StageData();
 
-    public void init(){
-        stageIndex=-1;
-        stageStatus=StageStatus.NONE;
+    private OrderCalculator orderCalculator;
 
-    }
-
-    class StageData {
-
-        MoveListImpl movesOfStage = new MoveListImpl();
-        int index = -1;
-
-        public int next() {
-            index++;
-            return movesOfStage.get(index);
+    public void init(MoveGenerator.GenMode mode, OrderCalculator orderCalculator) {
+        stageIndex = -1;
+        switch (mode) {
+        case NORMAL:
+            stages = STAGES_NORMAL;
+            break;
+        case QUIESCENCE:
+            stages = STAGES_QUIESCENCE;
+            break;
         }
-
-        public int getOrder() {
-            return movesOfStage.getOrder(index);
+        if (this.orderCalculator == null) {
+            this.orderCalculator = new OrderCalculator(orderCalculator);
+        } else {
+            this.orderCalculator.init(orderCalculator);
         }
-
-        public boolean hasNext() {
-            return index + 1 < movesOfStage.size();
-        }
-
-        public void initMove(int aMove) {
-            movesOfStage.reset();
-            index = -1;
-            movesOfStage.addMove(aMove);
-        }
-
-        public void initSomeMoves(int[] someMoves) {
-            movesOfStage.reset();
-            index = -1;
-            for (int aMove : someMoves) {
-                movesOfStage.addMove(aMove);
-            }
-        }
-
-        public void initQuiet() {
-            movesOfStage.reset();
-            index = -1;
-            stagedGenerator.generate(movelist.getBoard(), movelist.getSide(), movesOfStage,
-                    BBMoveGeneratorImpl2.GenTypes.QUIET);
-        }
-
-        public void initCaptures() {
-            movesOfStage.reset();
-            index = -1;
-            stagedGenerator.generate(movelist.getBoard(), movelist.getSide(), movesOfStage,
-                    BBMoveGeneratorImpl2.GenTypes.CAPTURES);
-        }
-
+        currStageData.reset(movelist.getBoard(), movelist.getSide(), orderCalculator);
     }
 
     @Override
     public void move(BoardRepresentation board) {
+//        LOGGER.info("Do Move " + currMoveObj.toLongAlgebraic());
+        // test code:
+//        if (!board.isvalidmove(currMove)) {
+//            throw new IllegalStateException("AAAHHH!");
+//        }
+
         board.domove(currMoveObj);
     }
 
@@ -115,6 +97,7 @@ public class StagedMoveCursor implements MoveCursor {
 
     @Override
     public void undoMove(BoardRepresentation board) {
+//        LOGGER.info("undo Move " + currMoveObj.toLongAlgebraic());
         board.undo(currMoveObj);
 
     }
@@ -165,30 +148,28 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     @Override
-    public void remove() {
-        throw new IllegalStateException("remove not supported!");
+    public boolean hasNext() {
+        while (!currStageData.hasNext() && !isLastStage()) {
+            nextStage();
+        }
+
+        // test code
+//        if (stageIndex >= 0) {
+//            LOGGER.info("hasnext(): result " + currStageData.hasNext() + " stage " + stages[stageIndex]);
+//        } else {
+//            LOGGER.info("hasnext(): result " + currStageData.hasNext() + " stage still -1!! ");
+//        }
+        return currStageData.hasNext();
     }
 
-    @Override
-    public boolean hasNext() {
-        if (stageStatus != StageStatus.ACTIVE) {
-            nextStage();
-            return currStageData.hasNext();
-        }
-        if (stageStatus == StageStatus.ACTIVE) {
-            if (currStageData.hasNext()) {
-                return true;
-            } else {
-                nextStage();
-                return currStageData.hasNext();
-            }
-        }
-        return false;
+    private boolean isLastStage() {
+        return stageIndex == stages.length - 1;
     }
 
     private void nextStage() {
-        while (stageIndex+1 < stages.length) {
+        while (stageIndex + 1 < stages.length) {
             stageIndex++;
+//            LOGGER.info("checking next stage " + stages[stageIndex]);
             switch (stages[stageIndex]) {
             case PV:
                 initPV();
@@ -196,100 +177,91 @@ public class StagedMoveCursor implements MoveCursor {
             case HASH:
                 initHash();
                 break;
-            case KILLER:
-                initKiller();
+            case KILLER1:
+                initKiller1();
+                break;
+            case KILLER2:
+                initKiller2();
+                break;
+            case COUNTER_MOVE:
+                initCounterMove();
                 break;
             case GOOD_CAPTURES:
-                initCaptures();
+                currStageData.initGoodCaptures();
+                break;
+            case ALL_CAPTURES:
+                currStageData.initAllCaptures();
+                break;
+            case PROMOTIONS:
+                currStageData.initPromotions();
                 break;
             case BAD_CAPTURES:
-                initBadCaptures();
+                currStageData.initBadCaptures();
+                break;
             case QUIET:
-                initQuiet();
+                currStageData.initQuiet();
+                break;
+            case ALL:
+                currStageData.initAll();
                 break;
             default:
             }
+
             // the next chosen stage is itself empty, so choose the next stage recursively
-            if (stageStatus == StageStatus.ACTIVE) {
+            if (currStageData.hasNext()) {
                 return;
             }
         }
-            stageStatus = StageStatus.FINISHED;
-
     }
 
-    private void initBadCaptures() {
-        stageStatus = StageStatus.FINISHED;
-    }
-
-    private void initKiller() {
-        //        int[] killers = movelist.getGameContext()
-        //                .getKillerMoves()
-        //                .getPossibleKillers(movelist.getSide(), movelist.getOrderCalculator().getPly());
-        //
-        //        currStageData.initSomeMoves(killers);
-        //        if (currStageData.hasNext()) {
-        //            stageStatus = StageStatus.ACTIVE;
-        //        } else {
-        stageStatus = StageStatus.FINISHED;
-        //        }
-    }
-
-    private void initQuiet() {
-        currStageData.initQuiet();
-        if (currStageData.hasNext()) {
-            stageStatus = StageStatus.ACTIVE;
-        } else {
-            stageStatus = StageStatus.FINISHED;
+    private int getKiller(int index) {
+        if (orderCalculator.getKillerMoves() != null) {
+            int[] killers = orderCalculator.getKillerMoves()
+                    .getOrCreateKillerList(orderCalculator.getColor(), orderCalculator.getPly());
+            if (killers.length > index) {
+                return killers[index];
+            }
         }
+        return 0;
     }
 
-    private void initCaptures() {
-        currStageData.initCaptures();
-        if (currStageData.hasNext()) {
-            stageStatus = StageStatus.ACTIVE;
-        } else {
-            stageStatus = StageStatus.FINISHED;
-        }
+    private void initKiller1() {
+        int killer1 = getKiller(0);
+        currStageData.prepareMoveIfValid(killer1);
+    }
+
+    private void initKiller2() {
+        int killer2 = getKiller(1);
+        currStageData.prepareMoveIfValid(killer2);
+    }
+
+    private void initCounterMove() {
+        int counterMove = orderCalculator.getCounterMove();
+        currStageData.prepareMoveIfValid(counterMove);
     }
 
     private void initHash() {
-        if (movelist.getOrderCalculator().getHashMove() != 0) {
-            if (movelist.getBoard().isvalidmove(movelist.getOrderCalculator().getHashMove())) {
-                currStageData.initMove(movelist.getOrderCalculator().getHashMove());
-                stageStatus = StageStatus.ACTIVE;
-                return;
-            }
-        }
-        stageStatus = StageStatus.FINISHED;
+        int hashMove = orderCalculator.getHashMove();
+        currStageData.prepareMoveIfValid(hashMove);
     }
 
     private void initPV() {
-        if (movelist.getOrderCalculator().getPvMove() != 0) {
-            if (movelist.getBoard().isvalidmove(movelist.getOrderCalculator().getPvMove())) {
-                currStageData.initMove(movelist.getOrderCalculator().getPvMove());
-                stageStatus = StageStatus.ACTIVE;
-                return;
-            }
-        }
-        stageStatus = StageStatus.FINISHED;
+        int pvMove = orderCalculator.getPvMove();
+        currStageData.prepareMoveIfValid(pvMove);
     }
 
     @Override
     public void next() {
-        if (stageStatus == StageStatus.NONE || stageStatus == StageStatus.FINISHED) {
-            throw new IllegalStateException("!!!");
-        } else {
-//            nextStage();
-            currMove = currStageData.next();
-            orderOfCurrentMove = currStageData.getOrder();
-            currMoveObj.fromLongEncoded(currMove);
-            if (!currStageData.hasNext()) {
-                stageStatus = StageStatus.FINISHED;
-            }
-        }
-//        if (stageStatus == StageStatus.FINISHED) {
-//            throw new IllegalArgumentException();
+
+        currMove = currStageData.next();
+        orderOfCurrentMove = currStageData.getOrder();
+        currMoveObj.fromLongEncoded(currMove);
+
+        // test data:
+//        LOGGER.info("next(): " + currMoveObj.toLongAlgebraic() + " from stage " + stages[stageIndex]);
+//        if (currMove == 0){
+//            LOGGER.severe("Error : next() has unitialized state!");
 //        }
+
     }
 }

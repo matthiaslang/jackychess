@@ -87,11 +87,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
         return currMoveObj.getToIndex();
     }
 
-    @Override
-    public void remove() {
-        throw new IllegalStateException("not allowed in a lazy sorted move cursor impl!");
-    }
-
     public void init(int[] moves, int size, int[] order) {
         if (longSorter == null) {
             longSorter = new LongSorter(moves, size, order);

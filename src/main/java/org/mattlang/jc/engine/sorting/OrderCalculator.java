@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.sorting;
 
-import java.util.HashMap;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -31,25 +29,20 @@ public class OrderCalculator {
 
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
-    /**
-     * a good capture is where I earn (statically viewed) at least a lower figure or more.
-     */
-    private static final int GOOD_CAPTURE_WEIGHT = 15;
+    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
+    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 1000000;
 
     private int pvMove;
-    private final HistoryHeuristic historyHeuristic;
-    private final KillerMoves killerMoves;
-    private final CounterMoveHeuristic counterMoveHeuristic;
+    private HistoryHeuristic historyHeuristic;
+    private KillerMoves killerMoves;
+    private CounterMoveHeuristic counterMoveHeuristic;
     private Color color;
 
-    private int depth;
     private int ply;
-    private final boolean useMvvLva;
-    private final Boolean usePvSorting;
+    private boolean useMvvLva;
+    private Boolean usePvSorting;
 
-    private HashMap<Integer, Integer> scores;
-    private final int targetDepth;
-    private final OrderHints orderHints;
+    private OrderHints orderHints;
 
     private int hashMove;
     private int parentMove;
@@ -58,9 +51,37 @@ public class OrderCalculator {
 
     private static SEE see = new SEE();
 
-    public OrderCalculator(OrderHints orderHints, int targetDepth) {
+    public OrderCalculator(OrderCalculator orderCalculator) {
+        init(orderCalculator);
+    }
+
+    /**
+     * used in staged move gen, because since the order calculator keeps state, we need to copy the state
+     * in staged move gen, since the stages are iteratively generated and mixed with recursive search and would
+     * collide with other stage move gens and the same order calculator instance.
+     *
+     * @param other
+     * @todo maye be we should have an own order calculator for each move list instance...
+     */
+    public void init(OrderCalculator other) {
+        this.orderHints = other.orderHints;
+        this.historyHeuristic = other.orderHints.historyHeuristic;
+        this.killerMoves = other.orderHints.killerMoves;
+        this.counterMoveHeuristic = other.orderHints.counterMoveHeuristic;
+
+        this.useMvvLva = orderHints.useMvvLvaSorting;
+        this.usePvSorting = other.usePvSorting;
+
+        this.hashMove = other.hashMove;
+        this.parentMove = other.parentMove;
+
+        this.ply = other.ply;
+        this.pvMove = other.pvMove;
+        this.color = other.color;
+    }
+
+    public OrderCalculator(OrderHints orderHints) {
         this.orderHints = orderHints;
-        this.targetDepth = targetDepth;
         this.historyHeuristic = orderHints.historyHeuristic;
         this.killerMoves = orderHints.killerMoves;
         this.counterMoveHeuristic = orderHints.counterMoveHeuristic;
@@ -68,28 +89,16 @@ public class OrderCalculator {
         this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
 
-    public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply, final int depth,
+    public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
             BoardRepresentation board) {
 
         this.hashMove = hashMove;
         this.parentMove = parentMove;
         int index = ply - 1;
-        // if we are at the root and have scores from a previous run, lets take them:
-//        if (index == 0 && orderHints.moveScores != null) {
-//            // todo assert that the first pvs should be the highest score...
-//            scores = new HashMap<>();
-//            for (MoveScore moveScore : orderHints.moveScores) {
-//                scores.put(moveScore.move, moveScore.numSearchedNodes);
-//            }
-//
-//        } else {
-            scores = null;
-//        }
 
         this.ply = ply;
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(index) : 0;
         this.color = color;
-        this.depth = depth;
         this.board = board;
     }
 
@@ -121,15 +130,6 @@ public class OrderCalculator {
             return PV_SCORE;
         } else if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
-        } else if (scores != null) {
-            Integer rslt = scores.get(moveInt);
-            if (rslt == null) {
-                // UCILogger.log("hey!! this should not happen!!!! cant find scores for " + m.toStr());
-                // this could happen for pseudo legal moves for illegal moves: here we have no score from the last round
-                return 0;
-            }
-            return -rslt;
-
         } else {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
 
@@ -144,9 +144,8 @@ public class OrderCalculator {
             } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
                 return KILLER_SCORE;
             } else if (m.isPromotion() && m.getPromotedFigure().figureType == FigureType.Queen) {
-               return QUEEN_PROMOTION_SCORE;
-            } else if (counterMoveHeuristic != null
-                    && counterMoveHeuristic.getCounter(color.ordinal(), parentMove) == moveInt) {
+                return QUEEN_PROMOTION_SCORE;
+            } else if (getCounterMove() == moveInt) {
                 return COUNTER_MOVE_SCORE;
             } else if (historyHeuristic != null) {
                 // history heuristic
@@ -161,4 +160,16 @@ public class OrderCalculator {
 
     }
 
+    /**
+     * Returns an counter move for this position or 0.
+     *
+     * @return
+     */
+    public int getCounterMove() {
+        return counterMoveHeuristic != null ? counterMoveHeuristic.getCounter(color.ordinal(), parentMove) : 0;
+    }
+
+    public static boolean isGoodCapture(int order) {
+        return order > GOOD_CAPT_LOWER;
+    }
 }

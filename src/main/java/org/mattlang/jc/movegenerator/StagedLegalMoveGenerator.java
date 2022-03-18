@@ -23,7 +23,7 @@ public class StagedLegalMoveGenerator implements MoveGenerator {
         if (!(moveList instanceof StagedMoveListImpl)) {
             throw new IllegalStateException("needs StagedMoveListImpl!");
         }
-        ((StagedMoveListImpl) moveList).init(gameContext, orderCalculator, board, side);
+        ((StagedMoveListImpl) moveList).init(mode, gameContext, orderCalculator, board, side);
     }
 
     @Override

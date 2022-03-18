@@ -102,7 +102,7 @@ public final class SearchContext {
         this.stc = stc;
         this.board = gameState.getBoard();
 
-        this.orderCalculator = new OrderCalculator(orderHints, targetDepth);
+        this.orderCalculator = new OrderCalculator(orderHints);
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
 
@@ -204,31 +204,30 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateSortedMoves(GenMode mode, int ply, int depth, Color color,
+    public MoveList generateSortedMoves(GenMode mode, int ply, Color color,
             int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
         generator.generate(mode, context, orderCalculator, board, color, moveList);
-        sortMoves(ply, depth, color, parentMove, moveList);
+        sortMoves(ply, color, parentMove, moveList);
 
         return moveList;
     }
 
-    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, int depth, Color color,
+    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color,
             int parentMove) {
-        MoveList moveList = generateSortedMoves(mode, ply, depth, color, parentMove);
+        MoveList moveList = generateSortedMoves(mode, ply, color, parentMove);
         return moveList.iterateMoves(board, checkChecker);
     }
 
     /**
      * Sorts the move list by calculating the move order first.
      *
-     * @param depth
      * @param color
      * @param moves
      */
-    private void sortMoves(int ply, int depth, Color color, int parentMove, MoveList moves) {
+    private void sortMoves(int ply, Color color, int parentMove, MoveList moves) {
         int hashMove = probeTTHashMove();
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, depth, board);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
         moves.sort(orderCalculator);
     }
 

@@ -57,4 +57,10 @@ public class SearchThreadContext {
     public OrderHints getOrderHints() {
         return orderHints;
     }
+
+    public void resetMoveLists() {
+        for (int i = 0; i < movelists.length; i++) {
+            movelists[i] = Factory.getDefaults().moveList.create();
+        }
+    }
 }

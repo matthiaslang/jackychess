@@ -13,6 +13,7 @@ import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.search.SearchThreadContexts;
 
 public class AsyncEngine {
 
@@ -40,7 +41,6 @@ public class AsyncEngine {
         searchParams.evaluateFunction.set(options.evluateFunctions.getValue().getSupplier());
         searchParams.moveList.set(options.moveListImpls.getValue().createSupplier());
         searchParams.setConfig(options);
-
         // if we have special "go" parameters, then override thinktime:
         if (!goParams.infinite) {
             long timeToUse =
@@ -49,7 +49,7 @@ public class AsyncEngine {
 
         }
         Factory.setDefaults(searchParams);
-
+        SearchThreadContexts.CONTEXTS.resetMoveLists();
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged")==null) {
             Factory.getDefaults().log();

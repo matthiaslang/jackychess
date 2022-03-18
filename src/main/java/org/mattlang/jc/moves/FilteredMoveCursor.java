@@ -1,6 +1,6 @@
 package org.mattlang.jc.moves;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
@@ -12,9 +12,10 @@ public class FilteredMoveCursor implements MoveCursor {
 
     private boolean cachedNext = false;
 
-    private Function<MoveCursor, Boolean> filterFunction;
+    private Predicate<MoveCursor> filterFunction;
 
-    public FilteredMoveCursor(MoveCursor delegate, Function<MoveCursor, Boolean> filterFunction) {
+    public void init(MoveCursor delegate, Predicate<MoveCursor> filterFunction) {
+        cachedNext = false;
         this.delegate = delegate;
         this.filterFunction = filterFunction;
     }
@@ -85,17 +86,13 @@ public class FilteredMoveCursor implements MoveCursor {
     }
 
     @Override
-    public void remove() {
-        delegate.remove();
-    }
-
-    @Override
     public void next() {
         if (cachedNext) {
             // dont do anything, the delegating cursor is already on the "next":
             cachedNext = false;
+        } else {
+            delegate.next();
         }
-        delegate.next();
     }
 
     @Override
@@ -105,7 +102,7 @@ public class FilteredMoveCursor implements MoveCursor {
         }
         while (!cachedNext && delegate.hasNext()) {
             delegate.next();
-            boolean isOk = filterFunction.apply(delegate);
+            boolean isOk = filterFunction.test(delegate);
             if (isOk) {
                 cachedNext = true;
             }
