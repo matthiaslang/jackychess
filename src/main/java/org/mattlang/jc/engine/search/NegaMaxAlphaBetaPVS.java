@@ -154,7 +154,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 return alpha;
         }
 
-        if (searchContext.isRepetition()) {
+        if (searchContext.isRepetition() || searchContext.isDrawByMaterial()) {
             return Weights.REPETITION_WEIGHT;
         }
 
@@ -493,7 +493,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int quiesce(int ply, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
 
-        if (searchContext.isRepetition()) {
+        if (searchContext.isRepetition() || searchContext.isDrawByMaterial()) {
             return Weights.REPETITION_WEIGHT;
         }
 

@@ -82,4 +82,6 @@ public interface BoardRepresentation {
      * @return
      */
     BitChessBoard getBoard();
+
+    boolean isDrawByMaterial();
 }

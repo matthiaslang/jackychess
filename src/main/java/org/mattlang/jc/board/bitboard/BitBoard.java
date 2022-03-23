@@ -13,6 +13,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
@@ -41,10 +42,13 @@ public class BitBoard implements BoardRepresentation {
 
     private long zobristHash = 0L;
 
+    private Material material = new Material();
+
     @Getter
     private Color siteToMove;
 
     private int[] historyEp = new int[MAXMOVES];
+    private int[] historyMaterial = new int[MAXMOVES];
     private long[] historyZobrist = new long[MAXMOVES];
     private byte[] historyCastling = new byte[MAXMOVES];
 
@@ -87,6 +91,7 @@ public class BitBoard implements BoardRepresentation {
         siteToMove=WHITE;
         castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
+        material.init(this);
     }
 
 
@@ -102,10 +107,12 @@ public class BitBoard implements BoardRepresentation {
         // remove from piece list, if this is a "override/capture" of this field:
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
             zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+            material.subtract(oldFigure);
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
             zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
+            material.add(figureCode);
         }
     }
 
@@ -116,6 +123,7 @@ public class BitBoard implements BoardRepresentation {
         // remove from piece list, if this is a "override/capture" of this field:
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
             zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+            material.subtract(oldFigure);
         }
     }
 
@@ -253,6 +261,7 @@ public class BitBoard implements BoardRepresentation {
         zobristHash = Zobrist.addFig(zobristHash, to, figCode);
         if (capturedFigure != 0) {
             zobristHash = Zobrist.removeFig(zobristHash, to, capturedFigure);
+            material.subtract(capturedFigure);
         }
 
         resetEnPassant();
@@ -304,6 +313,7 @@ public class BitBoard implements BoardRepresentation {
     public BitBoard copy() {
         BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
+        copied.material.init(copied);
         return copied;
     }
 
@@ -435,6 +445,7 @@ public class BitBoard implements BoardRepresentation {
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
         zobristHash = historyZobrist[moveCounter];
+        material.setMaterial(historyMaterial[moveCounter]);
     }
 
     @Override
@@ -458,6 +469,7 @@ public class BitBoard implements BoardRepresentation {
     private void pushHistory() {
         historyCastling[moveCounter] = castlingRights.getRights();
         historyEp[moveCounter] = enPassantMoveTargetPos;
+        historyMaterial[moveCounter] = material.getMaterial();
         historyZobrist[moveCounter] = zobristHash;
         moveCounter++;
     }
@@ -476,5 +488,10 @@ public class BitBoard implements BoardRepresentation {
         }
         return false;
 
+    }
+
+    @Override
+    public boolean isDrawByMaterial() {
+        return material.isDrawByMaterial();
     }
 }

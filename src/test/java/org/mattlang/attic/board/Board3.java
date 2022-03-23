@@ -473,4 +473,10 @@ public class Board3 implements BoardRepresentation {
     public BitChessBoard getBoard() {
         throw new IllegalStateException("not implemented! This is no bitboard implementation");
     }
+
+    @Override
+    public boolean isDrawByMaterial() {
+        // not implemented, so return always false:
+        return false;
+    }
 }
