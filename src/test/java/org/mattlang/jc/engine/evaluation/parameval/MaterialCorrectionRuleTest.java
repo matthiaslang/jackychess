@@ -3,6 +3,8 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
+import static org.mattlang.jc.material.Material.W_BISHOP_VAL;
+import static org.mattlang.jc.material.Material.W_ROOK_VAL;
 
 import java.util.List;
 
@@ -15,11 +17,11 @@ public class MaterialCorrectionRuleTest {
     public void parseRules() {
 
         MaterialCorrectionRule r = parse("", "R 0P vs B -> Reduce half");
-        assertThat(r.getStronger().getMaterial().getPawns()).isEqualTo(0);
-        assertThat(r.getStronger().getMaterial().getPieceMat()).isEqualTo(1000);
+        assertThat(r.getStronger().getMaterial().getPawnsMat()).isEqualTo(0);
+        assertThat(r.getStronger().getMaterial().getPieceMat()).isEqualTo(W_ROOK_VAL);
 
         assertThat(r.getWeaker().isPawnsUnspecific()).isTrue();
-        assertThat(r.getWeaker().getMaterial().getPieceMat()).isEqualTo(100);
+        assertThat(r.getWeaker().getMaterial().getPieceMat()).isEqualTo(W_BISHOP_VAL);
 
         MaterialCorrectionRule r2 = parse("", "R 0P vs N -> Reduce half");
         MaterialCorrectionRule r3 = parse("", "RB 0P vs R -> Reduce half");

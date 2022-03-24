@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialDescription.parseDescr;
 
+import org.mattlang.jc.material.Material;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

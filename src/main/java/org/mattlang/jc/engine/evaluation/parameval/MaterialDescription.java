@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import java.util.HashMap;
-
-import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.material.Material;
 
 import lombok.Getter;
 
@@ -24,10 +22,14 @@ import lombok.Getter;
 @Getter
 public class MaterialDescription {
 
+    /**
+     * Material of the description of one color (coded as white only in the material, black==0).
+     */
     private Material material;
 
     private boolean pawnsUnspecific = false;
 
+    /* complete unspecified. this makes only sense for the weaker side: means it is unspecified, but anyway lower/weaker than the stronger side. */
     private boolean unspecified = false;
 
     public MaterialDescription(boolean unspecified) {
@@ -48,54 +50,32 @@ public class MaterialDescription {
         String pieces = splitted[0];
         String pawnstr = splitted.length >= 2 ? splitted[1] : "";
 
-        int pieceMat = parsePieces(pieces);
-        Integer pawns = parsePawns(pawnstr);
+        String matDescr = pieces.toUpperCase();
+
         boolean pawnsUnspecified = false;
-        if (pawns == null) {
-            pawns = 0;
+        if (pawnstr.trim().length() == 0) {
             pawnsUnspecified = true;
+        } else {
+            matDescr += convertPawnStr(pawnstr);
         }
-        return new MaterialDescription(new Material(pawns, pieceMat), pawnsUnspecified);
+
+        return new MaterialDescription(new Material(matDescr), pawnsUnspecified);
     }
 
-    private static Integer parsePawns(String pawnstr) {
+    private static String convertPawnStr(String pawnstr) {
         if (pawnstr.length() > 2) {
             throw new ConfigParseException("Could not parse Pawn Description: " + pawnstr);
         }
-        if (pawnstr.length() == 0) {
-            return null;
-        }
+
         if (pawnstr.length() == 1) {
             throw new ConfigParseException("Could not parse Pawn Description: " + pawnstr);
         }
-        return Integer.parseInt(pawnstr.substring(0, 1));
-    }
-
-    private static int parsePieces(String pieces) {
-        int val = 0;
-        for (int i = 0; i < pieces.length(); i++) {
-            val += pieceVal(pieces.charAt(i));
+        int numPawns = Integer.parseInt(pawnstr.substring(0, 1));
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < numPawns; i++) {
+            b.append("P");
         }
-
-        return val;
-    }
-
-    private static final HashMap<Character, Integer> PIECE_VALS = new HashMap<>();
-
-    static {
-        PIECE_VALS.put('0', 0);
-        PIECE_VALS.put(FigureType.Knight.figureChar, 10);
-        PIECE_VALS.put(FigureType.Bishop.figureChar, 100);
-        PIECE_VALS.put(FigureType.Rook.figureChar, 1000);
-        PIECE_VALS.put(FigureType.Queen.figureChar, 10000);
-
-    }
-
-    private static int pieceVal(char charAt) {
-        if (!PIECE_VALS.containsKey(charAt)) {
-            throw new ConfigParseException("Could not parse Piece Value Char: " + charAt);
-        }
-        return PIECE_VALS.get(charAt);
+        return b.toString();
     }
 
     /**
@@ -115,6 +95,6 @@ public class MaterialDescription {
         if (pawnsUnspecific) {
             return true;
         }
-        return material.getPawns() == other.getPawns();
+        return material.getPawnsMat() == other.getPawnsMat();
     }
 }

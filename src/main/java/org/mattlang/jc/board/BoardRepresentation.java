@@ -1,6 +1,7 @@
 package org.mattlang.jc.board;
 
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.material.Material;
 
 public interface BoardRepresentation {
     void setStartPosition();
@@ -86,4 +87,6 @@ public interface BoardRepresentation {
     boolean isDrawByMaterial();
 
     boolean isvalidmove(int pvMove);
+
+    Material getMaterial();
 }

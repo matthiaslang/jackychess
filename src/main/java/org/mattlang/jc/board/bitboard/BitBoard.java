@@ -542,6 +542,11 @@ public class BitBoard implements BoardRepresentation {
     }
 
     @Override
+    public Material getMaterial() {
+        return material;
+    }
+
+    @Override
     public boolean isDrawByMaterial() {
         return material.isDrawByMaterial();
     }

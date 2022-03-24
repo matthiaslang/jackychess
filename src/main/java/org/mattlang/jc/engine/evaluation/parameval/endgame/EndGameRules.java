@@ -2,8 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.rule;
 
-import org.mattlang.jc.engine.evaluation.parameval.Material;
 import org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule;
+import org.mattlang.jc.material.Material;
 
 import lombok.Getter;
 

@@ -16,17 +16,45 @@ import lombok.Setter;
  */
 public class Material {
 
+    public static final int W_PAWN_VAL = 1 << 0;
+    public static final int W_KNIGHT_VAL = 1 << 4;
+    public static final int W_BISHOP_VAL = 1 << 7;
+    public static final int W_ROOK_VAL = 1 << 10;
+    public static final int W_QUEEN_VAL = 1 << 13;
+    public static final int B_PAWN_VAL = 1 << 16;
+    public static final int B_KNIGHT_VAL = 1 << 20;
+    public static final int B_BISHOP_VAL = 1 << 23;
+    public static final int B_ROOK_VAL = 1 << 26;
+    public static final int B_QUEEN_VAL = 1 << 29;
+
     private static final int[][] MAT_VALS = {
             // WHITE QQQRRRBBBNNNPPPP
-            { 1 << 0, 1 << 4, 1 << 7, 1 << 10, 1 << 13 },
+            { W_PAWN_VAL, W_KNIGHT_VAL, W_BISHOP_VAL, W_ROOK_VAL, W_QUEEN_VAL },
             // BLACK QQQRRRBBBNNNPPPP
-            { 1 << 16, 1 << 20, 1 << 23, 1 << 26, 1 << 29 } };
+            { B_PAWN_VAL, B_KNIGHT_VAL, B_BISHOP_VAL, B_ROOK_VAL, B_QUEEN_VAL } };
+
+    private static final int MASK_OUT_PAWNS = 0b11111111111100001111111111110000;
+    private static final int MASK_OUT_PIECES = 0b00000000000011110000000000001111;
+    private static final int MASK_WHITE_PART = 0b00000000000000001111111111111111;
+    private static final int MASK_BLACK_PART = 0b11111111111111110000000000000000;
 
     @Getter
     @Setter
     private int material;
 
+    public Material() {
+    }
+
+    public Material(String spec) {
+        this.material = parse(spec);
+    }
+
+    public Material(int material) {
+        this.material = material;
+    }
+
     public void init(BoardRepresentation board) {
+        material = 0;
         BitChessBoard bb = board.getBoard();
         for (Color color : Color.values()) {
             for (FigureType type : FigureType.values()) {
@@ -100,5 +128,36 @@ public class Material {
 
     private static Figure toFigureType(char charAt) {
         return Figure.getFigureByCode(Figure.convertFigureChar(charAt));
+    }
+
+    public int getBlackAsWhitePart() {
+        return material >>> 16;
+    }
+
+    public int getWhiteAsBlackPart() {
+        return material << 16;
+    }
+
+    public int switchSidesOnMaterial() {
+        return getWhiteAsBlackPart() | getBlackAsWhitePart();
+    }
+
+    /**
+     * Return only the pieces material without the pawns.
+     */
+    public int getPieceMat() {
+        return material & MASK_OUT_PAWNS;
+    }
+
+    public int getPawnsMat() {
+        return material & MASK_OUT_PIECES;
+    }
+
+    public int getWhiteMat() {
+        return material & MASK_WHITE_PART;
+    }
+
+    public int getBlackMat() {
+        return material & MASK_BLACK_PART;
     }
 }

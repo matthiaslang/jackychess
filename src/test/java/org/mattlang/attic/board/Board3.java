@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
@@ -477,6 +478,11 @@ public class Board3 implements BoardRepresentation {
     @Override
     public boolean isvalidmove(int pvMove) {
         throw new IllegalStateException("not implemented!");
+    }
+
+    @Override
+    public Material getMaterial() {
+        return null;
     }
 
     @Override

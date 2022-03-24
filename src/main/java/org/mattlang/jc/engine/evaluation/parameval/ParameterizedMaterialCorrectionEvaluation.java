@@ -1,12 +1,9 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-
 import java.util.List;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.material.Material;
 
 /**
  * Paremeterized Low Material Correction.
@@ -28,20 +25,16 @@ public class ParameterizedMaterialCorrectionEvaluation {
 
     public int correct(BoardRepresentation board, int result) {
 
-        BitChessBoard bb = board.getBoard();
-
-        int stronger;
-        int weaker;
+        Material currMaterial = board.getMaterial();
         if (result > 0) {
-            stronger = nWhite;
-            weaker = nBlack;
+            // white is stronger
+            matStronger.setMaterial(currMaterial.getWhiteMat());
+            matWeaker.setMaterial(currMaterial.getBlackAsWhitePart());
         } else {
-            stronger = nBlack;
-            weaker = nWhite;
+            // black is stronger
+            matStronger.setMaterial(currMaterial.getBlackAsWhitePart());
+            matWeaker.setMaterial(currMaterial.getWhiteMat());
         }
-
-        Material.fromBoard(matWeaker, bb, weaker);
-        Material.fromBoard(matStronger, bb, stronger);
 
         for (MaterialCorrectionRule rule : rules) {
             if (rule.matches(matStronger, matWeaker)) {
