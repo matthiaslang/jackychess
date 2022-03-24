@@ -29,6 +29,9 @@ public class SearchThreadContext {
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
 
     @Getter
+    private CaptureHeuristic captureHeuristic = new CaptureHeuristic();
+
+    @Getter
     private CounterMoveHeuristic counterMoveHeuristic = new CounterMoveHeuristic();
 
     @Getter

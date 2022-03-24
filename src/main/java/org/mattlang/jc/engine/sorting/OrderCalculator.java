@@ -5,6 +5,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.search.CaptureHeuristic;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
@@ -34,6 +35,7 @@ public class OrderCalculator {
 
     private int pvMove;
     private HistoryHeuristic historyHeuristic;
+    private CaptureHeuristic captureHeuristic;
     private KillerMoves killerMoves;
     private CounterMoveHeuristic counterMoveHeuristic;
     private Color color;
@@ -65,10 +67,10 @@ public class OrderCalculator {
      */
     public void init(OrderCalculator other) {
         this.orderHints = other.orderHints;
-        this.historyHeuristic = other.orderHints.historyHeuristic;
-        this.killerMoves = other.orderHints.killerMoves;
-        this.counterMoveHeuristic = other.orderHints.counterMoveHeuristic;
-
+        this.historyHeuristic = other.historyHeuristic;
+        this.killerMoves = other.killerMoves;
+        this.counterMoveHeuristic = other.counterMoveHeuristic;
+        this.captureHeuristic = other.captureHeuristic;
         this.useMvvLva = orderHints.useMvvLvaSorting;
         this.usePvSorting = other.usePvSorting;
 
@@ -82,9 +84,12 @@ public class OrderCalculator {
 
     public OrderCalculator(OrderHints orderHints) {
         this.orderHints = orderHints;
-        this.historyHeuristic = orderHints.historyHeuristic;
-        this.killerMoves = orderHints.killerMoves;
-        this.counterMoveHeuristic = orderHints.counterMoveHeuristic;
+        if (orderHints.stc != null) {
+            this.historyHeuristic = orderHints.stc.getHistoryHeuristic();
+            this.captureHeuristic = orderHints.stc.getCaptureHeuristic();
+            this.killerMoves = orderHints.stc.getKillerMoves();
+            this.counterMoveHeuristic = orderHints.stc.getCounterMoveHeuristic();
+        }
         this.useMvvLva = orderHints.useMvvLvaSorting;
         this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
@@ -100,12 +105,6 @@ public class OrderCalculator {
         this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(index) : 0;
         this.color = color;
         this.board = board;
-    }
-
-
-    public boolean hasPvMove(int ply){
-        int index=ply-1;
-        return orderHints.prevPvlist != null && orderHints.prevPvlist.getMove(index) != 0;
     }
 
     /**
@@ -135,11 +134,16 @@ public class OrderCalculator {
 
             if (m.isCapture()) {
                 // find out good moves (via see)
+                int captScore = 0;
                 if (see.see_ge(board, m, 0)) {
-                    return -mvvLva + GOOD_CAPTURES_SCORE;
+                    captScore = -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
-                    return -mvvLva;
+                    captScore = -mvvLva;
                 }
+                if (captureHeuristic != null) {
+                    captScore -= captureHeuristic.calcValue(m, color);
+                }
+                return captScore;
 
             } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
                 return KILLER_SCORE;

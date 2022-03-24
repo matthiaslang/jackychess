@@ -2,7 +2,10 @@ package org.mattlang.jc.engine.sorting;
 
 import java.util.List;
 
-import org.mattlang.jc.engine.search.*;
+import org.mattlang.jc.engine.search.MoveScore;
+import org.mattlang.jc.engine.search.NegaMaxResult;
+import org.mattlang.jc.engine.search.PVList;
+import org.mattlang.jc.engine.search.SearchThreadContext;
 
 import lombok.AllArgsConstructor;
 
@@ -12,7 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class OrderHints {
 
-    public static final OrderHints NO_HINTS = new OrderHints(null, null, null, null, null, false);
+    public static final OrderHints NO_HINTS = new OrderHints(null, null, null, false);
 
     /**
      * an optional previous pv list of the last round. Could be null. If set, it should be used for move ordering.
@@ -24,11 +27,7 @@ public class OrderHints {
      */
     public final List<MoveScore> moveScores;
 
-    public final HistoryHeuristic historyHeuristic;
-
-    public final KillerMoves killerMoves;
-
-    public final CounterMoveHeuristic counterMoveHeuristic;
+    public final SearchThreadContext stc;
 
     public final boolean useMvvLvaSorting;
 
@@ -38,9 +37,7 @@ public class OrderHints {
             boolean useMvvLvaSorting) {
         this.prevPvlist = negaMaxResult.pvList;
         this.moveScores = negaMaxResult.moveScores;
-        this.historyHeuristic = stc.getHistoryHeuristic();
-        this.killerMoves = stc.getKillerMoves();
-        this.counterMoveHeuristic = stc.getCounterMoveHeuristic();
+        this.stc = stc;
         this.useMvvLvaSorting = useMvvLvaSorting;
     }
 }

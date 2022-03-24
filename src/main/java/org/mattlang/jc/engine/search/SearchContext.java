@@ -32,6 +32,7 @@ import lombok.Getter;
 
 public final class SearchContext {
 
+
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
     private MoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
@@ -90,6 +91,8 @@ public final class SearchContext {
 
     private HistoryHeuristic historyHeuristic = null;
 
+    private CaptureHeuristic captureHeuristic = null;
+
     private KillerMoves killerMoves = null;
 
     private CounterMoveHeuristic counterMoveHeuristic = null;
@@ -120,6 +123,7 @@ public final class SearchContext {
 
         killerMoves = stc.getKillerMoves();
         historyHeuristic = stc.getHistoryHeuristic();
+        captureHeuristic = stc.getCaptureHeuristic();
         counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
@@ -253,17 +257,19 @@ public final class SearchContext {
             if (useCounterMove) {
                 counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
             }
+        } else {
+            captureHeuristic.update(color, moveCursor, depth);
         }
     }
 
     public void updateBadHeuristic(int depth, Color color, MoveCursor moveCursor) {
-        if (useHistoryHeuristic && !moveCursor.isCapture()) {
-            historyHeuristic.updateBad(color, moveCursor, depth);
+        if (!moveCursor.isCapture()) {
+            if (useHistoryHeuristic) {
+                historyHeuristic.updateBad(color, moveCursor, depth);
+            }
+        } else {
+            captureHeuristic.updateBad(color, moveCursor, depth);
         }
-    }
-
-    public boolean hasPvMove(int ply) {
-        return orderCalculator.hasPvMove(ply);
     }
 
     public boolean isDrawByMaterial() {
