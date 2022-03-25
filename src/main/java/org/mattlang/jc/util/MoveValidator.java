@@ -64,7 +64,7 @@ public class MoveValidator {
     }
 
     public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
-        return isLegalMove(board, move.toInt(), who2Move);
+        return isLegalMove(board, move.getMoveInt(), who2Move);
     }
 
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {

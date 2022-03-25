@@ -125,7 +125,7 @@ public class OrderCalculator {
      * @return
      */
     public int calcOrder(Move m) {
-        int moveInt = m.toInt();
+        int moveInt = m.getMoveInt();
         if (usePvSorting && pvMove == moveInt) {
             return PV_SCORE;
         } else if (hashMove == moveInt) {

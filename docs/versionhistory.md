@@ -1,8 +1,14 @@
 # Versions
-     
-### Version 0.11.6.3
 
-- experimental staged move gen 
+### Version 0.11.6.5
+
+- futility pruning by See
+
+### Version 0.11.6.4
+        
+- first simple draw by material detection during negamax search
+
+- experimental staged move gen. not used since it does not bring anything for now. 
 
 ### Version 0.11.6.1
 
@@ -40,7 +46,7 @@
 
 ### Version 0.10.0
 
-Official release. It plays ~2000 elos.
+Official release. It plays ~2000 elos. 
 
 - cleaned up Uci options.
 

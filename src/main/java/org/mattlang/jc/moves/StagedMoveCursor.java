@@ -80,7 +80,7 @@ public class StagedMoveCursor implements MoveCursor {
         // test code:
 //        if (!board.isvalidmove(currMove)) {
 //            throw new IllegalStateException("AAAHHH!");
-//        }
+        //        }
 
         board.domove(currMoveObj);
     }
@@ -91,13 +91,28 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     @Override
+    public int getEnPassantCapturePos() {
+        return currMoveObj.getEnPassantCapturePos();
+    }
+
+    @Override
+    public byte getPromotedFigureByte() {
+        return currMoveObj.getPromotedFigureByte();
+    }
+
+    @Override
+    public CastlingMove getCastlingMove() {
+        return currMoveObj.getCastlingMove();
+    }
+
+    @Override
     public int getOrder() {
         return orderOfCurrentMove;
     }
 
     @Override
     public void undoMove(BoardRepresentation board) {
-//        LOGGER.info("undo Move " + currMoveObj.toLongAlgebraic());
+        //        LOGGER.info("undo Move " + currMoveObj.toLongAlgebraic());
         board.undo(currMoveObj);
 
     }
@@ -108,7 +123,7 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     @Override
-    public boolean isPawnPromotion() {
+    public boolean isPromotion() {
         return currMoveObj.isPromotion();
     }
 
@@ -148,14 +163,19 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     @Override
+    public String toStr() {
+        return currMoveObj.toStr();
+    }
+
+    @Override
     public boolean hasNext() {
         while (!currStageData.hasNext() && !isLastStage()) {
             nextStage();
         }
 
         // test code
-//        if (stageIndex >= 0) {
-//            LOGGER.info("hasnext(): result " + currStageData.hasNext() + " stage " + stages[stageIndex]);
+        //        if (stageIndex >= 0) {
+        //            LOGGER.info("hasnext(): result " + currStageData.hasNext() + " stage " + stages[stageIndex]);
 //        } else {
 //            LOGGER.info("hasnext(): result " + currStageData.hasNext() + " stage still -1!! ");
 //        }
