@@ -294,12 +294,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 //                        continue;
                 //                    }
                 //                }
-
-//                boolean moveIsPrunable = searchedMoves > 0
-//                        && !moveCursor.isCapture()
-//                        && !moveCursor.isPromotion()
-//                        && !areWeInCheck
-//                        && !searchContext.isInCheck(color.invert());
+                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
+                boolean moveIsPrunable = searchedMoves > 0
+                        && !isHashMove
+                        && !moveCursor.isCapture()
+                        && !moveCursor.isPromotion()
+                        && !areWeInCheck
+                        && !searchContext.isInCheck(color.invert());
 
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
@@ -319,7 +320,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 // Futility pruning using SEE
                 int pruneDepth = Math.max(0, depth - 3); // shortcut, maybe fine tune this...
 
-                if (applyFutilityPruning
+                if (moveIsPrunable
                         && pruneDepth <= 6
                         && !see.see_ge(searchContext.getBoard(), moveCursor, -24 * pruneDepth * pruneDepth))
                     continue;
