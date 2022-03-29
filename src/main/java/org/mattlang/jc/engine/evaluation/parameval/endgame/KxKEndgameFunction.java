@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 
@@ -14,7 +14,7 @@ import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
  *
  * Should not be called when in check.
  */
-public class KxKEndgameFunction implements EndgameFunction{
+public class KxKEndgameFunction implements EndgameFunction {
 
     private static final int VALUE_KNOWN_WIN = 10000;
 
@@ -43,7 +43,7 @@ public class KxKEndgameFunction implements EndgameFunction{
         return 120 - push_close(s1, s2);
     }
 
-    public int evaluate(BitBoard bitBoard, int stronger, int weaker) {
+    public int evaluate(BoardRepresentation bitBoard, int stronger, int weaker, int materialEval) {
 
         BitChessBoard bb = bitBoard.getBoard();
 
@@ -54,7 +54,8 @@ public class KxKEndgameFunction implements EndgameFunction{
         int strongKing = Long.numberOfTrailingZeros(bb.getKings(stronger));
         int weakKing = Long.numberOfTrailingZeros(bb.getKings(weaker));
 
-        int result = push_to_edge(weakKing)
+        int result = materialEval
+                + push_to_edge(weakKing)
                 + push_close(strongKing, weakKing);
 
         if (bb.getQueensCount(stronger) > 0

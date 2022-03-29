@@ -1,8 +1,8 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.board.BoardRepresentation;
 
 public interface EndgameFunction {
 
-    int evaluate(BitBoard bitBoard, int stronger, int weaker);
+    int evaluate(BoardRepresentation board, int stronger, int weaker, int materialEval);
 }

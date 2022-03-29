@@ -3,6 +3,7 @@
 ### Version 0.11.6.5
                          
 - refactored code around the Move Interface
+- optimized eval cache
 - experiments with futility pruning by See (not used, doesnt bring anything)
 
 ### Version 0.11.6.4
