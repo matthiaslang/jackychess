@@ -294,6 +294,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 //                        continue;
                 //                    }
                 //                }
+//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
+//                boolean moveIsPrunable = searchedMoves > 0
+//                        && !isHashMove
+//                        && !moveCursor.isCapture()
+//                        && !moveCursor.isPromotion()
+//                        && !areWeInCheck
+//                        && !searchContext.isInCheck(color.invert());
 
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
@@ -304,11 +311,29 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 if (applyFutilityPruning
                         && searchedMoves > 0
                         && !moveCursor.isCapture()
-                        && !moveCursor.isPawnPromotion()
+                        && !moveCursor.isPromotion()
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         && !searchContext.isInCheck(color.invert())) {
                     continue;
                 }
+
+                // Futility pruning using SEE
+//                int pruneDepth = Math.max(0, depth - 3); // shortcut, maybe fine tune this...
+//
+//                if (moveIsPrunable
+//                        && pruneDepth <= 6
+//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -24 * pruneDepth * pruneDepth))
+//                    continue;
+
+//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
+//
+//                if (moveIsPrunable
+//                        && not_pv
+//                        && !isHashMove
+//                        && max > -32000 && max > alpha
+//                        && depth <= 5
+//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -100 * depth))
+//                    continue;
 
                 searchedMoves++;
 
@@ -439,7 +464,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
                 depth > 3 &&
                 !moveCursor.isCapture() &&
-                !moveCursor.isPawnPromotion() &&
+                !moveCursor.isPromotion() &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
                 moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
@@ -541,7 +566,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             while (moveCursor.doNextMove()) {
 
                 // skip low promotions
-                if (moveCursor.isPawnPromotion()
+                if (moveCursor.isPromotion()
                         && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
                     continue;
                 }
@@ -549,7 +574,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 //                searchedMoves++;
 
                 if (moveCursor.isCapture()
-                        || moveCursor.isPawnPromotion()) {
+                        || moveCursor.isPromotion()) {
 
                     /**********************************************************************
                      *  Delta cutoff - a move guarentees the score well below alpha, so    *
@@ -558,7 +583,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                      **********************************************************************/
 
                     if (deltaCutOff
-                            && !moveCursor.isPawnPromotion()
+                            && !moveCursor.isPromotion()
                             && x + see.pieceVal(moveCursor.getCapturedFigure()) + 200 < alpha
                             && searchContext.isOpeningOrMiddleGame()
                     ) {

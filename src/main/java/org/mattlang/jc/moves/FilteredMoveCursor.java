@@ -31,6 +31,21 @@ public class FilteredMoveCursor implements MoveCursor {
     }
 
     @Override
+    public int getEnPassantCapturePos() {
+        return delegate.getEnPassantCapturePos();
+    }
+
+    @Override
+    public byte getPromotedFigureByte() {
+        return delegate.getPromotedFigureByte();
+    }
+
+    @Override
+    public CastlingMove getCastlingMove() {
+        return delegate.getCastlingMove();
+    }
+
+    @Override
     public int getOrder() {
         return delegate.getOrder();
     }
@@ -46,8 +61,8 @@ public class FilteredMoveCursor implements MoveCursor {
     }
 
     @Override
-    public boolean isPawnPromotion() {
-        return delegate.isPawnPromotion();
+    public boolean isPromotion() {
+        return delegate.isPromotion();
     }
 
     @Override
@@ -83,6 +98,11 @@ public class FilteredMoveCursor implements MoveCursor {
     @Override
     public int getToIndex() {
         return delegate.getToIndex();
+    }
+
+    @Override
+    public String toStr() {
+        return delegate.toStr();
     }
 
     @Override

@@ -78,6 +78,21 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
+    public int getEnPassantCapturePos() {
+        return moveCursor.getEnPassantCapturePos();
+    }
+
+    @Override
+    public byte getPromotedFigureByte() {
+        return moveCursor.getPromotedFigureByte();
+    }
+
+    @Override
+    public CastlingMove getCastlingMove() {
+        return moveCursor.getCastlingMove();
+    }
+
+    @Override
     public int getOrder() {
         return moveCursor.getOrder();
     }
@@ -93,8 +108,8 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public boolean isPawnPromotion() {
-        return moveCursor.isPawnPromotion();
+    public boolean isPromotion() {
+        return moveCursor.isPromotion();
     }
 
     @Override
@@ -130,6 +145,11 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     @Override
     public int getToIndex() {
         return moveCursor.getToIndex();
+    }
+
+    @Override
+    public String toStr() {
+        return moveCursor.toStr();
     }
 
     @Override

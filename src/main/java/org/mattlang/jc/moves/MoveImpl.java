@@ -76,8 +76,6 @@ public final class MoveImpl implements Move {
     public static final byte CASTLING_BLACK_LONG = 13;
     public static final byte ENPASSANT_MOVE = 14;
 
-    private int order = NOT_SORTED;
-
     private static byte typeToPromotedFigure[] = new byte[PAWN_PROMOTION_B_QUEEN + 1];
 
     static {
@@ -270,17 +268,7 @@ public final class MoveImpl implements Move {
     }
 
     @Override
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    @Override
-    public int getOrder() {
-        return order;
-    }
-
-    @Override
-    public int toInt() {
+    public int getMoveInt() {
         return toLongEncoded();
     }
 

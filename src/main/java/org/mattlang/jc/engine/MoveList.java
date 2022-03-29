@@ -47,7 +47,7 @@ public interface MoveList extends MoveCollector, AutoCloseable {
             moveCursor.next();
             l1.add(new MoveImpl(moveCursor.getMoveInt()));
         }
-        l1.sort(Comparator.comparingInt(MoveImpl::toInt));
+        l1.sort(Comparator.comparingInt(MoveImpl::getMoveInt));
         return l1;
     }
 

@@ -33,6 +33,21 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
+    public int getEnPassantCapturePos() {
+        return currMoveObj.getEnPassantCapturePos();
+    }
+
+    @Override
+    public byte getPromotedFigureByte() {
+        return currMoveObj.getPromotedFigureByte();
+    }
+
+    @Override
+    public CastlingMove getCastlingMove() {
+        return currMoveObj.getCastlingMove();
+    }
+
+    @Override
     public int getOrder() {
         return orderOfCurrentMove;
     }
@@ -48,7 +63,7 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
-    public boolean isPawnPromotion() {
+    public boolean isPromotion() {
         return currMoveObj.isPromotion();
     }
 
@@ -85,6 +100,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     @Override
     public int getToIndex() {
         return currMoveObj.getToIndex();
+    }
+
+    @Override
+    public String toStr() {
+        return currMoveObj.toStr();
     }
 
     public void init(int[] moves, int size, int[] order) {

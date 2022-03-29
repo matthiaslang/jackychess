@@ -38,8 +38,7 @@ You should have a few UCI options able to set in the UI then.
 
 ## Rating
 
- - The latest version 0.10.0 has an estimated rating of 2000 ELO.
- - The engine Version 0.9.14 has an ELO rating of 1455 in the CCRL Blitz index, see http://ccrl.chessdom.com/ccrl/404/
+ - The engine Version 0.10.0 has an rating of 2078 ELO in the CCRL Blitz index, see http://ccrl.chessdom.com/ccrl/404/
 
 
 ## License
