@@ -17,7 +17,7 @@ public class SorterTest {
         LongSorter sorter = new LongSorter(objects, objects.length, order);
 
         ArrayList<Integer> sortedList = new ArrayList<>();
-        while(sorter.hasNext()){
+        while (sorter.hasNext()) {
             sortedList.add(sorter.next());
         }
 
@@ -25,13 +25,30 @@ public class SorterTest {
 
     }
 
+    @Test
+    public void partSorted() {
+
+        int objects[] = new int[] { 1, 3, 2 };
+
+        int order[] = new int[] { 1, 3, 2 };
+
+        LongSorter sorter = new LongSorter(objects, objects.length, order);
+
+        ArrayList<Integer> sortedList = new ArrayList<>();
+        while (sorter.hasNext()) {
+            sortedList.add(sorter.next());
+        }
+
+        Assertions.assertThat(sortedList).containsExactly(new Integer(1), new Integer(2), new Integer(3));
+
+    }
 
     @Test
-    public void unsorted(){
+    public void unsorted() {
 
-        int objects[] = new int[]{3,2,1};
+        int objects[] = new int[] { 3, 2, 1 };
 
-        int order[] = new int[]{ 3, 2, 1};
+        int order[] = new int[] { 3, 2, 1 };
 
         LongSorter sorter = new LongSorter(objects, objects.length, order);
 

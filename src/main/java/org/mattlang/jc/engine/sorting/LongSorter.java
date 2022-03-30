@@ -14,8 +14,6 @@ public class LongSorter {
 
     private int start = 0;
 
-    private boolean alreadyFullySorted = false;
-
     public LongSorter(int[] objects, int size, int[] orders) {
         init(objects, size, orders);
     }
@@ -25,28 +23,14 @@ public class LongSorter {
         this.orders = orders;
         this.size = size;
         start = 0;
-        alreadyFullySorted = false;
-    }
-
-    public static void sort(int[] data, int size, int[] order) {
-        new LongSorter(data, size, order).sortData();
-    }
-
-    private void sortData() {
-        while (!alreadyFullySorted) {
-            sortRound();
-        }
     }
 
     public boolean hasNext() {
-        return size > 0;
+        return start < size;
     }
 
     public int next() {
-        if (!alreadyFullySorted) {
-            sortRound();
-        }
-        size--;
+        sortRound();
         return objects[start++];
     }
 
@@ -59,30 +43,28 @@ public class LongSorter {
     }
 
     private void sortRound() {
-        if (start >= size - 1) {
-            return;
-        }
         int currLowest = -1;
-        int currLowestIndex = -1;
-        for (int i = start; i < size - 1; i++) {
+        int currLowestIndex = start;
+        for (int i = start; i < size; i++) {
             if (orders[i] < currLowest || currLowest == -1) {
                 currLowest = orders[i];
                 currLowestIndex = i;
             }
         }
 
-        if (currLowestIndex != start) {
+        if (currLowestIndex != start && currLowestIndex < size) {
             swap(start, currLowestIndex);
         }
     }
 
     private void swap(int i, int j) {
+
         int tmp = orders[i];
         orders[i] = orders[j];
         orders[j] = tmp;
 
-        int ttmp = objects[i];
+        tmp = objects[i];
         objects[i] = objects[j];
-        objects[j] = ttmp;
+        objects[j] = tmp;
     }
 }
