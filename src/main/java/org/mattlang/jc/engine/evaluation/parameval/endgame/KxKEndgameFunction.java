@@ -4,6 +4,7 @@ import static org.mattlang.jc.engine.evaluation.Tools.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 
 /**
@@ -43,9 +44,10 @@ public class KxKEndgameFunction implements EndgameFunction {
         return 120 - push_close(s1, s2);
     }
 
-    public int evaluate(BoardRepresentation bitBoard, int stronger, int weaker, int materialEval) {
+    public int evaluate(BoardRepresentation board, int stronger, int weaker,
+            ParameterizedMaterialEvaluation matEvaluation) {
 
-        BitChessBoard bb = bitBoard.getBoard();
+        BitChessBoard bb = board.getBoard();
 
         // Stalemate detection with lone king
         //        if (pos.side_to_move() == weakSide && !MoveList<LEGAL>(pos).size())
@@ -54,7 +56,7 @@ public class KxKEndgameFunction implements EndgameFunction {
         int strongKing = Long.numberOfTrailingZeros(bb.getKings(stronger));
         int weakKing = Long.numberOfTrailingZeros(bb.getKings(weaker));
 
-        int result = materialEval
+        int result = matEvaluation.evalEndGameMaterialOfSide(board, stronger)
                 + push_to_edge(weakKing)
                 + push_close(strongKing, weakKing);
 
@@ -78,6 +80,6 @@ public class KxKEndgameFunction implements EndgameFunction {
         //                && (pos.pieces(strongSide, BISHOP) &  DarkSquares)))
         //            result = std::min(result + VALUE_KNOWN_WIN, VALUE_TB_WIN_IN_MAX_PLY - 1);
         //
-        return stronger == bitBoard.getSiteToMove().ordinal() ? result : -result;
+        return stronger == board.getSiteToMove().ordinal() ? result : -result;
     }
 }

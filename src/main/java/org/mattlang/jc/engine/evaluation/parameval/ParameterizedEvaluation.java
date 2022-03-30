@@ -35,17 +35,18 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private EvalResult result = new EvalResult();
 
-    private boolean caching=false;
+    private boolean caching = false;
+
+    private boolean endgameEvaluations = false;
 
     private IntIntCache evalCache = EvalCache.instance;
-
-
 
     public ParameterizedEvaluation() {
 
         EvalConfig config = new EvalConfig();
 
         caching = config.getBoolProp("caching.active");
+        endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
         matEvaluation = new ParameterizedMaterialEvaluation(config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
@@ -71,13 +72,20 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         matEvaluation.eval(result, currBoard);
 
-//        EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
-//        if (endGameRule != null) {
-//            int stronger = result.endGame > 0 ? nWhite : nBlack;
-//            int weaker = stronger == nWhite ? nBlack : nWhite;
-//
-//            return endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, result.endGame);
-//        }
+        if (endgameEvaluations) {
+            EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
+            if (endGameRule != null) {
+
+                int stronger = result.endGame > 0 ? nWhite : nBlack;
+                int weaker = stronger == nWhite ? nBlack : nWhite;
+
+                int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
+                if (caching) {
+                    evalCache.save(currBoard.getZobristHash(), score);
+                }
+                return score;
+            }
+        }
 
         pstEvaluation.eval(result, currBoard);
         mobEvaluation.eval(result, currBoard);
@@ -98,13 +106,15 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-    private Material matWeaker = new Material();
-    private Material matStronger = new Material();
+
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
         long figs = board.getBoard().getColorMask(nWhite) | board.getBoard()
                 .getColorMask(nBlack);
         if (Long.bitCount(figs) <= 5) {
+            Material matWeaker = new Material();
+            Material matStronger = new Material();
+
             Material currMaterial = board.getMaterial();
             if (materialScore > 0) {
                 // white is stronger

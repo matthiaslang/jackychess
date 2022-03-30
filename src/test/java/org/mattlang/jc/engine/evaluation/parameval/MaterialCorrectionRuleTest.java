@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
+import static org.mattlang.jc.engine.evaluation.parameval.MaterialDescription.parseDescr;
 import static org.mattlang.jc.material.Material.W_BISHOP_VAL;
 import static org.mattlang.jc.material.Material.W_ROOK_VAL;
 
@@ -10,8 +11,17 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
+import org.mattlang.jc.material.Material;
 
 public class MaterialCorrectionRuleTest {
+
+    Material onlyKing = matOf("position fen k7/8/8/8/K7/8/8/8 w - - 2 17 ");
+    Material kingAndQueen = matOf("position fen k7/8/8/8/KQ6/8/8/8 w - - 2 17 ");
+    Material kingAndRook = matOf("position fen k7/8/8/8/KR6/8/8/8 w - - 2 17 ");
+    Material kingAndBishop = matOf("position fen k7/8/8/8/KB6/8/8/8 w - - 2 17 ");
+    Material kingAndRookPawn = matOf("position fen k7/8/8/8/KRP5/8/8/8 w - - 2 17 ");
+    Material kingPPP = matOf("position fen k7/8/8/8/KPPP4/8/8/8 w - - 2 17 ");
 
     @Test
     public void parseRules() {
@@ -52,5 +62,45 @@ public class MaterialCorrectionRuleTest {
         board.setFenPosition("position fen k7/4pr2/8/8/4K3/8/8/RBP5 w - - 2 17 ");
 
         assertThat(matCorr.correct(board, 500)).isEqualTo(500);
+    }
+
+    @Test
+    public void parseEndGameRules() {
+        EndGameRules.values();
+    }
+
+    @Test
+    public void testMatComparisons() {
+
+        assertThat(kingAndQueen.hasMoreWhiteMat(onlyKing)).isTrue();
+        assertThat(kingAndQueen.hasMoreWhiteMat(kingAndRook)).isFalse();
+        assertThat(kingAndQueen.hasMoreWhiteMat(kingAndQueen)).isFalse();
+
+        assertThat(kingAndRookPawn.hasMoreWhiteMat(kingAndRook)).isTrue();
+        assertThat(kingAndRookPawn.hasMoreWhiteMat(kingAndQueen)).isFalse();
+        assertThat(kingAndQueen.hasMoreWhiteMat(kingAndRookPawn)).isFalse();
+
+        assertThat(kingAndBishop.hasMoreWhiteMat(kingAndRookPawn)).isFalse();
+        assertThat(kingAndBishop.hasMoreWhiteMat(kingPPP)).isFalse();
+        assertThat(kingAndBishop.hasMoreWhiteMat(kingAndQueen)).isFalse();
+
+        assertThat(kingPPP.hasMoreWhiteMat(kingAndBishop)).isFalse();
+
+    }
+
+    private Material matOf(String fen) {
+        BitBoard board = new BitBoard();
+        board.setFenPosition(fen);
+        return board.getMaterial();
+    }
+
+    @Test
+    public void testMaterialDescriptions() {
+        assertThat(parseDescr("Q").matches(kingAndQueen)).isTrue();
+        assertThat(parseDescr("R").matches(kingAndRook)).isTrue();
+        assertThat(parseDescr("R+").matches(kingAndRookPawn)).isTrue();
+        assertThat(parseDescr("R*").matches(kingAndRookPawn)).isTrue();
+        assertThat(parseDescr("R*").matches(kingAndRook)).isTrue();
+        assertThat(parseDescr("R+").matches(kingAndRook)).isFalse();
     }
 }

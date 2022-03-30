@@ -77,9 +77,39 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext=new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
 
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+
+        System.out.println(move.toStr());
+
+        // with the evaluation function it should yield e7e6:
+        assertThat(move.toStr()).isEqualTo("e7e6");
+    }
+
+    @Test
+    @Ignore
+    public void testError() throws IOException {
+
+        System.setProperty(LOGGING_ACTIVATE, "false");
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createStable()
+                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+                .config(c -> c.timeout.setValue(36000000))
+                .config(c -> c.useTTCache.setValue(true))
+                .config(c -> c.maxDepth.setValue(11))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+        // now starting engine:
+        Engine engine = new Engine();
+        GameState gameState = engine.getBoard()
+                .setFenPosition("position startpos moves d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8 f1e2 e7e5 e1g1 b8c6 d4d5 c6e7 c1g5 h7h6 g5e3 f6g4 e3d2");
+        System.out.println(engine.getBoard().toUniCodeStr());
+        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+
+        Move move = engine.go(gameState, gameContext);
 
         System.out.println(move.toStr());
 

@@ -160,4 +160,23 @@ public class Material {
     public int getBlackMat() {
         return material & MASK_BLACK_PART;
     }
+
+    public boolean hasMoreWhiteMat(int thanThisWhiteMat) {
+        int meWhite = getWhiteMat();
+        // in case the other has only  a king and we some material:
+        if (meWhite > 0 && thanThisWhiteMat == 0) {
+            return true;
+        }
+        return (thanThisWhiteMat & meWhite) == thanThisWhiteMat && meWhite > thanThisWhiteMat;
+    }
+
+    /**
+     * Return true, if the given (white) material has more material than the other matieral.
+     * Measured in figures: Means this material has the same figures as the other material but also more figures.
+     * @param thanThisWhiteMaterial
+     * @return
+     */
+    public boolean hasMoreWhiteMat(Material thanThisWhiteMaterial) {
+        return hasMoreWhiteMat(thanThisWhiteMaterial.getWhiteMat());
+    }
 }

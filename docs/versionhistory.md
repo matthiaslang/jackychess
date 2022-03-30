@@ -1,13 +1,17 @@
 # Versions
 
+### Version 0.11.7
+
+- special end game eval function for KX vs K
+
 ### Version 0.11.6.5
-                         
+
 - refactored code around the Move Interface
 - optimized eval cache
 - experiments with futility pruning by See (not used, doesnt bring anything)
 
 ### Version 0.11.6.4
-        
+
 - first simple draw by material detection during negamax search
 
 - experimental staged move gen. not used since it does not bring anything for now. 

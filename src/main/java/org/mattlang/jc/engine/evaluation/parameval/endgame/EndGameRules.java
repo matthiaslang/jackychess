@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.rule;
 
+import java.util.Objects;
+
 import org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule;
 import org.mattlang.jc.material.Material;
 
@@ -10,13 +12,16 @@ import lombok.Getter;
 @Getter
 public enum EndGameRules {
 
-    KQ_VS_K(rule("KQ Vs K", "Q ", "0 0P"),
+    /** King, Queen (and more) against blank King. */
+    KQ_VS_K(rule("KQ* Vs K", "Q* ", " "),
             new KxKEndgameFunction()),
 
-    KR_VS_K(rule("KR Vs K", "R ", "0 0P"),
+    /** King, Rook (and more) against blank King. */
+    KR_VS_K(rule("KR* Vs K", "R* ", " "),
             new KxKEndgameFunction()),
 
-    KRR_VS_K(rule("KRR Vs K", "RR ", "0 0P"),
+    /** King, two Bishops (and more) against blank King. */
+    KRB_VS_K(rule("KBB* Vs K", "BB* ", " "),
             new KxKEndgameFunction());
 
     private MaterialCorrectionRule materialRule;
@@ -24,8 +29,8 @@ public enum EndGameRules {
 
     EndGameRules(MaterialCorrectionRule materialRule,
             EndgameFunction endgameFunction) {
-        this.materialRule = materialRule;
-        this.endgameFunction = endgameFunction;
+        this.materialRule = Objects.requireNonNull(materialRule);
+        this.endgameFunction = Objects.requireNonNull(endgameFunction);
     }
 
     public static EndGameRules findRule(Material matStronger, Material matWeaker) {

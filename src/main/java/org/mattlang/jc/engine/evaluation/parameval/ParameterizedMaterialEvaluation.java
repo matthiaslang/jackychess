@@ -72,4 +72,14 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
                 rookEG * rooksDiff +
                 queenEG * queensDiff;
     }
+
+    public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, int color) {
+        BitChessBoard bb = bitBoard.getBoard();
+
+        return pawnEG * bb.getPawnsCount(color) +
+                knightEG * bb.getKnightsCount(color) +
+                bishopEG * bb.getBishopsCount(color) +
+                rookEG * bb.getRooksCount(color) +
+                queenEG * bb.getQueensCount(color);
+    }
 }
