@@ -62,7 +62,7 @@ public class AsyncEngine {
                 Move move = new Engine().go(gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
                 logger.log(SEVERE, "error during async execution!", e);
                 throw e;
