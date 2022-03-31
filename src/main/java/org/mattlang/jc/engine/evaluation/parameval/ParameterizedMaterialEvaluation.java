@@ -6,9 +6,12 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
+import lombok.Getter;
+
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
+@Getter
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     private int pawnMG;

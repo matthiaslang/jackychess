@@ -19,31 +19,6 @@ public class KxKEndgameFunction implements EndgameFunction {
 
     private static final int VALUE_KNOWN_WIN = 10000;
 
-    private static final long DarkSquares = 0xAA55AA55AA55AA55L;
-
-    // Used to drive the king towards the edge of the board
-    // in KX vs K and KQ vs KR endgames.
-    // Values range from 27 (center squares) to 90 (in the corners)
-    int push_to_edge(int s) {
-        int rd = edgeRankDistance(rankOf(s)), fd = edgeFileDistance(fileOf(s));
-        return 90 - (7 * fd * fd / 2 + 7 * rd * rd / 2);
-    }
-
-    // Used to drive the king towards A1H8 corners in KBN vs K endgames.
-    // Values range from 0 on A8H1 diagonal to 7 in A1H8 corners
-    int push_to_corner(int s) {
-        return Math.abs(7 - rankOf(s) - fileOf(s));
-    }
-
-    // Drive a piece close to or away from another piece
-    int push_close(int s1, int s2) {
-        return 140 - 20 * distance(s1, s2);
-    }
-
-    int push_away(int s1, int s2) {
-        return 120 - push_close(s1, s2);
-    }
-
     public int evaluate(BoardRepresentation board, int stronger, int weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 

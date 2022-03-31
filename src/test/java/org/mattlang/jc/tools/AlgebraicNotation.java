@@ -1,7 +1,7 @@
 package org.mattlang.jc.tools;
 
-import static org.mattlang.jc.engine.evaluation.Tools.file;
-import static org.mattlang.jc.engine.evaluation.Tools.rank;
+import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
+import static org.mattlang.jc.engine.evaluation.Tools.rankOf;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,8 +75,8 @@ public class AlgebraicNotation {
     }
 
     private static boolean matchesFromSpec(MoveImpl move, String fromSpec) {
-        return rank(move.getFromIndex()) == rankFromSpec(fromSpec)
-                || file(move.getFromIndex()) == fileFromSpec(fromSpec)
+        return rankOf(move.getFromIndex()) == rankFromSpec(fromSpec)
+                || fileOf(move.getFromIndex()) == fileFromSpec(fromSpec)
                 || move.getFromIndex() == posFromSpec(fromSpec);
     }
 
