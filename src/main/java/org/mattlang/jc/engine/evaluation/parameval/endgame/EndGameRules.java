@@ -17,6 +17,12 @@ import lombok.Getter;
 public enum EndGameRules {
 
     /**
+     * King, Queen vs King Rook.
+     */
+    KQ_VS_KR(rule("KQ Vs KR", "Q ", "R "),
+            new KQvsKREndgameFunction()),
+
+    /**
      * King, Queen vs King Pawn.
      */
     KQ_VS_KP(rule("KQ Vs KP", "Q ", "P "),
