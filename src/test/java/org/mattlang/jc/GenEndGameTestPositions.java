@@ -41,6 +41,7 @@ public class GenEndGameTestPositions {
         epds.addAll(gen("KRkn", 50));
         epds.addAll(gen("KRk", 50));
         epds.addAll(gen("KBBk", 50));
+        epds.addAll(gen("KRNk", 50));
 
         Files.write(Paths.get("endgames.epd"), epds, Charset.defaultCharset());
     }

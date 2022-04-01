@@ -19,56 +19,47 @@ public enum EndGameRules {
     /**
      * King, Queen vs King Rook.
      */
-    KQ_VS_KR(rule("KQ Vs KR", "Q ", "R "),
-            new KQvsKREndgameFunction()),
+    KQ_VS_KR(rule("KQ vs KR"), new KQvsKREndgameFunction()),
 
     /**
      * King, Queen vs King Pawn.
      */
-    KQ_VS_KP(rule("KQ Vs KP", "Q ", "P "),
-            new KQvsKPEndgameFunction()),
+    KQ_VS_KP(rule("KQ vs KP"), new KQvsKPEndgameFunction()),
 
     /**
      * King, Rook vs King Bishop.
      */
-    KR_VS_KP(rule("KR Vs KP", "R ", "P "),
-            new KRvsKPEndgameFunction()),
+    KR_VS_KP(rule("KR vs KP"), new KRvsKPEndgameFunction()),
 
     /**
      * King, Rook vs King Bishop.
      */
-    KR_VS_KB(rule("KR Vs KB", "R ", "B "),
-            new KRvsKBEndgameFunction()),
+    KR_VS_KB(rule("KR vs KB"), new KRvsKBEndgameFunction()),
 
     /**
      * King, Rook vs King Knight.
      */
-    KR_VS_KN(rule("KR Vs KN", "R ", "N "),
-            new KRvsKNEndgameFunction()),
+    KR_VS_KN(rule("KR vs KN"), new KRvsKNEndgameFunction()),
 
     /**
      * King, Queen (and more) against blank King.
      */
-    KQ_VS_K(rule("KQ* Vs K", "Q* ", " "),
-            new KxKEndgameFunction()),
+    KQ_VS_K(rule("KQ* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, Rook (and more) against blank King.
      */
-    KR_VS_K(rule("KR* Vs K", "R* ", " "),
-            new KxKEndgameFunction()),
+    KR_VS_K(rule("KR* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, two Bishops (and more) against blank King.
      */
-    KBB_VS_K(rule("KBB* Vs K", "BB* ", " "),
-            new KxKEndgameFunction()),
+    KBB_VS_K(rule("KBB* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, Bishop and Knight against blank King.
      */
-    KBN_VS_K(rule("KBN* Vs K", "BN* ", " "),
-            new KBNvsKEndgameFunction());
+    KBN_VS_K(rule("KBN* vs K"), new KBNvsKEndgameFunction());
 
     private MaterialCorrectionRule materialRule;
     private EndgameFunction endgameFunction;

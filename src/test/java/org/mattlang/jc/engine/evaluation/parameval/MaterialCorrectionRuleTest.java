@@ -66,7 +66,15 @@ public class MaterialCorrectionRuleTest {
 
     @Test
     public void parseEndGameRules() {
-        EndGameRules.values();
+        EndGameRules[] rules = EndGameRules.values();
+
+        for (EndGameRules rule : rules) {
+            MaterialCorrectionRule matRule = rule.getMaterialRule();
+            System.out.println(
+                    matRule.getRuleName() + ": "
+                            + matRule.getStronger().toString() + " vs "
+                            + matRule.getWeaker().toString());
+        }
     }
 
     @Test

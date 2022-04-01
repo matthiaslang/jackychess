@@ -137,4 +137,8 @@ public class MaterialDescription {
         }
         return material.getPawnsMat() == other.getPawnsMat();
     }
+
+    public String toString(){
+        return material.toString() + " " + comparison.getSymbol();
+    }
 }

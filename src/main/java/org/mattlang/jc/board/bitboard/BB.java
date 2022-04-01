@@ -26,11 +26,23 @@ public class BB {
     }
 
     public enum File {
-        FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H
+        FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H;
+
+        private static final File[] FILES = File.values();
+
+        public static File file(int fileOrdinal) {
+            return FILES[fileOrdinal];
+        }
     }
 
     public enum Rank {
-        RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8
+        RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8;
+
+        private static final Rank[] RANKS = Rank.values();
+
+        public static Rank rank(int fileOrdinal) {
+            return RANKS[fileOrdinal];
+        }
     }
 
     public enum Direction{

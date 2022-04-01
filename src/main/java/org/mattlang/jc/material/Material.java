@@ -4,6 +4,8 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
+import java.util.Arrays;
+
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
@@ -173,10 +175,30 @@ public class Material {
     /**
      * Return true, if the given (white) material has more material than the other matieral.
      * Measured in figures: Means this material has the same figures as the other material but also more figures.
+     *
      * @param thanThisWhiteMaterial
      * @return
      */
     public boolean hasMoreWhiteMat(Material thanThisWhiteMaterial) {
         return hasMoreWhiteMat(thanThisWhiteMaterial.getWhiteMat());
+    }
+
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        int mat = material;
+
+        for (Figure figure : Arrays.asList(Figure.B_Queen, Figure.B_Rook, Figure.B_Bishop, Figure.B_Knight,
+                Figure.B_Pawn,
+                Figure.W_Queen, Figure.W_Rook, Figure.W_Bishop, Figure.W_Knight, Figure.W_Pawn)) {
+
+            int figVal = MAT_VALS[figure.color.ordinal()][figure.figureType.figureCode];
+            while (mat >= figVal) {
+                b.append(figure.figureChar);
+                mat -= figVal;
+            }
+
+        }
+
+        return b.toString();
     }
 }
