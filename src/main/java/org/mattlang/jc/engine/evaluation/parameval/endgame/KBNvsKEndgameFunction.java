@@ -2,11 +2,13 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.board.bitboard.BB.Square.SQ_A1;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.jc.material.Material;
 
 /**
  * Mate with KBN vs K. This is similar to KX vs K, but we have to drive the
@@ -16,14 +18,14 @@ public class KBNvsKEndgameFunction implements EndgameFunction {
 
     private static final int VALUE_KNOWN_WIN = 10000;
 
+    private static final Material KBN_K = new Material("KBNk");
+
     public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
 
-        // Stalemate detection with lone king
-        //        if (pos.side_to_move() == weakSide && !MoveList<LEGAL>(pos).size())
-        //            return VALUE_DRAW;
+        assertMat(board, KBN_K);
 
         int strongKing = Long.numberOfTrailingZeros(bb.getKings(stronger));
         int strongBishop = Long.numberOfTrailingZeros(bb.getBishops(stronger));

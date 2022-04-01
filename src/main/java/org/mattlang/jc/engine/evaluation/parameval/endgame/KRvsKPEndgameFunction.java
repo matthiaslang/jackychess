@@ -2,11 +2,13 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.board.bitboard.BB.Rank.*;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.jc.material.Material;
 
 /**
  * KR vs KP. This is a somewhat tricky endgame to evaluate precisely without
@@ -16,10 +18,14 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KRvsKPEndgameFunction implements EndgameFunction {
 
+    private static final Material KR_KP = new Material("KRkp");
+
     public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
+
+        assertMat(board, KR_KP);
 
         int strongKing = Long.numberOfTrailingZeros(bb.getKings(stronger));
         int strongRook = Long.numberOfTrailingZeros(bb.getRooks(stronger));

@@ -2,11 +2,13 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.engine.evaluation.Tools.push_close;
 import static org.mattlang.jc.engine.evaluation.Tools.push_to_edge;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.jc.material.Material;
 
 /**
  * KQ vs KR. This is almost identical to KX vs K: we give the attacking
@@ -16,10 +18,14 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KQvsKREndgameFunction implements EndgameFunction {
 
+    private static final Material KQ_KR = new Material("KQkr");
+
     public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
+
+        assertMat(board, KQ_KR);
 
         int strongKing = Long.numberOfTrailingZeros(bb.getKings(stronger));
         int weakKing = Long.numberOfTrailingZeros(bb.getKings(weaker));

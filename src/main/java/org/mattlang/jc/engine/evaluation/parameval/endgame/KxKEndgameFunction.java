@@ -25,6 +25,8 @@ public class KxKEndgameFunction implements EndgameFunction {
 
         BitChessBoard bb = board.getBoard();
 
+        EndgameFunction.assertMat(board, weaker, 0);
+
         // Stalemate detection with lone king
         //        if (pos.side_to_move() == weakSide && !MoveList<LEGAL>(pos).size())
         //            return VALUE_DRAW;

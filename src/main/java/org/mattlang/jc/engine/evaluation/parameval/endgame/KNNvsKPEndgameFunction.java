@@ -2,11 +2,13 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.engine.evaluation.Tools.push_to_edge;
 import static org.mattlang.jc.engine.evaluation.Tools.relativeRank;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.jc.material.Material;
 
 /**
  * KNN vs KP. Very drawish, but there are some mate opportunities if we can
@@ -14,13 +16,14 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KNNvsKPEndgameFunction implements EndgameFunction {
 
+    public static final Material KNN_KP = new Material("KNNkp");
+
     public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
 
-        //        assert (verify_material(pos, strongSide, 2 * KnightValueMg, 0));
-        //        assert (verify_material(pos, weakSide, VALUE_ZERO, 1));
+        assertMat(board, KNN_KP);
 
         int weakPawn = Long.numberOfTrailingZeros(bb.getPawns(weaker));
         int weakKing = Long.numberOfTrailingZeros(bb.getKings(weaker));
@@ -31,4 +34,5 @@ public class KNNvsKPEndgameFunction implements EndgameFunction {
 
         return stronger == board.getSiteToMove() ? result : -result;
     }
+
 }
