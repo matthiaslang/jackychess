@@ -146,6 +146,10 @@ public class Tools {
         return forward_ranks_bb(c, s) & file_bb_ofSquare(s);
     }
 
+    public static long forward_file_bb(Color c, int s) {
+        return forward_ranks_bb(c, s) & file_bb_ofSquare(s);
+    }
+
     public static long file_bb(int f) {
         return BB.A << f;
     }
@@ -158,9 +162,18 @@ public class Tools {
     /// front of the given one, from the point of view of the given color. For instance,
     /// forward_ranks_bb(BLACK, SQ_D3) will return the 16 squares on ranks 1 and 2.
 
+    public static long forward_ranks_bb(Color c, int s) {
+        return c == WHITE ? ~BB.rank1 << 8 * relativeRank(WHITE, s)
+                : ~BB.rank8 >> 8 * relativeRank(BLACK, s);
+    }
+
     public static long forward_ranks_bb(int c, int s) {
         return c == WHITE.ordinal() ? ~BB.rank1 << 8 * relativeRank(WHITE, s)
                 : ~BB.rank8 >> 8 * relativeRank(BLACK, s);
+    }
+
+    public static BB.Direction pawn_push(Color c) {
+        return c == WHITE ? NORTH : SOUTH;
     }
 
     public static BB.Direction pawn_push(int c) {

@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.bitboard.BB.Square.SQ_A1;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 
@@ -15,7 +16,7 @@ public class KBNvsKEndgameFunction implements EndgameFunction {
 
     private static final int VALUE_KNOWN_WIN = 10000;
 
-    public int evaluate(BoardRepresentation board, int stronger, int weaker,
+    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -35,6 +36,6 @@ public class KBNvsKEndgameFunction implements EndgameFunction {
                 + push_close(strongKing, weakKing)
                 + 420 * push_to_corner(opposite_colors(strongBishop, SQ_A1.ordinal()) ? flip_file(weakKing) : weakKing);
 
-        return stronger == board.getSiteToMove().ordinal() ? result : -result;
+        return stronger == board.getSiteToMove() ? result : -result;
     }
 }

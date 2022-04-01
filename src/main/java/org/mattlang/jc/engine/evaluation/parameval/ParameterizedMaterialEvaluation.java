@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
@@ -76,7 +77,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
                 queenEG * queensDiff;
     }
 
-    public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, int color) {
+    public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, Color color) {
         BitChessBoard bb = bitBoard.getBoard();
 
         return pawnEG * bb.getPawnsCount(color) +

@@ -67,7 +67,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_KNIGHT, color));
     }
 
+    public int getKnightsCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_KNIGHT, color));
+    }
+
     public int getPawnsCount(int color) {
+        return Long.bitCount(getPieceSet(FT_PAWN, color));
+    }
+
+    public int getPawnsCount(Color color) {
         return Long.bitCount(getPieceSet(FT_PAWN, color));
     }
 
@@ -75,7 +83,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_BISHOP, color));
     }
 
+    public int getBishopsCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_BISHOP, color));
+    }
+
     public int getRooksCount(int color) {
+        return Long.bitCount(getPieceSet(FT_ROOK, color));
+    }
+
+    public int getRooksCount(Color color) {
         return Long.bitCount(getPieceSet(FT_ROOK, color));
     }
 
@@ -83,7 +99,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_QUEEN, color));
     }
 
+    public int getQueensCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_QUEEN, color));
+    }
+
     public long getPawns(int color) {
+        return getPieceSet(FT_PAWN, color);
+    }
+
+    public long getPawns(Color color) {
         return getPieceSet(FT_PAWN, color);
     }
 
@@ -91,11 +115,23 @@ public class BitChessBoard {
         return getPieceSet(FT_KNIGHT, color);
     }
 
+    public long getKnights(Color color) {
+        return getPieceSet(FT_KNIGHT, color);
+    }
+
     public long getBishops(int color) {
         return getPieceSet(FT_BISHOP, color);
     }
 
+    public long getBishops(Color color) {
+        return getPieceSet(FT_BISHOP, color);
+    }
+
     public long getRooks(int color) {
+        return getPieceSet(FT_ROOK, color);
+    }
+
+    public long getRooks(Color color) {
         return getPieceSet(FT_ROOK, color);
     }
 
@@ -104,6 +140,10 @@ public class BitChessBoard {
     }
 
     public long getKings(int color) {
+        return getPieceSet(FT_KING, color);
+    }
+
+    public long getKings(Color color) {
         return getPieceSet(FT_KING, color);
     }
 

@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.bitboard.BB.Rank.RANK_7;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
@@ -16,7 +17,7 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KQvsKPEndgameFunction implements EndgameFunction {
 
-    public int evaluate(BoardRepresentation board, int stronger, int weaker,
+    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -34,6 +35,6 @@ public class KQvsKPEndgameFunction implements EndgameFunction {
                 || ((BB.B | BB.D | BB.E | BB.G) & weakPawnBB) != 0)
             result += matEvaluation.getQueenEG() - matEvaluation.getPawnEG();
 
-        return stronger == board.getSiteToMove().ordinal() ? result : -result;
+        return stronger == board.getSiteToMove() ? result : -result;
     }
 }

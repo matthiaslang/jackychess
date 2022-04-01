@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.bitboard.BB.Rank.*;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 
@@ -15,7 +16,7 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KRvsKPEndgameFunction implements EndgameFunction {
 
-    public int evaluate(BoardRepresentation board, int stronger, int weaker,
+    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -35,7 +36,7 @@ public class KRvsKPEndgameFunction implements EndgameFunction {
 
             // If the weaker side's king is too far from the pawn and the rook,
             // it's a win.
-        else if (distance(weakKing, weakPawn) >= 3 + (board.getSiteToMove().ordinal() == weaker ? 1 : 0)
+        else if (distance(weakKing, weakPawn) >= 3 + (board.getSiteToMove() == weaker ? 1 : 0)
                 && distance(weakKing, strongRook) >= 3)
             result = matEvaluation.getRookEG() - distance(strongKing, weakPawn);
 
@@ -44,7 +45,7 @@ public class KRvsKPEndgameFunction implements EndgameFunction {
         else if (relativeRank(stronger, weakKing) <= RANK_3.ordinal()
                 && distance(weakKing, weakPawn) == 1
                 && relativeRank(stronger, strongKing) >= RANK_4.ordinal()
-                && distance(strongKing, weakPawn) > 2 + (board.getSiteToMove().ordinal() == stronger ? 1 : 0))
+                && distance(strongKing, weakPawn) > 2 + (board.getSiteToMove() == stronger ? 1 : 0))
             result = 80 - 8 * distance(strongKing, weakPawn);
 
         else
@@ -52,7 +53,7 @@ public class KRvsKPEndgameFunction implements EndgameFunction {
                     - distance(weakKing, weakPawn + pawn_push(weaker).getOffset())
                     - distance(weakPawn, queeningSquare));
 
-        return stronger == board.getSiteToMove().ordinal() ? result : -result;
+        return stronger == board.getSiteToMove() ? result : -result;
 
     }
 }

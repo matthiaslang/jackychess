@@ -76,8 +76,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
             if (endGameRule != null) {
 
-                int stronger = result.endGame > 0 ? nWhite : nBlack;
-                int weaker = stronger == nWhite ? nBlack : nWhite;
+                Color stronger = result.endGame > 0 ? Color.WHITE : Color.BLACK;
+                Color weaker = stronger.invert();
 
                 int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
                 if (caching) {
