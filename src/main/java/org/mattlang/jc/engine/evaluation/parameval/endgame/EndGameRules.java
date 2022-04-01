@@ -64,7 +64,7 @@ public enum EndGameRules {
     /**
      * King, Bishop and Knight against blank King.
      */
-    KBN_VS_K(rule("KBN* vs K"), new KBNvsKEndgameFunction());
+    KBN_VS_K(rule("KBN vs K"), new KBNvsKEndgameFunction());
 
     private MaterialCorrectionRule materialRule;
     private EndgameFunction endgameFunction;
