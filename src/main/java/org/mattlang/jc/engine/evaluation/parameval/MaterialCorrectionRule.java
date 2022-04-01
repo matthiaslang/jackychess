@@ -55,7 +55,7 @@ public class MaterialCorrectionRule {
         String weakerStr = split[1];
 
         if (weakerStr.contains("->")) {
-            weakerStr = weakerStr.substring(weakerStr.indexOf("->"));
+            weakerStr = weakerStr.substring(0, weakerStr.indexOf("->"));
         }
 
         MaterialDescription stronger = parseDescr(strongerStr);
