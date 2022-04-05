@@ -1,11 +1,17 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.material.Material;
+import org.mattlang.jc.util.FenComposer;
 
 public interface EndgameFunction {
+
+    static final Logger logger = Logger.getLogger(EndgameFunction.class.getName());
 
     int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation);
@@ -17,7 +23,12 @@ public interface EndgameFunction {
         if (mat == expMat || mat == expMatInverse) {
             return;
         }
-        throw new AssertionError("Not expected Material for end game evaluation function!");
+        if (logger.isLoggable(Level.SEVERE)) {
+
+            logger.severe("Not Expected Material on Board\n" + board.toUniCodeStr());
+            logger.severe("Position: " + FenComposer.buildFenPosition(board));
+        }
+        // throw new AssertionError("Not expected Material for end game evaluation function! " );
 
     }
 
@@ -26,6 +37,12 @@ public interface EndgameFunction {
         if (mat == expectedMat) {
             return;
         }
+        if (logger.isLoggable(Level.SEVERE)) {
+
+            logger.severe("Not Expected Material on Board\n" + board.toUniCodeStr());
+            logger.severe("Position: " + FenComposer.buildFenPosition(board));
+        }
+
         throw new AssertionError("Not expected Material for end game evaluation function!");
 
     }

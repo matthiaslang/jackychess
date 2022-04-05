@@ -174,6 +174,11 @@ public class EngineTest {
     /**
      * see http://talkchess.com/forum3/viewtopic.php?f=7&t=78474&sid=05defae5cb855cf36d64c12f445ff2fbTt%20fen%2070%20Position%20test
      * Fine 70 test position to analyze tt caching
+     *
+     * https://www.chessprogramming.org/Lasker-Reichhelm_Position
+     *
+     * the only winning move is a1b1.
+     *
      * @throws IOException
      */
     @Test

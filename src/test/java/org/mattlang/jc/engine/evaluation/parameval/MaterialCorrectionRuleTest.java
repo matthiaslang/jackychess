@@ -26,17 +26,17 @@ public class MaterialCorrectionRuleTest {
     @Test
     public void parseRules() {
 
-        MaterialCorrectionRule r = parse("", "R 0P vs B -> Reduce half");
+        MaterialCorrectionRule r = parse("", "R  vs B* -> Reduce half");
         assertThat(r.getStronger().getMaterial().getPawnsMat()).isEqualTo(0);
         assertThat(r.getStronger().getMaterial().getPieceMat()).isEqualTo(W_ROOK_VAL);
 
-        assertThat(r.getWeaker().isPawnsUnspecific()).isTrue();
+        assertThat(r.getWeaker().getComparison()).isEqualTo(MaterialComparison.MORE_OR_EQUAL);
         assertThat(r.getWeaker().getMaterial().getPieceMat()).isEqualTo(W_BISHOP_VAL);
 
-        MaterialCorrectionRule r2 = parse("", "R 0P vs N -> Reduce half");
-        MaterialCorrectionRule r3 = parse("", "RB 0P vs R -> Reduce half");
-        MaterialCorrectionRule r4 = parse("", "RN 0P vs R -> Reduce half");
-        MaterialCorrectionRule r5 = parse("", "B 0P vs X -> Reduce all");
+        MaterialCorrectionRule r2 = parse("", "R vs N* -> Reduce half");
+        MaterialCorrectionRule r3 = parse("", "RB vs R* -> Reduce half");
+        MaterialCorrectionRule r4 = parse("", "RN vs R* -> Reduce half");
+        MaterialCorrectionRule r5 = parse("", "B vs X -> Reduce all");
 
         List<MaterialCorrectionRule> rules = asList(r, r2, r3, r4, r5);
 
