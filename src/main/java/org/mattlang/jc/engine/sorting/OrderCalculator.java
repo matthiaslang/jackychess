@@ -29,7 +29,7 @@ public class OrderCalculator {
 
     public static final int QUIET = -100_000;
 
-    public static final int BAD_CAPTURES_SCORE = +500_000;
+    public static final int BAD_CAPTURES_SCORE = -500_000;
 
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
