@@ -1,4 +1,4 @@
-package org.mattlang.jc.tools;
+package org.mattlang.jc.util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;

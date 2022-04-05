@@ -15,7 +15,7 @@ import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.tools.FenComposer;
+import org.mattlang.jc.util.FenComposer;
 import org.mattlang.jc.util.MoveValidator;
 
 /**
@@ -32,18 +32,36 @@ public class GenEndGameTestPositions {
     public static void main(String[] args) throws IOException {
         ArrayList<String> epds = new ArrayList<>();
 
-        epds.addAll(gen("KQk", 50));
-        epds.addAll(gen("KQBk", 50));
-        epds.addAll(gen("KQkr", 50));
-        epds.addAll(gen("KQkp", 50));
-        epds.addAll(gen("KRkp", 50));
-        epds.addAll(gen("KRkb", 50));
-        epds.addAll(gen("KRkn", 50));
-        epds.addAll(gen("KRk", 50));
-        epds.addAll(gen("KBBk", 50));
-        epds.addAll(gen("KRNk", 50));
+        Collection<String> kBNk = genWrite("KBNk", 50);
+        epds.addAll(kBNk);
+        Collection<String> kQk = genWrite("KQk", 50);
+        epds.addAll(kQk);
+        Collection<String> kqBk = genWrite("KQBk", 50);
+        epds.addAll(kqBk);
+        Collection<String> kQkr = genWrite("KQkr", 50);
+        epds.addAll(kQkr);
+        Collection<String> kQkp = genWrite("KQkp", 50);
+        epds.addAll(kQkp);
+        Collection<String> kRkp = genWrite("KRkp", 50);
+        epds.addAll(kRkp);
+        Collection<String> kRkb = genWrite("KRkb", 50);
+        epds.addAll(kRkb);
+        Collection<String> kRkn = genWrite("KRkn", 50);
+        epds.addAll(kRkn);
+        Collection<String> kRk = genWrite("KRk", 50);
+        epds.addAll(kRk);
+        Collection<String> kbBk = gen("KBBk", 50);
+        epds.addAll(kbBk);
+        Collection<String> krNk = gen("KRNk", 50);
+        epds.addAll(krNk);
 
         Files.write(Paths.get("endgames.epd"), epds, Charset.defaultCharset());
+    }
+
+    private static Collection<String> genWrite(String figs, int numPositions) throws IOException {
+        Collection<String> result=gen(figs,numPositions);
+        Files.write(Paths.get("endgames" + figs + ".epd"), result, Charset.defaultCharset());
+        return result;
     }
 
     private static Collection<String> gen(String figs, int numPositions) {
