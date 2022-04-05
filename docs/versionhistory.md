@@ -1,5 +1,13 @@
 # Versions
 
+### Version 0.11.9
+
+- experimental move order change to sort bad captures at least
+
+### Version 0.11.8
+
+- more special end game functions
+
 ### Version 0.11.7
 
 - special end game eval function for KX vs K
