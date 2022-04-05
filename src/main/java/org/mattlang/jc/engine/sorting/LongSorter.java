@@ -7,12 +7,16 @@ package org.mattlang.jc.engine.sorting;
  */
 public class LongSorter {
 
+
     private int[] objects;
     private int[] orders;
 
     private int size = 0;
 
     private int start = 0;
+
+    private int swapCounter = 0;
+    private boolean alreadyFullySorted = false;
 
     public LongSorter(int[] objects, int size, int[] orders) {
         init(objects, size, orders);
@@ -23,14 +27,29 @@ public class LongSorter {
         this.orders = orders;
         this.size = size;
         start = 0;
+        swapCounter = 0;
+        alreadyFullySorted = false;
+    }
+
+    public static void sort(int[] data, int size, int[] order) {
+        new LongSorter(data, size, order).sortData();
+    }
+
+    private void sortData() {
+        while (!alreadyFullySorted) {
+            sortRound();
+        }
     }
 
     public boolean hasNext() {
-        return start < size;
+        return size > 0;
     }
 
     public int next() {
-        sortRound();
+        if (!alreadyFullySorted) {
+            sortRound();
+        }
+        size--;
         return objects[start++];
     }
 
@@ -43,28 +62,40 @@ public class LongSorter {
     }
 
     private void sortRound() {
+        if (start >= size - 1) {
+            return;
+        }
+        swapCounter = 0;
         int currLowest = -1;
-        int currLowestIndex = start;
-        for (int i = start; i < size; i++) {
+        int currLowestIndex = -1;
+        for (int i = start; i < size - 1; i++) {
+            if (orders[i] > orders[i + 1]) {
+                swap(i, i + 1);
+
+            }
             if (orders[i] < currLowest || currLowest == -1) {
                 currLowest = orders[i];
                 currLowestIndex = i;
             }
+
         }
 
-        if (currLowestIndex != start && currLowestIndex < size) {
+        if (currLowestIndex != start) {
             swap(start, currLowestIndex);
+        }
+        if (swapCounter == 0) {
+            alreadyFullySorted = true;
         }
     }
 
     private void swap(int i, int j) {
-
+        swapCounter++;
         int tmp = orders[i];
         orders[i] = orders[j];
         orders[j] = tmp;
 
-        tmp = objects[i];
+        int ttmp = objects[i];
         objects[i] = objects[j];
-        objects[j] = tmp;
+        objects[j] = ttmp;
     }
 }
