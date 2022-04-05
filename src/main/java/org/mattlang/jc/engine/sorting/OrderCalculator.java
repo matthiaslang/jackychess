@@ -27,6 +27,10 @@ public class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
+    public static final int QUIET = -100_000;
+
+    public static final int BAD_CAPTURES_SCORE = +500_000;
+
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
     private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
@@ -138,7 +142,7 @@ public class OrderCalculator {
                 if (see.see_ge(board, m, 0)) {
                     return -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
-                    return -mvvLva;
+                    return -mvvLva + BAD_CAPTURES_SCORE;
                 }
 
             } else if (killerMoves != null && killerMoves.isKiller(color, moveInt, ply)) {
@@ -155,7 +159,7 @@ public class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-            return -mvvLva;
+            return -mvvLva + QUIET;
         }
 
     }
