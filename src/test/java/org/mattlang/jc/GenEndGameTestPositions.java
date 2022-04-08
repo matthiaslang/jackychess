@@ -54,6 +54,10 @@ public class GenEndGameTestPositions {
         epds.addAll(kbBk);
         Collection<String> krNk = gen("KRNk", 50);
         epds.addAll(krNk);
+        Collection<String> kBBk = genWrite("KBBk", 50);
+        epds.addAll(kBBk);
+        Collection<String> kNNkp = genWrite("KNNkp", 50);
+        epds.addAll(kNNkp);
 
         Files.write(Paths.get("endgames.epd"), epds, Charset.defaultCharset());
     }
