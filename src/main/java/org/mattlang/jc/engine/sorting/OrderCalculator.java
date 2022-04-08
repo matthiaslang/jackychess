@@ -27,9 +27,9 @@ public class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
-    public static final int QUIET = -100_000;
+    public static final int QUIET = 0;
 
-    public static final int BAD_CAPTURES_SCORE = -500_000;
+    public static final int BAD_CAPTURES_SCORE = 0;
 
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
