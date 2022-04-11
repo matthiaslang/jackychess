@@ -5,11 +5,14 @@ import static org.mattlang.jc.Main.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.jc.EvalFunctions;
+import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.SearchMethod;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
@@ -17,7 +20,7 @@ import org.mattlang.jc.uci.UCI;
 
 public class QueenAndKingVsKing_EndgameTest {
 
-    int maxDepth = 9;
+    int maxDepth = 17;
 
     @Test
     public void queen_and_king_vs_king() throws IOException {
@@ -48,6 +51,26 @@ public class QueenAndKingVsKing_EndgameTest {
             System.out.println(move.toStr());
             System.out.println(gameState.getBoard().toUniCodeStr());
         }
+
+        Factory.setDefaults(Factory.createDefaultParameter());
+    }
+
+    @Test
+    public void queen_and_king_vs_kingAnalyze() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createDefaultParameter()
+                .config(c -> c.maxDepth.setValue(maxDepth))
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
+                .config(c -> c.timeout.setValue(600)));
+        // now starting engine:
+
+        Playing playing = new Playing("position fen 8/8/8/1Q6/8/8/8/K5k1 w - - 0 60 ");
+
+        playing.playGameTillEnd();
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
