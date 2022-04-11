@@ -180,6 +180,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         public boolean isCheckMate() {
             return Math.abs(Math.abs(rslt.directScore) - Weights.KING_WEIGHT) < 100;
         }
+
+        public boolean hasResults() {
+            return rslt != null;
+        }
     }
 
     private IterativeRoundResult searchRound(SearchThreadContext stc, StopWatch watch,
@@ -197,7 +201,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         NegaMaxResult rslt = null;
 
-        if (useAspirationWindow && currdepth >= 3) {
+        if (useAspirationWindow && currdepth >= 3 && lastRoundResults.hasResults()) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
             rslt = searchWithAspirationWindow(stc, aspWindow, gameState, gameContext, stopTime,
                     lastRoundResults.getOrderHints(),
