@@ -34,7 +34,7 @@ public class IterativeSearchResult {
 
     private NegaMaxResult findLastResult(List<IterativeDeepeningPVS.IterativeRoundResult> rounds) {
         for (int i = rounds.size() - 1; i >= 0; i--) {
-            if (rounds.get(i).getRslt() != null) {
+            if (rounds.get(i).getRslt() != null && rounds.get(i).getRslt().savedMove != null) {
                 return rounds.get(i).getRslt();
             }
         }
