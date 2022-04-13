@@ -46,7 +46,7 @@ public class UciProcessor {
                 }
             }
         } catch (SearchException se) {
-            LOGGER.log(SEVERE, se.toStringAllInfos());
+            LOGGER.log(SEVERE, se.toStringAllInfos(), se);
         } catch (Exception e) {
             LOGGER.log(SEVERE, "Error in main uci processing loop!", e);
         }

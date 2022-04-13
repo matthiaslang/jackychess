@@ -37,7 +37,9 @@ public class SearchException extends RuntimeException {
         b.append("\n Rounds of this game state so far:\n");
 
         for (IterativeDeepeningPVS.IterativeRoundResult round : rounds) {
-            b.append(round.getRslt().toString()).append("\n");
+            if (round.getRslt() != null) {
+                b.append(round.getRslt().toString()).append("\n");
+            }
         }
 
         return b.toString();
