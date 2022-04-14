@@ -151,7 +151,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 return alpha;
         }
 
-        if (searchContext.isRepetition() || searchContext.isDrawByMaterial()) {
+        /**
+         * Return immediately if it is a repetition or draw by material.
+         * By draw by material we only immediately return on higher plys because otherwise we would not return a move.
+         */
+        if (searchContext.isRepetition() || (searchContext.isDrawByMaterial() && ply !=1)) {
             return Weights.REPETITION_WEIGHT;
         }
 
