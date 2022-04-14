@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import java.util.ArrayList;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.uci.GameContext;
 
@@ -41,6 +42,9 @@ public class SearchException extends RuntimeException {
                 b.append(round.getRslt().toString()).append("\n");
             }
         }
+        b.append("\n");
+        Factory.getDefaults().log(b);
+        b.append("\n");
 
         return b.toString();
     }

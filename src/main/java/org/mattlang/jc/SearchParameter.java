@@ -42,7 +42,6 @@ public class SearchParameter {
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
-
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
                 + " Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
@@ -63,7 +62,7 @@ public class SearchParameter {
                 }
             }
         }
-        
+
         LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
@@ -71,6 +70,24 @@ public class SearchParameter {
         LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         for (UCIOption option : config.getAllOptions().getAllOptions()) {
             LOGGER.info(option.getName() + ": " + option.getValue());
+        }
+
+    }
+
+    public void log(StringBuilder b) {
+        b.append("Board: " + boards.instance().getClass().getSimpleName());
+        b.append("\n");
+        b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+        b.append("\n");
+        b.append("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        b.append("\n");
+        b.append("Legal Move Gen: " + legalMoveGenerator.instance().getClass().getSimpleName());
+        b.append("\n");
+        b.append("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
+        b.append("\n");
+        for (UCIOption option : config.getAllOptions().getAllOptions()) {
+            b.append(option.getName() + ": " + option.getValue());
+            b.append("\n");
         }
 
     }
