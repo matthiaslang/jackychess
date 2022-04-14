@@ -71,10 +71,10 @@ public class NegaMaxResult {
                 "directScore=" + directScore +
                 ", max=" + max +
                 ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", moveScores=" + moveScores +
                 ", pvList=" + pvList.toPvStr() +
                 ", targetDepth=" + targetDepth +
                 ", selDepth=" + selDepth +
+                ", moveScores=" + moveScores +
                 '}';
     }
 
