@@ -5,6 +5,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.board.FigureType.Pawn;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 
@@ -54,7 +55,6 @@ public class FenParser {
     }
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
-        // todo we need to distinguish between different move implementations via factory somehow
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
             return MoveImpl.createCastling(CastlingMove.CASTLING_WHITE_SHORT);
         } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
@@ -77,16 +77,17 @@ public class FenParser {
 
         // en passant:
         Move tmp = new MoveImpl(moveStr);
-        if (board.isEnPassantCapturePossible(tmp.getToIndex())) {
+        Figure fig = board.getFigure(tmp.getFromIndex());
+        Figure target = board.getFigure(tmp.getToIndex());
+
+        if (fig.figureType == Pawn && board.isEnPassantCapturePossible(tmp.getToIndex())) {
             Color side = board.getFigure(tmp.getFromIndex()).color;
             byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
-            return  MoveImpl.createEnPassant(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn, board.getEnPassantCapturePos());
+            return MoveImpl.createEnPassant(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn,
+                    board.getEnPassantCapturePos());
         }
 
         // normal move:
-
-        Figure fig = board.getFigure(tmp.getFromIndex());
-        Figure target = board.getFigure(tmp.getToIndex());
         byte captureFig = target==EMPTY? (byte)0: target.figureCode;
         return new MoveImpl(fig.figureType.figureCode, tmp.getFromIndex(), tmp.getToIndex(), captureFig);
     }
