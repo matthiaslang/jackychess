@@ -1,8 +1,18 @@
 # Versions
 
-### Version 0.11.9
+### Version 0.11.9      
+
+RC01 for next official release.
 
 - experimental move order change to sort bad captures at least
+- fixed bug parsing UCI fen position: under certain circumstands a move string has been misinterpreting as en passant move.
+- fixed bug with draw by material: only return draw score for higher plies than 1 to properly return a best move
+
+Elo difference: 85.8 compared to 0.10.0
+
+Elo difference: 107.5 4 Threads vs 1 Thread
+
+
 
 ### Version 0.11.8
 
