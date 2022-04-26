@@ -428,8 +428,8 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         // shallow search to try and look for one
         // This is especially true at PV nodes and potential cut nodes
         if (hashMove == 0 && !hasPvMove && !areWeInCheck
-                && ((is_pv && depth >= 3)
-                || (not_pv && depth >= 4))) {
+                && ((is_pv && depth >= 7)
+                || (not_pv && depth >= 8))) {
             int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
             negaMaximize(ply, iidDepth, color, alpha, beta);
 

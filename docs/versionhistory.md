@@ -2,7 +2,7 @@
 
 ### Version 0.11.10
 
-- IID (again)
+- IID (again, but deactivated by default, as it does not bring anything right now)
 
 ### Version 0.11.9      
 
