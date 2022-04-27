@@ -80,6 +80,20 @@ public final class Pattern {
     public int dotProduct(long bb, Color color) {
 
         int[] weights = color == WHITE ? flippedPattern : boardPattern;
+        int accu = 0;
+        while (bb != 0) {
+            final int pos = Long.numberOfTrailingZeros(bb);
+            accu += weights[pos];
+
+            bb &= bb - 1;
+        }
+
+        return accu;
+    }
+
+    public int dotProductOld(long bb, Color color) {
+
+        int[] weights = color == WHITE ? flippedPattern : boardPattern;
 
         long bit = 1;
         int accu = 0;

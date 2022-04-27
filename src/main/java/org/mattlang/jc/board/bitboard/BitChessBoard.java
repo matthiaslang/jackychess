@@ -204,19 +204,6 @@ public class BitChessBoard {
         pieceBB[figType] |= posMask;
     }
 
-    public void cleanPos(int i) {
-        long posMask = 1L << i;
-
-        long invPosMask = ~posMask;
-
-        colorBB[nWhite] &= invPosMask;
-        colorBB[nBlack] &= invPosMask;
-        for (int figType = 0; figType < 6; figType++) {
-            pieceBB[figType] &= invPosMask;
-        }
-
-    }
-
     public byte get(int i) {
         long posMask = 1L << i;
         byte colorOffset;
