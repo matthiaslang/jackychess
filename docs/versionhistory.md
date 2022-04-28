@@ -2,7 +2,10 @@
 
 ### Version 0.11.10
 
-- IID (again, but deactivated by default, as it does not bring anything right now)
+- IID only used on higher depths; seem to bring some Elos...
+- PST prodProduct calc optimization. brings ~60 ELO compared to 0.11.9
+
+Elo difference: ~60 compared to 0.11.9 
 
 ### Version 0.11.9      
 
