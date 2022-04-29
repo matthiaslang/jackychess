@@ -180,4 +180,9 @@ public class OrderCalculator {
     public static boolean isGoodCapture(int order) {
         return order > GOOD_CAPT_LOWER;
     }
+
+    public boolean hasPvMove(int ply){
+        int index=ply-1;
+        return orderHints.prevPvlist != null && orderHints.prevPvlist.getMove(index) != 0;
+    }
 }
