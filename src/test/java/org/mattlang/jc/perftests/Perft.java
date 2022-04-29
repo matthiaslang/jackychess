@@ -110,7 +110,7 @@ public class Perft {
                     if (iterator.isCastling()) {
                         castles++;
                     }
-                    if (iterator.isPawnPromotion()) {
+                    if (iterator.isPromotion()) {
                         promotion++;
                     }
                 }

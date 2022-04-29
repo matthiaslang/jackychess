@@ -64,7 +64,7 @@ public class MoveValidator {
     }
 
     public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
-        return isLegalMove(board, move.toInt(), who2Move);
+        return isLegalMove(board, move.getMoveInt(), who2Move);
     }
 
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
@@ -154,10 +154,32 @@ public class MoveValidator {
                 }
                 who2Move = who2Move.invert();
             } else {
-                LOGGER.fine("stopped extending pv: no pv cache entry found! extended " + extended + " of " + (depth -size));
+                LOGGER.fine("stopped extending pv: no pv cache entry found! extended " + extended + " of " + (depth
+                        - size));
                 break; // stop here...
             }
 
         }
+    }
+
+    /**
+     * Tester if legal moves are available for a position
+     * @param board
+     * @return
+     */
+    public boolean hasLegalMoves(BoardRepresentation board) {
+
+        moveList.reset();
+        movegen.generate(board, board.getSiteToMove(), moveList);
+
+        boolean hasLegalMoves = false;
+        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+            while (iterator.doNextMove()) {
+                hasLegalMoves = true;
+                break;
+            }
+        }
+        return hasLegalMoves;
+
     }
 }

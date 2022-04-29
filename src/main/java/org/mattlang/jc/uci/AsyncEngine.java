@@ -1,6 +1,7 @@
 package org.mattlang.jc.uci;
 
 import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -13,6 +14,7 @@ import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
 
 public class AsyncEngine {
@@ -62,9 +64,13 @@ public class AsyncEngine {
                 Move move = new Engine().go(gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
-            } catch (Exception e) {
+            } catch (SearchException se){
+                completableFuture.completeExceptionally(se);
+                logger.log(SEVERE, se.toStringAllInfos(), se);
+                throw se;
+            } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
-                logger.log(SEVERE, "error during async execution!", e);
+                logger.log(SEVERE, fmtSevere(gameState,"error during async execution!"), e);
                 throw e;
             }
 

@@ -4,11 +4,15 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+
+import lombok.Getter;
 
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
+@Getter
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     private int pawnMG;
@@ -71,5 +75,15 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
                 bishopEG * bishopsDiff +
                 rookEG * rooksDiff +
                 queenEG * queensDiff;
+    }
+
+    public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, Color color) {
+        BitChessBoard bb = bitBoard.getBoard();
+
+        return pawnEG * bb.getPawnsCount(color) +
+                knightEG * bb.getKnightsCount(color) +
+                bishopEG * bb.getBishopsCount(color) +
+                rookEG * bb.getRooksCount(color) +
+                queenEG * bb.getQueensCount(color);
     }
 }

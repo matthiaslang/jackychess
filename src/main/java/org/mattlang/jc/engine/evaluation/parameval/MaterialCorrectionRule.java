@@ -36,27 +36,42 @@ public class MaterialCorrectionRule {
 
     private ReductionRule reductionRule;
 
-    public static MaterialCorrectionRule rule(String ruleName, String strongerDescr, String weakerDescr) {
-        return new MaterialCorrectionRule(ruleName, parseDescr(strongerDescr), parseDescr(weakerDescr), null);
+    public static MaterialCorrectionRule rule(String rule) {
+        Descriptions descriptions = parseMaterialDescriptions(rule);
+        return new MaterialCorrectionRule(rule, descriptions.stronger, descriptions.weaker, null);
     }
 
-    public static MaterialCorrectionRule parse(String ruleName, String ruleStr) {
+    @AllArgsConstructor
+    @Getter
+    static class Descriptions {
+
+        MaterialDescription stronger;
+        MaterialDescription weaker;
+    }
+
+    public static Descriptions parseMaterialDescriptions(String ruleStr) {
         String[] split = ruleStr.split(" vs ");
         String strongerStr = split[0];
         String weakerStr = split[1];
 
-        String[] split2 = weakerStr.split("->");
-
-        weakerStr = split2[0];
-
-        String redruleStr = split2[1];
+        if (weakerStr.contains("->")) {
+            weakerStr = weakerStr.substring(0, weakerStr.indexOf("->"));
+        }
 
         MaterialDescription stronger = parseDescr(strongerStr);
         MaterialDescription weaker = parseDescr(weakerStr);
 
+        return new Descriptions(stronger, weaker);
+    }
+
+    public static MaterialCorrectionRule parse(String ruleName, String ruleStr) {
+        Descriptions descriptions = parseMaterialDescriptions(ruleStr);
+
+        String[] split2 = ruleStr.split("->");
+        String redruleStr = split2[1];
         ReductionRule rule = ReductionRule.findByTxt(redruleStr);
 
-        return new MaterialCorrectionRule(ruleName, stronger, weaker, rule);
+        return new MaterialCorrectionRule(ruleName, descriptions.stronger, descriptions.weaker, rule);
     }
 
     public boolean matches(Material matStronger, Material matWeaker) {

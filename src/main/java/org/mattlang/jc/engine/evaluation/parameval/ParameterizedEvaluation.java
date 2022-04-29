@@ -1,9 +1,14 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.tt.IntCache;
+import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
+import org.mattlang.jc.engine.tt.IntIntCache;
+import org.mattlang.jc.material.Material;
 
 /**
  * Another experimental evaluation.
@@ -30,17 +35,18 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private EvalResult result = new EvalResult();
 
-    private boolean caching=false;
+    private boolean caching = false;
 
-    private IntCache evalCache = EvalCache.instance;
+    private boolean endgameEvaluations = false;
 
-
+    private IntIntCache evalCache = EvalCache.instance;
 
     public ParameterizedEvaluation() {
 
         EvalConfig config = new EvalConfig();
 
         caching = config.getBoolProp("caching.active");
+        endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
         matEvaluation = new ParameterizedMaterialEvaluation(config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
@@ -57,7 +63,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         if (caching) {
             int cachedResult = evalCache.find(currBoard.getZobristHash());
-            if (cachedResult != IntCache.NORESULT) {
+            if (cachedResult != IntIntCache.NORESULT) {
                 return cachedResult;
             }
         }
@@ -65,6 +71,22 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         result.clear();
 
         matEvaluation.eval(result, currBoard);
+
+        if (endgameEvaluations) {
+            EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
+            if (endGameRule != null) {
+
+                Color stronger = result.endGame > 0 ? Color.WHITE : Color.BLACK;
+                Color weaker = stronger.invert();
+
+                int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
+                if (caching) {
+                    evalCache.save(currBoard.getZobristHash(), score);
+                }
+                return score;
+            }
+        }
+
         pstEvaluation.eval(result, currBoard);
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
@@ -77,10 +99,39 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
 
-        if (caching){
+        if (caching) {
             evalCache.save(currBoard.getZobristHash(), score);
         }
 
         return score;
     }
+
+
+
+    private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
+        long figs = board.getBoard().getColorMask(nWhite) | board.getBoard()
+                .getColorMask(nBlack);
+        if (Long.bitCount(figs) <= 5) {
+            Material matWeaker = new Material();
+            Material matStronger = new Material();
+
+            Material currMaterial = board.getMaterial();
+            if (materialScore > 0) {
+                // white is stronger
+                matStronger.setMaterial(currMaterial.getWhiteMat());
+                matWeaker.setMaterial(currMaterial.getBlackAsWhitePart());
+            } else {
+                // black is stronger
+                matStronger.setMaterial(currMaterial.getBlackAsWhitePart());
+                matWeaker.setMaterial(currMaterial.getWhiteMat());
+            }
+
+            return EndGameRules.findRule(matStronger, matWeaker);
+
+        }
+
+        return null;
+
+    }
+
 }

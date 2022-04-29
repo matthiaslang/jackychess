@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static java.util.Objects.requireNonNull;
+
 import org.mattlang.jc.material.Material;
 
 import lombok.Getter;
@@ -8,8 +10,11 @@ import lombok.Getter;
  * A Description of Material used in Configurations.
  * It specifies Pieces and Pawns.
  *
- * Pieces must always fix specified.
+ * Pieces must be fix specified but can be combined with + or *.
  * Pawns can be omitted
+ *
+ * + == more than the defined material
+ * * == more or equal than the defined material
  *
  * Example
  *
@@ -18,6 +23,12 @@ import lombok.Getter;
  * RRB   == two Rooks, a Bishop, any number of Pawns since they are not specified
  *
  * RQ 2P == a rook, a queen and two pawns
+ *
+ * RQ+ == a rook, a queen and some more unspecified material
+ * RB* == a rook, a bishop at least and maybe even more unspecified material
+ *
+ * X == any material. This makes only sense in certain situations like describing a weaker material side when a stronger
+ * material description is given which would mean that it is anything but at least weaker then the stronger side
  */
 @Getter
 public class MaterialDescription {
@@ -27,55 +38,37 @@ public class MaterialDescription {
      */
     private Material material;
 
-    private boolean pawnsUnspecific = false;
+    private MaterialComparison comparison = MaterialComparison.EQUAL;
 
-    /* complete unspecified. this makes only sense for the weaker side: means it is unspecified, but anyway lower/weaker than the stronger side. */
-    private boolean unspecified = false;
-
-    public MaterialDescription(boolean unspecified) {
-        this.unspecified = unspecified;
+    public MaterialDescription(MaterialComparison comparison) {
+        this.comparison = requireNonNull(comparison);
     }
 
-    public MaterialDescription(Material material, boolean pawnsUnspecific) {
-        this.material = material;
-        this.pawnsUnspecific = pawnsUnspecific;
+    public MaterialDescription(Material material, MaterialComparison comparison) {
+        this.material = requireNonNull(material);
+        this.comparison = requireNonNull(comparison);
     }
 
     public static MaterialDescription parseDescr(String descr) {
         descr = descr.trim();
         if ("X".equals(descr)) {
-            return new MaterialDescription(true);
-        }
-        String[] splitted = descr.split(" ");
-        String pieces = splitted[0];
-        String pawnstr = splitted.length >= 2 ? splitted[1] : "";
-
-        String matDescr = pieces.toUpperCase();
-
-        boolean pawnsUnspecified = false;
-        if (pawnstr.trim().length() == 0) {
-            pawnsUnspecified = true;
-        } else {
-            matDescr += convertPawnStr(pawnstr);
+            return new MaterialDescription(MaterialComparison.UNSPECIFIED);
         }
 
-        return new MaterialDescription(new Material(matDescr), pawnsUnspecified);
-    }
+        String matDescr = descr.toUpperCase();
 
-    private static String convertPawnStr(String pawnstr) {
-        if (pawnstr.length() > 2) {
-            throw new ConfigParseException("Could not parse Pawn Description: " + pawnstr);
-        }
+        MaterialComparison comparison = MaterialComparison.EQUAL;
 
-        if (pawnstr.length() == 1) {
-            throw new ConfigParseException("Could not parse Pawn Description: " + pawnstr);
+        if (matDescr.contains("+")) {
+            comparison = MaterialComparison.MORE;
         }
-        int numPawns = Integer.parseInt(pawnstr.substring(0, 1));
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < numPawns; i++) {
-            b.append("P");
+        if (matDescr.contains("*")) {
+            comparison = MaterialComparison.MORE_OR_EQUAL;
         }
-        return b.toString();
+        matDescr = matDescr.replace("+", "");
+        matDescr = matDescr.replace("*", "");
+
+        return new MaterialDescription(new Material(matDescr), comparison);
     }
 
     /**
@@ -86,15 +79,34 @@ public class MaterialDescription {
      * @return
      */
     public boolean matches(Material other) {
-        if (unspecified) {
+        switch (comparison) {
+        case UNSPECIFIED:
             return true;
+        case EQUAL:
+            return compareEqual(other);
+        case MORE:
+            return compareMore(other);
+        case MORE_OR_EQUAL:
+            return compareEqual(other) || compareMore(other);
+        default:
+            throw new IllegalStateException("unkown Comparison value: " + comparison);
         }
+
+    }
+
+    private boolean compareMore(Material other) {
+        return other.hasMoreWhiteMat(material);
+    }
+
+    private boolean compareEqual(Material other) {
+
         if (material.getPieceMat() != other.getPieceMat()) {
             return false;
         }
-        if (pawnsUnspecific) {
-            return true;
-        }
         return material.getPawnsMat() == other.getPawnsMat();
+    }
+
+    public String toString(){
+        return material.toString() + " " + comparison.getSymbol();
     }
 }

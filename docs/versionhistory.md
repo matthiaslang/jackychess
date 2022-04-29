@@ -1,8 +1,45 @@
 # Versions
-     
-### Version 0.11.6.3
 
-- experimental staged move gen 
+### Version 0.11.10
+
+- IID only used on higher depths; seem to bring some Elos...
+- PST prodProduct calc optimization. brings ~60 ELO compared to 0.11.9
+
+Elo difference: ~60 compared to 0.11.9 
+
+### Version 0.11.9      
+
+RC01 for next official release.
+
+- experimental move order change to sort bad captures at least
+- fixed bug parsing UCI fen position: under certain circumstands a move string has been misinterpreting as en passant move.
+- fixed bug with draw by material: only return draw score for higher plies than 1 to properly return a best move
+
+Elo difference: 85.8 compared to 0.10.0
+
+Elo difference: 107.5 4 Threads vs 1 Thread
+
+
+
+### Version 0.11.8
+
+- more special end game functions
+
+### Version 0.11.7
+
+- special end game eval function for KX vs K
+
+### Version 0.11.6.5
+
+- refactored code around the Move Interface
+- optimized eval cache
+- experiments with futility pruning by See (not used, doesnt bring anything)
+
+### Version 0.11.6.4
+
+- first simple draw by material detection during negamax search
+
+- experimental staged move gen. not used since it does not bring anything for now. 
 
 ### Version 0.11.6.1
 
@@ -40,7 +77,7 @@
 
 ### Version 0.10.0
 
-Official release. It plays ~2000 elos.
+Official release. It plays ~2000 elos. 
 
 - cleaned up Uci options.
 

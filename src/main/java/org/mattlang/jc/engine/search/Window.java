@@ -48,8 +48,11 @@ public class Window {
 
     public void limitWindow(NegaMaxResult rslt) {
         lastScore = rslt.max;
-        alpha = lastScore - WINDOW_MARGIN;
-        beta = lastScore + WINDOW_MARGIN;
+
+        if (lastScore != ALPHA_START && lastScore != BETA_START) {
+            alpha = lastScore - WINDOW_MARGIN;
+            beta = lastScore + WINDOW_MARGIN;
+        }
 
         wideningPhase = 0;
     }

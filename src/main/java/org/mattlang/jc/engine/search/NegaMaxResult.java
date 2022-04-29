@@ -47,7 +47,11 @@ public class NegaMaxResult {
             SearchContext searchContext, int nodesVisited, int quiescenceNodesVisited) {
         this.directScore = directScore;
         this.max = searchContext.getSavedMoveScore();
-        this.savedMove = new MoveImpl(searchContext.getSavedMove());
+        if (searchContext.getSavedMove() != 0) {
+            this.savedMove = new MoveImpl(searchContext.getSavedMove());
+        } else {
+            this.savedMove = null;
+        }
         this.moveScores = searchContext.getMoveScores();
         this.pvList = new PVList(pvMoves);
         ;
@@ -67,10 +71,10 @@ public class NegaMaxResult {
                 "directScore=" + directScore +
                 ", max=" + max +
                 ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", moveScores=" + moveScores +
                 ", pvList=" + pvList.toPvStr() +
                 ", targetDepth=" + targetDepth +
                 ", selDepth=" + selDepth +
+                ", moveScores=" + moveScores +
                 '}';
     }
 

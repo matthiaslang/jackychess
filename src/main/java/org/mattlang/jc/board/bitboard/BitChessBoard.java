@@ -1,13 +1,17 @@
 package org.mattlang.jc.board.bitboard;
 
+import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.FigureType;
 
 /**
  * The chess board as bit board implementation.
@@ -67,7 +71,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_KNIGHT, color));
     }
 
+    public int getKnightsCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_KNIGHT, color));
+    }
+
     public int getPawnsCount(int color) {
+        return Long.bitCount(getPieceSet(FT_PAWN, color));
+    }
+
+    public int getPawnsCount(Color color) {
         return Long.bitCount(getPieceSet(FT_PAWN, color));
     }
 
@@ -75,7 +87,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_BISHOP, color));
     }
 
+    public int getBishopsCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_BISHOP, color));
+    }
+
     public int getRooksCount(int color) {
+        return Long.bitCount(getPieceSet(FT_ROOK, color));
+    }
+
+    public int getRooksCount(Color color) {
         return Long.bitCount(getPieceSet(FT_ROOK, color));
     }
 
@@ -83,7 +103,15 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_QUEEN, color));
     }
 
+    public int getQueensCount(Color color) {
+        return Long.bitCount(getPieceSet(FT_QUEEN, color));
+    }
+
     public long getPawns(int color) {
+        return getPieceSet(FT_PAWN, color);
+    }
+
+    public long getPawns(Color color) {
         return getPieceSet(FT_PAWN, color);
     }
 
@@ -91,11 +119,23 @@ public class BitChessBoard {
         return getPieceSet(FT_KNIGHT, color);
     }
 
+    public long getKnights(Color color) {
+        return getPieceSet(FT_KNIGHT, color);
+    }
+
     public long getBishops(int color) {
         return getPieceSet(FT_BISHOP, color);
     }
 
+    public long getBishops(Color color) {
+        return getPieceSet(FT_BISHOP, color);
+    }
+
     public long getRooks(int color) {
+        return getPieceSet(FT_ROOK, color);
+    }
+
+    public long getRooks(Color color) {
         return getPieceSet(FT_ROOK, color);
     }
 
@@ -104,6 +144,10 @@ public class BitChessBoard {
     }
 
     public long getKings(int color) {
+        return getPieceSet(FT_KING, color);
+    }
+
+    public long getKings(Color color) {
         return getPieceSet(FT_KING, color);
     }
 
@@ -148,6 +192,7 @@ public class BitChessBoard {
      * Note it does not take care to clear the field before, because it assumes it is empty.
      * the set(..) method on the other hand takes care for that (does a implicit remove of a figure that is on the field
      * before setting the new figure)
+     *
      * @param i
      * @param figureCode
      */
@@ -157,19 +202,6 @@ public class BitChessBoard {
         byte figType = (byte) (figureCode & MASK_OUT_COLOR);
         colorBB[colorIdx] |= posMask;
         pieceBB[figType] |= posMask;
-    }
-
-    public void cleanPos(int i) {
-        long posMask = 1L << i;
-
-        long invPosMask = ~posMask;
-
-        colorBB[nWhite] &= invPosMask;
-        colorBB[nBlack] &= invPosMask;
-        for (int figType = 0; figType < 6; figType++) {
-            pieceBB[figType] &= invPosMask;
-        }
-
     }
 
     public byte get(int i) {
@@ -274,5 +306,91 @@ public class BitChessBoard {
         long posMask2 = 1L << p2;
         return ((colorBB[nWhite] & posMask1) != 0 && (colorBB[nBlack] & posMask2) != 0
                 || (colorBB[nWhite] & posMask2) != 0 && (colorBB[nBlack] & posMask1) != 0);
+    }
+
+    /**
+     * Do some consistency checks. useful for debugging.
+     */
+    public void doAssertions() {
+
+        if ((colorBB[nWhite] & colorBB[nBlack]) != 0) {
+            throw new AssertionError("Inconsistency: Overlap white/black bitmasks!");
+        }
+        for (FigureType t1 : FigureType.values()) {
+            for (FigureType t2 : FigureType.values()) {
+                if (t1 != t2 && t1 != FigureType.EMPTY && t2 != FigureType.EMPTY) {
+                    long overlap = pieceBB[t1.figureCode] & pieceBB[t2.figureCode];
+                    if (overlap != 0) {
+
+                        throw new AssertionError(
+                                "Inconsistency: Overlap piece bitmasks between ! \n" +
+                                        formatAsTabs(Arrays.asList(createMask(overlap, "Overlap"),
+                                                createMask(pieceBB[t1.figureCode], t1.name()),
+                                                createMask(pieceBB[t2.figureCode], t2.name())), "          "));
+                    }
+                }
+
+            }
+        }
+
+        if (getKings(WHITE) == 0L) {
+            throw new AssertionError("Inconsistency: white king mask is 0!");
+        }
+        if (getKings(BLACK) == 0L) {
+            throw new AssertionError("Inconsistency: black king mask is 0!");
+        }
+    }
+
+    public String toLogStr() {
+        List<String> masks = new ArrayList<>();
+        for (Color color : Color.values()) {
+            for (FigureType type : FigureType.values()) {
+                if (type != FigureType.EMPTY) {
+                    byte figureCode = type.figureCode;
+                    long mask = getPieceSet(figureCode, color);
+
+                    masks.add(createMask(mask, color.name() + " " + type.figureChar));
+                }
+            }
+        }
+        masks.add(createMask(getColorMask(nWhite), "White"));
+        masks.add(createMask(getColorMask(nBlack), "Black"));
+
+        String fmt = formatAsTabs(masks, "    ");
+        return fmt;
+    }
+
+    public static String formatAsTabs(List<String> masks, String tab) {
+
+        List<StringBuilder> rows = new ArrayList<>();
+
+        for (String mask : masks) {
+            String[] maskRows = mask.split("\n");
+            int maxLine = 0;
+            for (int i = 0; i < maskRows.length; i++) {
+                StringBuilder row = i < rows.size() ? rows.get(i) : null;
+                if (row == null) {
+                    row = new StringBuilder();
+                    rows.add(row);
+                }
+                row.append(maskRows[i]);
+                row.append(tab);
+                maxLine = Math.max(maxLine, row.length());
+            }
+            for (StringBuilder row : rows) {
+                while (row.length() < maxLine) {
+                    row.append(" ");
+                }
+
+            }
+        }
+
+        return rows.stream()
+                .map(b -> b.toString())
+                .collect(joining("\n"));
+    }
+
+    public static String createMask(long mask, String title) {
+        return title + "\n" + toStr(mask);
     }
 }

@@ -14,6 +14,10 @@ public interface Move {
 
     int getToIndex();
 
+    /**
+     * String UCI move representation.
+     * @return
+     */
     String toStr();
 
     boolean isEnPassant();
@@ -24,14 +28,10 @@ public interface Move {
 
     Figure getPromotedFigure();
 
-    void setOrder(int order);
-
-    int getOrder();
-
     /**
      * Representation of the move as int value.
      */
-    int toInt();
+    int getMoveInt();
 
     int getEnPassantCapturePos();
 

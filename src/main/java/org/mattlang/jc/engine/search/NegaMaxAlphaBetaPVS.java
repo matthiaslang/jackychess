@@ -151,7 +151,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 return alpha;
         }
 
-        if (searchContext.isRepetition() || searchContext.isDrawByMaterial()) {
+        /**
+         * Return immediately if it is a repetition or draw by material.
+         * By draw by material we only immediately return on higher plys because otherwise we would not return a move.
+         */
+        if (searchContext.isRepetition() || (searchContext.isDrawByMaterial() && ply !=1)) {
             return Weights.REPETITION_WEIGHT;
         }
 
@@ -294,6 +298,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 //                        continue;
                 //                    }
                 //                }
+//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
+//                boolean moveIsPrunable = searchedMoves > 0
+//                        && !isHashMove
+//                        && !moveCursor.isCapture()
+//                        && !moveCursor.isPromotion()
+//                        && !areWeInCheck
+//                        && !searchContext.isInCheck(color.invert());
 
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
@@ -304,11 +315,29 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 if (applyFutilityPruning
                         && searchedMoves > 0
                         && !moveCursor.isCapture()
-                        && !moveCursor.isPawnPromotion()
+                        && !moveCursor.isPromotion()
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         && !searchContext.isInCheck(color.invert())) {
                     continue;
                 }
+
+                // Futility pruning using SEE
+//                int pruneDepth = Math.max(0, depth - 3); // shortcut, maybe fine tune this...
+//
+//                if (moveIsPrunable
+//                        && pruneDepth <= 6
+//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -24 * pruneDepth * pruneDepth))
+//                    continue;
+
+//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
+//
+//                if (moveIsPrunable
+//                        && not_pv
+//                        && !isHashMove
+//                        && max > -32000 && max > alpha
+//                        && depth <= 5
+//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -100 * depth))
+//                    continue;
 
                 searchedMoves++;
 
@@ -391,20 +420,20 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
             boolean areWeInCheck) {
-//        boolean is_pv = !not_pv;
-//        int hashMove = searchContext.probeTTHashMove();
-//        boolean hasPvMove = searchContext.hasPvMove(ply);
-//        // Internal iterative deepening
-//        // When there is no hash move available, it is sometimes worth doing a
-//        // shallow search to try and look for one
-//        // This is especially true at PV nodes and potential cut nodes
-//        if (hashMove == 0 && !hasPvMove && !areWeInCheck
-//                && ((is_pv && depth >= 3)
-//                || (not_pv && depth >= 4))) {
-//            int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
-//            negaMaximize(ply, iidDepth, color, alpha, beta);
-//
-//        }
+        boolean is_pv = !not_pv;
+        int hashMove = searchContext.probeTTHashMove();
+        boolean hasPvMove = searchContext.hasPvMove(ply);
+        // Internal iterative deepening
+        // When there is no hash move available, it is sometimes worth doing a
+        // shallow search to try and look for one
+        // This is especially true at PV nodes and potential cut nodes
+        if (hashMove == 0 && !hasPvMove && !areWeInCheck
+                && ((is_pv && depth >= 7)
+                || (not_pv && depth >= 8))) {
+            int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
+            negaMaximize(ply, iidDepth, color, alpha, beta);
+
+        }
     }
 
     /**
@@ -439,7 +468,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
                 depth > 3 &&
                 !moveCursor.isCapture() &&
-                !moveCursor.isPawnPromotion() &&
+                !moveCursor.isPromotion() &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
                 moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
@@ -541,7 +570,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             while (moveCursor.doNextMove()) {
 
                 // skip low promotions
-                if (moveCursor.isPawnPromotion()
+                if (moveCursor.isPromotion()
                         && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
                     continue;
                 }
@@ -549,7 +578,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 //                searchedMoves++;
 
                 if (moveCursor.isCapture()
-                        || moveCursor.isPawnPromotion()) {
+                        || moveCursor.isPromotion()) {
 
                     /**********************************************************************
                      *  Delta cutoff - a move guarentees the score well below alpha, so    *
@@ -558,7 +587,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                      **********************************************************************/
 
                     if (deltaCutOff
-                            && !moveCursor.isPawnPromotion()
+                            && !moveCursor.isPromotion()
                             && x + see.pieceVal(moveCursor.getCapturedFigure()) + 200 < alpha
                             && searchContext.isOpeningOrMiddleGame()
                     ) {

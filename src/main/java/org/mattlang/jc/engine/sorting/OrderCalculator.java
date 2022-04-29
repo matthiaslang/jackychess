@@ -28,6 +28,10 @@ public class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
+    public static final int QUIET = -100_000;
+
+    public static final int BAD_CAPTURES_SCORE = -500_000;
+
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
     private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
@@ -124,7 +128,7 @@ public class OrderCalculator {
      * @return
      */
     public int calcOrder(Move m) {
-        int moveInt = m.toInt();
+        int moveInt = m.getMoveInt();
         if (usePvSorting && pvMove == moveInt) {
             return PV_SCORE;
         } else if (hashMove == moveInt) {
@@ -138,7 +142,7 @@ public class OrderCalculator {
                 if (see.see_ge(board, m, 0)) {
                     captScore = -mvvLva + GOOD_CAPTURES_SCORE;
                 } else {
-                    captScore = -mvvLva;
+                    captScore = -mvvLva + BAD_CAPTURES_SCORE;
                 }
                 if (captureHeuristic != null) {
                     captScore -= captureHeuristic.calcValue(m, color);
@@ -159,7 +163,7 @@ public class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-            return -mvvLva;
+            return -mvvLva + QUIET;
         }
 
     }

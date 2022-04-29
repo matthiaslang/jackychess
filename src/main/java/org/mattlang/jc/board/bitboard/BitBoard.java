@@ -88,13 +88,12 @@ public class BitBoard implements BoardRepresentation {
                 setPos(i, j, row.charAt(j));
             }
         }
-        moveCounter=0;
-        siteToMove=WHITE;
+        moveCounter = 0;
+        siteToMove = WHITE;
         castlingRights = new CastlingRights();
         zobristHash = Zobrist.hash(this);
         material.init(this);
     }
-
 
     @Override
     public GameState setFenPosition(String fen) {
@@ -114,17 +113,6 @@ public class BitBoard implements BoardRepresentation {
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
             zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
             material.add(figureCode);
-        }
-    }
-
-
-    private void cleanPos(int pos) {
-        byte oldFigure = board.get(pos);
-        board.cleanPos(pos);
-        // remove from piece list, if this is a "override/capture" of this field:
-        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
-            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
-            material.subtract(oldFigure);
         }
     }
 
@@ -321,7 +309,7 @@ public class BitBoard implements BoardRepresentation {
     @Override
     public int findPosOfFigure(byte figureCode) {
         // todo that method should be renamed to something like getKingPos()
-        long kingBB = board.getPieceSet(FT_KING, (figureCode & BLACK.code)==BLACK.code?BLACK:WHITE);
+        long kingBB = board.getPieceSet(FT_KING, (figureCode & BLACK.code) == BLACK.code ? BLACK : WHITE);
         final int king = Long.numberOfTrailingZeros(kingBB);
         return king;
     }
@@ -549,5 +537,15 @@ public class BitBoard implements BoardRepresentation {
     @Override
     public boolean isDrawByMaterial() {
         return material.isDrawByMaterial();
+    }
+
+
+    public void doAssertLogs() {
+        try {
+            board.doAssertions();
+        } catch (AssertionError e) {
+             println();
+             e.printStackTrace();
+        }
     }
 }

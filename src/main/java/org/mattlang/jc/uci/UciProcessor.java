@@ -25,7 +25,6 @@ public class UciProcessor {
     public static final String CMD_READYOK = "readyok";
     public static final String CMD_UCINEWGAME = "ucinewgame";
     public static final String CMD_BESTMOVE = "bestmove";
-    private BoardRepresentation board = Factory.getDefaults().boards.create();
 
     private GameState gameState;
 
@@ -46,7 +45,7 @@ public class UciProcessor {
                 }
             }
         } catch (SearchException se) {
-            LOGGER.log(SEVERE, se.toStringAllInfos());
+            LOGGER.log(SEVERE, se.toStringAllInfos(), se);
         } catch (Exception e) {
             LOGGER.log(SEVERE, "Error in main uci processing loop!", e);
         }
@@ -85,7 +84,8 @@ public class UciProcessor {
             LOGGER.info("stopped engine, sending best move so far:");
             sendBestMove(optBestMove.get());
         } else {
-            LOGGER.info("no best move so far, maybe engine is not running... in any way we need to send bestmove with empty move!");
+            LOGGER.info(
+                    "no best move so far, maybe engine is not running... in any way we need to send bestmove with empty move!");
             UCI.instance.putCommand(CMD_BESTMOVE + " ");
         }
     }
@@ -109,7 +109,7 @@ public class UciProcessor {
         String option = result[2];
         String value = result[4];
 
-       UCIOption.parseOption(configValues.getAllOptions(), option, value);
+        UCIOption.parseOption(configValues.getAllOptions(), option, value);
     }
 
     public GoParameter parseGoParams(String cmdStr) {
@@ -117,14 +117,14 @@ public class UciProcessor {
         GoParameter param = new GoParameter();
         // example: go wtime 567860 btime 584661 winc 0 binc 0 movestogo 39
         int x = 0;
-        while (x< result.length){
+        while (x < result.length) {
             String tok = result[x];
             if ("go".equals(tok)) {
                 // overread
                 x++;
             }
             if ("infinite".equals(tok)) {
-                param.infinite=true;
+                param.infinite = true;
                 x++;
             }
             if ("wtime".equals(tok)) {
@@ -162,9 +162,9 @@ public class UciProcessor {
 
     }
 
-
     private GameState setPosition(String positionStr) {
         FenParser fenParser = new FenParser();
+        BoardRepresentation board = Factory.getDefaults().boards.create();
         return fenParser.setPosition(positionStr, board);
     }
 

@@ -35,9 +35,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
      * Does not bring an improvement: the depth skip makes the performance/results worse... so we dont use it
      */
     // Laser based SMP skip
-//    private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
-//    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
-//    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
+    //    private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
+    //    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
+    //    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
 
     /**
      * worker number if this iterative deepening is running inside a worker thread.
@@ -69,7 +69,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
-//        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
+        //        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
         isWorker = workerNumber > 0;
     }
 
@@ -153,19 +153,22 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     /**
      * adjusts the depth for workers. We dont do this for now, as it does not give any improvement,
      * indeed it makes the performance and elo worse.
+     *
      * @param currDepth
      * @return
      */
     private int adjustDepthForWorker(int currDepth) {
-//        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
-//            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
-//        }
+        //        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
+        //            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+        //        }
         return currDepth;
     }
 
     private void logIsr(IterativeSearchResult isr) {
         if (!isWorker) {
-            LOGGER.info("best move: " + isr.getSavedMove() + " " + isr.getRslt().toLogString());
+            String bestMove = isr.getSavedMove() != null ? isr.getSavedMove().toStr() : "none";
+            String rslt = isr.getRslt() != null ? isr.getRslt().toLogString() : "no results";
+            LOGGER.info("best move: " + bestMove + " " + rslt);
         }
     }
 
@@ -179,6 +182,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         public boolean isCheckMate() {
             return Math.abs(Math.abs(rslt.directScore) - Weights.KING_WEIGHT) < 100;
+        }
+
+        public boolean hasResults() {
+            return rslt != null;
         }
     }
 
@@ -197,7 +204,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         NegaMaxResult rslt = null;
 
-        if (useAspirationWindow && currdepth >= 3) {
+        if (useAspirationWindow && currdepth >= 3 && lastRoundResults.hasResults()) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
             rslt = searchWithAspirationWindow(stc, aspWindow, gameState, gameContext, stopTime,
                     lastRoundResults.getOrderHints(),
@@ -287,7 +294,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
     @Override
     public void collectStatistics(Map stats) {
-     stats.put("it.deep", this.stats);
+        stats.put("it.deep", this.stats);
     }
 
     @Override

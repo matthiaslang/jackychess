@@ -12,14 +12,12 @@ public class MoveScore {
     public MoveScore(int move, int score, int numSearchedNodes) {
         this.move = move;
         this.score = score;
-        this.numSearchedNodes=numSearchedNodes;
+        this.numSearchedNodes = numSearchedNodes;
     }
 
     @Override
     public String toString() {
-        return "MoveScore{" +
-                new MoveImpl(move).toStr() +
-                ", " + score +
-                '}';
+        return new MoveImpl(move).toStr() +
+                ": " + score;
     }
 }
