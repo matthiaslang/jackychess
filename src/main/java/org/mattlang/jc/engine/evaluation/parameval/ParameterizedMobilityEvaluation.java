@@ -103,10 +103,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
-            long connectivity = attacks & ownFigsMask;
+//            long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(bishop, oppKingPos);
 
-            result.countFigureVals(paramsBishop, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsBishop, mobility, captures, kingZoneAttacs, tropism);
 
             bishopBB &= bishopBB - 1;
         }
@@ -121,10 +121,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long captures = moves & opponentFigsMask;
             long mobility = moves & ~captures & noOppPawnAttacs;
             long kingZoneAttacs = knightAttack & oppKingZone;
-            long connectivity = knightAttack & ownFigsMask;
+            //            long connectivity = knightAttack & ownFigsMask;
             int tropism = getTropism(knight, oppKingPos);
 
-            result.countFigureVals(paramsKnight, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsKnight, mobility, captures, kingZoneAttacs, tropism);
 
             knightBB &= knightBB - 1;
         }
@@ -139,11 +139,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
-            long connectivity = attacks & ownFigsMask;
+            //            long connectivity = attacks & ownFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
             int tropism = getTropism(rook, oppKingPos);
 
-            result.countFigureVals(paramsRook, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsRook, mobility, captures, kingZoneAttacs, tropism);
 
             result.rookOpenFiles(rook, oppKingPos, ownPawns, oppPawns);
 
@@ -160,10 +160,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
             long kingZoneAttacs = attacks & oppKingZone;
-            long connectivity = attacks & ownFigsMask;
+            //            long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(queen, oppKingPos);
 
-            result.countFigureVals(paramsQueen, mobility, captures, connectivity, kingZoneAttacs, tropism);
+            result.countFigureVals(paramsQueen, mobility, captures, kingZoneAttacs, tropism);
 
             result.evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
 
@@ -179,10 +179,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long captures = moves & opponentFigsMask;
         long mobility = moves & ~captures & noOppPawnAttacs;
         long kingZoneAttacs = kingAttack & oppKingZone;
-        long connectivity = kingAttack & ownFigsMask;
+        //        long connectivity = kingAttack & ownFigsMask;
         int tropism = getTropism(king, oppKingPos);
 
-        result.countFigureVals(paramsKing, mobility, captures, connectivity, kingZoneAttacs, tropism);
+        result.countFigureVals(paramsKing, mobility, captures, kingZoneAttacs, tropism);
 
         result.blockedPieces(bb, side);
     }

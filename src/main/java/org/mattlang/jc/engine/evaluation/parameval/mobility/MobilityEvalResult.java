@@ -92,7 +92,6 @@ public class MobilityEvalResult {
     public void countFigureVals(MobFigParams params,
             long mobility,
             long captures,
-            long connectivity,
             long kingZoneAttacs,
             int tropism) {
 
