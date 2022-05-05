@@ -8,6 +8,7 @@ import org.mattlang.jc.engine.tt.IntIntCache;
 public class EvalCache {
 
     public final static IntIntCache instance = new IntIntCache(25);
+    public final static IntIntCache pawnCache = new IntIntCache(23);
 
     private EvalCache() {
 

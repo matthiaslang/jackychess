@@ -41,7 +41,8 @@ public class BitBoard implements BoardRepresentation {
 
     private CastlingRights castlingRights = new CastlingRights();
 
-    private long zobristHash = 0L;
+    private Zobrist zobristHash = new Zobrist();
+    private Zobrist pawnZobristHash = new Zobrist();
 
     private Material material = new Material();
 
@@ -51,6 +52,7 @@ public class BitBoard implements BoardRepresentation {
     private int[] historyEp = new int[MAXMOVES];
     private int[] historyMaterial = new int[MAXMOVES];
     private long[] historyZobrist = new long[MAXMOVES];
+    private long[] historyPawnZobrist = new long[MAXMOVES];
     private byte[] historyCastling = new byte[MAXMOVES];
 
     private int moveCounter = 0;
@@ -91,7 +93,9 @@ public class BitBoard implements BoardRepresentation {
         moveCounter = 0;
         siteToMove = WHITE;
         castlingRights = new CastlingRights();
-        zobristHash = Zobrist.hash(this);
+        zobristHash.init(this);
+        pawnZobristHash.initPawnHash(this);
+
         material.init(this);
     }
 
@@ -106,13 +110,19 @@ public class BitBoard implements BoardRepresentation {
         board.set(pos, figureCode);
         // remove from piece list, if this is a "override/capture" of this field:
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
-            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+            zobristHash.removeFig(pos, oldFigure);
             material.subtract(oldFigure);
+            if (oldFigure == W_PAWN || oldFigure == B_PAWN) {
+                pawnZobristHash.removeFig(pos, oldFigure);
+            }
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
-            zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
+            zobristHash.addFig(pos, figureCode);
             material.add(figureCode);
+            if (figureCode == W_PAWN || figureCode == B_PAWN) {
+                pawnZobristHash.addFig(pos, figureCode);
+            }
         }
     }
 
@@ -208,36 +218,36 @@ public class BitBoard implements BoardRepresentation {
         // remove castling rights when rooks or kings are moved:
         if (figType == FT_KING) {
             if (isWhiteFigure) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                zobristHash.updateCastling(getCastlingRights());
                 castlingRights.retain(WHITE, SHORT);
                 castlingRights.retain(WHITE, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                zobristHash.updateCastling(getCastlingRights());
             } else {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                zobristHash.updateCastling(getCastlingRights());
                 castlingRights.retain(BLACK, SHORT);
                 castlingRights.retain(BLACK, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                zobristHash.updateCastling(getCastlingRights());
             }
         } else if (figType == FT_ROOK) {
             if (isWhiteFigure) {
                 if (from == 0) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                     castlingRights.retain(WHITE, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                 } else if (from == 7) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                     castlingRights.retain(WHITE, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                 }
             } else {
                 if (from == 56) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                     castlingRights.retain(BLACK, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                 } else if (from == 63) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                     castlingRights.retain(BLACK, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    zobristHash.updateCastling(getCastlingRights());
                 }
             }
         }
@@ -246,11 +256,18 @@ public class BitBoard implements BoardRepresentation {
 
         byte figCode = (byte) (figType | (isWhiteFigure ? WHITE.code : BLACK.code));
 
-        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
-        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
+        zobristHash.move(from, to, figCode);
+        if (figCode == W_PAWN || figCode == B_PAWN) {
+            pawnZobristHash.move(from, to, figCode);
+        }
+
         if (capturedFigure != 0) {
-            zobristHash = Zobrist.removeFig(zobristHash, to, capturedFigure);
+            zobristHash.removeFig(to, capturedFigure);
             material.subtract(capturedFigure);
+
+            if (capturedFigure == W_PAWN || capturedFigure == B_PAWN) {
+                pawnZobristHash.removeFig(to, capturedFigure);
+            }
         }
 
         resetEnPassant();
@@ -269,7 +286,8 @@ public class BitBoard implements BoardRepresentation {
     @Override
     public void switchSiteToMove() {
         siteToMove = siteToMove.invert();
-        zobristHash = Zobrist.colorFlip(zobristHash);
+        zobristHash.colorFlip();
+        pawnZobristHash.colorFlip();
     }
 
     @Override
@@ -301,7 +319,8 @@ public class BitBoard implements BoardRepresentation {
     @Override
     public BitBoard copy() {
         BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
-        copied.zobristHash = Zobrist.hash(copied);
+        copied.zobristHash.init(copied);
+        copied.pawnZobristHash.initPawnHash(copied);
         copied.material.init(copied);
         return copied;
     }
@@ -331,10 +350,12 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant(enPassantMoveTargetPos);
+        pawnZobristHash.updateEnPassant(enPassantMoveTargetPos);
         this.enPassantMoveTargetPos = enPassantOption;
 
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant(enPassantMoveTargetPos);
+        pawnZobristHash.updateEnPassant(enPassantMoveTargetPos);
     }
 
     private int calcEnPassantCaptureFromEnPassantOption() {
@@ -346,9 +367,11 @@ public class BitBoard implements BoardRepresentation {
     }
 
     private void resetEnPassant() {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant(enPassantMoveTargetPos);
+        pawnZobristHash.updateEnPassant(enPassantMoveTargetPos);
         enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant(enPassantMoveTargetPos);
+        pawnZobristHash.updateEnPassant(enPassantMoveTargetPos);
     }
 
     @Override
@@ -358,9 +381,9 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public void setCastlingAllowed(Color color, RochadeType type) {
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        zobristHash.updateCastling(getCastlingRights());
         castlingRights.setAllowed(color, type);
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        zobristHash.updateCastling(getCastlingRights());
     }
 
     @Override
@@ -370,7 +393,11 @@ public class BitBoard implements BoardRepresentation {
 
     @Override
     public long getZobristHash() {
-        return zobristHash;
+        return zobristHash.getHash();
+    }
+
+    public long getPawnZobristHash() {
+        return pawnZobristHash.getHash();
     }
 
     @Override
@@ -433,7 +460,8 @@ public class BitBoard implements BoardRepresentation {
         moveCounter--;
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
-        zobristHash = historyZobrist[moveCounter];
+        zobristHash.setHash(historyZobrist[moveCounter]);
+        pawnZobristHash.setHash(historyPawnZobrist[moveCounter]);
         material.setMaterial(historyMaterial[moveCounter]);
     }
 
@@ -459,7 +487,8 @@ public class BitBoard implements BoardRepresentation {
         historyCastling[moveCounter] = castlingRights.getRights();
         historyEp[moveCounter] = enPassantMoveTargetPos;
         historyMaterial[moveCounter] = material.getMaterial();
-        historyZobrist[moveCounter] = zobristHash;
+        historyZobrist[moveCounter] = zobristHash.getHash();
+        historyPawnZobrist[moveCounter] = pawnZobristHash.getHash();
         moveCounter++;
     }
 
@@ -470,8 +499,9 @@ public class BitBoard implements BoardRepresentation {
         //            return false;
         //        }
         final int moveCountMin = Math.max(0, moveCounter - 50);
+        long hash = zobristHash.getHash();
         for (int i = moveCounter - 2; i >= moveCountMin; i -= 2) {
-            if (zobristHash == historyZobrist[i]) {
+            if (hash == historyZobrist[i]) {
                 return true;
             }
         }

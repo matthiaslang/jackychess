@@ -1,14 +1,16 @@
 package org.mattlang.jc.zobrist;
 
 import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 import java.util.Random;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
 
-public class Zobrist {
+import lombok.Getter;
+
+public final class Zobrist {
 
     // max field pos: 64 board files + 1 "virtual" für en passten unset (-1)
     private static final int MAXPOS = 64 + 1;
@@ -23,6 +25,9 @@ public class Zobrist {
     private static long[] rndCastling = new long[MAXCASTLING];
 
     private static long colorFlip;
+
+    @Getter
+    private long hash = 0;
 
     static {
         initRandomNumbers();
@@ -42,49 +47,68 @@ public class Zobrist {
         colorFlip = random.nextLong();
     }
 
-    public static long hash(BoardRepresentation board) {
-        long h = 0;
+    public void setHash(long val) {
+        hash = val;
+    }
+
+    public void init(BoardRepresentation board) {
+        hash = 0;
         for (int i = 0; i < 64; i++) {
             byte fig = board.getFigureCode(i);
             if (fig != FigureConstants.FT_EMPTY) {
-                h = addFig(h, i, fig);
+                addFig(i, fig);
             }
         }
-        h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
-        h = updateCastling(h, board.getCastlingRights());
+        updateEnPassant(board.getEnPassantMoveTargetPos());
+        updateCastling(board.getCastlingRights());
         if (board.getSiteToMove() == BLACK) {
-            h = Zobrist.colorFlip(h);
+            colorFlip();
         }
-
-        return h;
     }
 
-    public static long addFig(long h, int i, byte fig) {
+    public void initPawnHash(BoardRepresentation board) {
+        hash = 0;
+        for (int i = 0; i < 64; i++) {
+            byte fig = board.getFigureCode(i);
+            if (fig != FigureConstants.FT_EMPTY) {
+                if (fig == W_PAWN || fig == B_PAWN) {
+                    addFig(i, fig);
+                }
+            }
+        }
+        if (board.getSiteToMove() == BLACK) {
+            colorFlip();
+        }
+    }
+
+    public void addFig(int i, byte fig) {
         int blackoffset = (fig & BLACK.code) == BLACK.code ? 6 : 0;
         int figIndex = (fig & MASK_OUT_COLOR) + blackoffset;
-        h ^= rnd[i][figIndex];
-        return h;
+        hash ^= rnd[i][figIndex];
     }
 
-    public static long removeFig(long h, int i, byte fig) {
+    public void removeFig(int i, byte fig) {
         int blackoffset = (fig & BLACK.code) == BLACK.code ? 6 : 0;
         int figIndex = (fig & MASK_OUT_COLOR) + blackoffset;
-        h ^= rnd[i][figIndex];
-        return h;
+        hash ^= rnd[i][figIndex];
     }
 
-    public static long updateEnPassant(long h, int enPassantMoveTargetPos) {
-        h ^= rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
-        return h;
+    public void move(int from, int to, byte fig) {
+        int blackoffset = (fig & BLACK.code) == BLACK.code ? 6 : 0;
+        int figIndex = (fig & MASK_OUT_COLOR) + blackoffset;
+        hash ^= rnd[from][figIndex] ^ rnd[to][figIndex];
     }
 
-    public static long updateCastling(long h, byte castlingRights) {
-        h ^= rndCastling[castlingRights];
-        return h;
+    public void updateEnPassant(int enPassantMoveTargetPos) {
+        hash ^= rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
     }
 
-    public static long colorFlip(long h) {
-        h ^= colorFlip;
-        return h;
+    public void updateCastling(byte castlingRights) {
+        hash ^= rndCastling[castlingRights];
     }
+
+    public void colorFlip() {
+        hash ^= colorFlip;
+    }
+
 }

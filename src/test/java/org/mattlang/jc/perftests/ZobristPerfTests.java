@@ -126,7 +126,9 @@ public class ZobristPerfTests {
         perft.setVisitor((visitedBoard, c, d, cursor) -> {
 
             long zobristHash = visitedBoard.getZobristHash();
-            long zobristFromScratch = Zobrist.hash(visitedBoard);
+            Zobrist z2 = new Zobrist();
+            z2.init(visitedBoard);
+            long zobristFromScratch = z2.getHash();
             assertThat(zobristHash).isEqualTo(zobristFromScratch);
 
             Set<String> entries = collisionMap.get(zobristHash);

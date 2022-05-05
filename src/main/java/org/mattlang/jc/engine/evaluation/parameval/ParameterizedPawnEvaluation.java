@@ -10,7 +10,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
-import org.mattlang.jc.engine.tt.LongCache;
+import org.mattlang.jc.engine.tt.IntIntCache;
 
 /**
  * Paremeterized Pawn Evaluation.
@@ -52,42 +52,20 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         // king shield is only relevant for middle game:
         result.midGame += (wKingShield - bKingShield);
 
-        long pawnHashKey = createPawnHashKey(bitBoard);
+        long pawnHashKey = bitBoard.getPawnZobristHash();
+        int cachedPawnEval = EvalCache.pawnCache.find(pawnHashKey);
 
-        if (!pawnCacheMatch(pawnHashKey)) {
+        if (cachedPawnEval == IntIntCache.NORESULT) {
 
             int pawnResultWhite = evalPawns(bitBoard, WHITE);
             int pawnResultBlack = evalPawns(bitBoard, BLACK);
 
             int pawnEval = pawnResultWhite - pawnResultBlack;
             result.result += pawnEval;
-            putPawnCache(pawnHashKey, pawnEval);
+            EvalCache.pawnCache.save(pawnHashKey, pawnEval);
         } else {
-            result.result += getCachedPawnEval(pawnHashKey);
+            result.result += cachedPawnEval;
         }
-    }
-
-    private int getCachedPawnEval(long pawnHashKey) {
-        return (int) pawnCache.find(pawnHashKey);
-    }
-
-    private void putPawnCache(long pawnHashKey, int pawnEval) {
-        pawnCache.save(pawnHashKey, pawnEval);
-    }
-
-    private boolean pawnCacheMatch(long pawnHashKey) {
-        return pawnCache.find(pawnHashKey) != LongCache.NORESULT;
-    }
-
-    private int pawnCacheSize=   1 << 22;
-    private LongCache pawnCache=new LongCache(22);
-
-
-    private long createPawnHashKey(BoardRepresentation bitBoard) {
-        BitChessBoard bb = bitBoard.getBoard();
-        long hashKey = bb.getPawns(BitChessBoard.nWhite) * 31
-                + bb.getPawns(BitChessBoard.nBlack);
-        return hashKey;
     }
 
     private int evalPawns(BoardRepresentation bitBoard, Color color) {

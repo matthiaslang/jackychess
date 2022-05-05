@@ -50,7 +50,7 @@ public class Board3 implements BoardRepresentation {
     private PieceList blackPieces = new PieceList();
     private PieceList whitePieces = new PieceList();
 
-    private long zobristHash = 0L;
+    private Zobrist zobristHash = new Zobrist();
 
     @Getter
     private Color siteToMove;
@@ -110,7 +110,7 @@ public class Board3 implements BoardRepresentation {
         moveCounter=0;
         siteToMove=WHITE;
         castlingRights = new CastlingRights();
-        zobristHash = Zobrist.hash(this);
+        zobristHash.init(this);
     }
 
     private void cleanPeaceList() {
@@ -131,13 +131,13 @@ public class Board3 implements BoardRepresentation {
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
             PieceList pieceList = ((oldFigure & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
             pieceList.remove(pos, (byte) (oldFigure & MASK_OUT_COLOR));
-            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+            zobristHash.removeFig( pos, oldFigure);
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
             PieceList pieceList = ((figureCode & BLACK.code) == BLACK.code) ? blackPieces : whitePieces;
             pieceList.set(pos, (byte) (figureCode & MASK_OUT_COLOR));
-            zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
+            zobristHash.addFig( pos, figureCode);
         }
     }
 
@@ -230,31 +230,31 @@ public class Board3 implements BoardRepresentation {
         byte figure = board[from];
         // remove castling rights when rooks or kings are moved:
         if (figure == W_KING) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(WHITE, SHORT);
             castlingRights.retain(WHITE, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         } else if (figure == B_KING) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(BLACK, SHORT);
             castlingRights.retain(BLACK, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         } else if (figure == W_ROOK && from == 0) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(WHITE, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         } else if (figure == W_ROOK && from == 7) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(WHITE, SHORT);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         } else if (figure == B_ROOK && from == 56) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(BLACK, LONG);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         } else if (figure == B_ROOK && from == 63) {
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
             castlingRights.retain(BLACK, SHORT);
-            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            zobristHash.updateCastling( getCastlingRights());
         }
 
         set(from, Figure.EMPTY.figureCode);
@@ -275,7 +275,7 @@ public class Board3 implements BoardRepresentation {
     @Override
     public void switchSiteToMove() {
         siteToMove = siteToMove.invert();
-        zobristHash = Zobrist.colorFlip(zobristHash);
+        zobristHash.colorFlip();
     }
 
     @Override
@@ -308,7 +308,7 @@ public class Board3 implements BoardRepresentation {
     @Override
     public Board3 copy() {
         Board3 copied = new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
-        copied.zobristHash = Zobrist.hash(copied);
+        copied.zobristHash.init(copied);
         return copied;
     }
 
@@ -336,10 +336,10 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant( enPassantMoveTargetPos);
         this.enPassantMoveTargetPos = enPassantOption;
 
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant( enPassantMoveTargetPos);
     }
 
     private int calcEnPassantCaptureFromEnPassantOption(){
@@ -351,9 +351,9 @@ public class Board3 implements BoardRepresentation {
     }
 
     private void resetEnPassant() {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant( enPassantMoveTargetPos);
         enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        zobristHash.updateEnPassant( enPassantMoveTargetPos);
     }
 
     public PieceList getBlackPieces() {
@@ -371,9 +371,9 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public void setCastlingAllowed(Color color, RochadeType type) {
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        zobristHash.updateCastling( getCastlingRights());
         castlingRights.setAllowed(color, type);
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        zobristHash.updateCastling( getCastlingRights());
     }
 
     @Override
@@ -383,14 +383,19 @@ public class Board3 implements BoardRepresentation {
 
     @Override
     public long getZobristHash() {
-        return zobristHash;
+        return zobristHash.getHash();
+    }
+
+    @Override
+    public long getPawnZobristHash() {
+        throw new IllegalStateException("not implemented!");
     }
 
     @Override
     public void domove(Move move) {
         historyCastling[moveCounter] = castlingRights.getRights();
         historyEp[moveCounter] = enPassantMoveTargetPos;
-        historyZobrist[moveCounter] = zobristHash;
+        historyZobrist[moveCounter] = zobristHash.getHash();
         moveCounter++;
 
         move(move.getFromIndex(), move.getToIndex());
@@ -429,7 +434,7 @@ public class Board3 implements BoardRepresentation {
         moveCounter--;
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
-        zobristHash = historyZobrist[moveCounter];
+        zobristHash.setHash(historyZobrist[moveCounter]);
     }
 
 
@@ -441,14 +446,14 @@ public class Board3 implements BoardRepresentation {
         moveCounter--;
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
-        zobristHash = historyZobrist[moveCounter];
+        zobristHash.setHash(historyZobrist[moveCounter]);
     }
 
     @Override
     public void doNullMove() {
         historyCastling[moveCounter] = castlingRights.getRights();
         historyEp[moveCounter] = enPassantMoveTargetPos;
-        historyZobrist[moveCounter] = zobristHash;
+        historyZobrist[moveCounter] = zobristHash.getHash();
         moveCounter++;
 
         switchSiteToMove();
@@ -462,7 +467,7 @@ public class Board3 implements BoardRepresentation {
         //        }
         final int moveCountMin = Math.max(0, moveCounter - 50);
         for (int i = moveCounter - 2; i >= moveCountMin; i -= 2) {
-            if (zobristHash == historyZobrist[i]) {
+            if (zobristHash.getHash() == historyZobrist[i]) {
                 return true;
             }
         }
