@@ -5,6 +5,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
@@ -26,6 +27,9 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     private Pattern queenEG;
     private Pattern kingEG;
 
+    private Pattern[] mgPatterns = new Pattern[7];
+    private Pattern[] egPatterns = new Pattern[7];
+
     public ParameterizedPstEvaluation(String subPath) {
         pawnMG = loadFromFullPath(subPath + "pawnMG.csv");
         knightMG = loadFromFullPath(subPath + "knightMG.csv");
@@ -40,23 +44,34 @@ public class ParameterizedPstEvaluation implements EvalComponent {
         queenEG = loadFromFullPath(subPath + "queenEG.csv");
         kingEG = loadFromFullPath(subPath + "kingEG.csv");
 
+        mgPatterns[FigureConstants.FT_PAWN] = pawnMG;
+        mgPatterns[FigureConstants.FT_BISHOP] = bishopMG;
+        mgPatterns[FigureConstants.FT_KNIGHT] = knightMG;
+        mgPatterns[FigureConstants.FT_ROOK] = rookMG;
+        mgPatterns[FigureConstants.FT_QUEEN] = queenMG;
+        mgPatterns[FigureConstants.FT_KING] = kingMG;
+
+        egPatterns[FigureConstants.FT_PAWN] = pawnEG;
+        egPatterns[FigureConstants.FT_BISHOP] = bishopEG;
+        egPatterns[FigureConstants.FT_KNIGHT] = knightEG;
+        egPatterns[FigureConstants.FT_ROOK] = rookEG;
+        egPatterns[FigureConstants.FT_QUEEN] = queenEG;
+        egPatterns[FigureConstants.FT_KING] = kingEG;
     }
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         BitChessBoard bb = bitBoard.getBoard();
 
-        result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
-                knightMG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
-                bishopMG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
-                rookMG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
-                queenMG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
-                kingMG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
-        result.endGame += pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
-                knightEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
-                bishopEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
-                rookEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
-                queenEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
-                kingEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
+        result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack));
+        result.endGame += pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack));
+    }
+
+    public Pattern getPatternMG(byte figureType) {
+        return mgPatterns[figureType];
+    }
+
+    public Pattern getPatternEG(byte figureType) {
+        return egPatterns[figureType];
     }
 }

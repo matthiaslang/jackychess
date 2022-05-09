@@ -32,6 +32,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             500, 500, 500, 500, 500, 500, 500, 500, 500, 500
     };
 
+    private final ParameterizedPstEvaluation pstEvaluation;
+
     /**
      * splitted results by color, and type of evaluation, e.g. mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
@@ -45,7 +47,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private MobFigParams paramsQueen;
     private MobFigParams paramsKing;
 
-    public ParameterizedMobilityEvaluation(EvalConfig config) {
+    public ParameterizedMobilityEvaluation(ParameterizedPstEvaluation pstEvaluation, EvalConfig config) {
+
+        this.pstEvaluation=pstEvaluation;
 
         paramsKnight = new MobFigParams(config, "knight");
         paramsBishop = new MobFigParams(config, "bishop");
@@ -99,6 +103,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
 
+            result.calcPst(bishop, FT_BISHOP, side, pstEvaluation);
+
             long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
@@ -114,6 +120,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long knightBB = bb.getPieceSet(FT_KNIGHT, side);
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
+
+            result.calcPst(knight, FT_KNIGHT, side, pstEvaluation);
 
             long knightAttack = BB.getKnightAttacs(knight);
 
@@ -136,6 +144,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (rookBB != 0) {
             final int rook = Long.numberOfTrailingZeros(rookBB);
 
+            result.calcPst(rook, FT_ROOK, side, pstEvaluation);
+
             long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
             long mobility = attacks & empty & noOppPawnAttacs;
             long captures = attacks & opponentFigsMask;
@@ -153,6 +163,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long queenBB = bb.getPieceSet(FT_QUEEN, side);
         while (queenBB != 0) {
             final int queen = Long.numberOfTrailingZeros(queenBB);
+
+            result.calcPst(queen, FT_QUEEN, side, pstEvaluation);
 
             long attacksRook = MagicBitboards.genRookAttacs(queen, occupancy);
             long attacksBishop = MagicBitboards.genBishopAttacs(queen, occupancy);
@@ -172,6 +184,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         long kingBB = bb.getPieceSet(FT_KING, side);
         final int king = Long.numberOfTrailingZeros(kingBB);
+
+        result.calcPst(king, FT_KING, side, pstEvaluation);
 
         long kingAttack = BB.getKingAttacs(king);
 
@@ -231,6 +245,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         result.midGame += (wResult.mobilityMG - bResult.mobilityMG);
         result.endGame += (wResult.mobilityEG - bResult.mobilityEG);
+
+        result.midGame += (wResult.pstMG - bResult.pstMG);
+        result.endGame += (wResult.pstEG - bResult.pstEG);
 
         result.midGame += (wResult.tropismMG - bResult.tropismMG);
         result.endGame += (wResult.tropismEG - bResult.tropismEG);

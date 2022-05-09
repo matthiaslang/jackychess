@@ -13,13 +13,18 @@ import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.Fields;
 import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+/**
+ * Temporary Results used during evaluation holding intermediate evaluation results.
+ */
 public class MobilityEvalResult {
 
     private static final long WHITE_QUEEN_DEVELOPED_MASK = ALL & ~rank1 & ~rank2;
@@ -29,6 +34,9 @@ public class MobilityEvalResult {
     public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
     public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
     public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
+
+    public int pstMG;
+    public int pstEG;
 
     public int mobilityMG;
     public int mobilityEG;
@@ -77,6 +85,8 @@ public class MobilityEvalResult {
     }
 
     public void clear() {
+        pstMG = 0;
+        pstEG = 0;
         mobilityMG = 0;
         mobilityEG = 0;
         captures = 0;
@@ -261,5 +271,12 @@ public class MobilityEvalResult {
                 && (Fields.A1.isSet(rookBB, side) || Fields.B1.isSet(rookBB, side)))
             blockages -= kingBlocksRookPenalty;
 
+    }
+
+    public void calcPst(int pos, byte figureType, Color side, ParameterizedPstEvaluation pstEvaluation) {
+        Pattern mgPattern = pstEvaluation.getPatternMG(figureType);
+        pstMG += mgPattern.getVal(pos, side);
+        Pattern egPattern = pstEvaluation.getPatternEG(figureType);
+        pstEG += egPattern.getVal(pos, side);
     }
 }

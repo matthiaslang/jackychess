@@ -1,5 +1,10 @@
 # Versions
 
+### Version 0.11.11
+
+- tryout several experimental low level optimizations which do not bring any benefit... skipping changes...
+- 
+
 ### Version 0.11.10
 
 - IID only used on higher depths; seem to bring some Elos...
