@@ -4,6 +4,7 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -25,13 +26,17 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
     private final Pattern protectedPasserPst;
 
+    private final ParameterizedPstEvaluation pstEvaluation;
+
     private int shield2 = 10;
     private int shield3 = 5;
 
     private int doublePawnPenalty = 20;
     private int attackedPawnPenalty = 4;
 
-    public ParameterizedPawnEvaluation(EvalConfig config) {
+    public ParameterizedPawnEvaluation(ParameterizedPstEvaluation pstEvaluation, EvalConfig config) {
+        this.pstEvaluation = pstEvaluation;
+
         shield2 = config.getPosIntProp("pawnShield2");
         shield3 = config.getPosIntProp("pawnShield3");
         doublePawnPenalty = config.getPosIntProp("doublePawnPenalty");
@@ -48,15 +53,15 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         int wKingShield = calcWhiteKingShield(bitBoard.getBoard());
         int bKingShield = calcBlackKingShield(bitBoard.getBoard());
 
-        int pawnResultWhite = evalPawns(bitBoard, WHITE);
-        int pawnResultBlack = evalPawns(bitBoard, BLACK);
+        int pawnResultWhite = evalPawns(bitBoard, result, WHITE);
+        int pawnResultBlack = evalPawns(bitBoard, result, BLACK);
         // king shield is only relevant for middle game:
         result.midGame += (wKingShield - bKingShield);
 
         result.result += (pawnResultWhite - pawnResultBlack);
     }
 
-    private int evalPawns(BoardRepresentation bitBoard, Color color) {
+    private int evalPawns(BoardRepresentation bitBoard, EvalResult evalResult, Color color) {
         int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
@@ -86,6 +91,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             long pawns = whitePawns;
             while (pawns != 0) {
                 final int pawn = Long.numberOfTrailingZeros(pawns);
+
+                pstEvaluation.evalSingleFigure(evalResult, pawn, FT_PAWN, WHITE);
+
                 long pawnMask = 1L << pawn;
 
                 boolean isAttacked = (pawnMask & blackPawnAttacs) != 0;
@@ -119,6 +127,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             long pawns = blackPawns;
             while (pawns != 0) {
                 final int pawn = Long.numberOfTrailingZeros(pawns);
+
+                pstEvaluation.evalSingleFigure(evalResult, pawn, FT_PAWN, BLACK);
+
                 long pawnMask = 1L << pawn;
 
                 boolean isAttacked = (pawnMask & whitePawnAttacs) != 0;

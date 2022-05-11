@@ -25,7 +25,7 @@ import lombok.Setter;
 /**
  * Temporary Results used during evaluation holding intermediate evaluation results.
  */
-public class MobilityEvalResult {
+public final class MobilityEvalResult {
 
     private static final long WHITE_QUEEN_DEVELOPED_MASK = ALL & ~rank1 & ~rank2;
     private static final long BLACK_QUEEN_DEVELOPED_MASK = ALL & ~rank7 & ~rank8;
