@@ -19,6 +19,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.IncrementalEvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
@@ -655,6 +656,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 quiescenceNodesVisited);
 
         stc.setOrderHints(new OrderHints(rslt, stc,true));
+
+        if (evaluate instanceof IncrementalEvaluateFunction) {
+            IncrementalEvaluateFunction ie = (IncrementalEvaluateFunction) evaluate;
+            gameState.getBoard().unregisterIncrementalEval();
+            ie.unregisterIncrementalEval();
+        }
+
 
         return rslt;
     }

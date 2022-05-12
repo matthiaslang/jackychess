@@ -1,6 +1,7 @@
 package org.mattlang.jc.board;
 
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.IncrementalEvaluateFunction;
 import org.mattlang.jc.material.Material;
 
 public interface BoardRepresentation {
@@ -89,4 +90,8 @@ public interface BoardRepresentation {
     boolean isvalidmove(int pvMove);
 
     Material getMaterial();
+
+    void registerIncrementalEval(IncrementalEvaluateFunction evaluateFunction);
+
+    void unregisterIncrementalEval();
 }

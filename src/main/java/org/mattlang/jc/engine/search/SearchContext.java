@@ -8,10 +8,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.*;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
@@ -101,6 +98,11 @@ public final class SearchContext {
 
         this.stc = stc;
         this.board = gameState.getBoard();
+        if (evaluate instanceof IncrementalEvaluateFunction) {
+            IncrementalEvaluateFunction ie = (IncrementalEvaluateFunction) evaluate;
+            ie.initIncrementalValues(board);
+            this.board.registerIncrementalEval(ie);
+        }
 
         this.orderCalculator = new OrderCalculator(orderHints);
 

@@ -43,4 +43,10 @@ public class EvalResult {
         int score = (int) scaleByPhase(bitBoard.getBoard(), midGame, endGame) + result;
         return score;
     }
+
+    public void add(EvalResult other) {
+        midGame+=other.midGame;
+        endGame+=other.endGame;
+        result+=other.result;
+    }
 }

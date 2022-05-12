@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.IncrementalEvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
@@ -19,7 +20,7 @@ import org.mattlang.jc.material.Material;
  * All parameters are bundled by a named "configuration" which can be selected via UCI (or property).
  * All parameters of a bundled configuration are inside a resource folder with the same name as the configuration.
  */
-public class ParameterizedEvaluation implements EvaluateFunction {
+public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEvaluateFunction {
 
     private ParameterizedMaterialEvaluation matEvaluation;
 
@@ -40,6 +41,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     private boolean endgameEvaluations = false;
 
     private IntIntCache evalCache = EvalCache.instance;
+    private BoardRepresentation associatedIncrementalBoard;
 
     public ParameterizedEvaluation() {
 
@@ -87,9 +89,15 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        pstEvaluation.eval(result, currBoard);
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
+
+        if (associatedIncrementalBoard == currBoard) {
+            result.add(incrementalResult);
+        } else {
+            pstEvaluation.eval(result, currBoard);
+        }
+
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
         int score = result.calcCompleteScore(currBoard);
@@ -106,7 +114,34 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
+    private EvalResult incrementalResult = new EvalResult();
 
+    @Override
+    public void initIncrementalValues(BoardRepresentation board) {
+        this.associatedIncrementalBoard = board;
+        incrementalResult.clear();
+        pstEvaluation.eval(incrementalResult, board);
+    }
+
+    @Override
+    public void removeFigure(int pos, byte figCode) {
+        pstEvaluation.incrementalRemoveFigure(incrementalResult, pos, figCode);
+    }
+
+    @Override
+    public void addFigure(int pos, byte figCode) {
+        pstEvaluation.incrementalAddFigure(incrementalResult, pos, figCode);
+    }
+
+    @Override
+    public void moveFigure(int from, int to, byte figCode) {
+        pstEvaluation.incrementalMoveFigure(incrementalResult, from, to, figCode);
+    }
+
+    @Override
+    public void unregisterIncrementalEval() {
+        this.associatedIncrementalBoard = null;
+    }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
         long figs = board.getBoard().getColorMask(nWhite) | board.getBoard()

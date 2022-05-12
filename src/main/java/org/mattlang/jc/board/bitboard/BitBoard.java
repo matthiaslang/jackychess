@@ -13,6 +13,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.engine.IncrementalEvaluateFunction;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
@@ -59,6 +60,11 @@ public class BitBoard implements BoardRepresentation {
      * -1 if no en passant is possible.
      */
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
+
+    /**
+     * a registered evaluate function to use for incremental updates.
+     */
+    private IncrementalEvaluateFunction evaluateFunction = new EmptyIncrementalEvaluateFunction();
 
     public BitBoard() {
         for (int i = 0; i < 64; i++) {
@@ -108,11 +114,13 @@ public class BitBoard implements BoardRepresentation {
         if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
             zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
             material.subtract(oldFigure);
+            evaluateFunction.removeFigure(pos, oldFigure);
         }
         // add this piece to piece list:
         if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
             zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
             material.add(figureCode);
+            evaluateFunction.addFigure(pos, figureCode);
         }
     }
 
@@ -248,9 +256,11 @@ public class BitBoard implements BoardRepresentation {
 
         zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
         zobristHash = Zobrist.addFig(zobristHash, to, figCode);
+        evaluateFunction.moveFigure(from, to, figCode);
         if (capturedFigure != 0) {
             zobristHash = Zobrist.removeFig(zobristHash, to, capturedFigure);
             material.subtract(capturedFigure);
+            evaluateFunction.removeFigure(to, capturedFigure);
         }
 
         resetEnPassant();
@@ -382,6 +392,7 @@ public class BitBoard implements BoardRepresentation {
 
         if (move.isEnPassant()) {
             set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+            evaluateFunction.removeFigure(move.getEnPassantCapturePos(), move.getCapturedFigure());
         } else if (move.isPromotion()) {
             set(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
@@ -398,21 +409,28 @@ public class BitBoard implements BoardRepresentation {
 
         long fromMask = 1L << move.getToIndex();
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
+        Color color = isWhiteFigure? WHITE: BLACK;
 
         byte figureType = move.getFigureType();
         if (move.isPromotion()) {
             figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
         }
         board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+        evaluateFunction.moveFigure(move.getToIndex(), move.getFromIndex(),  (byte) (move.getFigureType() | color.code) );
 
         if (move.getCapturedFigure() != 0) {
             board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            evaluateFunction.addFigure(move.getToIndex(), move.getCapturedFigure());
         }
         if (move.isEnPassant()) {
             // override the "default" overrider field with empty..
             board.set(move.getToIndex(), FigureConstants.FT_EMPTY);
             // because we have the special en passant capture pos which we need to reset with the captured figure
             board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
+
+            evaluateFunction.removeFigure(move.getToIndex(), move.getCapturedFigure());
+            evaluateFunction.addFigure(move.getEnPassantCapturePos(), move.getCapturedFigure());
+
         } else if (move.isPromotion()) {
             Figure promotedFigure = getFigure(move.getFromIndex());
             byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
@@ -535,10 +553,19 @@ public class BitBoard implements BoardRepresentation {
     }
 
     @Override
+    public void registerIncrementalEval(IncrementalEvaluateFunction evaluateFunction) {
+        this.evaluateFunction = evaluateFunction;
+    }
+
+    @Override
+    public void unregisterIncrementalEval() {
+        this.evaluateFunction = new EmptyIncrementalEvaluateFunction();
+    }
+
+    @Override
     public boolean isDrawByMaterial() {
         return material.isDrawByMaterial();
     }
-
 
     public void doAssertLogs() {
         try {
