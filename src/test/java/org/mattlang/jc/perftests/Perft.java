@@ -37,6 +37,10 @@ public class Perft {
     @Setter
     PerftConsumer visitor;
 
+    @Getter
+    @Setter
+    BeforePerftConsumer beforePerftConsumer;
+
     public Perft() {
         perftReset();
     }
@@ -53,6 +57,9 @@ public class Perft {
     public void assertPerft(MoveGenerator generator, BoardRepresentation board, Color color, int depth,
             int expectedNodes, int expectedCaptures, int expectedEP, int expectedCastles, int expectedPromotions) {
         perftReset();
+        if (beforePerftConsumer!=null){
+            beforePerftConsumer.beforePerft(board);
+        }
         perft(generator, board, color, depth);
         long stop = System.currentTimeMillis();
         long duration = stop - start;

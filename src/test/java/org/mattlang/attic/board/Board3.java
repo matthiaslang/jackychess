@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.IncrementalEvaluateFunction;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.uci.FenParser;
@@ -483,6 +484,16 @@ public class Board3 implements BoardRepresentation {
     @Override
     public Material getMaterial() {
         return null;
+    }
+
+    @Override
+    public void registerIncrementalEval(IncrementalEvaluateFunction evaluateFunction) {
+
+    }
+
+    @Override
+    public void unregisterIncrementalEval() {
+
     }
 
     @Override
