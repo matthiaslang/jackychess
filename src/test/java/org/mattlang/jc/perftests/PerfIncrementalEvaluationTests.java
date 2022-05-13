@@ -25,8 +25,14 @@ public class PerfIncrementalEvaluationTests {
         @Override
         public void accept(BoardRepresentation board, Color color, int depth, MoveCursor cursor) {
 
-            int cmpEval= fullEval.eval(board, color);
+            int cmpEval = fullEval.eval(board, color);
             int incEval = incrementalEval.eval(board, color);
+
+//            System.out.println(new MoveImpl(cursor.getMoveInt()).toLongAlgebraic() + ": " + cmpEval + " == " + incEval);
+
+            if (cmpEval!=incEval){
+                int a=7;
+            }
 
             // now we can test the validity of the move:
             Assertions.assertThat(incEval).isEqualTo(cmpEval);
@@ -40,7 +46,7 @@ public class PerfIncrementalEvaluationTests {
     };
 
     @Test
-    public void initialPositionPerformanceLegalMoves() {
+    public void initialPositionIncEval() {
         Factory.setDefaults(Factory.createStable());
 
         MoveGenerator generator = new PseudoLegalMoveGenerator();
@@ -48,8 +54,8 @@ public class PerfIncrementalEvaluationTests {
         Perft perft = new Perft();
         perft.setVisitor(validtMoveTester);
         perft.setBeforePerftConsumer(board -> {
-           incrementalEval.initIncrementalValues(board);
-           board.registerIncrementalEval(incrementalEval);
+            incrementalEval.initIncrementalValues(board);
+            board.registerIncrementalEval(incrementalEval);
         });
 
         perft.perftInitialPosition(generator);

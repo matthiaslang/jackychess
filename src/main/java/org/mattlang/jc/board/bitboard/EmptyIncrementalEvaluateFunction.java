@@ -29,4 +29,14 @@ public class EmptyIncrementalEvaluateFunction implements IncrementalEvaluateFunc
     public void unregisterIncrementalEval() {
 
     }
+
+    @Override
+    public void pop(int moveCounter) {
+
+    }
+
+    @Override
+    public void push(int moveCounter) {
+
+    }
 }

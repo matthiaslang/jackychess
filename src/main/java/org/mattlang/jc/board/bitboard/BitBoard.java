@@ -392,7 +392,6 @@ public class BitBoard implements BoardRepresentation {
 
         if (move.isEnPassant()) {
             set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
-            evaluateFunction.removeFigure(move.getEnPassantCapturePos(), move.getCapturedFigure());
         } else if (move.isPromotion()) {
             set(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
@@ -409,27 +408,21 @@ public class BitBoard implements BoardRepresentation {
 
         long fromMask = 1L << move.getToIndex();
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
-        Color color = isWhiteFigure? WHITE: BLACK;
 
         byte figureType = move.getFigureType();
         if (move.isPromotion()) {
             figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
         }
         board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
-        evaluateFunction.moveFigure(move.getToIndex(), move.getFromIndex(),  (byte) (move.getFigureType() | color.code) );
 
         if (move.getCapturedFigure() != 0) {
             board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
-            evaluateFunction.addFigure(move.getToIndex(), move.getCapturedFigure());
         }
         if (move.isEnPassant()) {
             // override the "default" overrider field with empty..
             board.set(move.getToIndex(), FigureConstants.FT_EMPTY);
             // because we have the special en passant capture pos which we need to reset with the captured figure
             board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
-
-            evaluateFunction.removeFigure(move.getToIndex(), move.getCapturedFigure());
-            evaluateFunction.addFigure(move.getEnPassantCapturePos(), move.getCapturedFigure());
 
         } else if (move.isPromotion()) {
             Figure promotedFigure = getFigure(move.getFromIndex());
@@ -453,6 +446,7 @@ public class BitBoard implements BoardRepresentation {
         enPassantMoveTargetPos = historyEp[moveCounter];
         zobristHash = historyZobrist[moveCounter];
         material.setMaterial(historyMaterial[moveCounter]);
+        evaluateFunction.pop(moveCounter);
     }
 
     @Override
@@ -478,6 +472,7 @@ public class BitBoard implements BoardRepresentation {
         historyEp[moveCounter] = enPassantMoveTargetPos;
         historyMaterial[moveCounter] = material.getMaterial();
         historyZobrist[moveCounter] = zobristHash;
+        evaluateFunction.push(moveCounter);
         moveCounter++;
     }
 

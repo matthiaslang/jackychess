@@ -13,4 +13,8 @@ public interface IncrementalEvaluateFunction {
     void moveFigure(int from, int to, byte figCode);
 
     void unregisterIncrementalEval();
+
+    void pop(int moveCounter);
+
+    void push(int moveCounter);
 }

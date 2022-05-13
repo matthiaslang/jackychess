@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.board.bitboard.BitBoard.MAXMOVES;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
@@ -42,6 +43,9 @@ public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEva
 
     private IntIntCache evalCache = EvalCache.instance;
     private BoardRepresentation associatedIncrementalBoard;
+
+    private int[] historyIncMGEval = new int[MAXMOVES];
+    private int[] historyIncEGEval = new int[MAXMOVES];
 
     public ParameterizedEvaluation() {
 
@@ -141,6 +145,18 @@ public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEva
     @Override
     public void unregisterIncrementalEval() {
         this.associatedIncrementalBoard = null;
+    }
+
+    @Override
+    public void pop(int moveCounter) {
+        incrementalResult.midGame = historyIncMGEval[moveCounter];
+        incrementalResult.endGame = historyIncEGEval[moveCounter];
+    }
+
+    @Override
+    public void push(int moveCounter) {
+        historyIncMGEval[moveCounter] = incrementalResult.midGame;
+        historyIncEGEval[moveCounter] = incrementalResult.endGame;
     }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
