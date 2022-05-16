@@ -2,13 +2,12 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
@@ -16,7 +15,7 @@ import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
-public class ParameterizedPstEvaluation implements EvalComponent {
+public final class ParameterizedPstEvaluation implements EvalComponent {
 
     private Pattern pawnMG;
     private Pattern knightMG;
@@ -34,18 +33,32 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     private Pattern[] mgPatterns = new Pattern[7];
     private Pattern[] egPatterns = new Pattern[7];
 
-    public ParameterizedPstEvaluation(String subPath) {
-        pawnMG = loadFromFullPath(subPath + "pawnMG.csv");
-        knightMG = loadFromFullPath(subPath + "knightMG.csv");
-        bishopMG = loadFromFullPath(subPath + "bishopMG.csv");
-        rookMG = loadFromFullPath(subPath + "rookMG.csv");
-        queenMG = loadFromFullPath(subPath + "queenMG.csv");
+    /**
+     * redundant patterns derived from the Pattern classes. These are used for incremental pst updates and
+     * redundant copied into these array to speed up lookup.
+     * The black values are negated so that a looked up value needs only to be summed up with the current incremental
+     * value.
+     *
+     * Dimensions:
+     * [color][eg/mg][figuretype][pos]
+     */
+    private int[][][][] incPatterns = new int[2][2][7][64];
+
+    public static final int MG = 0;
+    public static final int EG = 1;
+
+    public ParameterizedPstEvaluation(ParameterizedMaterialEvaluation materialEvaluation, String subPath) {
+        pawnMG = loadFromFullPath(subPath + "pawnMG.csv").applyOffset(materialEvaluation.getPawnMG());
+        knightMG = loadFromFullPath(subPath + "knightMG.csv").applyOffset(materialEvaluation.getKnightMG());
+        bishopMG = loadFromFullPath(subPath + "bishopMG.csv").applyOffset(materialEvaluation.getBishopMG());
+        rookMG = loadFromFullPath(subPath + "rookMG.csv").applyOffset(materialEvaluation.getRookMG());
+        queenMG = loadFromFullPath(subPath + "queenMG.csv").applyOffset(materialEvaluation.getQueenMG());
         kingMG = loadFromFullPath(subPath + "kingMG.csv");
-        pawnEG = loadFromFullPath(subPath + "pawnEG.csv");
-        knightEG = loadFromFullPath(subPath + "knightEG.csv");
-        bishopEG = loadFromFullPath(subPath + "bishopEG.csv");
-        rookEG = loadFromFullPath(subPath + "rookEG.csv");
-        queenEG = loadFromFullPath(subPath + "queenEG.csv");
+        pawnEG = loadFromFullPath(subPath + "pawnEG.csv").applyOffset(materialEvaluation.getPawnEG());
+        knightEG = loadFromFullPath(subPath + "knightEG.csv").applyOffset(materialEvaluation.getKnightEG());
+        bishopEG = loadFromFullPath(subPath + "bishopEG.csv").applyOffset(materialEvaluation.getBishopEG());
+        rookEG = loadFromFullPath(subPath + "rookEG.csv").applyOffset(materialEvaluation.getRookEG());
+        queenEG = loadFromFullPath(subPath + "queenEG.csv").applyOffset(materialEvaluation.getQueenEG());
         kingEG = loadFromFullPath(subPath + "kingEG.csv");
 
         mgPatterns[FigureConstants.FT_PAWN] = pawnMG;
@@ -61,6 +74,19 @@ public class ParameterizedPstEvaluation implements EvalComponent {
         egPatterns[FigureConstants.FT_ROOK] = rookEG;
         egPatterns[FigureConstants.FT_QUEEN] = queenEG;
         egPatterns[FigureConstants.FT_KING] = kingEG;
+
+        for (int color = nWhite; color <= nBlack; color++) {
+            for (int stage = MG; stage <= EG; stage++) {
+                Pattern[] patterns = stage == MG ? mgPatterns : egPatterns;
+                for (int fig = FT_PAWN; fig <= FT_KING; fig++) {
+                    for (int pos = 0; pos < 64; pos++) {
+                        incPatterns[color][stage][fig][pos] =
+                                patterns[fig].getVal(pos, color == nWhite ? WHITE : BLACK) * (color == nBlack ? -1 : 1);
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
@@ -83,32 +109,26 @@ public class ParameterizedPstEvaluation implements EvalComponent {
 
     public void incrementalRemoveFigure(EvalResult incrementalResult, int pos, byte figCode) {
         byte figureType = (byte) (figCode & MASK_OUT_COLOR);
-        Color color = ((figCode & BLACK.code) == BLACK.code) ? BLACK : WHITE;
+        int color = ((figCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
 
-        int factor = color == WHITE ? 1 : -1;
-        incrementalResult.midGame -= mgPatterns[figureType].getVal(pos, color) * factor;
-        incrementalResult.endGame -= egPatterns[figureType].getVal(pos, color) * factor;
+        incrementalResult.midGame -= incPatterns[color][MG][figureType][pos];
+        incrementalResult.endGame -= incPatterns[color][EG][figureType][pos];
 
     }
 
     public void incrementalAddFigure(EvalResult incrementalResult, int pos, byte figCode) {
         byte figureType = (byte) (figCode & MASK_OUT_COLOR);
-        Color color = ((figCode & BLACK.code) == BLACK.code) ? BLACK : WHITE;
+        int color = ((figCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
 
-        int factor = color == WHITE ? 1 : -1;
-        incrementalResult.midGame += mgPatterns[figureType].getVal(pos, color) * factor;
-        incrementalResult.endGame += egPatterns[figureType].getVal(pos, color) * factor;
+        incrementalResult.midGame += incPatterns[color][MG][figureType][pos];
+        incrementalResult.endGame += incPatterns[color][EG][figureType][pos];
     }
 
     public void incrementalMoveFigure(EvalResult incrementalResult, int from, int to, byte figCode) {
         byte figureType = (byte) (figCode & MASK_OUT_COLOR);
-        Color color = ((figCode & BLACK.code) == BLACK.code) ? BLACK : WHITE;
+        int color = ((figCode & BLACK.code) == BLACK.code) ? nBlack : nWhite;
 
-        int factor = color == WHITE ? 1 : -1;
-        incrementalResult.midGame -= mgPatterns[figureType].getVal(from, color) * factor;
-        incrementalResult.endGame -= egPatterns[figureType].getVal(from, color) * factor;
-
-        incrementalResult.midGame += mgPatterns[figureType].getVal(to, color) * factor;
-        incrementalResult.endGame += egPatterns[figureType].getVal(to, color) * factor;
+        incrementalResult.midGame += incPatterns[color][MG][figureType][to] - incPatterns[color][MG][figureType][from];
+        incrementalResult.endGame += incPatterns[color][EG][figureType][to] - incPatterns[color][EG][figureType][from];
     }
 }

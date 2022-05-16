@@ -1,8 +1,5 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -10,10 +7,12 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import lombok.Getter;
 
 /**
- * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
+ * A Tapered, parameterized material evaluation.
+ * Actually the values are added to the pst evaluation for performance reasons to not separately evaluate material
+ * values.
  */
 @Getter
-public class ParameterizedMaterialEvaluation implements EvalComponent {
+public class ParameterizedMaterialEvaluation {
 
     private int pawnMG;
     private int knightMG;
@@ -26,8 +25,6 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     private int bishopEG;
     private int rookEG;
     private int queenEG;
-
-    private boolean deactivated = false;
 
     public ParameterizedMaterialEvaluation(EvalConfig config) {
 
@@ -43,38 +40,6 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         rookEG = config.getIntProp("matRookEG");
         queenEG = config.getIntProp("matQueenEG");
 
-        /**
-         * some configs might not use material properties, but use only PST for the material evaluation.
-         * In that case the properties are all 0, and we can disable this evaluation.
-         */
-        deactivated =
-                pawnMG + knightMG + bishopMG + rookMG + queenMG + pawnEG + knightEG + bishopEG + rookEG + queenEG == 0;
-    }
-
-    @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        if (deactivated) {
-            return;
-        }
-        BitChessBoard bb = bitBoard.getBoard();
-
-        int pawnsDiff = bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack);
-        int knightsDiff = bb.getKnightsCount(nWhite) - bb.getKnightsCount(nBlack);
-        int bishopsDiff = bb.getBishopsCount(nWhite) - bb.getBishopsCount(nBlack);
-        int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
-        int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
-
-        result.midGame += pawnMG * pawnsDiff +
-                knightMG * knightsDiff +
-                bishopMG * bishopsDiff +
-                rookMG * rooksDiff +
-                queenMG * queensDiff;
-
-        result.endGame += pawnEG * pawnsDiff +
-                knightEG * knightsDiff +
-                bishopEG * bishopsDiff +
-                rookEG * rooksDiff +
-                queenEG * queensDiff;
     }
 
     public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, Color color) {

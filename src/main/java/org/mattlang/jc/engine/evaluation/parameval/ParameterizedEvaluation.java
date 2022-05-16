@@ -21,7 +21,7 @@ import org.mattlang.jc.material.Material;
  * All parameters are bundled by a named "configuration" which can be selected via UCI (or property).
  * All parameters of a bundled configuration are inside a resource folder with the same name as the configuration.
  */
-public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEvaluateFunction {
+public final class ParameterizedEvaluation implements EvaluateFunction, IncrementalEvaluateFunction {
 
     private ParameterizedMaterialEvaluation matEvaluation;
 
@@ -55,7 +55,7 @@ public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEva
         endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
         matEvaluation = new ParameterizedMaterialEvaluation(config);
-        pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
+        pstEvaluation = new ParameterizedPstEvaluation(matEvaluation, config.getConfigDir() + "pst/");
 
         mobEvaluation = new ParameterizedMobilityEvaluation(config);
         pawnEvaluation = new ParameterizedPawnEvaluation(config);
@@ -75,8 +75,6 @@ public class ParameterizedEvaluation implements EvaluateFunction, IncrementalEva
         }
 
         result.clear();
-
-        matEvaluation.eval(result, currBoard);
 
         if (endgameEvaluations) {
             EndGameRules endGameRule = matchesRule(currBoard, result.endGame);

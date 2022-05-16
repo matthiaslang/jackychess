@@ -50,6 +50,21 @@ public final class Pattern {
         }
     }
 
+    /**
+     * applies an offset to all pst values. Usually this is used to combine the pst with material value of a figure
+     * precalculated.
+     *
+     * @param offset
+     * @return
+     */
+    public Pattern applyOffset(int offset) {
+        for (int i = 0; i < 64; i++) {
+            flippedPattern[i] += offset;
+            boardPattern[i] += offset;
+        }
+        return this;
+    }
+
     public final int calcScore(long whiteFigures, long blackFigures, int who2mov) {
         int w = dotProduct(whiteFigures, WHITE);
         int b = dotProduct(blackFigures, BLACK);
