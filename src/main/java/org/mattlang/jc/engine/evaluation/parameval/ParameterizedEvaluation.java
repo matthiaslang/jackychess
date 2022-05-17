@@ -76,6 +76,15 @@ public final class ParameterizedEvaluation implements EvaluateFunction, Incremen
 
         result.clear();
 
+        if (associatedIncrementalBoard == currBoard) {
+            result.add(incrementalResult);
+        } else {
+            pstEvaluation.eval(result, currBoard);
+        }
+
+        // stronger is determined now by "mat + pst" instead of pure "mat" evaluation; but that should not be a difference
+        // for only 5 pieces... maybe we have some more elegant way to decide who is stronger (by the material key?) to
+        // be more consistent
         if (endgameEvaluations) {
             EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
             if (endGameRule != null) {
@@ -93,12 +102,6 @@ public final class ParameterizedEvaluation implements EvaluateFunction, Incremen
 
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
-
-        if (associatedIncrementalBoard == currBoard) {
-            result.add(incrementalResult);
-        } else {
-            pstEvaluation.eval(result, currBoard);
-        }
 
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
