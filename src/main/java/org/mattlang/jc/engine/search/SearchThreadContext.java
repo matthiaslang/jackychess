@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.IntCache;
@@ -37,6 +38,12 @@ public class SearchThreadContext {
     @Getter
     private IntCache pvCache = new IntCache(16);
     private OrderHints orderHints = OrderHints.NO_HINTS;
+
+    /**
+     * the threads own evaluate function.
+     */
+    @Getter
+    private EvaluateFunction evaluate = Factory.getDefaults().evaluateFunction.create();
 
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {

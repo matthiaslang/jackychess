@@ -16,7 +16,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepeningV2;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -283,7 +282,6 @@ public class EngineTest {
     @Test
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
-        EvaluateFunction eval = new MinimalPstEvaluation();
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
@@ -292,7 +290,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        SearchMethod negaMax = new NegaMaxAlphaBetaPVS(eval);
+        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         // block with other figure:
@@ -305,15 +303,13 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        EvaluateFunction eval = new MinimalPstEvaluation();
-
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
         GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
 
         System.out.println(board.toUniCodeStr());
 
-        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS(eval);
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         System.out.println(board.toUniCodeStr());
@@ -330,15 +326,13 @@ public class EngineTest {
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable());
 
-        EvaluateFunction eval = new MinimalPstEvaluation();
-
         BoardRepresentation board = new BitBoard();
         GameState gameState =
                 board.setFenPosition("position fen rnb1kbnr/6pp/3Np3/1Pp1P3/5q2/3Q4/PB2BPPP/R4RK1 b kq - 0 16 ");
 
         System.out.println(board.toUniCodeStr());
 
-        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS(eval);
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 4);
 
         System.out.println(board.toUniCodeStr());

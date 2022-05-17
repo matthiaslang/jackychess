@@ -96,17 +96,16 @@ public final class SearchContext {
 
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
-            OrderHints orderHints, EvaluateFunction evaluate,
+            OrderHints orderHints,
             int targetDepth, int alpha) {
 
         this.stc = stc;
         this.board = gameState.getBoard();
+        this.evaluate=stc.getEvaluate();
 
         this.orderCalculator = new OrderCalculator(orderHints);
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
-
-        this.evaluate = evaluate;
 
         this.gameState = gameState;
         this.context = context;

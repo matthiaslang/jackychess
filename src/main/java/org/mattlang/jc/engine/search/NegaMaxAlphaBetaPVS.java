@@ -18,7 +18,6 @@ import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
-import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
@@ -55,8 +54,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      * number of additional searched moves to do a higher reduction for LMR.
      */
     private static final int LMR_N_MOVES_REDUCE_MORE = 6;
-
-    private EvaluateFunction evaluate;
 
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
@@ -100,11 +97,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         reset();
     }
 
-    public NegaMaxAlphaBetaPVS(EvaluateFunction evaluate) {
-        reset();
-        this.evaluate = evaluate;
-    }
-
     @Override
     public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
@@ -125,7 +117,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public void reset() {
         resetStatistics();
-        evaluate = Factory.getDefaults().evaluateFunction.create();
     }
 
     private int negaMaximize(int ply, int depth, Color color,
@@ -636,7 +627,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
 
-        searchContext = new SearchContext(stc, gameState, context, orderHints, evaluate, depth, alpha);
+        searchContext = new SearchContext(stc, gameState, context, orderHints, depth, alpha);
 
         this.stopTime = stopTime;
 
