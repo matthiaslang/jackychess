@@ -49,7 +49,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
         matEvaluation = new ParameterizedMaterialEvaluation(config);
-        pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
+        pstEvaluation = new ParameterizedPstEvaluation(matEvaluation, config.getConfigDir() + "pst/");
 
         mobEvaluation = new ParameterizedMobilityEvaluation(config);
         pawnEvaluation = new ParameterizedPawnEvaluation(config);
@@ -70,7 +70,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         result.clear();
 
-        matEvaluation.eval(result, currBoard);
+        // do mat+eval first; we use the end game value then to find special end game evaluations if any
+        pstEvaluation.eval(result, currBoard);
 
         if (endgameEvaluations) {
             EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
@@ -87,7 +88,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        pstEvaluation.eval(result, currBoard);
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
