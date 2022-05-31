@@ -19,6 +19,8 @@ import org.mattlang.jc.board.Color;
  */
 public final class TTCache3 implements TTCacheInterface {
 
+	public static final long NORESULT = Long.MAX_VALUE;
+
 	private static final Logger LOGGER = Logger.getLogger(TTCache3.class.getSimpleName());
 
 	private static int POWER_2_TT_ENTRIES = 22;
@@ -105,7 +107,7 @@ public final class TTCache3 implements TTCacheInterface {
 		}
 
 		cacheMisses++;
-		return 0;
+		return NORESULT;
 	}
 
 	private int getIndex(final long key) {
@@ -203,7 +205,7 @@ public final class TTCache3 implements TTCacheInterface {
 	@Override
 	public boolean findEntry(TTResult result, BoardRepresentation board) {
 		long v = getValue(board.getZobristHash());
-		if (v != 0) {
+		if (v != NORESULT) {
 			result.setDepth(getDepth(v));
 			result.setType((byte) getFlag(v));
 			result.setScore(getScore(v));
