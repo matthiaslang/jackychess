@@ -22,6 +22,7 @@ import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.AllArgsConstructor;
@@ -147,6 +148,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
         logIsr(isr);
+        LoggerUtils.logStats(LOGGER, "iterative deepening statistics" , stats);
         return isr;
     }
 

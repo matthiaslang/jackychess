@@ -2,14 +2,14 @@ package org.mattlang.jc.engine.search;
 
 import static java.lang.Math.abs;
 import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StatisticsCollector;
@@ -36,6 +36,8 @@ import org.mattlang.jc.util.MoveValidator;
  * Supports TT Cache
  */
 public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
+
+    private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
@@ -86,7 +88,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
     private boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
-    private int[] parentMoves=new int[MAX_PLY];
+    private int[] parentMoves = new int[MAX_PLY];
 
     private ExtensionsInfo extensionsInfo = new ExtensionsInfo();
 
@@ -95,6 +97,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private boolean debug = true;
 
     private MoveValidator moveValidator = new MoveValidator();
+    private int drawByMaterialDetected;
+    private int drawByRepetionDetected;
+    private int mateDistancePruningCount;
+    private int ttPruningCount;
+    private int staticNullMovePruningCount;
+    private int nullMovePruningCount;
+    private int razoringPruningCount;
+    private int iterativeDeepeningCount;
+    private int futilityPruningCount;
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -120,6 +131,15 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
         cutOff = 0;
+        drawByMaterialDetected = 0;
+        drawByRepetionDetected = 0;
+        mateDistancePruningCount = 0;
+        ttPruningCount = 0;
+        staticNullMovePruningCount = 0;
+        nullMovePruningCount = 0;
+        razoringPruningCount = 0;
+        iterativeDeepeningCount = 0;
+        futilityPruningCount = 0;
         extensionsInfo = new ExtensionsInfo();
     }
 
@@ -130,6 +150,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     private int negaMaximize(int ply, int depth, Color color,
             int alpha, int beta) {
+
+        /**
+         * Return immediately if it is a repetition or draw by material.
+         * By draw by material we only immediately return on higher plys because otherwise we would not return a move.
+         */
+
+        if (searchContext.isDrawByMaterial() && ply != 1) {
+            drawByMaterialDetected++;
+            return Weights.REPETITION_WEIGHT;
+        }
+
+        if (searchContext.isRepetition()) {
+            drawByRepetionDetected++;
+            int staticEval = searchContext.eval(color);
+            return weightRepetition(staticEval);
+        }
+
         int mateValue = KING_WEIGHT - ply;
 
         nodesVisited++;
@@ -147,17 +184,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 alpha = -mateValue;
             if (beta > mateValue - 1)
                 beta = mateValue - 1;
-            if (alpha >= beta)
+            if (alpha >= beta) {
+                mateDistancePruningCount++;
                 return alpha;
+            }
         }
 
-        /**
-         * Return immediately if it is a repetition or draw by material.
-         * By draw by material we only immediately return on higher plys because otherwise we would not return a move.
-         */
-        if (searchContext.isRepetition() || (searchContext.isDrawByMaterial() && ply !=1)) {
-            return Weights.REPETITION_WEIGHT;
-        }
+
 
         boolean areWeInCheck = searchContext.isInCheck(color);
         depth = checkToExtend(areWeInCheck, color, depth);
@@ -174,8 +207,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
             else if (tte.isUpperBound() && tte.getScore() < beta)
                 beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
-            if (alpha >= beta)
+            if (alpha >= beta) {
+                ttPruningCount++;
                 return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
+            }
         }
 
         checkTimeout();
@@ -200,8 +235,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     && abs(beta - 1) > ALPHA_START + 100) {
 
                 int eval_margin = 120 * depth;
-                if (staticEval - eval_margin >= beta)
+                if (staticEval - eval_margin >= beta) {
+                    staticNullMovePruningCount++;
                     return staticEval - eval_margin;
+                }
             }
 
             /**
@@ -223,6 +260,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 searchContext.undoNullMove();
 
                 if (eval >= beta) {
+                    nullMovePruningCount++;
                     return eval;
                 }
             }
@@ -240,8 +278,10 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 int threshold = alpha - 300 - (depth - 1) * 60;
                 if (staticEval < threshold) {
                     int val = quiesce(ply + 1, -1, color, alpha, beta);
-                    if (val < threshold)
+                    if (val < threshold) {
+                        razoringPruningCount++;
                         return alpha;
+                    }
                 }
             }
 
@@ -318,6 +358,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                         && !moveCursor.isPromotion()
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         && !searchContext.isInCheck(color.invert())) {
+                    futilityPruningCount++;
                     continue;
                 }
 
@@ -418,6 +459,28 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return max;
     }
 
+    /**
+     * Evaluate a repetition. A repetition in general is undesirable as it means we have reached the same position
+     * again
+     * which means it doesnt bring us any further.
+     * It could be also the case that this is the third time the repetition which means it is a draw.
+     * So we make here a decision if the draw would be useful or bad which depends if we are the winning side or the
+     * loosing side.
+     * This is especial useful in endgames where caching of tt values could easily lead into repetition draw situations
+     * unintentionally for the winning side.
+     *
+     * @param staticEval
+     * @return
+     */
+    private int weightRepetition(int staticEval) {
+        if (staticEval >= WINNING_WEIGHT) {
+            return -DRAW_IS_VERY_BAD;
+        } else if (staticEval <= -WINNING_WEIGHT) {
+            return +DRAW_IS_VERY_BAD;
+        }
+        return Weights.REPETITION_WEIGHT;
+    }
+
     private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
             boolean areWeInCheck) {
         boolean is_pv = !not_pv;
@@ -430,6 +493,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         if (hashMove == 0 && !hasPvMove && !areWeInCheck
                 && ((is_pv && depth >= 7)
                 || (not_pv && depth >= 8))) {
+            iterativeDeepeningCount++;
             int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
             negaMaximize(ply, iidDepth, color, alpha, beta);
 
@@ -518,8 +582,13 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int quiesce(int ply, int depth, Color color, int alpha, int beta) {
         nodesVisited++;
 
-        if (searchContext.isRepetition() || searchContext.isDrawByMaterial()) {
+        if (searchContext.isDrawByMaterial()) {
             return Weights.REPETITION_WEIGHT;
+        }
+
+        if (searchContext.isRepetition()) {
+            int staticEval = searchContext.eval(color);
+            return weightRepetition(staticEval);
         }
 
         TTResult tte = searchContext.getTTEntry();
@@ -675,6 +744,16 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
         }
         rslts.put("cutoff", cutOff);
+
+        rslts.put("drawByMaterialDetected", drawByMaterialDetected);
+        rslts.put("drawByRepetionDetected", drawByRepetionDetected);
+        rslts.put("mateDistancePruningCount", mateDistancePruningCount);
+        rslts.put("ttPruningCount", ttPruningCount);
+        rslts.put("staticNullMovePruningCount", staticNullMovePruningCount);
+        rslts.put("nullMovePruningCount", nullMovePruningCount);
+        rslts.put("razoringPruningCount", razoringPruningCount);
+        rslts.put("iterativeDeepeningCount", iterativeDeepeningCount);
+        rslts.put("futilityPruningCount", futilityPruningCount);
 
         Map searchstatsMap = new LinkedHashMap();
         searchContext.collectStatistics(searchstatsMap);
