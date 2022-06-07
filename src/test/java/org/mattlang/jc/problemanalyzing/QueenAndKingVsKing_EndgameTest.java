@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
+import org.mattlang.jc.play.Playing;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
@@ -74,5 +75,28 @@ public class QueenAndKingVsKing_EndgameTest {
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
+
+
+    @Test
+    public void queen_and_king_vs_kingGivesRemis() throws IOException {
+
+        initLogging();
+        UCI.instance.attachStreams();
+        Factory.setDefaults(Factory.createDefaultParameter()
+                .config(c -> c.maxDepth.setValue(maxDepth))
+                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
+                .config(c -> c.timeout.setValue(600)));
+        // now starting engine:
+
+//        Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
+        Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
+
+        playing.playGameTillEnd();
+
+        Factory.setDefaults(Factory.createDefaultParameter());
+    }
+
 
 }
