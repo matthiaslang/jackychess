@@ -13,6 +13,7 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
+import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
@@ -41,6 +42,10 @@ public final class SearchContext {
     private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
     private boolean useCounterMove = Factory.getDefaults().getConfig().useCounterMoves.getValue();
 
+    /**
+     * The side that we are.
+     */
+    private final Color weAre;
     private GameState gameState;
     private GameContext context;
 
@@ -105,6 +110,7 @@ public final class SearchContext {
         this.orderCalculator = new OrderCalculator(orderHints);
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
+        weAre = gameState.getWho2Move();
 
         this.evaluate = evaluate;
 
@@ -233,6 +239,35 @@ public final class SearchContext {
 
     public int eval(Color color) {
         return evaluate.eval(board, color);
+    }
+
+    /**
+     * Evaluate a repetition. A repetition in general is undesirable as it means we have reached the same position
+     * again
+     * which means it doesnt bring us any further.
+     * It could be also the case that this is the third time the repetition which means it is a draw.
+     * So we make here a decision if the draw would be useful or bad which depends if we are the winning side or the
+     * loosing side.
+     * This is especial useful in endgames where caching of tt values could easily lead into repetition draw situations
+     * unintentionally for the winning side.
+     *
+     * At the moment it seems we do not have to do special handling. the described situations lead from a general
+     * wrong handling of keeping the move history in cloned boards. So at the moement we do simply return the weight of 0.
+     *
+     * @param color
+     * @return
+     */
+    public int evaluateRepetition(Color color) {
+        // the issues we had with draws was caused by wrong board copy logic, so we it looks like we do
+        // not have to do any special logic here...
+
+//        int staticEval = eval(color);
+//        if (staticEval >= WINNING_WEIGHT && weAre == WHITE) {
+//            return -DRAW_IS_VERY_BAD;
+//        } else if (staticEval <= -WINNING_WEIGHT && weAre == BLACK) {
+//            return +DRAW_IS_VERY_BAD;
+//        }
+        return Weights.REPETITION_WEIGHT;
     }
 
     public void savePv(int bestMove) {

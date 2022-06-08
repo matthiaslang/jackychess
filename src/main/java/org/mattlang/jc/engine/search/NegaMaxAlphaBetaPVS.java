@@ -1,8 +1,10 @@
 package org.mattlang.jc.engine.search;
 
 import static java.lang.Math.abs;
+import static java.util.logging.Level.FINE;
 import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
@@ -161,10 +163,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             return Weights.REPETITION_WEIGHT;
         }
 
-        if (searchContext.isRepetition()) {
+        if (searchContext.isRepetition() && ply != 1) {
             drawByRepetionDetected++;
-            int staticEval = searchContext.eval(color);
-            return weightRepetition(staticEval);
+            return searchContext.evaluateRepetition(color);
         }
 
         int mateValue = KING_WEIGHT - ply;
@@ -459,28 +460,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         return max;
     }
 
-    /**
-     * Evaluate a repetition. A repetition in general is undesirable as it means we have reached the same position
-     * again
-     * which means it doesnt bring us any further.
-     * It could be also the case that this is the third time the repetition which means it is a draw.
-     * So we make here a decision if the draw would be useful or bad which depends if we are the winning side or the
-     * loosing side.
-     * This is especial useful in endgames where caching of tt values could easily lead into repetition draw situations
-     * unintentionally for the winning side.
-     *
-     * @param staticEval
-     * @return
-     */
-    private int weightRepetition(int staticEval) {
-        if (staticEval >= WINNING_WEIGHT) {
-            return -DRAW_IS_VERY_BAD;
-        } else if (staticEval <= -WINNING_WEIGHT) {
-            return +DRAW_IS_VERY_BAD;
-        }
-        return Weights.REPETITION_WEIGHT;
-    }
-
     private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
             boolean areWeInCheck) {
         boolean is_pv = !not_pv;
@@ -587,20 +566,23 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         }
 
         if (searchContext.isRepetition()) {
-            int staticEval = searchContext.eval(color);
-            return weightRepetition(staticEval);
+            return searchContext.evaluateRepetition(color);
         }
 
         TTResult tte = searchContext.getTTEntry();
         if (tte != null && tte.getDepth() >= depth && ply != 1) {
-            if (tte.isExact()) // stored value is exact
+            if (tte.isExact()) {// stored value is exact
+                ttPruningCount++;
                 return adjustScore(tte.getScore(), ply);
+            }
             if (tte.isLowerBound() && tte.getScore() > alpha)
                 alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
             else if (tte.isUpperBound() && tte.getScore() < beta)
                 beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
-            if (alpha >= beta)
+            if (alpha >= beta) {
+                ttPruningCount++;
                 return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
+            }
         }
 
         int eval = searchContext.eval(color);
@@ -705,6 +687,9 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             int depth,
             int alpha, int beta, long stopTime, OrderHints orderHints) {
 
+        if (LOGGER.isLoggable(FINE)) {
+            LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
+        }
         searchContext = new SearchContext(stc, gameState, context, orderHints, evaluate, depth, alpha);
 
         this.stopTime = stopTime;
