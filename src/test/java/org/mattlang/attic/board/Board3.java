@@ -309,6 +309,10 @@ public class Board3 implements BoardRepresentation {
     public Board3 copy() {
         Board3 copied = new Board3(board.clone(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
+        copied.historyCastling=historyCastling.clone();
+        copied.historyZobrist=historyZobrist.clone();
+        copied.historyEp=historyEp.clone();
+        copied.moveCounter=moveCounter;
         return copied;
     }
 

@@ -303,6 +303,10 @@ public class BitBoard implements BoardRepresentation {
         BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
+        copied.historyCastling=historyCastling.clone();
+        copied.historyZobrist=historyZobrist.clone();
+        copied.historyEp=historyEp.clone();
+        copied.moveCounter=moveCounter;
         return copied;
     }
 
