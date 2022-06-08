@@ -32,7 +32,7 @@ public class Playing {
         this.fenPosition = fenPosition;
     }
 
-    public void playGameTillEnd() {
+    public GameStatusResult playGameTillEnd() {
 
         Engine engine = new Engine();
         engine.getBoard().setFenPosition(fenPosition);
@@ -69,6 +69,7 @@ public class Playing {
         }
 
         System.out.println("Played Moves: " + playedMoves);
+        return currentState;
     }
 
     private GameStatusResult checkGameStatus(BoardRepresentation board) {

@@ -1,5 +1,6 @@
 package org.mattlang.jc.problemanalyzing;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
@@ -15,13 +16,15 @@ import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
+import org.mattlang.jc.play.EndStatus;
+import org.mattlang.jc.play.GameStatusResult;
 import org.mattlang.jc.play.Playing;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
 public class QueenAndKingVsKing_EndgameTest {
 
-    int maxDepth = 17;
+    int maxDepth = 40;
 
     @Test
     public void queen_and_king_vs_king() throws IOException {
@@ -30,10 +33,10 @@ public class QueenAndKingVsKing_EndgameTest {
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.maxQuiescence.setValue(10))
+                .config(c -> c.maxQuiescence.setValue(50))
                 .config(c -> c.useTTCache.setValue(false))
 //                .config(c -> c.evluateFunctions.setValue(MINIMAL_PST))
-                .config(c -> c.timeout.setValue(600)));
+                .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 8/8/4k3/8/3Q4/4K3/8/8 w - - 0 0 ");
@@ -87,15 +90,19 @@ public class QueenAndKingVsKing_EndgameTest {
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
-                .config(c -> c.timeout.setValue(600)));
+                .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
 
-//        Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
+        //        Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
         Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
 
-        playing.playGameTillEnd();
+        GameStatusResult status = playing.playGameTillEnd();
 
         Factory.setDefaults(Factory.createDefaultParameter());
+
+        assertThat(status.isEnd()).isTrue();
+        assertThat(status.getEndStatus()).isEqualTo(EndStatus.MATT);
+
     }
 
 

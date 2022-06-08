@@ -1,5 +1,8 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 
@@ -37,6 +40,9 @@ public class BoardPrinter {
                 tabs.add(BitChessBoard.createMask(mask, "" + type.figureChar));
             }
         }
+        tabs.add(BitChessBoard.createMask(board.getBoard().getColorMask(nWhite), "W"));
+        tabs.add(BitChessBoard.createMask(board.getBoard().getColorMask(nBlack), "B"));
+
 
         all.append(BitChessBoard.formatAsTabs(tabs, "          "));
         all.append("\n");
