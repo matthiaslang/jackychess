@@ -1,5 +1,10 @@
 # Versions
 
+### Version 0.11.11
+
+- fixed draw by repetition issue: internal board copy method has not copied move history, therefore winning situations lead often to draws.
+- 
+
 ### Version 0.11.10
 
 - IID only used on higher depths; seem to bring some Elos...
