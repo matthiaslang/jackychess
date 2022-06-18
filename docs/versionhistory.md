@@ -1,9 +1,27 @@
 # Versions
 
+### Version 0.12.0
+
+Official Release, same as 0.11.11.
+
+Main difference to 0.10.0:
+
+- fixed draw by repetition issue
+- IID only used on higher depths; seem to bring some Elos...
+- PST prodProduct calc optimization.
+- special end game functions for common basic end games
+- multi threading using lazy SMP
+
+Elo Difference to 0.10.0: +187
+
 ### Version 0.11.11
+
+RC02 for next official release.
 
 - fixed draw by repetition issue: internal board copy method has not copied move history, therefore winning situations lead often to draws.
 - 
+
+Elo difference: ~30 compared to 0.11.10
 
 ### Version 0.11.10
 
