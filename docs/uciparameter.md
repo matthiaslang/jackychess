@@ -1,5 +1,23 @@
 # UCI Options
 List of all UCI options of the engine.
+## Group Caching
+Parameter for caching of information during search.
+### Option Hash
+TT Hash Size in MB
+
+min: 1
+max: 2048
+default: 128
+
+#### Declaration
+    option name Hash type spin default 128 min 1 max 2048
+### Option TTCacheImpl
+internally. Only for development testing
+
+default value: STANDARD
+
+#### Declaration
+    option name TTCacheImpl type combo default STANDARD var OLD_STANDARD var STANDARD
 ## Group Limits
 Parameter which limit the search or search time in some way.
 ### Option thinktime
@@ -15,20 +33,45 @@ default: 15000
 the maximum search depth to use if there is enough search time
 
 min: 3
-max: 64
-default: 40
+max: 63
+default: 63
 
 #### Declaration
-    option name maxdepth type spin default 40 min 3 max 64
+    option name maxdepth type spin default 63 min 3 max 63
 ### Option quiescence
 the maximum search depth in quiescence
 
 min: 0
-max: 50
-default: 10
+max: 63
+default: 63
 
 #### Declaration
-    option name quiescence type spin default 10 min 0 max 50
+    option name quiescence type spin default 63 min 0 max 63
+### Option maxThreads
+the maximum search threads when multi threading search is activated
+
+min: 1
+max: 8
+default: 1
+
+#### Declaration
+    option name maxThreads type spin default 1 min 1 max 8
+### Option searchalg
+the search algorithm to use.
+
+default value: MULTITHREAD
+
+#### Declaration
+    option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD var STAGED_MOVE_GEN
+## Group Common
+Common parameter
+### Option moveListImpl
+internally. Only for development testing
+
+default value: OPTIMIZED
+
+#### Declaration
+    option name moveListImpl type combo default OPTIMIZED var OPTIMIZED var STAGED
 
 # internal options of the engine.
 
@@ -72,15 +115,6 @@ default value: true
     You can set a value via Property opt.usePvSorting
 ## Group Internal
 Internal Test Parameter for Development
-### Option maxThreads
-the maximum search threads when multi threading search is activated
-
-min: 1
-max: 8
-default: 4
-
-#### Declaration
-    You can set a value via Property opt.maxThreads
 ### Option useTTCache
 Flag, if the tt cache to store scores should be activated
 
@@ -88,13 +122,6 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.useTTCache
-### Option MoveListImpl
-internally. Only for development testing
-
-default value: OPTIMIZED
-
-#### Declaration
-    You can set a value via Property opt.MoveListImpl
 ### Option expandPv
 should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.
 
@@ -109,15 +136,15 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.mateDistancePruning
-## Group Search
-Parameter that influence search.
-### Option searchalg
-the search algorithm to use.
+### Option iid
+should internal iterative deepening be activated?
 
-default value: STABLE
+default value: true
 
 #### Declaration
-    You can set a value via Property opt.searchalg
+    You can set a value via Property opt.iid
+## Group Search
+Parameter that influence search.
 ### Option activatePvsSearch
 should principal variation search be used
 
@@ -190,15 +217,6 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.useLateMoveReductions
-## Group Experimental
-Experimental parameter used during development
-### Option TTCacheImpl
-internally. Only for development testing
-
-default value: STANDARD
-
-#### Declaration
-    You can set a value via Property opt.TTCacheImpl
 ## Group Extensions
 Parameter influencing the extension of the search tree
 ### Option useCheckExtension
