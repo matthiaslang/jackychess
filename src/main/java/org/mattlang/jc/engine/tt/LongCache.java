@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
-import static org.mattlang.jc.engine.tt.TTEntry.*;
+import static org.mattlang.jc.engine.tt.TTResult.*;
 
 /**
  * A thread safe tt cache with a long as payload.

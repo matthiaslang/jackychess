@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.tt;
 
-import static org.mattlang.jc.engine.tt.TTEntry.*;
-
 import lombok.Data;
 
 /**
@@ -9,6 +7,10 @@ import lombok.Data;
  */
 @Data
 public class TTResult {
+
+    public static final byte EXACT_VALUE = 1;
+    public static final byte LOWERBOUND = 2;
+    public static final byte UPPERBOUND = 3;
 
     private byte type;
     private int depth;

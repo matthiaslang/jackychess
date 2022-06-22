@@ -133,7 +133,7 @@ public final class TTCache3 implements TTCacheInterface {
 
 			int currentDepth = getDepth(currentValue);
 			if ((xorKey ^ currentValue) == key) {
-				if (currentDepth > depth && flag != TTEntry.EXACT_VALUE) {
+				if (currentDepth > depth && flag != TTResult.EXACT_VALUE) {
 					return;
 				}
 				replaceIndex = i;
