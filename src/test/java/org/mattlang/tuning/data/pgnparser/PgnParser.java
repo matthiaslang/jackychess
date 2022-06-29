@@ -2,6 +2,7 @@ package org.mattlang.tuning.data.pgnparser;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.tuning.data.pgnparser.OrdinarySymbol.BRACKET_OPEN;
 import static org.mattlang.tuning.data.pgnparser.OrdinarySymbol.DOT;
 
 import java.io.File;
@@ -31,24 +32,27 @@ public class PgnParser {
         List<PgnGame> result = new ArrayList<>();
         Scanner scanner = new Scanner(in);
         Matcher matcher = new Matcher(scanner);
-        while (scanner.hasNext()) {
+        while (scanner.hasNext() && matcher.match(BRACKET_OPEN)) {
             PgnGame game = parseGame(matcher);
             result.add(game);
-
         }
+        if (scanner.hasNext()) {
+            throw new PgnParserException("Symbols after expected end:" + scanner.getCurr());
+        }
+
         return result;
     }
 
     private PgnGame parseGame(Matcher matcher) throws IOException {
         PgnGame game = new PgnGame();
 
-        // parse parameters:
-        while (matcher.match(OrdinarySymbol.BRACKET_OPEN)) {
+        // parse parameters:  the first open bracke is already consumed by the caller
+        do {
             Word word = matcher.matchWord();
             Quote quote = matcher.matchQuote();
             matcher.expectSymbol(OrdinarySymbol.BRACKET_CLOSE);
             game.addTag(word.getWord(), quote.getQuote());
-        }
+        } while (matcher.match(OrdinarySymbol.BRACKET_OPEN));
 
         // parse the plys:
         int moveNum = 1;
@@ -71,14 +75,15 @@ public class PgnParser {
             matcher.expectSymbol(DOT);
 
             MoveDescr moveWhite = parseMove(matcher, board, WHITE);
-            if (moveWhite.getMoveText().getType().isEnd()) {
+
+            if (moveWhite.getEnding() != null) {
                 game.addMove(new PgnMove(moveWhite, null));
                 return false;
             }
 
             MoveDescr moveBlack = parseMove(matcher, board, BLACK);
             game.addMove(new PgnMove(moveWhite, moveBlack));
-            if (moveBlack.getMoveText().getType().isEnd()) {
+            if (moveBlack.getEnding() != null) {
                 return false;
             }
             return true;
@@ -92,13 +97,12 @@ public class PgnParser {
     private MoveDescr parseMove(Matcher matcher, BoardRepresentation board, Color color) throws IOException {
         MoveText moveText = matcher.matchMoveText();
         try {
-            if (!moveText.getType().isEnd()) {
-                Move move = algebraicNotation.moveFromAN(board, color, moveText);
-                board.domove(move);
-            }
+            Move move = algebraicNotation.moveFromAN(board, color, moveText);
+            board.domove(move);
             Optional<Comment> optComment = matcher.optMatchComment();
+            Optional<Ending> optEnding = matcher.optMatchEnding();
 
-            return new MoveDescr(moveText, optComment.orElse(null));
+            return new MoveDescr(moveText, optComment.orElse(null), optEnding.orElse(null));
         } catch (RuntimeException e) {
             throw new PgnParserException("Error parsing move " + moveText.getStr(), e);
         }

@@ -68,15 +68,6 @@ public class MoveText implements Symbol {
         case "O-O-O":
             type = CASTLING_LONG;
             break;
-        case "1/2-1/2":
-            type = DRAW;
-            break;
-        case "1-0":
-            type = MATE_WHITE;
-            break;
-        case "0-1":
-            type = MATE_BLACK;
-            break;
         default:
             type = NORMAL;
         }

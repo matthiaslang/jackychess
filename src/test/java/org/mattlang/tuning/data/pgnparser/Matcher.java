@@ -1,5 +1,7 @@
 package org.mattlang.tuning.data.pgnparser;
 
+import static java.util.Optional.empty;
+
 import java.io.IOException;
 import java.util.Optional;
 
@@ -64,7 +66,7 @@ public class Matcher {
                 return Optional.of(number);
             }
         }
-        return Optional.empty();
+        return empty();
     }
 
     public Optional<Comment> optMatchComment() throws IOException {
@@ -74,6 +76,16 @@ public class Matcher {
                 return Optional.of(comment);
             }
         }
-        return Optional.empty();
+        return empty();
+    }
+
+    public Optional<Ending> optMatchEnding() throws IOException {
+        if (scanner.hasNext()) {
+            if (scanner.getCurr() instanceof Ending) {
+                Ending ending = (Ending) scanner.next();
+                return Optional.of(ending);
+            }
+        }
+        return empty();
     }
 }

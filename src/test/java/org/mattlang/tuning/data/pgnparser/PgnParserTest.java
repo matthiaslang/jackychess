@@ -17,6 +17,6 @@ public class PgnParserTest {
         InputStream in = PgnParserTest.class.getResourceAsStream("/testpgn/example.pgn");
         List<PgnGame> games = parser.parse(in);
 
-        assertThat(games).hasSize(200);
+        assertThat(games).hasSize(400);
     }
 }

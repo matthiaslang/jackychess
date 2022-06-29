@@ -5,21 +5,10 @@ import lombok.Getter;
 @Getter
 public enum PgnMoveDescrType {
 
-    NORMAL(false),
+    NORMAL,
 
-    CASTLING_SHORT(false),
+    CASTLING_SHORT,
 
-    CASTLING_LONG(false),
+    CASTLING_LONG;
 
-    DRAW(true),
-
-    MATE_WHITE(true),
-
-    MATE_BLACK(true);
-
-    private final boolean end;
-
-    PgnMoveDescrType(boolean end) {
-        this.end = end;
-    }
 }
