@@ -9,4 +9,6 @@ public interface TuneableEvaluateFunction extends EvaluateFunction {
     void setParams(List<TuningParameter> params);
 
     List<TuningParameter> getParams();
+
+    void printResults();
 }

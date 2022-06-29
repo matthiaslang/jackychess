@@ -8,11 +8,13 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
 @Getter
+@Setter
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     private int pawnMG;

@@ -10,6 +10,8 @@ import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
+import lombok.Getter;
+
 /**
  * Another experimental evaluation.
  * This evaluation is parametrized as much as possible with parameters read from resource files.
@@ -21,6 +23,7 @@ import org.mattlang.jc.material.Material;
  */
 public class ParameterizedEvaluation implements EvaluateFunction {
 
+    @Getter
     private ParameterizedMaterialEvaluation matEvaluation;
 
     private ParameterizedPstEvaluation pstEvaluation;
