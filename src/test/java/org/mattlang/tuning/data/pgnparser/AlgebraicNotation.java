@@ -1,16 +1,17 @@
-package org.mattlang.jc.tools;
+package org.mattlang.tuning.data.pgnparser;
 
+import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.Tools.rankOf;
+import static org.mattlang.jc.moves.CastlingMove.*;
+import static org.mattlang.jc.moves.MoveImpl.createCastling;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.tools.LegalMoves;
 import org.mattlang.jc.uci.FenParser;
 
 /**
@@ -25,36 +26,24 @@ public class AlgebraicNotation {
      * @param algNotMove
      * @return
      */
-    public String longANFromShortAN(BoardRepresentation board, Color color, String algNotMove) {
-        algNotMove = algNotMove.trim();
-        algNotMove = algNotMove.replace("+", ""); // replace check hint
-
-        FigureType figureType = determineFigureType(algNotMove);
-
-        String to = algNotMove.substring(algNotMove.length() - 2);
-
-        String fromSpec = algNotMove.substring(0, algNotMove.length() - 2);
-        if (Character.isUpperCase(fromSpec.charAt(0))) {
-            fromSpec = fromSpec.substring(1);
-        }
-        fromSpec = fromSpec.replace("x", "");
-
-        int toidx = toIndex(to);
-
-        String moveStr = determineMoveStr(board, color, figureType, toidx, fromSpec);
-
-        return moveStr;
-    }
-
-    private String determineMoveStr(BoardRepresentation board, Color color, FigureType figureType, int toidx,
-            String fromSpec) {
+    public String longANFromShortAN(BoardRepresentation board, Color color, MoveText algNotMove) {
 
         List<MoveImpl> allMoves =
                 LegalMoves.generateLegalMoves(board, color).extractList();
 
         List<MoveImpl> matching = allMoves.stream()
-                .filter(m -> m.getFigureType() == figureType.figureCode && m.getToIndex() == toidx)
+                .filter(m -> m.getFigureType() == algNotMove.getFigure().figureCode
+                        && m.getToIndex() == algNotMove.getToIdx())
                 .collect(Collectors.toList());
+
+        // further match for promotions to filter out the one with the right promoted figure:
+        if (algNotMove.isPromotion()) {
+            matching = matching.stream()
+                    .filter(m -> m.isPromotion()
+                            && m.getPromotedFigure().figureType == algNotMove.getPromotedFigureType())
+                    .collect(Collectors.toList());
+        }
+
         switch (matching.size()) {
         case 0:
             throw new IllegalStateException("somethings wrong, no legal move seems to match!");
@@ -65,11 +54,11 @@ public class AlgebraicNotation {
             // we need to distinguish by the fromSpec:
 
             for (MoveImpl move : matching) {
-                if (matchesFromSpec(move, fromSpec)) {
+                if (matchesFromSpec(move, algNotMove.getFromSpec())) {
                     return move.toStr();
                 }
             }
-            throw new IllegalStateException("cant identify move from ambiguous matching ones..");
+            throw new IllegalStateException("cant identify move from ambiguous matching ones.." + board.toUniCodeStr());
         }
 
     }
@@ -80,14 +69,14 @@ public class AlgebraicNotation {
                 || move.getFromIndex() == posFromSpec(fromSpec);
     }
 
-    private static int posFromSpec(String fromSpec) {
+    public static int posFromSpec(String fromSpec) {
         if (fromSpec.length() == 2) {
             return toIndex(fromSpec);
         }
         return -1000;
     }
 
-    private static int fileFromSpec(String fromSpec) {
+    public static int fileFromSpec(String fromSpec) {
         if (fromSpec.length() == 1) {
             if (Character.isAlphabetic(fromSpec.charAt(0))) {
                 return fileFromChar(fromSpec.charAt(0));
@@ -96,7 +85,7 @@ public class AlgebraicNotation {
         return -1000;
     }
 
-    private static int rankFromSpec(String fromSpec) {
+    public static int rankFromSpec(String fromSpec) {
         if (fromSpec.length() == 1) {
             if (Character.isDigit(fromSpec.charAt(0))) {
                 return rankFromChar(fromSpec.charAt(0));
@@ -113,10 +102,8 @@ public class AlgebraicNotation {
         return file - 'a';
     }
 
-    private static int toIndex(String to) {
-        int x = fileFromChar(to.charAt(0));
-        int y = rankFromChar(to.charAt(1));
-        return (7 - y) * 8 + x;
+    public static int toIndex(String to) {
+        return IndexConversion.parsePos(to);
     }
 
     /**
@@ -125,21 +112,35 @@ public class AlgebraicNotation {
      * @param algNotMove
      * @return
      */
-    public Move moveFromAN(BoardRepresentation board, Color color, String algNotMove) {
-        String longAn = longANFromShortAN(board, color, algNotMove);
-        FenParser fenParser = new FenParser();
-        return fenParser.parseMove(board, longAn);
+    public Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
+        switch (algNotMove.getType()) {
+        case CASTLING_SHORT:
+            return createCastling(color == WHITE ? CASTLING_WHITE_SHORT : CASTLING_BLACK_SHORT);
+        case CASTLING_LONG:
+            return createCastling(color == WHITE ? CASTLING_WHITE_LONG : CASTLING_BLACK_LONG);
+        case NORMAL:
+            String longAn = longANFromShortAN(board, color, algNotMove);
+            FenParser fenParser = new FenParser();
+            return fenParser.parseMove(board, longAn);
+        default:
+            throw new IllegalArgumentException("unsupported alg not type:" + algNotMove.getType());
+        }
+
     }
 
-    private static FigureType determineFigureType(String algNotMove) {
+    public static FigureType determineFigureType(String algNotMove) {
         char fig = algNotMove.charAt(0);
+        return determineFigureType(fig);
+    }
+
+    public static FigureType determineFigureType(char fig) {
         if (Character.isUpperCase(fig)) {
             for (FigureType figureType : FigureType.values()) {
                 if (figureType.figureChar == fig) {
                     return figureType;
                 }
             }
-            throw new IllegalStateException("unable to determine Figure Type of " + algNotMove);
+            throw new IllegalStateException("unable to determine Figure Type of " + fig);
         } else {
             return FigureType.Pawn;
         }
