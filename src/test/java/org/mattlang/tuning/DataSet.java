@@ -39,6 +39,7 @@ public class DataSet {
         return val * val;
     }
 
-
-
+    public void addFen(FenEntry entry) {
+        fens.add(entry);
+    }
 }

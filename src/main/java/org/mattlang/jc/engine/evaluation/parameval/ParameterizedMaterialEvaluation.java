@@ -17,6 +17,16 @@ import lombok.Setter;
 @Setter
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
+    public static final String MAT_PAWN_MG = "matPawnMG";
+    public static final String MAT_KNIGHT_MG = "matKnightMG";
+    public static final String MAT_BISHOP_MG = "matBishopMG";
+    public static final String MAT_ROOK_MG = "matRookMG";
+    public static final String MAT_QUEEN_MG = "matQueenMG";
+    public static final String MAT_PAWN_EG = "matPawnEG";
+    public static final String MAT_KNIGHT_EG = "matKnightEG";
+    public static final String MAT_BISHOP_EG = "matBishopEG";
+    public static final String MAT_ROOK_EG = "matRookEG";
+    public static final String MAT_QUEEN_EG = "matQueenEG";
     private int pawnMG;
     private int knightMG;
     private int bishopMG;
@@ -33,17 +43,17 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     public ParameterizedMaterialEvaluation(EvalConfig config) {
 
-        pawnMG = config.getIntProp("matPawnMG");
-        knightMG = config.getIntProp("matKnightMG");
-        bishopMG = config.getIntProp("matBishopMG");
-        rookMG = config.getIntProp("matRookMG");
-        queenMG = config.getIntProp("matQueenMG");
+        pawnMG = config.getIntProp(MAT_PAWN_MG);
+        knightMG = config.getIntProp(MAT_KNIGHT_MG);
+        bishopMG = config.getIntProp(MAT_BISHOP_MG);
+        rookMG = config.getIntProp(MAT_ROOK_MG);
+        queenMG = config.getIntProp(MAT_QUEEN_MG);
 
-        pawnEG = config.getIntProp("matPawnEG");
-        knightEG = config.getIntProp("matKnightEG");
-        bishopEG = config.getIntProp("matBishopEG");
-        rookEG = config.getIntProp("matRookEG");
-        queenEG = config.getIntProp("matQueenEG");
+        pawnEG = config.getIntProp(MAT_PAWN_EG);
+        knightEG = config.getIntProp(MAT_KNIGHT_EG);
+        bishopEG = config.getIntProp(MAT_BISHOP_EG);
+        rookEG = config.getIntProp(MAT_ROOK_EG);
+        queenEG = config.getIntProp(MAT_QUEEN_EG);
 
         /**
          * some configs might not use material properties, but use only PST for the material evaluation.

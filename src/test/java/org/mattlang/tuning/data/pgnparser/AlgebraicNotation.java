@@ -19,13 +19,16 @@ import org.mattlang.jc.tools.LegalMoves;
  */
 public class AlgebraicNotation {
 
+    private AlgebraicNotation() {
+    }
+
     /**
      * Converts a move in algebraic notation into a long algebraic notation which is used in UCI.
      *
      * @param algNotMove
      * @return
      */
-    public Move convertToMove(BoardRepresentation board, Color color, MoveText algNotMove) {
+    private static Move convertToMove(BoardRepresentation board, Color color, MoveText algNotMove) {
 
         List<MoveImpl> allMoves =
                 LegalMoves.generateLegalMoves(board, color).extractList();
@@ -111,7 +114,7 @@ public class AlgebraicNotation {
      * @param algNotMove
      * @return
      */
-    public Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
+    public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
             return createCastling(color == WHITE ? CASTLING_WHITE_SHORT : CASTLING_BLACK_SHORT);

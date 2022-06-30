@@ -117,13 +117,9 @@ public class Scanner {
         if (onlyDigits) {
             return new IntegerNumber(Integer.parseInt(str));
         } else {
-            switch (str) {
-            case "1/2-1/2":
-                return Ending.DRAW;
-            case "1-0":
-                return Ending.MATE_WHITE;
-            case "0-1":
-                return Ending.MATE_BLACK;
+            Ending ending = Ending.match(str);
+            if (ending != null) {
+                return ending;
             }
             return new MoveText(str);
         }

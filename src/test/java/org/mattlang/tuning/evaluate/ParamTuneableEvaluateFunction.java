@@ -1,5 +1,7 @@
 package org.mattlang.tuning.evaluate;
 
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,17 +35,13 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         ArrayList<TuningParameter> params = new ArrayList<>();
 
         ParameterizedMaterialEvaluation matEval = parameterizedEvaluation.getMatEvaluation();
-        params.add(new MaterialValueParam("pawnMg", matEval.getPawnMG(), v -> matEval.setPawnMG(v)));
-        params.add(new MaterialValueParam("knightMg", matEval.getKnightMG(), v -> matEval.setKnightMG(v)));
-        params.add(new MaterialValueParam("bishopMg", matEval.getBishopMG(), v -> matEval.setBishopMG(v)));
-        params.add(new MaterialValueParam("rookMg", matEval.getRookMG(), v -> matEval.setRookMG(v)));
-        params.add(new MaterialValueParam("queenMg", matEval.getQueenMG(), v -> matEval.setQueenMG(v)));
+        params.add(new MaterialValueParam(MAT_PAWN_MG, matEval.getPawnMG(), v -> matEval.setPawnMG(v)));
+        params.add(new MaterialValueParam(MAT_KNIGHT_MG, matEval.getKnightMG(), v -> matEval.setKnightMG(v)));
+        params.add(new MaterialValueParam(MAT_BISHOP_MG, matEval.getBishopMG(), v -> matEval.setBishopMG(v)));
+        params.add(new MaterialValueParam(MAT_ROOK_MG, matEval.getRookMG(), v -> matEval.setRookMG(v)));
+        params.add(new MaterialValueParam(MAT_QUEEN_MG, matEval.getQueenMG(), v -> matEval.setQueenMG(v)));
 
         return params;
     }
-
-    @Override
-    public void printResults() {
-
-    }
+    
 }

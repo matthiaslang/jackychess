@@ -21,6 +21,11 @@ public class MaterialValueParam implements TuningParameter {
         value += i;
     }
 
+    @Override
+    public void printResult() {
+        System.out.println(name + "=" + value);
+    }
+
     public void saveValue() {
         saver.accept(value);
     }

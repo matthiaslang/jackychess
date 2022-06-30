@@ -20,8 +20,6 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class PgnParser {
 
-    private AlgebraicNotation algebraicNotation = new AlgebraicNotation();
-
     public List<PgnGame> parse(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             return parse(fis);
@@ -97,7 +95,7 @@ public class PgnParser {
     private MoveDescr parseMove(Matcher matcher, BoardRepresentation board, Color color) throws IOException {
         MoveText moveText = matcher.matchMoveText();
         try {
-            Move move = algebraicNotation.moveFromAN(board, color, moveText);
+            Move move = AlgebraicNotation.moveFromAN(board, color, moveText);
             board.domove(move);
             Optional<Comment> optComment = matcher.optMatchComment();
             Optional<Ending> optEnding = matcher.optMatchEnding();
