@@ -32,20 +32,24 @@ public class DatasetPreparer {
     }
 
     private void addGame(DataSet dataSet, PgnGame game) {
-        if (game.getResult() == Ending.MATE_WHITE || game.getResult() == Ending.MATE_BLACK) {
-            double result = game.getResult() == Ending.MATE_WHITE ? 1 : -1;
 
-            BoardRepresentation board = new BitBoard();
-            board.setStartPosition();
-            // play game and add all relevant positions:
-            for (PgnMove pgnMove : game.getMoves()) {
+        double result = 0.5;
+        if (game.getResult() == Ending.MATE_WHITE) {
+            result = 1;
+        }
+        if (game.getResult() == Ending.MATE_BLACK) {
+            result = 0;
+        }
 
-                doAndHandleMove(dataSet, pgnMove.getWhite(), board, result);
+        BoardRepresentation board = new BitBoard();
+        board.setStartPosition();
+        // play game and add all relevant positions:
+        for (PgnMove pgnMove : game.getMoves()) {
 
-                if (pgnMove.getBlack() != null) {
-                    doAndHandleMove(dataSet, pgnMove.getBlack(), board, result);
-                }
+            doAndHandleMove(dataSet, pgnMove.getWhite(), board, result);
 
+            if (pgnMove.getBlack() != null) {
+                doAndHandleMove(dataSet, pgnMove.getBlack(), board, result);
             }
 
         }
