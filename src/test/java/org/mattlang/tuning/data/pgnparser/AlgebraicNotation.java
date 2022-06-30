@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.tools.LegalMoves;
-import org.mattlang.jc.uci.FenParser;
 
 /**
  * Untested so far. Should be used for eigenmann & bratkopec tests to properly compare the expected move which
@@ -26,7 +25,7 @@ public class AlgebraicNotation {
      * @param algNotMove
      * @return
      */
-    public String longANFromShortAN(BoardRepresentation board, Color color, MoveText algNotMove) {
+    public Move convertToMove(BoardRepresentation board, Color color, MoveText algNotMove) {
 
         List<MoveImpl> allMoves =
                 LegalMoves.generateLegalMoves(board, color).extractList();
@@ -48,14 +47,14 @@ public class AlgebraicNotation {
         case 0:
             throw new IllegalStateException("somethings wrong, no legal move seems to match!");
         case 1:
-            return matching.get(0).toStr();
+            return matching.get(0);
         default:
             // its not unique, seems multiple same figure types can move to this target place,
             // we need to distinguish by the fromSpec:
 
             for (MoveImpl move : matching) {
                 if (matchesFromSpec(move, algNotMove.getFromSpec())) {
-                    return move.toStr();
+                    return move;
                 }
             }
             throw new IllegalStateException("cant identify move from ambiguous matching ones.." + board.toUniCodeStr());
@@ -119,9 +118,7 @@ public class AlgebraicNotation {
         case CASTLING_LONG:
             return createCastling(color == WHITE ? CASTLING_WHITE_LONG : CASTLING_BLACK_LONG);
         case NORMAL:
-            String longAn = longANFromShortAN(board, color, algNotMove);
-            FenParser fenParser = new FenParser();
-            return fenParser.parseMove(board, longAn);
+            return convertToMove(board, color, algNotMove);
         default:
             throw new IllegalArgumentException("unsupported alg not type:" + algNotMove.getType());
         }
