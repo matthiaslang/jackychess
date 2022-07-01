@@ -22,8 +22,13 @@ public class LocalOptimizer implements Optimizer {
         int nParams = initialGuess.size();
         double bestE = e(initialGuess);
         List<TuningParameter> bestParValues = initialGuess;
+        int round = 0;
         boolean improved = true;
         while (improved) {
+            round++;
+            if (round % 1000 == 0) {
+                System.out.println("round " + round + ", best Error= " + bestE);
+            }
             improved = false;
             for (int pi = 0; pi < nParams; pi++) {
                 bestParValues.get(pi).change(1);

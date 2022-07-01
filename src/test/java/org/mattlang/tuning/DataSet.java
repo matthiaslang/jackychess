@@ -38,4 +38,8 @@ public class DataSet {
     public void addFen(FenEntry entry) {
         fens.add(entry);
     }
+
+    public void add(DataSet other) {
+        fens.addAll(other.getFens());
+    }
 }

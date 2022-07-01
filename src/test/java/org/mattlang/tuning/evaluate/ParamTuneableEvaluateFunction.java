@@ -44,6 +44,12 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         params.add(new MaterialValueParam(MAT_ROOK_MG, matEval.getRookMG(), v -> matEval.setRookMG(v)));
         params.add(new MaterialValueParam(MAT_QUEEN_MG, matEval.getQueenMG(), v -> matEval.setQueenMG(v)));
 
+        params.add(new MaterialValueParam(MAT_PAWN_EG, matEval.getPawnEG(), v -> matEval.setPawnEG(v)));
+        params.add(new MaterialValueParam(MAT_KNIGHT_EG, matEval.getKnightEG(), v -> matEval.setKnightEG(v)));
+        params.add(new MaterialValueParam(MAT_BISHOP_EG, matEval.getBishopEG(), v -> matEval.setBishopEG(v)));
+        params.add(new MaterialValueParam(MAT_ROOK_EG, matEval.getRookEG(), v -> matEval.setRookEG(v)));
+        params.add(new MaterialValueParam(MAT_QUEEN_EG, matEval.getQueenEG(), v -> matEval.setQueenEG(v)));
+        
         return params;
     }
     

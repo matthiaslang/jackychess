@@ -1,5 +1,6 @@
 package org.mattlang.tuning.tuner;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -23,6 +24,17 @@ public class DatasetPreparer {
     public DataSet prepareDatasetFromPgn(InputStream in) throws IOException {
         PgnParser parser = new PgnParser();
         List<PgnGame> games = parser.parse(in);
+
+        DataSet dataSet = new DataSet();
+        for (PgnGame game : games) {
+            addGame(dataSet, game);
+        }
+        return dataSet;
+    }
+
+    public DataSet prepareLoadFromFile(File file) throws IOException {
+        PgnParser parser = new PgnParser();
+        List<PgnGame> games = parser.parse(file);
 
         DataSet dataSet = new DataSet();
         for (PgnGame game : games) {
@@ -66,9 +78,15 @@ public class DatasetPreparer {
     private boolean isMateScore(Comment comment) {
 
         // comment in cutechess has the form: -319.87/13 1.1s
-        String scoreStr = comment.getText().split("/")[0];
-        double score = Double.parseDouble(scoreStr);
-        return score < -319.0 || score > 319;
+        if (comment != null && comment.getText() != null && comment.getText().contains("/")) {
+            String scoreStr = comment.getText().split("/")[0];
+            if (scoreStr != null) {
+                double score = Double.parseDouble(scoreStr);
+                return score < -319.0 || score > 319;
+            }
+        }
+        // todo we need to decide it ourself somehow... e.g. let our engine calculate a score of that position and decide on that..
+        return false;
     }
 
     private void addFen(DataSet dataSet, BoardRepresentation board, double result) {
@@ -80,5 +98,6 @@ public class DatasetPreparer {
     private boolean isBookMove(MoveDescr moveDesr) {
         return moveDesr.getComment() != null && moveDesr.getComment().getText().contains("book");
     }
+
 }
 
