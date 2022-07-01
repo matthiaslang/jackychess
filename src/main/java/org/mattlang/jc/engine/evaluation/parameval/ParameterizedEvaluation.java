@@ -26,6 +26,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Getter
     private ParameterizedMaterialEvaluation matEvaluation;
 
+    @Getter
     private ParameterizedPstEvaluation pstEvaluation;
 
     private ParameterizedMobilityEvaluation mobEvaluation;

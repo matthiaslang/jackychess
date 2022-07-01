@@ -1,6 +1,7 @@
 package org.mattlang.tuning.evaluate;
 
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
 
@@ -49,7 +51,17 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         params.add(new MaterialValueParam(MAT_BISHOP_EG, matEval.getBishopEG(), v -> matEval.setBishopEG(v)));
         params.add(new MaterialValueParam(MAT_ROOK_EG, matEval.getRookEG(), v -> matEval.setRookEG(v)));
         params.add(new MaterialValueParam(MAT_QUEEN_EG, matEval.getQueenEG(), v -> matEval.setQueenEG(v)));
-        
+
+        ParameterizedPstEvaluation pstEval = parameterizedEvaluation.getPstEvaluation();
+        for (int i = 0; i < 64; i++) {
+            params.add(new PstValueParam(PAWN_MG_CSV, pstEval.getPawnMG(), i));
+            params.add(new PstValueParam(BISHOP_MG_CSV, pstEval.getBishopMG(), i));
+            params.add(new PstValueParam(KNIGHT_MG_CSV, pstEval.getKnightMG(), i));
+            params.add(new PstValueParam(ROOK_MG_CSV, pstEval.getRookMG(), i));
+            params.add(new PstValueParam(QUEEN_MG_CSV, pstEval.getQueenMG(), i));
+            params.add(new PstValueParam(KING_MG_CSV, pstEval.getKingMG(), i));
+        }
+
         return params;
     }
     

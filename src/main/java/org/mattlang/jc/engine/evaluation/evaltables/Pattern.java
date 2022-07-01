@@ -70,6 +70,11 @@ public final class Pattern {
         }
     }
 
+    public void addOffsetVal(int pos, int offset) {
+        boardPattern[pos] += offset;
+        flippedPattern[FLIP[pos]] += offset;
+    }
+
     /**
      * Calc weighted population count of bitmasks; useful in evaluations.
      *
@@ -118,13 +123,15 @@ public final class Pattern {
     }
 
     public static Pattern loadFromFullPath(String fullName) {
-
-        List<Integer> values = new ArrayList<>();
-
         InputStream is = Pattern.class.getResourceAsStream(fullName);
         if (is == null) {
             throw new IllegalArgumentException("Could not load pst pattern from resource file " + fullName);
         }
+        return parsePattern(is);
+    }
+
+    public static Pattern parsePattern(InputStream is) {
+        List<Integer> values = new ArrayList<>();
         new BufferedReader(new InputStreamReader(is))
                 .lines().forEach(line -> {
                     if (line.startsWith("//")) {
@@ -140,5 +147,31 @@ public final class Pattern {
 
         return new Pattern(values.stream().mapToInt(i -> i.intValue()).toArray());
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Pattern pattern = (Pattern) o;
+        return Arrays.equals(boardPattern, pattern.boardPattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(boardPattern);
+    }
+
+    public String toPatternStr() {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < boardPattern.length; i++) {
+            b.append(boardPattern[i]).append(";");
+            if ((i + 1) % 8 == 0) {
+                b.append("\n");
+            }
+        }
+        return b.toString();
     }
 }

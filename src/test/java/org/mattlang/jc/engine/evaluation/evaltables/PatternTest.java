@@ -6,6 +6,8 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
+import java.io.ByteArrayInputStream;
+
 import org.junit.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -57,6 +59,12 @@ public class PatternTest {
             assertThat(loadedPattern.getVal(i, WHITE)).isEqualTo(test.getVal(i, WHITE));
             assertThat(loadedPattern.getVal(i, BLACK)).isEqualTo(test.getVal(i, BLACK));
         }
+
+        String patternStr=loadedPattern.toPatternStr();
+
+        Pattern reParsedPattern = Pattern.parsePattern(new ByteArrayInputStream(patternStr.getBytes()));
+
+        assertThat(reParsedPattern).isEqualTo(loadedPattern);
 
     }
 }

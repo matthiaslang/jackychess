@@ -35,6 +35,11 @@ public class StopWatch {
         return formatDuration(d);
     }
 
+    public String getFormattedCurrDuration(){
+        Duration d = Duration.of(getCurrDuration(), ChronoUnit.MILLIS);
+        return formatDuration(d);
+    }
+
     public static String formatDuration(Duration duration) {
 
        int millis= duration.getNano()/1_000_000;
