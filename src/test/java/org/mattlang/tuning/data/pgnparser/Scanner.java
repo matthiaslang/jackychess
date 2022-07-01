@@ -102,9 +102,9 @@ public class Scanner implements TextPosition {
         putChar(ch);
         String str = buffer.toString();
         if (onlyLetters) {
-            return new Word(str);
+            return new Word(str, this);
         } else {
-            return new MoveText(str);
+            return new MoveText(str, this);
         }
     }
 
@@ -125,13 +125,13 @@ public class Scanner implements TextPosition {
         putChar(ch);
         String str = buffer.toString();
         if (onlyDigits) {
-            return new IntegerNumber(Integer.parseInt(str));
+            return new IntegerNumber(str, this);
         } else {
             Ending ending = Ending.match(str);
             if (ending != null) {
                 return ending;
             }
-            return new MoveText(str);
+            return new MoveText(str, this);
         }
 
     }
@@ -145,11 +145,11 @@ public class Scanner implements TextPosition {
     }
 
     private Symbol readQuote() throws IOException {
-        return new Quote(readTillSymbol(QUOTE));
+        return new Quote(readTillSymbol(QUOTE), this);
     }
 
     private Symbol readComment() throws IOException {
-        return new Comment(readTillSymbol(CURL_BRACKET_CLOSE));
+        return new Comment(readTillSymbol(CURL_BRACKET_CLOSE), this);
     }
 
     private String readTillSymbol(char endSym) throws IOException {

@@ -1,13 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
-import lombok.Getter;
+public class Word extends TextualSymbol {
 
-@Getter
-public class Word implements Symbol {
-
-    private final String word;
-
-    public Word(String word) {
-        this.word = word;
+    public Word(String text, TextPosition textPosition) {
+        super(text, textPosition);
     }
 }

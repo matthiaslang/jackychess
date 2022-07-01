@@ -1,13 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
-import lombok.Getter;
+public class Quote extends TextualSymbol {
 
-@Getter
-public class Quote implements Symbol {
-
-    private final String quote;
-
-    public Quote(String quote) {
-        this.quote = quote;
+    public Quote(String text, TextPosition textPosition) {
+        super(text, textPosition);
     }
 }

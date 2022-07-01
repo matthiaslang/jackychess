@@ -117,9 +117,17 @@ public class AlgebraicNotation {
     public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
-            return createCastling(color == WHITE ? CASTLING_WHITE_SHORT : CASTLING_BLACK_SHORT);
+            MoveImpl castlingMove = createCastling(color == WHITE ? CASTLING_WHITE_SHORT : CASTLING_BLACK_SHORT);
+            if (!board.isvalidmove(castlingMove.getMoveInt())) {
+                throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
+            }
+            return castlingMove;
         case CASTLING_LONG:
-            return createCastling(color == WHITE ? CASTLING_WHITE_LONG : CASTLING_BLACK_LONG);
+            castlingMove = createCastling(color == WHITE ? CASTLING_WHITE_LONG : CASTLING_BLACK_LONG);
+            if (!board.isvalidmove(castlingMove.getMoveInt())) {
+                throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
+            }
+            return castlingMove;
         case NORMAL:
             return convertToMove(board, color, algNotMove);
         default:

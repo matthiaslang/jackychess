@@ -3,11 +3,12 @@ package org.mattlang.tuning.data.pgnparser;
 import lombok.Getter;
 
 @Getter
-public class IntegerNumber implements Symbol {
+public class IntegerNumber extends TextualSymbol {
 
-    private final int i;
+    private final int number;
 
-    public IntegerNumber(int i) {
-        this.i = i;
+    public IntegerNumber(String str, TextPosition textPosition) {
+        super(str, textPosition);
+        this.number = Integer.parseInt(str);
     }
 }

@@ -12,12 +12,7 @@ import lombok.Getter;
 /**
  * Represents an algebraic notated Move (usually within a pgn file).
  */
-public class MoveText implements Symbol {
-
-    /**
-     * the original text description of the move.
-     */
-    private final String str;
+public class MoveText extends TextualSymbol {
 
     /**
      * the move type.
@@ -51,44 +46,33 @@ public class MoveText implements Symbol {
     private boolean captureHint;
     private boolean checkMateHint;
 
-    public MoveText(String str) {
-        this.str = str.trim();
-
-        parseMoveText(str);
+    public MoveText(String str, TextPosition textPosition) {
+        super(str.trim(), textPosition);
+        parseMoveText(getText());
     }
 
     private void parseMoveText(String str) {
-        // special Moves:
-        switch (str) {
-        case "0-0":
-        case "O-O":
-            type = CASTLING_SHORT;
-            break;
-        case "0-0-0":
-        case "O-O-O":
-            type = CASTLING_LONG;
-            break;
-        default:
-            type = NORMAL;
+        if (str.contains("+")) {
+            checkHint = true;
         }
-
-        if (type == NORMAL) {
+        if (str.contains("x")) {
+            captureHint = true;
+        }
+        if (str.contains("#")) {
+            checkMateHint = true;
+        }
+        if (str.startsWith("0-0-0") || str.startsWith("O-O-O")) {
+            type = CASTLING_LONG;
+        } else if (str.startsWith("0-0") || str.startsWith("O-O")) {
+            type = CASTLING_SHORT;
+        } else {
+            type = NORMAL;
             parseRegularMove();
         }
     }
 
     private void parseRegularMove() {
-        String s = str;
-
-        if (s.contains("+")) {
-            checkHint = true;
-        }
-        if (s.contains("x")) {
-            captureHint = true;
-        }
-        if (s.contains("#")) {
-            checkMateHint = true;
-        }
+        String s = getText();
 
         if (s.contains("=")) {
             int idx = s.indexOf("=");

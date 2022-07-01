@@ -49,7 +49,7 @@ public class PgnParser {
             Word word = matcher.matchWord();
             Quote quote = matcher.matchQuote();
             matcher.expectSymbol(OrdinarySymbol.BRACKET_CLOSE);
-            game.addTag(word.getWord(), quote.getQuote());
+            game.addTag(word.getText(), quote.getText());
         } while (matcher.match(OrdinarySymbol.BRACKET_OPEN));
 
         // parse the plys:
@@ -63,29 +63,33 @@ public class PgnParser {
 
     }
 
-    private boolean parseMove(PgnGame game, Matcher matcher, int ply, BoardRepresentation board)
+    private boolean parseMove(PgnGame game, Matcher matcher, int moveNum, BoardRepresentation board)
             throws IOException {
         Optional<IntegerNumber> optNumber = matcher.optMatchNumber();
         if (optNumber.isPresent()) {
-            if (ply != optNumber.get().getI()) {
-                throw new PgnParserException("Expecting Ply " + ply, matcher);
+            try {
+                if (moveNum != optNumber.get().getNumber()) {
+                    throw new PgnParserException("Expecting move number " + moveNum, optNumber.get());
+                }
+                matcher.expectSymbol(DOT);
+
+                MoveDescr moveWhite = parseMove(matcher, board, WHITE);
+
+                if (moveWhite.getEnding() != null) {
+                    game.addMove(new PgnMove(moveWhite, null));
+                    return false;
+                }
+
+                MoveDescr moveBlack = parseMove(matcher, board, BLACK);
+                game.addMove(new PgnMove(moveWhite, moveBlack));
+                if (moveBlack.getEnding() != null) {
+                    return false;
+                }
+                return true;
+
+            } catch(Exception e){
+                throw new PgnParserException("Error Parsing Move " + moveNum, e, matcher);
             }
-            matcher.expectSymbol(DOT);
-
-            MoveDescr moveWhite = parseMove(matcher, board, WHITE);
-
-            if (moveWhite.getEnding() != null) {
-                game.addMove(new PgnMove(moveWhite, null));
-                return false;
-            }
-
-            MoveDescr moveBlack = parseMove(matcher, board, BLACK);
-            game.addMove(new PgnMove(moveWhite, moveBlack));
-            if (moveBlack.getEnding() != null) {
-                return false;
-            }
-            return true;
-
         } else {
             return false;
         }
@@ -102,7 +106,7 @@ public class PgnParser {
 
             return new MoveDescr(moveText, optComment.orElse(null), optEnding.orElse(null));
         } catch (RuntimeException e) {
-            throw new PgnParserException("Error parsing move " + moveText.getStr(), e, matcher);
+            throw new PgnParserException("Error parsing move " + moveText.getText() + " board:\n" + board.toUniCodeStr(), e, moveText);
         }
     }
 

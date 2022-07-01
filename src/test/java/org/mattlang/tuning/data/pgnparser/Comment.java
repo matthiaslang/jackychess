@@ -1,13 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
-import lombok.Getter;
+public class Comment extends TextualSymbol {
 
-@Getter
-public class Comment implements Symbol {
-
-    private String text;
-
-    public Comment(String text) {
-        this.text = text;
+    public Comment(String text, TextPosition textPosition) {
+        super(text, textPosition);
     }
 }
