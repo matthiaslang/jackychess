@@ -24,7 +24,7 @@ public class DataSet {
         // build sum:
         double sum = 0;
         for (FenEntry fen : fens) {
-            sum += square(fen.getResult() - sigmoid(evaluate.eval(fen.getBoard(), Color.WHITE)));
+            sum += Math.pow(fen.getResult() - sigmoid(evaluate.eval(fen.getBoard(), Color.WHITE)), 2);
         }
         return sum / fens.size();
 
@@ -33,10 +33,6 @@ public class DataSet {
     private double sigmoid(int eval) {
         double deval = eval;
         return 1 / (1 + Math.pow(10, -K * deval / 400));
-    }
-
-    private double square(double val) {
-        return val * val;
     }
 
     public void addFen(FenEntry entry) {

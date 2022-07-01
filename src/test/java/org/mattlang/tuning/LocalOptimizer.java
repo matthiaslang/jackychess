@@ -4,6 +4,8 @@ import java.util.List;
 
 public class LocalOptimizer implements Optimizer {
 
+    /** safety delta value to ensure that error is not only better by a minor calculation precision issue. */
+    public static final double DELTA = 0.00000001;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
@@ -26,18 +28,18 @@ public class LocalOptimizer implements Optimizer {
             for (int pi = 0; pi < nParams; pi++) {
                 bestParValues.get(pi).change(1);
                 double newE = e(bestParValues);
-                if (newE < bestE) {
+                if (newE < bestE - DELTA) {
                     bestE = newE;
                     improved = true;
                 } else {
                     bestParValues.get(pi).change(-2);
                     newE = e(bestParValues);
-                    if (newE < bestE) {
+                    if (newE < bestE - DELTA) {
                         bestE = newE;
                         improved = true;
                     } else {
                         // reset change:
-                        bestParValues.get(pi).change(+2);
+                        bestParValues.get(pi).change(+1);
                     }
                 }
             }
