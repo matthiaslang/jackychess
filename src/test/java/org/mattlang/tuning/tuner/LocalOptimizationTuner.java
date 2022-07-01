@@ -17,6 +17,7 @@ public class LocalOptimizationTuner {
         LocalOptimizer optimizer = new LocalOptimizer();
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction();
 
+        System.out.println("Load & Prepare Data...");
         DataSet dataset = loadDataset();
 
         System.out.println("Initial Parameter values:");
@@ -24,6 +25,7 @@ public class LocalOptimizationTuner {
             param.printResult();
         }
 
+        System.out.println("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);
 
         System.out.println("Optimized Parameter values:");

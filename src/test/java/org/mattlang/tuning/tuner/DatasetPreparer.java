@@ -58,9 +58,17 @@ public class DatasetPreparer {
     private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, double result) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
-        if (moveDesr.getEnding() == null && !isBookMove(moveDesr)) {
+        if (moveDesr.getEnding() == null && !isBookMove(moveDesr) && !isMateScore(moveDesr.getComment())) {
             addFen(dataSet, board, result);
         }
+    }
+
+    private boolean isMateScore(Comment comment) {
+
+        // comment in cutechess has the form: -319.87/13 1.1s
+        String scoreStr = comment.getText().split("/")[0];
+        double score = Double.parseDouble(scoreStr);
+        return score < -319.0 || score > 319;
     }
 
     private void addFen(DataSet dataSet, BoardRepresentation board, double result) {

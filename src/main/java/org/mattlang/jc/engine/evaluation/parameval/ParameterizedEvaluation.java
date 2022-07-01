@@ -61,6 +61,11 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         adjustments = new ParameterizedAdjustmentsEvaluation(config);
     }
 
+    public ParameterizedEvaluation(boolean caching) {
+        this();
+        this.caching = caching;
+    }
+
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 

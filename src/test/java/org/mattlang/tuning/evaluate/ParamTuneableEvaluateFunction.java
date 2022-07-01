@@ -14,7 +14,10 @@ import org.mattlang.tuning.TuningParameter;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
-    private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation();
+    private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation(false);
+
+    public ParamTuneableEvaluateFunction() {
+    }
 
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
