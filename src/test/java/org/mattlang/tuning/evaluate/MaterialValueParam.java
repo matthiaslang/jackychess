@@ -22,8 +22,8 @@ public class MaterialValueParam implements TuningParameter {
     }
 
     @Override
-    public void printResult() {
-        System.out.println(name + "=" + value);
+    public String getParamDef() {
+        return name + "=" + value;
     }
 
     public void saveValue() {

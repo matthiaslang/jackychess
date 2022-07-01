@@ -1,9 +1,13 @@
 package org.mattlang.tuning.tuner;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.LocalOptimizer;
@@ -17,22 +21,19 @@ public class LocalOptimizationTuner {
 
         System.out.println("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
+        System.out.println("Data set with " + dataset.getFens().size() + " Fens loaded.");
 
         LocalOptimizer optimizer = new LocalOptimizer();
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction();
 
         System.out.println("Initial Parameter values:");
-        for (TuningParameter param : evaluate.getParams()) {
-            param.printResult();
-        }
+        System.out.println(collectParamDescr(evaluate.getParams()));
 
         System.out.println("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);
 
         System.out.println("Optimized Parameter values:");
-        for (TuningParameter param : optimizedParams) {
-            param.printResult();
-        }
+        System.out.println(collectParamDescr(optimizedParams));
     }
 
     private static DataSet loadDataset(String[] args) throws IOException {
@@ -51,4 +52,13 @@ public class LocalOptimizationTuner {
         }
     }
 
+    private static String collectParamDescr(List<TuningParameter> params) {
+        // make them distinct (since some params may be related and return a description of the whole related parameters:
+        Set<String> distinctSet = new LinkedHashSet<>();
+        for (TuningParameter param : params) {
+            distinctSet.add(param.getParamDef());
+        }
+        return distinctSet.stream()
+                .collect(joining("\n"));
+    }
 }
