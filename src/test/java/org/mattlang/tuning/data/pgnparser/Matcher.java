@@ -5,7 +5,7 @@ import static java.util.Optional.empty;
 import java.io.IOException;
 import java.util.Optional;
 
-public class Matcher {
+public class Matcher implements TextPosition {
 
     private final Scanner scanner;
 
@@ -25,7 +25,7 @@ public class Matcher {
 
     public void expectSymbol(OrdinarySymbol ordinarySymbol) throws IOException {
         if (!match(ordinarySymbol)) {
-            throw new PgnParserException("expecting " + ordinarySymbol);
+            throw new PgnParserException("expecting " + ordinarySymbol, scanner);
         }
     }
 
@@ -36,7 +36,7 @@ public class Matcher {
                 return word;
             }
         }
-        throw new PgnParserException("expecting word!");
+        throw new PgnParserException("expecting word!", scanner);
     }
 
     public Quote matchQuote() throws IOException {
@@ -46,7 +46,7 @@ public class Matcher {
                 return quote;
             }
         }
-        throw new PgnParserException("expecting quote!");
+        throw new PgnParserException("expecting quote!", scanner);
     }
 
     public MoveText matchMoveText() throws IOException {
@@ -56,7 +56,7 @@ public class Matcher {
                 return moveText;
             }
         }
-        throw new PgnParserException("expecting move text!");
+        throw new PgnParserException("expecting move text!", scanner);
     }
 
     public Optional<IntegerNumber> optMatchNumber() throws IOException {
@@ -87,5 +87,13 @@ public class Matcher {
             }
         }
         return empty();
+    }
+
+    public int getLineNo() {
+        return scanner.getLineNo();
+    }
+
+    public int getColNo() {
+        return scanner.getColNo();
     }
 }

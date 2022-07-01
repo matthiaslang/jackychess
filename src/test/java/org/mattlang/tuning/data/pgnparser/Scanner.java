@@ -6,7 +6,9 @@ import static java.lang.Character.isLetter;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Scanner {
+import lombok.Getter;
+
+public class Scanner implements TextPosition {
 
     public static final char BRACKET_OPEN = '[';
     public static final char BRACKET_CLOSE = ']';
@@ -21,8 +23,16 @@ public class Scanner {
 
     private Symbol cachedSym = null;
 
+    @Getter
+    private int lineNo = 1;
+
+    @Getter
+    private int colNo = 1;
+
     public Scanner(InputStream in) {
         this.in = in;
+        lineNo = 1;
+        colNo = 1;
     }
 
     public boolean hasNext() throws IOException {
@@ -36,7 +46,7 @@ public class Scanner {
     public Symbol next() {
         Symbol nextOne = cachedSym;
         if (nextOne == null) {
-            throw new PgnParserException("End of File or next() called without hasNext()!");
+            throw new PgnParserException("End of File or next() called without hasNext()!", this);
         }
         cachedSym = null;
         return nextOne;
@@ -45,7 +55,7 @@ public class Scanner {
     public Symbol getCurr() {
         Symbol curr = cachedSym;
         if (curr == null) {
-            throw new PgnParserException("End of File or next() called without hasNext()!");
+            throw new PgnParserException("End of File or next() called without hasNext()!", this);
         }
         return curr;
     }
@@ -76,7 +86,7 @@ public class Scanner {
             return readQuote();
 
         }
-        throw new PgnParserException("Unknown Symbol: " + ch);
+        throw new PgnParserException("Unknown Symbol: " + ch, this);
     }
 
     private Symbol readWordOrMoveText(char ch) throws IOException {
@@ -158,7 +168,7 @@ public class Scanner {
     private char readExpectedChar() throws IOException {
         int ch = readChar();
         if (ch == 0) {
-            throw new PgnParserException("error end of file!");
+            throw new PgnParserException("error end of file!", this);
         }
         return (char) ch;
     }
@@ -166,6 +176,13 @@ public class Scanner {
     private char readChar() throws IOException {
         int ch = charCached ? cachedChar : in.read();
         charCached = false;
+
+        colNo++;
+        if (ch == 10) {
+            lineNo++;
+            colNo = 1;
+        }
+
         if (ch == -1) {
             return (char) 0;
         }
@@ -174,7 +191,7 @@ public class Scanner {
 
     private void putChar(char ch) {
         if (charCached) {
-            throw new PgnParserException("Illegal State: already char cached!");
+            throw new PgnParserException("Illegal State: already char cached!", this);
         }
         charCached = true;
         cachedChar = ch;

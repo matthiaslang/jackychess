@@ -35,7 +35,7 @@ public class PgnParser {
             result.add(game);
         }
         if (scanner.hasNext()) {
-            throw new PgnParserException("Symbols after expected end:" + scanner.getCurr());
+            throw new PgnParserException("Symbols after expected end:" + scanner.getCurr(), scanner);
         }
 
         return result;
@@ -68,7 +68,7 @@ public class PgnParser {
         Optional<IntegerNumber> optNumber = matcher.optMatchNumber();
         if (optNumber.isPresent()) {
             if (ply != optNumber.get().getI()) {
-                throw new PgnParserException("Expecting Ply " + ply);
+                throw new PgnParserException("Expecting Ply " + ply, matcher);
             }
             matcher.expectSymbol(DOT);
 
@@ -102,7 +102,7 @@ public class PgnParser {
 
             return new MoveDescr(moveText, optComment.orElse(null), optEnding.orElse(null));
         } catch (RuntimeException e) {
-            throw new PgnParserException("Error parsing move " + moveText.getStr(), e);
+            throw new PgnParserException("Error parsing move " + moveText.getStr(), e, matcher);
         }
     }
 
