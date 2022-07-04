@@ -1,6 +1,7 @@
 package org.mattlang.tuning.tuner;
 
 import static java.util.stream.Collectors.joining;
+import static org.mattlang.jc.Main.initLogging;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.LocalOptimizer;
@@ -17,23 +19,28 @@ import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 
 public class LocalOptimizationTuner {
 
-    public static void main(String[] args) throws IOException {
+    private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
 
-        System.out.println("Load & Prepare Data...");
+    public static void main(String[] args) throws IOException {
+        System.setProperty("jacky.logging.activate", "true");
+        initLogging("/tuningLogging.properties");
+
+        LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
-        System.out.println("Data set with " + dataset.getFens().size() + " Fens loaded.");
+        dataset.setMultithreaded(true);
+        LOGGER.info("Data set with " + dataset.getFens().size() + " Fens loaded.");
 
         LocalOptimizer optimizer = new LocalOptimizer();
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction();
 
-        System.out.println("Initial Parameter values:");
-        System.out.println(collectParamDescr(evaluate.getParams()));
+        LOGGER.info("Initial Parameter values:");
+        LOGGER.info(collectParamDescr(evaluate.getParams()));
 
-        System.out.println("Opimizing...");
+        LOGGER.info("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);
 
-        System.out.println("Optimized Parameter values:");
-        System.out.println(collectParamDescr(optimizedParams));
+        LOGGER.info("Optimized Parameter values:");
+        LOGGER.info(collectParamDescr(optimizedParams));
     }
 
     private static DataSet loadDataset(String[] args) throws IOException {
@@ -41,7 +48,7 @@ public class LocalOptimizationTuner {
         if (args != null && args.length > 0) {
             DataSet result = new DataSet();
             for (String arg : args) {
-                System.out.println("parsing file " + arg);
+                LOGGER.info("parsing file " + arg);
                 result.add(preparer.prepareLoadFromFile(new File(arg)));
             }
             return result;

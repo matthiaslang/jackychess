@@ -28,6 +28,10 @@ public class Main {
         }
     }
 
+    public static void initLogging(String resourceFileLogProperties) {
+        readLoggerConfig(resourceFileLogProperties);
+    }
+
     private static void readLoggerConfig(String resourceFile) {
         LogManager manager = LogManager.getLogManager();
         try {
