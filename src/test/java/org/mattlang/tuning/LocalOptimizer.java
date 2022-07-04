@@ -60,7 +60,7 @@ public class LocalOptimizer implements Optimizer {
     }
 
     private double e(List<TuningParameter> params) {
-        evaluate.setParams(params);
-        return dataSet.calcError(evaluate);
+
+        return dataSet.calcError(evaluate, params);
     }
 }

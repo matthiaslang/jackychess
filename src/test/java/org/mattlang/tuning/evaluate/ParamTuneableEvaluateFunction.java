@@ -35,6 +35,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         }
     }
 
+
     @Override
     public List<TuningParameter> getParams() {
         ArrayList<TuningParameter> params = new ArrayList<>();
@@ -64,5 +65,11 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
         return params;
     }
-    
+
+    @Override
+    public TuneableEvaluateFunction copy() {
+        // copy means so far just to create a new object.
+        return new ParamTuneableEvaluateFunction();
+    }
+
 }

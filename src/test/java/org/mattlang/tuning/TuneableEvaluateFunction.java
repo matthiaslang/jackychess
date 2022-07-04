@@ -10,4 +10,5 @@ public interface TuneableEvaluateFunction extends EvaluateFunction {
 
     List<TuningParameter> getParams();
 
+    TuneableEvaluateFunction copy();
 }
