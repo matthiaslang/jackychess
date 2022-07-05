@@ -70,9 +70,9 @@ public final class Pattern {
         }
     }
 
-    public void addOffsetVal(int pos, int offset) {
-        boardPattern[pos] += offset;
-        flippedPattern[FLIP[pos]] += offset;
+    public void setVal(int pos, int value) {
+        boardPattern[pos] = value;
+        flippedPattern[FLIP[pos]] = value;
     }
 
     /**
@@ -173,5 +173,9 @@ public final class Pattern {
             }
         }
         return b.toString();
+    }
+
+    public Pattern copy() {
+        return new Pattern(boardPattern.clone());
     }
 }

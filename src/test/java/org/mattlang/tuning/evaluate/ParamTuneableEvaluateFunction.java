@@ -73,6 +73,11 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     }
 
+    private ParamTuneableEvaluateFunction(ArrayList<TuningParameterGroup> groups, ArrayList<TuningParameter> params) {
+        this.groups = groups;
+        this.params = params;
+    }
+
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
         return parameterizedEvaluation.eval(currBoard, who2Move);
@@ -94,7 +99,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     @Override
     public TuneableEvaluateFunction copy() {
         // copy means so far just to create a new object.
-        return new ParamTuneableEvaluateFunction();
+        return new ParamTuneableEvaluateFunction(this.groups, this.params);
     }
 
     public String collectParamDescr() {

@@ -53,7 +53,16 @@ public class DataSet {
         evaluate.saveValues(params);
         this.evaluate = evaluate;
         this.params = params;
+        // "delete" all "previous" thread locals, so that we get new ones, where we again call "saveValues" on creation:
+        threadLocalEvaluateFunction = new ThreadLocal<EvaluateFunction>() {
 
+            @Override
+            protected EvaluateFunction initialValue() {
+                TuneableEvaluateFunction copy = evaluate.copy();
+                copy.saveValues(params);
+                return copy;
+            }
+        };
         // build sum:
 
         Optional<Double> sum2 = fens.stream()
