@@ -1,5 +1,7 @@
 package org.mattlang.tuning.tuner;
 
+import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
+import static org.mattlang.jc.AppConfiguration.LOGGING_DIR;
 import static org.mattlang.jc.Main.initLogging;
 
 import java.io.File;
@@ -19,12 +21,13 @@ public class LocalOptimizationTuner {
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
 
     public static void main(String[] args) throws IOException {
-        System.setProperty("jacky.logging.activate", "true");
+        System.setProperty(LOGGING_ACTIVATE, "true");
+        System.setProperty(LOGGING_DIR, ".");
         initLogging("/tuningLogging.properties");
 
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
-//        dataset.setMultithreaded(true);
+        dataset.setMultithreaded(true);
         LOGGER.info("Data set with " + dataset.getFens().size() + " Fens loaded.");
 
         LocalOptimizer optimizer = new LocalOptimizer();

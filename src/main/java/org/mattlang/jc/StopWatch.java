@@ -53,4 +53,22 @@ public class StopWatch {
                 millis);
         return seconds < 0 ? "-" + positive : positive;
     }
+
+    private long lastTimeElapsedMeasure = 0;
+
+    public boolean timeElapsed(int millis) {
+        long now = System.currentTimeMillis();
+        if (lastTimeElapsedMeasure == 0) {
+            if (now - start > millis) {
+                lastTimeElapsedMeasure = now;
+                return true;
+            }
+        } else {
+            if (now - lastTimeElapsedMeasure > millis) {
+                lastTimeElapsedMeasure = now;
+                return true;
+            }
+        }
+        return false;
+    }
 }

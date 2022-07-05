@@ -3,17 +3,22 @@ package org.mattlang.tuning.tuner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.util.FenComposer;
+import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.data.pgnparser.*;
 
 public class DatasetPreparer {
+
+    private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
 
     /**
      * Prepares a data set from a pgn file as source.
@@ -25,20 +30,29 @@ public class DatasetPreparer {
         PgnParser parser = new PgnParser();
         List<PgnGame> games = parser.parse(in);
 
-        DataSet dataSet = new DataSet();
-        for (PgnGame game : games) {
-            addGame(dataSet, game);
-        }
-        return dataSet;
+        return prepareGames(games);
     }
 
     public DataSet prepareLoadFromFile(File file) throws IOException {
         PgnParser parser = new PgnParser();
         List<PgnGame> games = parser.parse(file);
 
+        return prepareGames(games);
+    }
+
+    private DataSet prepareGames(List<PgnGame> games) {
+        LOGGER.info("preparing Data now...");
         DataSet dataSet = new DataSet();
-        for (PgnGame game : games) {
+        int counter = 0;
+        Iterator<PgnGame> iterator=games.iterator();
+        while(iterator.hasNext()){
+            PgnGame game= iterator.next();
             addGame(dataSet, game);
+            iterator.remove();
+            counter++;
+            if (counter % 500 == 0) {
+                LOGGER.info(" prepared " + counter + " games; " + dataSet.getFens().size() + " fens...");
+            }
         }
         return dataSet;
     }
@@ -81,6 +95,10 @@ public class DatasetPreparer {
         if (comment != null && comment.getText() != null && comment.getText().contains("/")) {
             String scoreStr = comment.getText().split("/")[0];
             if (scoreStr != null) {
+                if (scoreStr.startsWith("+M") || scoreStr.startsWith("-M")) {
+                    // a "mate in x moves" Syntax:
+                    return true;
+                }
                 double score = Double.parseDouble(scoreStr);
                 return score < -319.0 || score > 319;
             }
@@ -91,7 +109,7 @@ public class DatasetPreparer {
 
     private void addFen(DataSet dataSet, BoardRepresentation board, double result) {
         String fen = FenComposer.buildFenPosition(board);
-        FenEntry entry = new FenEntry(fen, board.copy(), result);
+        FenEntry entry = new FenEntry(fen, BitBoardForTuning.copy(board), result);
         dataSet.addFen(entry);
     }
 

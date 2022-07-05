@@ -5,13 +5,11 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.tuning.data.pgnparser.OrdinarySymbol.BRACKET_OPEN;
 import static org.mattlang.tuning.data.pgnparser.OrdinarySymbol.DOT;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -20,8 +18,10 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class PgnParser {
 
+    private static final Logger LOGGER = Logger.getLogger(PgnParser.class.getSimpleName());
+
     public List<PgnGame> parse(File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file)) {
+        try (InputStream fis = new BufferedInputStream(new FileInputStream(file))) {
             return parse(fis);
         }
     }
@@ -30,9 +30,14 @@ public class PgnParser {
         List<PgnGame> result = new ArrayList<>();
         Scanner scanner = new Scanner(in);
         Matcher matcher = new Matcher(scanner);
+        int counter = 0;
         while (scanner.hasNext() && matcher.match(BRACKET_OPEN)) {
             PgnGame game = parseGame(matcher);
             result.add(game);
+            counter++;
+            if (counter % 500 == 0) {
+                LOGGER.info("parsed " + counter + " games...");
+            }
         }
         if (scanner.hasNext()) {
             throw new PgnParserException("Symbols after expected end:" + scanner.getCurr(), scanner);

@@ -36,12 +36,13 @@ public class LocalOptimizer implements Optimizer {
 
         boolean improved = true;
         while (improved) {
+            improved = false;
             for (int pi = 0; pi < nParams; pi++) {
                 round++;
-                if (round % 1000 == 0) {
-                    LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", best Error= " + bestE);
+                if (round % 100 == 0 && stopWatch.timeElapsed(5*60000)) {
+                    LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE);
+                    LOGGER.info(evaluate.collectParamDescr());
                 }
-                improved = false;
 
                 bestParValues.get(pi).change(1);
                 double newE = e(bestParValues);
