@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
@@ -27,7 +26,7 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
         this.getter = getter;
         this.pattern = getter.apply(parameterizedEvaluation.getPstEvaluation()).copy();
         for (int pos = 0; pos < 64; pos++) {
-            parameters.add(new PstValueParam(this, pos, pattern.getVal(pos, Color.WHITE)));
+            parameters.add(new PstValueParam(this, pos, pattern.getRawVal(pos)));
         }
     }
 

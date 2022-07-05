@@ -61,6 +61,7 @@ public class PatternTest {
         }
 
         String patternStr=loadedPattern.toPatternStr();
+        System.out.println(patternStr);
 
         Pattern reParsedPattern = Pattern.parsePattern(new ByteArrayInputStream(patternStr.getBytes()));
 

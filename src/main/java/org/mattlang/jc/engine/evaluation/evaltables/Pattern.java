@@ -70,6 +70,15 @@ public final class Pattern {
         }
     }
 
+    /**
+     * Return "raw" value, used during tuning process.
+     * @param pos
+     * @return
+     */
+    public int getRawVal(int pos){
+        return boardPattern[pos];
+    }
+
     public void setVal(int pos, int value) {
         boardPattern[pos] = value;
         flippedPattern[FLIP[pos]] = value;
@@ -167,7 +176,9 @@ public final class Pattern {
     public String toPatternStr() {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < boardPattern.length; i++) {
-            b.append(boardPattern[i]).append(";");
+            int val = boardPattern[i];
+            String formattedVal=String.format("%1$3s", val);
+            b.append(formattedVal).append(";");
             if ((i + 1) % 8 == 0) {
                 b.append("\n");
             }
