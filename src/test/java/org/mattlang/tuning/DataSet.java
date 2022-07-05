@@ -39,7 +39,7 @@ public class DataSet {
     }
 
     private double calcSingleThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
-        evaluate.setParams(params);
+        evaluate.saveValues(params);
         // build sum:
         double sum = 0;
         for (FenEntry fen : fens) {
@@ -50,7 +50,7 @@ public class DataSet {
     }
 
     public double calcMultiThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
-        evaluate.setParams(params);
+        evaluate.saveValues(params);
         this.evaluate = evaluate;
         this.params = params;
 
@@ -70,7 +70,7 @@ public class DataSet {
         @Override
         protected EvaluateFunction initialValue() {
             TuneableEvaluateFunction copy = evaluate.copy();
-            copy.setParams(params);
+            copy.saveValues(params);
             return copy;
         }
     };

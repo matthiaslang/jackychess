@@ -1,14 +1,22 @@
 package org.mattlang.tuning;
 
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+
+/**
+ * Interface for all Tuning Parameters.
+ */
 public interface TuningParameter {
 
+    /**
+     * change the parameter by an offset of i. (Note it does only set the parameter, not update the value in any
+     * evaluation function.
+     */
     void change(int i);
 
     /**
-     * Returns a string describing/defining the parameter. Usually a Text fragment in the form of the propery
-     * configuration of that parameter.
+     * Writes the tuning parameter value to the evaluation function.
      *
-     * @return
+     * @param parameterizedEvaluation
      */
-    String getParamDef();
+    void saveValue(ParameterizedEvaluation parameterizedEvaluation);
 }

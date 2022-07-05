@@ -1,10 +1,13 @@
 package org.mattlang.tuning.evaluate;
 
+import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -13,12 +16,61 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation(false);
 
+    ArrayList<TuningParameterGroup> groups = new ArrayList<>();
+
+    ArrayList<TuningParameter> params = new ArrayList<>();
+
     public ParamTuneableEvaluateFunction() {
+
+        groups.add(
+                new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getPawnMG,
+                        ParameterizedMaterialEvaluation::setPawnMG));
+        groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getKnightMG, ParameterizedMaterialEvaluation::setKnightMG));
+        groups.add(new MaterialValueParam(MAT_BISHOP_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getBishopMG, ParameterizedMaterialEvaluation::setBishopMG));
+        groups.add(
+                new MaterialValueParam(MAT_ROOK_MG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getRookMG,
+                        ParameterizedMaterialEvaluation::setRookMG));
+        groups.add(new MaterialValueParam(MAT_QUEEN_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getQueenMG, ParameterizedMaterialEvaluation::setQueenMG));
+
+        groups.add(
+                new MaterialValueParam(MAT_PAWN_EG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getPawnEG,
+                        ParameterizedMaterialEvaluation::setPawnEG));
+        groups.add(new MaterialValueParam(MAT_KNIGHT_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getKnightEG, ParameterizedMaterialEvaluation::setKnightEG));
+        groups.add(new MaterialValueParam(MAT_BISHOP_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getBishopEG, ParameterizedMaterialEvaluation::setBishopEG));
+        groups.add(
+                new MaterialValueParam(MAT_ROOK_EG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getRookEG,
+                        ParameterizedMaterialEvaluation::setRookEG));
+        groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
+
+        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getPawnMG));
+        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getBishopMG));
+        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKnightMG));
+        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getRookMG));
+        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getQueenMG));
+        groups.add(new PstPatternParameterGroup(KING_MG_CSV, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKingMG));
+
+        for (TuningParameterGroup group : groups) {
+            params.addAll(group.getParameters());
+        }
+
     }
 
     @Override
@@ -27,42 +79,15 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     @Override
-    public void setParams(List<TuningParameter> params) {
+    public void saveValues(List<TuningParameter> params) {
         for (TuningParameter param : params) {
-            if (param instanceof MaterialValueParam) {
-                ((MaterialValueParam) param).saveValue();
-            }
+            param.saveValue(parameterizedEvaluation);
         }
     }
 
 
     @Override
     public List<TuningParameter> getParams() {
-        ArrayList<TuningParameter> params = new ArrayList<>();
-
-        ParameterizedMaterialEvaluation matEval = parameterizedEvaluation.getMatEvaluation();
-        params.add(new MaterialValueParam(MAT_PAWN_MG, matEval.getPawnMG(), v -> matEval.setPawnMG(v)));
-        params.add(new MaterialValueParam(MAT_KNIGHT_MG, matEval.getKnightMG(), v -> matEval.setKnightMG(v)));
-        params.add(new MaterialValueParam(MAT_BISHOP_MG, matEval.getBishopMG(), v -> matEval.setBishopMG(v)));
-        params.add(new MaterialValueParam(MAT_ROOK_MG, matEval.getRookMG(), v -> matEval.setRookMG(v)));
-        params.add(new MaterialValueParam(MAT_QUEEN_MG, matEval.getQueenMG(), v -> matEval.setQueenMG(v)));
-
-        params.add(new MaterialValueParam(MAT_PAWN_EG, matEval.getPawnEG(), v -> matEval.setPawnEG(v)));
-        params.add(new MaterialValueParam(MAT_KNIGHT_EG, matEval.getKnightEG(), v -> matEval.setKnightEG(v)));
-        params.add(new MaterialValueParam(MAT_BISHOP_EG, matEval.getBishopEG(), v -> matEval.setBishopEG(v)));
-        params.add(new MaterialValueParam(MAT_ROOK_EG, matEval.getRookEG(), v -> matEval.setRookEG(v)));
-        params.add(new MaterialValueParam(MAT_QUEEN_EG, matEval.getQueenEG(), v -> matEval.setQueenEG(v)));
-
-        ParameterizedPstEvaluation pstEval = parameterizedEvaluation.getPstEvaluation();
-        for (int i = 0; i < 64; i++) {
-            params.add(new PstValueParam(PAWN_MG_CSV, pstEval.getPawnMG(), i));
-            params.add(new PstValueParam(BISHOP_MG_CSV, pstEval.getBishopMG(), i));
-            params.add(new PstValueParam(KNIGHT_MG_CSV, pstEval.getKnightMG(), i));
-            params.add(new PstValueParam(ROOK_MG_CSV, pstEval.getRookMG(), i));
-            params.add(new PstValueParam(QUEEN_MG_CSV, pstEval.getQueenMG(), i));
-            params.add(new PstValueParam(KING_MG_CSV, pstEval.getKingMG(), i));
-        }
-
         return params;
     }
 
@@ -72,4 +97,13 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         return new ParamTuneableEvaluateFunction();
     }
 
+    public String collectParamDescr() {
+        // make them distinct (since some params may be related and return a description of the whole related parameters:
+        Set<String> distinctSet = new LinkedHashSet<>();
+        for (TuningParameterGroup group : groups) {
+            distinctSet.add(group.getParamDef());
+        }
+        return distinctSet.stream()
+                .collect(joining("\n"));
+    }
 }

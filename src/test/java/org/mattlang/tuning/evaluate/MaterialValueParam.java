@@ -1,19 +1,32 @@
 package org.mattlang.tuning.evaluate;
 
-import java.util.function.IntConsumer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
 
-public class MaterialValueParam implements TuningParameter {
+public class MaterialValueParam implements TuningParameter, TuningParameterGroup {
 
-    private final IntConsumer saver;
+    private final BiConsumer<ParameterizedMaterialEvaluation, Integer> saver;
+
+    private final Function<ParameterizedMaterialEvaluation, Integer> getter;
+
     private String name;
     private int value;
 
-    public MaterialValueParam(String name, int value, IntConsumer saver) {
+    public MaterialValueParam(String name,
+            ParameterizedEvaluation evaluation,
+            Function<ParameterizedMaterialEvaluation, Integer> getter,
+            BiConsumer<ParameterizedMaterialEvaluation, Integer> saver) {
         this.name = name;
-        this.value = value;
         this.saver = saver;
+        this.getter = getter;
+        value = getter.apply(evaluation.getMatEvaluation());
     }
 
     @Override
@@ -26,7 +39,12 @@ public class MaterialValueParam implements TuningParameter {
         return name + "=" + value;
     }
 
-    public void saveValue() {
-        saver.accept(value);
+    public void saveValue(ParameterizedEvaluation evaluation) {
+        saver.accept(evaluation.getMatEvaluation(), value);
+    }
+
+    @Override
+    public List<TuningParameter> getParameters() {
+        return Arrays.asList(this);
     }
 }

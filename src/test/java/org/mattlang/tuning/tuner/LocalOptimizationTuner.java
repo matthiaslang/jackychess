@@ -1,14 +1,11 @@
 package org.mattlang.tuning.tuner;
 
-import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.Main.initLogging;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mattlang.tuning.DataSet;
@@ -27,20 +24,20 @@ public class LocalOptimizationTuner {
 
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
-        dataset.setMultithreaded(true);
+//        dataset.setMultithreaded(true);
         LOGGER.info("Data set with " + dataset.getFens().size() + " Fens loaded.");
 
         LocalOptimizer optimizer = new LocalOptimizer();
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction();
 
         LOGGER.info("Initial Parameter values:");
-        LOGGER.info(collectParamDescr(evaluate.getParams()));
+        LOGGER.info(evaluate.collectParamDescr());
 
         LOGGER.info("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);
 
         LOGGER.info("Optimized Parameter values:");
-        LOGGER.info(collectParamDescr(optimizedParams));
+        LOGGER.info(evaluate.collectParamDescr());
     }
 
     private static DataSet loadDataset(String[] args) throws IOException {
@@ -59,13 +56,4 @@ public class LocalOptimizationTuner {
         }
     }
 
-    private static String collectParamDescr(List<TuningParameter> params) {
-        // make them distinct (since some params may be related and return a description of the whole related parameters:
-        Set<String> distinctSet = new LinkedHashSet<>();
-        for (TuningParameter param : params) {
-            distinctSet.add(param.getParamDef());
-        }
-        return distinctSet.stream()
-                .collect(joining("\n"));
-    }
 }

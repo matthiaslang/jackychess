@@ -1,27 +1,30 @@
 package org.mattlang.tuning.evaluate;
 
-import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.TuningParameter;
 
+import lombok.Getter;
+
+@Getter
 public class PstValueParam implements TuningParameter {
 
-    private final String tableCsvName;
-    private final Pattern pattern;
     private final int pos;
+    private final PstPatternParameterGroup group;
+    private int val;
 
-    public PstValueParam(String tableCsvName, Pattern pattern, int pos) {
-        this.tableCsvName = tableCsvName;
-        this.pattern = pattern;
+    public PstValueParam(PstPatternParameterGroup group, int pos, int val) {
+        this.group = group;
         this.pos = pos;
+        this.val = val;
     }
 
     @Override
     public void change(int offset) {
-        pattern.addOffsetVal(pos, offset);
+        val += offset;
     }
 
     @Override
-    public String getParamDef() {
-        return tableCsvName + "\n" + pattern.toPatternStr();
+    public void saveValue(ParameterizedEvaluation parameterizedEvaluation) {
+        group.setVal(parameterizedEvaluation, pos, val);
     }
 }
