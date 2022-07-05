@@ -54,17 +54,18 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
                 ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
 
-        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, parameterizedEvaluation,
+        boolean mirrored = true;
+        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getPawnMG));
-        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getBishopMG));
-        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getKnightMG));
-        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getRookMG));
-        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getQueenMG));
-        groups.add(new PstPatternParameterGroup(KING_MG_CSV, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getKingMG));
 
         for (TuningParameterGroup group : groups) {
