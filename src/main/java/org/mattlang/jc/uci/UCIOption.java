@@ -69,7 +69,7 @@ public abstract class UCIOption<T> {
 
         Optional<String> optStrVal = AppConfiguration.APPCONFIG.getStringValue("opt." + getName());
         if (optStrVal.isPresent()) {
-            LOGGER.log(Level.INFO, "Overrider: opt." + getName() + "=" + optStrVal.get());
+            LOGGER.log(Level.FINEST, "Overrider: opt." + getName() + "=" + optStrVal.get());
             parseAndSetParameter(optStrVal.get());
         }
 
