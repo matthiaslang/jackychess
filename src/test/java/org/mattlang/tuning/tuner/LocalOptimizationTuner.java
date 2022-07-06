@@ -10,28 +10,57 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mattlang.tuning.DataSet;
-import org.mattlang.tuning.LocalOptimizer;
-import org.mattlang.tuning.TuneableEvaluateFunction;
-import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.*;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 
 public class LocalOptimizationTuner {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
+    private final String[] args;
+
+    private boolean multiThreading = true;
+
+    private boolean adjustK = true;
+
+    private boolean tuneMaterial = false;
+
+    private boolean tunePst = true;
+
+    public LocalOptimizationTuner(String[] args) {
+        this.args = args;
+    }
 
     public static void main(String[] args) throws IOException {
+
+        LocalOptimizationTuner tuner = new LocalOptimizationTuner(args);
+        tuner.run();
+
+    }
+
+    private void run() throws IOException {
+
+        System.setProperty("opt.evalParamSet", "TUNED01");
+
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");
         initLogging("/tuningLogging.properties");
 
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
-        dataset.setMultithreaded(true);
+        dataset.setMultithreaded(multiThreading);
         LOGGER.info("Data set with " + dataset.getFens().size() + " Fens loaded.");
 
+        TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(tuneMaterial, tunePst);
+
+        if (adjustK) {
+            LOGGER.info("Minimize Scaling K...");
+            LocalOptimizerK optimizerK = new LocalOptimizerK();
+            double k = optimizerK.optimize(evaluate, dataset);
+            LOGGER.info("Scaling finished: K=" + k);
+            dataset.setK(k);
+        }
+
         LocalOptimizer optimizer = new LocalOptimizer();
-        TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction();
 
         LOGGER.info("Initial Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());
@@ -43,7 +72,7 @@ public class LocalOptimizationTuner {
         LOGGER.info(evaluate.collectParamDescr());
     }
 
-    private static DataSet loadDataset(String[] args) throws IOException {
+    private DataSet loadDataset(String[] args) throws IOException {
         DatasetPreparer preparer = new DatasetPreparer();
         if (args != null && args.length > 0) {
             DataSet result = new DataSet();

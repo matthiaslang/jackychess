@@ -26,47 +26,54 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     ArrayList<TuningParameter> params = new ArrayList<>();
 
-    public ParamTuneableEvaluateFunction() {
+    private boolean tuneMaterial;
 
-        groups.add(
-                new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getPawnMG,
-                        ParameterizedMaterialEvaluation::setPawnMG));
-        groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getKnightMG, ParameterizedMaterialEvaluation::setKnightMG));
-        groups.add(new MaterialValueParam(MAT_BISHOP_MG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getBishopMG, ParameterizedMaterialEvaluation::setBishopMG));
-        groups.add(
-                new MaterialValueParam(MAT_ROOK_MG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getRookMG,
-                        ParameterizedMaterialEvaluation::setRookMG));
-        groups.add(new MaterialValueParam(MAT_QUEEN_MG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getQueenMG, ParameterizedMaterialEvaluation::setQueenMG));
+    private boolean tunePst;
 
-        groups.add(
-                new MaterialValueParam(MAT_PAWN_EG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getPawnEG,
-                        ParameterizedMaterialEvaluation::setPawnEG));
-        groups.add(new MaterialValueParam(MAT_KNIGHT_EG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getKnightEG, ParameterizedMaterialEvaluation::setKnightEG));
-        groups.add(new MaterialValueParam(MAT_BISHOP_EG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getBishopEG, ParameterizedMaterialEvaluation::setBishopEG));
-        groups.add(
-                new MaterialValueParam(MAT_ROOK_EG, parameterizedEvaluation, ParameterizedMaterialEvaluation::getRookEG,
-                        ParameterizedMaterialEvaluation::setRookEG));
-        groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
-                ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
+    public ParamTuneableEvaluateFunction(boolean tuneMaterial, boolean tunePst) {
+        this.tuneMaterial = tuneMaterial;
+        this.tunePst = tunePst;
 
-        boolean mirrored = true;
-        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getPawnMG));
-        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getBishopMG));
-        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKnightMG));
-        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getRookMG));
-        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getQueenMG));
-        groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKingMG));
+        if (tuneMaterial) {
+            groups.add(new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getPawnMG, ParameterizedMaterialEvaluation::setPawnMG));
+            groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getKnightMG, ParameterizedMaterialEvaluation::setKnightMG));
+            groups.add(new MaterialValueParam(MAT_BISHOP_MG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getBishopMG, ParameterizedMaterialEvaluation::setBishopMG));
+            groups.add(new MaterialValueParam(MAT_ROOK_MG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getRookMG, ParameterizedMaterialEvaluation::setRookMG));
+            groups.add(new MaterialValueParam(MAT_QUEEN_MG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getQueenMG, ParameterizedMaterialEvaluation::setQueenMG));
+
+            groups.add(new MaterialValueParam(MAT_PAWN_EG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getPawnEG, ParameterizedMaterialEvaluation::setPawnEG));
+            groups.add(new MaterialValueParam(MAT_KNIGHT_EG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getKnightEG, ParameterizedMaterialEvaluation::setKnightEG));
+            groups.add(new MaterialValueParam(MAT_BISHOP_EG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getBishopEG, ParameterizedMaterialEvaluation::setBishopEG));
+            groups.add(new MaterialValueParam(MAT_ROOK_EG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getRookEG, ParameterizedMaterialEvaluation::setRookEG));
+            groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
+                    ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
+        }
+
+        if (tunePst) {
+            boolean mirrored = true;
+            groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getPawnMG));
+            groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getBishopMG));
+            groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getKnightMG));
+            groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getRookMG));
+            groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getQueenMG));
+            groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getKingMG));
+
+        }
 
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
