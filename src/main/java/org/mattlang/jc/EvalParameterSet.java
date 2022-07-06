@@ -18,5 +18,7 @@ public enum EvalParameterSet {
     /**
      * Experimental evaluation set to try out different parameters and compare with other sets.
      */
-    EXPERIMENTAL
+    EXPERIMENTAL,
+
+    TUNED01
 }
