@@ -73,6 +73,19 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
             groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
                     ParameterizedPstEvaluation::getKingMG));
 
+            groups.add(new PstPatternParameterGroup(PAWN_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getPawnEG));
+            groups.add(new PstPatternParameterGroup(BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getBishopEG));
+            groups.add(new PstPatternParameterGroup(KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getKnightEG));
+            groups.add(new PstPatternParameterGroup(ROOK_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getRookEG));
+            groups.add(new PstPatternParameterGroup(QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getQueenEG));
+            groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
+                    ParameterizedPstEvaluation::getKingEG));
+            
         }
 
         for (TuningParameterGroup group : groups) {
