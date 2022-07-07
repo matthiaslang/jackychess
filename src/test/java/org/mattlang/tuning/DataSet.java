@@ -2,12 +2,12 @@ package org.mattlang.tuning;
 
 import static java.lang.Math.pow;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.tuning.tuner.LocalOptimizationTuner.THREAD_COUNT;
+import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
@@ -27,9 +27,7 @@ public class DataSet {
      * scaling Constant.
      */
     private static final double K = 1.13;
-    private static final int THREAD_COUNT = 11;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
     private List<DataSet> workers = new ArrayList<>();
 

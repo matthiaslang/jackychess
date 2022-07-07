@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import org.mattlang.tuning.*;
@@ -22,9 +24,13 @@ public class LocalOptimizationTuner {
 
     private boolean adjustK = true;
 
-    private boolean tuneMaterial = false;
+    private boolean tuneMaterial = true;
 
-    private boolean tunePst = true;
+    private boolean tunePst = false;
+
+    public static final int THREAD_COUNT = 11;
+
+    public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
     public LocalOptimizationTuner(String[] args) {
         this.args = args;
@@ -70,6 +76,9 @@ public class LocalOptimizationTuner {
 
         LOGGER.info("Optimized Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());
+
+        executorService.shutdown();
+
     }
 
     private DataSet loadDataset(String[] args) throws IOException {
