@@ -177,7 +177,7 @@ public final class Pattern {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < boardPattern.length; i++) {
             int val = boardPattern[i];
-            String formattedVal=String.format("%1$3s", val);
+            String formattedVal=String.format("%1$4s", val);
             b.append(formattedVal).append(";");
             if ((i + 1) % 8 == 0) {
                 b.append("\n");

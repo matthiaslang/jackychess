@@ -1,5 +1,6 @@
 package org.mattlang.tuning;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -16,4 +17,6 @@ public interface TuningParameterGroup {
      * @return
      */
     String getParamDef();
+
+    void writeParamDef(File outputDir);
 }

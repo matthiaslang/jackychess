@@ -1,5 +1,6 @@
 package org.mattlang.tuning.evaluate;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -37,6 +38,11 @@ public class MaterialValueParam implements TuningParameter, TuningParameterGroup
     @Override
     public String getParamDef() {
         return name + "=" + value;
+    }
+
+    @Override
+    public void writeParamDef(File outputDir) {
+
     }
 
     public void saveValue(ParameterizedEvaluation evaluation) {

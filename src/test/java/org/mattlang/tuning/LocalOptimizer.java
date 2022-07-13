@@ -1,5 +1,6 @@
 package org.mattlang.tuning;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -13,9 +14,14 @@ public class LocalOptimizer implements Optimizer {
      * safety delta value to ensure that error is not only better by a minor calculation precision issue.
      */
     public static final double DELTA = 0.00000001;
+    private final File outputDir;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
+
+    public LocalOptimizer(File outputDir) {
+        this.outputDir=outputDir;
+    }
 
     @Override
     public List<TuningParameter> optimize(TuneableEvaluateFunction evaluate, DataSet dataSet) {
@@ -42,6 +48,7 @@ public class LocalOptimizer implements Optimizer {
                 if (round % 100 == 0 && stopWatch.timeElapsed(5*60000)) {
                     LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE);
                     LOGGER.info(evaluate.collectParamDescr());
+                    evaluate.writeParamDescr(outputDir);
                 }
 
                 bestParValues.get(pi).change(1);

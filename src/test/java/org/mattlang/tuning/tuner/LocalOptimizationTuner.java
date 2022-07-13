@@ -24,11 +24,13 @@ public class LocalOptimizationTuner {
 
     private boolean adjustK = true;
 
-    private boolean tuneMaterial = true;
+    private boolean tuneMaterial = false;
 
-    private boolean tunePst = false;
+    private boolean tunePst = true;
 
-    public static final int THREAD_COUNT = 11;
+    private File outputDir = new File("./tuningoutput");
+
+    public static final int THREAD_COUNT = 7;
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
@@ -66,10 +68,11 @@ public class LocalOptimizationTuner {
             dataset.setK(k);
         }
 
-        LocalOptimizer optimizer = new LocalOptimizer();
+        LocalOptimizer optimizer = new LocalOptimizer(outputDir);
 
         LOGGER.info("Initial Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());
+        evaluate.writeParamDescr(outputDir);
 
         LOGGER.info("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);

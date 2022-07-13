@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -131,5 +132,13 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         }
         return distinctSet.stream()
                 .collect(joining("\n"));
+    }
+
+    @Override
+    public void writeParamDescr(File outputDir) {
+        outputDir.mkdirs();
+        for (TuningParameterGroup group : groups) {
+            group.writeParamDef(outputDir);
+        }
     }
 }

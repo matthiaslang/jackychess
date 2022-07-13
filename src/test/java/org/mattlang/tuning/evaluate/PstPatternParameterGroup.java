@@ -1,5 +1,8 @@
 package org.mattlang.tuning.evaluate;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +62,10 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
 
     @Override
     public String getParamDef() {
+        return tableCsvName + "\n" + createParamStr();
+    }
+
+    public String createParamStr() {
         // update the pattern with current param values:
         for (TuningParameter parameter : parameters) {
             PstValueParam pstParam = (PstValueParam) parameter;
@@ -67,8 +74,17 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
                 pattern.setVal(pstParam.getMirroredPos(), pstParam.getVal());
             }
         }
+        return pattern.toPatternStr();
+    }
 
-        return tableCsvName + "\n" + pattern.toPatternStr();
+    @Override
+    public void writeParamDef(File outputDir) {
+        File outFile = new File(outputDir, tableCsvName);
+        try (FileOutputStream fos = new FileOutputStream(outFile)) {
+            fos.write(createParamStr().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {
