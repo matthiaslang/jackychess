@@ -26,7 +26,11 @@ public class DataSet {
     /**
      * scaling Constant.
      */
-    private static final double K = 1.13;
+//    private static final double K = 1.13;
+    /**
+     * calculated to 1.09 by pre-scaling. now using this fixed value.
+     */
+    private static final double K = 1.0999999999999999;
 
 
     private List<DataSet> workers = new ArrayList<>();
@@ -112,7 +116,7 @@ public class DataSet {
                 workers.get(i % THREAD_COUNT).addFen(fen);
                 i++;
             }
-        }
+        }                                                                       
 
         // update the evaluation functions of the workers with the current parameter settings:
         for (DataSet worker : workers) {

@@ -22,7 +22,7 @@ public class LocalOptimizationTuner {
 
     private boolean multiThreading = true;
 
-    private boolean adjustK = true;
+    private boolean adjustK = false;
 
     private boolean tuneMaterial = false;
 
