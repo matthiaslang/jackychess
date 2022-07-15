@@ -1,16 +1,21 @@
 package org.mattlang.tuning;
 
 import static java.lang.Math.pow;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.THREAD_COUNT;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mattlang.tuning.data.pgnparser.Ending;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 
 import lombok.Data;
@@ -136,5 +141,15 @@ public class DataSet {
 
     public void add(DataSet other) {
         fens.addAll(other.getFens());
+    }
+
+    public void logInfos() {
+        Map<Ending, Long> countsByEnding = fens.stream()
+                .map(f -> f.getEnding())
+                .collect(groupingBy(identity(), counting()));
+
+        LOGGER.info("Data set: " + getFens().size() + " MATE White: " + countsByEnding.get(Ending.MATE_WHITE)
+                + " MATE Black: " + countsByEnding.get(Ending.MATE_BLACK) + " DRAWS: " + countsByEnding.get(
+                Ending.DRAW));
     }
 }

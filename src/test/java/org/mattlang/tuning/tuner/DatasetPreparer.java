@@ -59,33 +59,25 @@ public class DatasetPreparer {
 
     private void addGame(DataSet dataSet, PgnGame game) {
 
-        double result = 0.5;
-        if (game.getResult() == Ending.MATE_WHITE) {
-            result = 1;
-        }
-        if (game.getResult() == Ending.MATE_BLACK) {
-            result = 0;
-        }
-
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         // play game and add all relevant positions:
         for (PgnMove pgnMove : game.getMoves()) {
 
-            doAndHandleMove(dataSet, pgnMove.getWhite(), board, result);
+            doAndHandleMove(dataSet, pgnMove.getWhite(), board, game.getResult());
 
             if (pgnMove.getBlack() != null) {
-                doAndHandleMove(dataSet, pgnMove.getBlack(), board, result);
+                doAndHandleMove(dataSet, pgnMove.getBlack(), board, game.getResult());
             }
 
         }
     }
 
-    private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, double result) {
+    private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
         if (moveDesr.getEnding() == null && !isBookMove(moveDesr) && !isMateScore(moveDesr.getComment())) {
-            addFen(dataSet, board, result);
+            addFen(dataSet, board, ending);
         }
     }
 
@@ -107,9 +99,9 @@ public class DatasetPreparer {
         return false;
     }
 
-    private void addFen(DataSet dataSet, BoardRepresentation board, double result) {
+    private void addFen(DataSet dataSet, BoardRepresentation board, Ending ending) {
         String fen = FenComposer.buildFenPosition(board);
-        FenEntry entry = new FenEntry(fen, BitBoardForTuning.copy(board), result);
+        FenEntry entry = new FenEntry(fen, BitBoardForTuning.copy(board), ending);
         dataSet.addFen(entry);
     }
 

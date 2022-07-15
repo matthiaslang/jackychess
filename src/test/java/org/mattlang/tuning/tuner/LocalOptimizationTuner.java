@@ -56,7 +56,8 @@ public class LocalOptimizationTuner {
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(args);
         dataset.setMultithreaded(multiThreading);
-        LOGGER.info("Data set with " + dataset.getFens().size() + " Fens loaded.");
+        dataset.logInfos();
+
 
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(tuneMaterial, tunePst);
 
