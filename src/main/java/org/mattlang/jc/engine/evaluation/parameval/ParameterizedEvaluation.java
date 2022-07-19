@@ -62,9 +62,19 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         adjustments = new ParameterizedAdjustmentsEvaluation(config);
     }
 
-    public ParameterizedEvaluation(boolean caching) {
-        this();
-        this.caching = caching;
+    /**
+     * Creates a parameterized evaluation for tuning: disabled cache and disabled end game functions.
+     *
+     * @return
+     */
+    public static ParameterizedEvaluation createForTuning() {
+        //
+        ParameterizedEvaluation eval = new ParameterizedEvaluation();
+        // disable caching for tuning since the parameters change during tuning:
+        eval.caching = false;
+        // disable special end game functions, as they get not tuned (because they do not have any parameters)
+        eval.endgameEvaluations = false;
+        return eval;
     }
 
     @Override

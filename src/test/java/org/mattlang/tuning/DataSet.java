@@ -9,6 +9,7 @@ import static org.mattlang.tuning.tuner.LocalOptimizationTuner.THREAD_COUNT;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -144,12 +145,31 @@ public class DataSet {
     }
 
     public void logInfos() {
+        LinkedHashMap<String, Object> stats = new LinkedHashMap<>();
+
+        stats.put("Num Fens", fens.size());
+
         Map<Ending, Long> countsByEnding = fens.stream()
                 .map(f -> f.getEnding())
                 .collect(groupingBy(identity(), counting()));
 
-        LOGGER.info("Data set: " + getFens().size() + " MATE White: " + countsByEnding.get(Ending.MATE_WHITE)
-                + " MATE Black: " + countsByEnding.get(Ending.MATE_BLACK) + " DRAWS: " + countsByEnding.get(
-                Ending.DRAW));
+        stats.put("MATE White", countsByEnding.get(Ending.MATE_WHITE));
+        stats.put("MATE Black", countsByEnding.get(Ending.MATE_BLACK));
+        stats.put("Draws", countsByEnding.get(Ending.DRAW));
+
+        Long dupCount = fens.stream()
+                .collect(groupingBy(f -> f.getBoard().getZobristHash(), counting()))
+                .values()
+                .stream()
+                .filter(v -> v > 1)
+                .reduce(new Long(0), (a, b) -> a + b);
+
+        stats.put("Duplicate Fens", dupCount);
+
+        LOGGER.info("Data set statistics:");
+        for (Map.Entry<String, Object> entry : stats.entrySet()) {
+            LOGGER.info(entry.getKey() + ": " + entry.getValue());
+        }
+
     }
 }

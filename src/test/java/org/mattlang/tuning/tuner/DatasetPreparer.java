@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.tools.LegalMoves;
 import org.mattlang.jc.util.FenComposer;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
@@ -76,7 +77,8 @@ public class DatasetPreparer {
     private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
-        if (moveDesr.getEnding() == null && !isBookMove(moveDesr) && !isMateScore(moveDesr.getComment())) {
+        boolean anyLegalMoves = LegalMoves.generateLegalMoves(board, board.getSiteToMove()).size() > 0;
+        if (moveDesr.getEnding() == null && !isBookMove(moveDesr) && anyLegalMoves /*&& !isMateScore(moveDesr.getComment())*/) {
             addFen(dataSet, board, ending);
         }
     }

@@ -47,7 +47,7 @@ public class LocalOptimizationTuner {
 
     private void run() throws IOException {
 
-        System.setProperty("opt.evalParamSet", "TUNED01");
+        System.setProperty("opt.evalParamSet", "TUNED02");
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");

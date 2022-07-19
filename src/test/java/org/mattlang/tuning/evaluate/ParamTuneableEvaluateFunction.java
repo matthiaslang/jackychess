@@ -21,7 +21,7 @@ import org.mattlang.tuning.TuningParameterGroup;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
-    private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation(false);
+    private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
 
     ArrayList<TuningParameterGroup> groups = new ArrayList<>();
 
