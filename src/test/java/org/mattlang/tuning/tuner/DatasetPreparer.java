@@ -11,7 +11,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.tools.LegalMoves;
-import org.mattlang.jc.util.FenComposer;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
@@ -102,8 +101,8 @@ public class DatasetPreparer {
     }
 
     private void addFen(DataSet dataSet, BoardRepresentation board, Ending ending) {
-        String fen = FenComposer.buildFenPosition(board);
-        FenEntry entry = new FenEntry(fen, BitBoardForTuning.copy(board), ending);
+//        String fen = FenComposer.buildFenPosition(board);
+        FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
         dataSet.addFen(entry);
     }
 

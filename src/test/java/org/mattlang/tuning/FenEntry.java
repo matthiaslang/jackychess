@@ -8,7 +8,7 @@ import lombok.Value;
 @Value
 public class FenEntry {
 
-    private String fen;
+//    private String fen;
 
     private BoardRepresentation board;
 
@@ -17,7 +17,7 @@ public class FenEntry {
     private double result;
 
     public FenEntry(String fen, BoardRepresentation board, Ending ending) {
-        this.fen = fen;
+//        this.fen = fen;
         this.board = board;
         this.ending = ending;
 

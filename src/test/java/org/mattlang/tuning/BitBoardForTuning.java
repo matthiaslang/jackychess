@@ -39,7 +39,6 @@ public class BitBoardForTuning implements BoardRepresentation {
             "RNBQKBNR"
     };
     public static final int NO_EN_PASSANT_OPTION = -1;
-    public static final int MAXMOVES = 1024;
 
     @Getter
     private BitChessBoard board = new BitChessBoard();

@@ -13,7 +13,7 @@ public class LocalOptimizer implements Optimizer {
     /**
      * safety delta value to ensure that error is not only better by a minor calculation precision issue.
      */
-    public static final double DELTA = 0.00000001;
+    public static final double DELTA = 0.000001;
     private final File outputDir;
     private DataSet dataSet;
 
