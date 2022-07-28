@@ -32,11 +32,11 @@ public class DataSet {
     /**
      * scaling Constant.
      */
-//    private static final double K = 1.13;
+    private static final double K = 1.13;
     /**
      * calculated to 1.09 by pre-scaling. now using this fixed value.
      */
-    private static final double K = 0.6899999999999995 ;
+//    private static final double K = 0.6899999999999995 ;
 
 
     private List<DataSet> workers = new ArrayList<>();

@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.tools.LegalMoves;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
@@ -76,10 +78,26 @@ public class DatasetPreparer {
     private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
-        boolean anyLegalMoves = LegalMoves.generateLegalMoves(board, board.getSiteToMove()).size() > 0;
-        if (moveDesr.getEnding() == null && !isBookMove(moveDesr) && anyLegalMoves /*&& !isMateScore(moveDesr.getComment())*/) {
+        MoveList moveList = LegalMoves.generateLegalMoves(board, board.getSiteToMove());
+        boolean anyLegalMoves = moveList.size() > 0;
+        if (moveDesr.getEnding() == null
+                && !isBookMove(moveDesr)
+                && anyLegalMoves
+                && isQuiet(moveList)
+            /*&& !isMateScore(moveDesr.getComment())*/) {
             addFen(dataSet, board, ending);
         }
+    }
+
+    private boolean isQuiet(MoveList moveList) {
+        MoveCursor iterator = moveList.iterate();
+        while (iterator.hasNext()) {
+            iterator.next();
+            if (iterator.isCapture() || iterator.isPromotion()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isMateScore(Comment comment) {
