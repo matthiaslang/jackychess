@@ -3,13 +3,13 @@
 
 Texel like tuned with self playing between current version and previous version.
 
-20000 games jacky012.0 vs 0.10.0 with random opening book.
+20000 games jacky012.0 vs 0.10.0 with random opening book with ultra short time.
 
-extraction of non-opening- moves, excluding end-move;
+extraction of non-opening- moves, excluding end-move, extracting non quiet positions;
 
 disabling end game evaluations as they get not tuned and would affect the tuning result.
 
-tuning psts in several rounds; auto calibrating K on first round.
+
 
 
 
