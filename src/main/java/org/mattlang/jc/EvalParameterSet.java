@@ -20,8 +20,11 @@ public enum EvalParameterSet {
      */
     EXPERIMENTAL,
 
+    /** experiments with tuned parameter configs. */
     TUNED01,
 
     
-    TUNED02
+    TUNED02,
+
+    TUNED03
 }
