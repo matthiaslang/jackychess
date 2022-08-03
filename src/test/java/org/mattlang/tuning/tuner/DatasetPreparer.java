@@ -12,6 +12,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.LegalMoves;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
@@ -21,6 +22,8 @@ import org.mattlang.tuning.data.pgnparser.*;
 public class DatasetPreparer {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
+
+    private ParameterizedEvaluation parameterizedEvaluation=new ParameterizedEvaluation();
 
     /**
      * Prepares a data set from a pgn file as source.
@@ -83,10 +86,17 @@ public class DatasetPreparer {
         if (moveDesr.getEnding() == null
                 && !isBookMove(moveDesr)
                 && anyLegalMoves
-                && isQuiet(moveList)
+                && !isEvalUsingEndGameFunction(board)
+//                && isQuiet(moveList)
             /*&& !isMateScore(moveDesr.getComment())*/) {
             addFen(dataSet, board, ending);
         }
+    }
+
+
+
+    private boolean isEvalUsingEndGameFunction(BoardRepresentation board) {
+        return parameterizedEvaluation.isUsingEndgameFunction(board);
     }
 
     private boolean isQuiet(MoveList moveList) {

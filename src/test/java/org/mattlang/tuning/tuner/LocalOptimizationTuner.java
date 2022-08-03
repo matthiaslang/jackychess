@@ -28,6 +28,8 @@ public class LocalOptimizationTuner {
 
     private boolean tunePst = true;
 
+    private boolean removeDuplicateFens = true;
+
     private File outputDir = new File("./tuningoutput");
 
     public static final int THREAD_COUNT = 7;
@@ -47,7 +49,7 @@ public class LocalOptimizationTuner {
 
     private void run() throws IOException {
 
-        System.setProperty("opt.evalParamSet", "TUNED02");
+        System.setProperty("opt.evalParamSet", "TUNED03");
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");
@@ -57,7 +59,11 @@ public class LocalOptimizationTuner {
         DataSet dataset = loadDataset(args);
         dataset.setMultithreaded(multiThreading);
         dataset.logInfos();
-
+        if (removeDuplicateFens){
+            dataset.removeDuplidateFens();
+            LOGGER.info("Statistics after removing duplicates:");
+            dataset.logInfos();
+        }
 
         TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(tuneMaterial, tunePst);
 

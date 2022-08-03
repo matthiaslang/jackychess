@@ -153,4 +153,15 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     }
 
+    /**
+     * Used in tuning: Returns true if the evaluation would use a special end game function for that position.
+     * @param currBoard
+     * @return
+     */
+    public boolean isUsingEndgameFunction(BoardRepresentation currBoard) {
+        result.clear();
+        matEvaluation.eval(result, currBoard);
+        EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
+        return endGameRule != null;
+    }
 }

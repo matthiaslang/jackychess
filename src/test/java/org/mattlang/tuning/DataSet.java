@@ -8,10 +8,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.THREAD_COUNT;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -32,11 +29,11 @@ public class DataSet {
     /**
      * scaling Constant.
      */
-    private static final double K = 1.13;
+    //        private static final double K = 1.13;
     /**
      * calculated to 1.09 by pre-scaling. now using this fixed value.
      */
-//    private static final double K = 0.6899999999999995 ;
+    private static final double K = 0.7299999999999995;
 
 
     private List<DataSet> workers = new ArrayList<>();
@@ -161,7 +158,8 @@ public class DataSet {
                 .collect(groupingBy(f -> f.getBoard().getZobristHash(), counting()))
                 .values()
                 .stream()
-                .filter(v -> v > 1)
+                .filter(v -> v > 1)  // filter out those which have duplicates
+                .map(v -> v - 1)    // remove one from count to get the right numer of duplicates
                 .reduce(new Long(0), (a, b) -> a + b);
 
         stats.put("Duplicate Fens", dupCount);
@@ -171,5 +169,17 @@ public class DataSet {
             LOGGER.info(entry.getKey() + ": " + entry.getValue());
         }
 
+    }
+
+    public void removeDuplidateFens() {
+        List<FenEntry> result = new ArrayList<>();
+        HashSet<Long> hashes = new HashSet<>();
+        for (FenEntry fen : fens) {
+            if (!hashes.contains(fen.getBoard().getZobristHash())) {
+                result.add(fen);
+                hashes.add(fen.getBoard().getZobristHash());
+            }
+        }
+        fens = result;
     }
 }
