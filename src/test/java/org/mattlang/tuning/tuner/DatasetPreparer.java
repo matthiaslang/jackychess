@@ -87,7 +87,7 @@ public class DatasetPreparer {
                 && !isBookMove(moveDesr)
                 && anyLegalMoves
                 && !isEvalUsingEndGameFunction(board)
-//                && isQuiet(moveList)
+                && isQuiet(moveList)
             /*&& !isMateScore(moveDesr.getComment())*/) {
             addFen(dataSet, board, ending);
         }

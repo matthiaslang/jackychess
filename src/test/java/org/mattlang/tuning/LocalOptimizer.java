@@ -10,6 +10,7 @@ public class LocalOptimizer implements Optimizer {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizer.class.getSimpleName());
 
+    public static final int[] stepGranularity = { /*20, 15, 10,*/ 5, 3, 1 };
     /**
      * safety delta value to ensure that error is not only better by a minor calculation precision issue.
      */
@@ -27,49 +28,51 @@ public class LocalOptimizer implements Optimizer {
     public List<TuningParameter> optimize(TuneableEvaluateFunction evaluate, DataSet dataSet) {
         this.dataSet = dataSet;
         this.evaluate = evaluate;
-        List<TuningParameter> initialGuess = evaluate.getParams();
-        return optimize(initialGuess);
+        List<TuningParameter> params = evaluate.getParams();
+
+        for (int step : stepGranularity) {
+            LOGGER.info("Optimizing with step " + step);
+            optimize(params, step);
+        }
+        return params;
     }
 
-    public List<TuningParameter> optimize(List<TuningParameter> initialGuess) {
-        int nParams = initialGuess.size();
-        double bestE = e(initialGuess);
+    private void optimize(List<TuningParameter> params, int step) {
+        double bestE = e(params);
         LOGGER.info("Error at start: " + bestE);
 
-        List<TuningParameter> bestParValues = initialGuess;
         int round = 0;
-        StopWatch stopWatch=new StopWatch();
+        StopWatch stopWatch = new StopWatch();
 
         boolean improved = true;
         while (improved) {
             improved = false;
-            for (int pi = 0; pi < nParams; pi++) {
+            for (TuningParameter param : params) {
                 round++;
-                if (round % 100 == 0 && stopWatch.timeElapsed(5*60000)) {
-                    LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE);
+                if (round % 100 == 0 && stopWatch.timeElapsed(5 * 60000)) {
+                    LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step + ", curr Error= " + bestE);
                     LOGGER.info(evaluate.collectParamDescr());
                     evaluate.writeParamDescr(outputDir);
                 }
 
-                bestParValues.get(pi).change(1);
-                double newE = e(bestParValues);
+                param.change(step);
+                double newE = e(params);
                 if (newE < bestE - DELTA) {
                     bestE = newE;
                     improved = true;
                 } else {
-                    bestParValues.get(pi).change(-2);
-                    newE = e(bestParValues);
+                    param.change(-2 * step);
+                    newE = e(params);
                     if (newE < bestE - DELTA) {
                         bestE = newE;
                         improved = true;
                     } else {
                         // reset change:
-                        bestParValues.get(pi).change(+1);
+                        param.change(step);
                     }
                 }
             }
         }
-        return bestParValues;
     }
 
     private double e(List<TuningParameter> params) {

@@ -29,11 +29,11 @@ public class DataSet {
     /**
      * scaling Constant.
      */
-    //        private static final double K = 1.13;
+            private static final double K = 1.13;
     /**
      * calculated to 1.09 by pre-scaling. now using this fixed value.
      */
-    private static final double K = 0.7299999999999995;
+//    private static final double K = 0.7299999999999995;
 
 
     private List<DataSet> workers = new ArrayList<>();
@@ -70,7 +70,7 @@ public class DataSet {
      * @param params
      * @return
      */
-    public double calcMultiThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
+    private double calcMultiThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
         evaluate.saveValues(params);
         this.evaluate = evaluate;
         this.params = params;
