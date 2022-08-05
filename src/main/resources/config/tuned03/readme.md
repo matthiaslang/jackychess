@@ -1,7 +1,7 @@
 # tuned experiement 03
 
 - fens from 60000 games with only small depth and quiescence
-- only quiets
+- no checking positions
 - no fens which would be evaluated by special end game functions
 - no book moves
 
