@@ -1,5 +1,8 @@
 package org.mattlang.tuning.tuner;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +13,11 @@ import java.util.logging.Logger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.tools.LegalMoves;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
@@ -23,7 +28,9 @@ public class DatasetPreparer {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
 
-    private ParameterizedEvaluation parameterizedEvaluation=new ParameterizedEvaluation();
+    private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation();
+
+    private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     /**
      * Prepares a data set from a pgn file as source.
@@ -87,13 +94,16 @@ public class DatasetPreparer {
                 && !isBookMove(moveDesr)
                 && anyLegalMoves
                 && !isEvalUsingEndGameFunction(board)
-                && isQuiet(moveList)
+                && !isCheck(board)
+            //                && isQuiet(moveList)
             /*&& !isMateScore(moveDesr.getComment())*/) {
             addFen(dataSet, board, ending);
         }
     }
 
-
+    private boolean isCheck(BoardRepresentation board) {
+        return checkChecker.isInChess(board, WHITE) || checkChecker.isInChess(board, BLACK);
+    }
 
     private boolean isEvalUsingEndGameFunction(BoardRepresentation board) {
         return parameterizedEvaluation.isUsingEndgameFunction(board);

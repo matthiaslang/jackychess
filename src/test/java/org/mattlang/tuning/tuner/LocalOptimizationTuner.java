@@ -18,6 +18,11 @@ import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 public class LocalOptimizationTuner {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
+
+    /**
+     * the paramset name to tune.
+     */
+    public static final String EVAL_PARAM_SET = "TUNED03";
     private final String[] args;
 
     private boolean multiThreading = true;
@@ -49,7 +54,10 @@ public class LocalOptimizationTuner {
 
     private void run() throws IOException {
 
-        System.setProperty("opt.evalParamSet", "TUNED03");
+        System.setProperty("opt.evalParamSet", EVAL_PARAM_SET);
+
+        // set output dir to pst config dir:
+        outputDir = new File("./src/main/resources/config/" + EVAL_PARAM_SET.toLowerCase() + "/pst/");
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");
@@ -59,7 +67,7 @@ public class LocalOptimizationTuner {
         DataSet dataset = loadDataset(args);
         dataset.setMultithreaded(multiThreading);
         dataset.logInfos();
-        if (removeDuplicateFens){
+        if (removeDuplicateFens) {
             dataset.removeDuplidateFens();
             LOGGER.info("Statistics after removing duplicates:");
             dataset.logInfos();
