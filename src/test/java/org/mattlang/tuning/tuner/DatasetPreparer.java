@@ -60,7 +60,7 @@ public class DatasetPreparer {
         }
     }
 
-    private static DataSet prepareFromEpd(File file) {
+    private DataSet prepareFromEpd(File file) {
         DataSet dataSet = new DataSet();
         try (Stream<String> stream = Files.lines(file.toPath())) {
 
@@ -93,8 +93,11 @@ public class DatasetPreparer {
 
                 board.setFenPosition("position fen " + line);
 
-                FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
-                dataSet.addFen(entry);
+                if (!isEvalUsingEndGameFunction(board)){
+                    FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
+                    dataSet.addFen(entry);
+                }
+
             });
             return dataSet;
 
