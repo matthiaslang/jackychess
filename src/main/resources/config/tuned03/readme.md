@@ -1,10 +1,12 @@
 # tuned experiement 03
 
-- fens from 60000 games with only small depth and quiescence
-- no checking positions
-- no fens which would be evaluated by special end game functions
-- no book moves
+- using zurich test set, remving all fens where jacky uses special end game functions
 
 local minimum optimization for all pst values, starting with bigger step sizes to smaller step sizes.
 
-Optimization duration: ~1.25 h.
+
+Error at start: 0.06330978224026085
+
+
+
+
