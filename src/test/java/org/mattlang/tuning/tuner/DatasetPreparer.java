@@ -6,9 +6,11 @@ import static org.mattlang.jc.board.Color.WHITE;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
@@ -46,19 +48,68 @@ public class DatasetPreparer {
     }
 
     public DataSet prepareLoadFromFile(File file) throws IOException {
-        PgnParser parser = new PgnParser();
-        List<PgnGame> games = parser.parse(file);
+        if (file.getName().endsWith(".pgn")) {
+            PgnParser parser = new PgnParser();
+            List<PgnGame> games = parser.parse(file);
 
-        return prepareGames(games);
+            return prepareGames(games);
+        } else if (file.getName().endsWith(".epd")) {
+            return prepareFromEpd(file);
+        } else {
+            throw new RuntimeException("can only parse pgn or epd files!");
+        }
+    }
+
+    private static DataSet prepareFromEpd(File file) {
+        DataSet dataSet = new DataSet();
+        try (Stream<String> stream = Files.lines(file.toPath())) {
+
+            LOGGER.info("preparing Data now...");
+
+            stream.forEach(line -> {
+
+                if (dataSet.getFens().size() % 5000 == 0) {
+                    LOGGER.info(" prepared " + dataSet.getFens().size() + " fens...");
+                }
+
+                BoardRepresentation board = new BitBoard();
+
+                Ending ending;
+                if (line.contains("\"1/2-1/2\"")) {
+                    ending = Ending.DRAW;
+                    line = line.replace("\"1/2-1/2\"", "");
+                } else if (line.contains("\"0-1\"")) {
+                    ending = Ending.MATE_BLACK;
+                    line = line.replace("\"0-1\"", "");
+                } else if (line.contains("\"1-0\"")) {
+                    ending = Ending.MATE_WHITE;
+                    line = line.replace("\"1-0\"", "");
+                } else {
+                    throw new RuntimeException("Error Parsing pgn file: no ending could be found in " + line);
+                }
+
+                // replace noise in the zurich test set:
+                line = line.replace(";", "").replace("c9", "") + " 0 0";
+
+                board.setFenPosition("position fen " + line);
+
+                FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
+                dataSet.addFen(entry);
+            });
+            return dataSet;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private DataSet prepareGames(List<PgnGame> games) {
         LOGGER.info("preparing Data now...");
         DataSet dataSet = new DataSet();
         int counter = 0;
-        Iterator<PgnGame> iterator=games.iterator();
-        while(iterator.hasNext()){
-            PgnGame game= iterator.next();
+        Iterator<PgnGame> iterator = games.iterator();
+        while (iterator.hasNext()) {
+            PgnGame game = iterator.next();
             addGame(dataSet, game);
             iterator.remove();
             counter++;

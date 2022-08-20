@@ -33,7 +33,7 @@ public class DataSet {
     /**
      * calculated to 1.09 by pre-scaling. now using this fixed value.
      */
-    private static final double K = 0.7299999999999995;
+    private static final double K = 1.5700000000000003;
 
 
     private List<DataSet> workers = new ArrayList<>();
