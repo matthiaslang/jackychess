@@ -1,16 +1,11 @@
-# tunded version of the current manual derived parameter set.
+# tunded 02
 
 
-Texel like tuned with self playing between current version and previous version.
+- using zurich test set, remving all fens where jacky uses special end game functions
 
-20000 games jacky012.0 vs 0.10.0 with random opening book with ultra short time.
-
-extraction of non-opening- moves, excluding end-move, extracting non quiet positions;
-
-disabling end game evaluations as they get not tuned and would affect the tuning result.
+local minimum optimization for all pst values with step size 1.
 
 
-
-
+Error at start: 0.06330978224026085
 
 
