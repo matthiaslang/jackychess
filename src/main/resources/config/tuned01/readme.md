@@ -1,14 +1,7 @@
-# tunded version of the current manual derived parameter set.
+# tuned experiment 01
 
+- using zurich test set, remving all fens where jacky uses special end game functions
 
-Texel like tuned with self playing between current version and previous version.
+local minimum optimization for all pst values, starting with bigger step sizes to smaller step sizes.
 
-20000 games jacky012.0 vs 0.10.0 with random opening book.
-
-extraction of non-opening- moves; not using mate moves: 2040767 fens;
-                                                                    
-tuning psts in several rounds; auto calibrating K.
-
-
-
-
+same as 03, but with smaller delta value to stop optimization.
