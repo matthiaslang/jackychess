@@ -1,5 +1,10 @@
 # Versions
 
+### Version 0.12.2
+
+- tuning of evaluation pst values. Brings ~70 elos.
+
+
 ### Version 0.12.0
 
 Official Release, same as 0.11.11.
