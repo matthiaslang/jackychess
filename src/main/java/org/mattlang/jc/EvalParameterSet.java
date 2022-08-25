@@ -20,6 +20,11 @@ public enum EvalParameterSet {
      */
     EXPERIMENTAL,
 
+    /**
+     * Parameterset of the version 0.12.0.
+     * */
+    V_0_12_0,
+
     /** experiments with tuned parameter configs. */
     TUNED01,
 
