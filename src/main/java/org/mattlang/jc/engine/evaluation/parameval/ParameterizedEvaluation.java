@@ -35,6 +35,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     ParameterizedMaterialCorrectionEvaluation matCorrection;
 
+    @Getter
     ParameterizedAdjustmentsEvaluation adjustments;
 
     private EvalResult result = new EvalResult();

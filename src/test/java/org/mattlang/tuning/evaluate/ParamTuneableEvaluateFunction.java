@@ -1,6 +1,7 @@
 package org.mattlang.tuning.evaluate;
 
 import static java.util.stream.Collectors.joining;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
@@ -12,12 +13,14 @@ import java.util.Set;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
+import org.mattlang.tuning.tuner.OptParameters;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
@@ -27,15 +30,26 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     ArrayList<TuningParameter> params = new ArrayList<>();
 
-    private boolean tuneMaterial;
+    private final OptParameters optParams;
 
-    private boolean tunePst;
+    public ParamTuneableEvaluateFunction(OptParameters optParams) {
+        this.optParams = optParams;
 
-    public ParamTuneableEvaluateFunction(boolean tuneMaterial, boolean tunePst) {
-        this.tuneMaterial = tuneMaterial;
-        this.tunePst = tunePst;
+        if (optParams.isTuneAdjustments()) {
+            groups.add(new AdjustmentValueParam(TEMPO, parameterizedEvaluation,
+                    ParameterizedAdjustmentsEvaluation::getTempo, ParameterizedAdjustmentsEvaluation::setTempo));
+            groups.add(new AdjustmentValueParam(BISHOP_PAIR, parameterizedEvaluation,
+                    ParameterizedAdjustmentsEvaluation::getBishopPair,
+                    ParameterizedAdjustmentsEvaluation::setBishopPair));
+            groups.add(new AdjustmentValueParam(KNIGHT_PAIR, parameterizedEvaluation,
+                    ParameterizedAdjustmentsEvaluation::getKnightPair,
+                    ParameterizedAdjustmentsEvaluation::setKnightPair));
+            groups.add(new AdjustmentValueParam(ROOK_PAIR, parameterizedEvaluation,
+                    ParameterizedAdjustmentsEvaluation::getRookPair, ParameterizedAdjustmentsEvaluation::setRookPair));
 
-        if (tuneMaterial) {
+        }
+
+        if (optParams.isTuneMaterial()) {
             groups.add(new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation,
                     ParameterizedMaterialEvaluation::getPawnMG, ParameterizedMaterialEvaluation::setPawnMG));
             groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
@@ -59,7 +73,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                     ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
         }
 
-        if (tunePst) {
+        if (optParams.isTunePst()) {
             boolean mirrored = true;
             groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
                     ParameterizedPstEvaluation::getPawnMG));
@@ -95,9 +109,11 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     }
 
-    private ParamTuneableEvaluateFunction(ArrayList<TuningParameterGroup> groups, ArrayList<TuningParameter> params) {
+    private ParamTuneableEvaluateFunction(ArrayList<TuningParameterGroup> groups, ArrayList<TuningParameter> params,
+            OptParameters optParams) {
         this.groups = groups;
         this.params = params;
+        this.optParams = optParams;
     }
 
     @Override
@@ -121,7 +137,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     @Override
     public TuneableEvaluateFunction copy() {
         // copy means so far just to create a new object.
-        return new ParamTuneableEvaluateFunction(this.groups, this.params);
+        return new ParamTuneableEvaluateFunction(this.groups, this.params, this.optParams);
     }
 
     public String collectParamDescr() {
