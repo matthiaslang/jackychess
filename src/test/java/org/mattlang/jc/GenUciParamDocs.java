@@ -1,12 +1,12 @@
 package org.mattlang.jc;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.jc.uci.*;
 
 public class GenUciParamDocs {
@@ -16,17 +16,18 @@ public class GenUciParamDocs {
         UCIOptions all = new ConfigValues().getAllOptions();
 
         try (FileWriter fw = new FileWriter("docs/uciparameter.md");
-                BufferedWriter bw = new BufferedWriter(fw)) {
-            bw.write("# UCI Options");
-            bw.newLine();
+                MarkdownWriter bw = new MarkdownWriter(fw)) {
+            bw.h1("UCI Options");
 
-            bw.write("List of all UCI options of the engine.");
-            bw.newLine();
+            bw.paragraph("List of all UCI options of the engine.");
+
             for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getUCIOptionsByGroup().entrySet()) {
                 writeGroup(bw, entry.getKey(), entry.getValue());
             }
 
-            bw.newLine();
+            bw.h1("internal options of the engine.");
+            bw.paragraph(
+                    "These options is mainly only for testing and development. These options can be set via system properties or a configuration property file");
 
 
 
@@ -49,61 +50,46 @@ public class GenUciParamDocs {
         }
     }
 
-    private void writeGroup(BufferedWriter fw, UCIGroup group, List<UCIOption> options) throws IOException {
-        fw.write("## " + group.getName());
-        fw.newLine();
-        fw.write(group.getDescription());
+    private void writeGroup(MarkdownWriter fw, UCIGroup group, List<UCIOption> options) throws IOException {
+        fw.h2("Group " + group.getName());
 
-        fw.newLine();
+        fw.paragraph(group.getDescription());
 
         for (UCIOption option : options) {
-            fw.write("### Option " + option.getName());
-            fw.newLine();
+            fw.h3("Option " + option.getName());
 
-            fw.write(option.getDescription());
-
-            fw.newLine();
-            fw.newLine();
+            fw.paragraph(option.getDescription());
 
             writeOptionSpecificParameter(fw, option);
 
-            fw.newLine();
-
             if (option.getType() == OptionType.UCI) {
 
-                fw.write("#### Declaration");
-                fw.newLine();
+                fw.h4("Declaration");
 
-                fw.write("    " + option.createOptionDeclaration());
+                fw.codeBlock(option.createOptionDeclaration());
 
             } else {
-                fw.write("#### Declaration");
-                fw.newLine();
+                fw.h4("Declaration");
 
-                fw.write("    You can set a value via Property opt." + option.getName());
+                fw.blockquote("You can set a value via Property opt." + option.getName());
             }
-            fw.newLine();
+
         }
     }
 
-    private void writeOptionSpecificParameter(BufferedWriter fw, UCIOption option) throws IOException {
+    private void writeOptionSpecificParameter(MarkdownWriter fw, UCIOption option) throws IOException {
         if (option instanceof UCIComboOption) {
             UCIComboOption comboOption = (UCIComboOption) option;
-            fw.write("default value: " + comboOption.getDefaultValue());
-            fw.newLine();
+            fw.unOrderedList("default value: " + comboOption.getDefaultValue());
 
         } else if (option instanceof UCISpinOption) {
             UCISpinOption spinOption = (UCISpinOption) option;
-            fw.write("min: " + spinOption.getMin());
-            fw.newLine();
-            fw.write("max: " + spinOption.getMax());
-            fw.newLine();
-            fw.write("default: " + spinOption.getDefaultValue());
-            fw.newLine();
+            fw.unOrderedList("min: " + spinOption.getMin(),
+                    "max: " + spinOption.getMax(),
+                    "default: " + spinOption.getDefaultValue());
         } else if (option instanceof UCICheckOption) {
             UCICheckOption checkOption = (UCICheckOption) option;
-            fw.write("default value: " + checkOption.isDefaultValue());
-            fw.newLine();
+            fw.unOrderedList("default value: " + checkOption.isDefaultValue());
         }
     }
 
