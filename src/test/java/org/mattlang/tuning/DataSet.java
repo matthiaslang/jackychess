@@ -7,11 +7,13 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.tuning.data.pgnparser.Ending;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 import org.mattlang.tuning.tuner.OptParameters;
@@ -187,5 +189,31 @@ public class DataSet {
             }
         }
         fens = result;
+    }
+
+    public void writeLogInfos(MarkdownWriter w) throws IOException {
+
+        w.h1("Dataset Information");
+
+        w.unOrderedList("Num Fens = " + fens.size());
+
+        Map<Ending, Long> countsByEnding = fens.stream()
+                .map(f -> f.getEnding())
+                .collect(groupingBy(identity(), counting()));
+
+        w.unOrderedList("MATE White: " + countsByEnding.get(Ending.MATE_WHITE));
+        w.unOrderedList("MATE Black: " + countsByEnding.get(Ending.MATE_BLACK));
+        w.unOrderedList("Draws: " + countsByEnding.get(Ending.DRAW));
+
+        Long dupCount = fens.stream()
+                .collect(groupingBy(f -> f.getBoard().getZobristHash(), counting()))
+                .values()
+                .stream()
+                .filter(v -> v > 1)  // filter out those which have duplicates
+                .map(v -> v - 1)    // remove one from count to get the right numer of duplicates
+                .reduce(new Long(0), (a, b) -> a + b);
+
+        w.unOrderedList("Duplicate Fens: " + dupCount);
+
     }
 }

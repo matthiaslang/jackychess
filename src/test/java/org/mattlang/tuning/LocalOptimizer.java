@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.tools.MarkdownAppender;
 
 public class LocalOptimizer implements Optimizer {
 
@@ -16,12 +17,14 @@ public class LocalOptimizer implements Optimizer {
      */
     public static final double DELTA = 0.000001;
     private final File outputDir;
+    private final MarkdownAppender markdownAppender;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
 
-    public LocalOptimizer(File outputDir) {
-        this.outputDir=outputDir;
+    public LocalOptimizer(File outputDir, MarkdownAppender markdownAppender) {
+        this.outputDir = outputDir;
+        this.markdownAppender = markdownAppender;
     }
 
     @Override
@@ -30,8 +33,11 @@ public class LocalOptimizer implements Optimizer {
         this.evaluate = evaluate;
         List<TuningParameter> params = evaluate.getParams();
 
+        markdownAppender.append(w -> w.h2("new optimization round"));
+
         for (int step : stepGranularity) {
             LOGGER.info("Optimizing with step " + step);
+            markdownAppender.append(w -> w.h3("Optimizing with step " + step));
             optimize(params, step);
         }
         return params;
@@ -40,6 +46,8 @@ public class LocalOptimizer implements Optimizer {
     private void optimize(List<TuningParameter> params, int step) {
         double bestE = e(params);
         LOGGER.info("Error at start: " + bestE);
+        final double errorAtStart=bestE;
+        markdownAppender.append(w->w.paragraph("Error at start: " + errorAtStart));
 
         int round = 0;
         StopWatch stopWatch = new StopWatch();
@@ -50,9 +58,7 @@ public class LocalOptimizer implements Optimizer {
             for (TuningParameter param : params) {
                 round++;
                 if (round % 100 == 0 && stopWatch.timeElapsed(5 * 60000)) {
-                    LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step + ", curr Error= " + bestE);
-                    LOGGER.info(evaluate.collectParamDescr());
-                    evaluate.writeParamDescr(outputDir);
+                    progressInfo(step, bestE, round, stopWatch);
                 }
 
                 param.change(step);
@@ -73,6 +79,18 @@ public class LocalOptimizer implements Optimizer {
                 }
             }
         }
+    }
+
+    private void progressInfo(int step, double bestE, int round, StopWatch stopWatch) {
+        LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
+                + ", curr Error= " + bestE);
+        LOGGER.info(evaluate.collectParamDescr());
+        evaluate.writeParamDescr(outputDir);
+
+        markdownAppender.append(w -> {
+            w.paragraph(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
+                    + ", curr Error= " + bestE);
+        });
     }
 
     private double e(List<TuningParameter> params) {

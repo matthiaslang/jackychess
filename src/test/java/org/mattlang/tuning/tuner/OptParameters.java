@@ -1,6 +1,13 @@
 package org.mattlang.tuning.tuner;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.mattlang.jc.tools.MarkdownWriter;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,4 +33,19 @@ public class OptParameters {
     private boolean removeDuplicateFens = true;
 
     private int threadCount = 7;
+
+    public void writeMarkdownInfos(MarkdownWriter mdWriter)
+            throws IOException {
+        mdWriter.h1("Tuning Options");
+        try {
+            for (PropertyDescriptor pd : Introspector.getBeanInfo(OptParameters.class).getPropertyDescriptors()) {
+                if (pd.getReadMethod() != null && !"class".equals(pd.getName())) {
+                    Object value = pd.getReadMethod().invoke(this);
+                    mdWriter.paragraph(pd.getName() + " = " + value);
+                }
+            }
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
