@@ -29,6 +29,7 @@ public class OptParameters {
     private boolean tuneMaterial = true;
 
     private boolean tunePst = true;
+    private boolean tuneAdjustments = true;
 
     private boolean removeDuplicateFens = true;
 

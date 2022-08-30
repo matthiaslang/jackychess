@@ -89,7 +89,7 @@ public class LocalOptimizationTuner {
         }
 
         TuneableEvaluateFunction evaluate =
-                new ParamTuneableEvaluateFunction(params.isTuneMaterial(), params.isTunePst());
+                new ParamTuneableEvaluateFunction(params);
 
         if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");

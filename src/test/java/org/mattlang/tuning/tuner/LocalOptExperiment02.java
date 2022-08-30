@@ -17,6 +17,7 @@ public class LocalOptExperiment02 {
                 .removeDuplicateFens(true)
                 .tunePst(true)
                 .tuneMaterial(true)
+                .tuneAdjustments(true)
                 .inputFiles(Arrays.asList(
                         "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
                 .build();

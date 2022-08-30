@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.List;
@@ -37,19 +36,6 @@ public class DatasetPreparer {
 
     public DatasetPreparer(OptParameters params) {
         this.params = params;
-    }
-
-    /**
-     * Prepares a data set from a pgn file as source.
-     *
-     * @param in
-     * @return
-     */
-    public DataSet prepareDatasetFromPgn(InputStream in) throws IOException {
-        PgnParser parser = new PgnParser();
-        List<PgnGame> games = parser.parse(in);
-
-        return prepareGames(games);
     }
 
     public DataSet prepareLoadFromFile(File file) throws IOException {

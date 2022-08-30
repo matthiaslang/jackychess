@@ -7,25 +7,40 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Paremeterized positional and material adjustments.
  */
 public class ParameterizedAdjustmentsEvaluation {
 
-    private final int tempo;
-    private final int bishopPair;
-    private final int knightPair;
-    private final int rookPair;
+    public static final String TEMPO = "tempo";
+    public static final String BISHOP_PAIR = "bishopPair";
+    public static final String KNIGHT_PAIR = "knightPair";
+    public static final String ROOK_PAIR = "rookPair";
+    @Getter
+    @Setter
+    private int tempo;
+    @Getter
+    @Setter
+    private int bishopPair;
+    @Getter
+    @Setter
+    private int knightPair;
+    @Getter
+    @Setter
+    private int rookPair;
 
     /* adjustements of piece value based on the number of own pawns */
     int n_adj[] = { -20, -16, -12, -8, -4, 0, 4, 8, 12 };
     int r_adj[] = { 15, 12, 9, 6, 3, 0, -3, -6, -9 };
 
     public ParameterizedAdjustmentsEvaluation(EvalConfig config) {
-        tempo = config.getIntProp("tempo");
-        bishopPair = config.getIntProp("bishopPair");
-        knightPair = config.getIntProp("knightPair");
-        rookPair = config.getIntProp("rookPair");
+        tempo = config.getIntProp(TEMPO);
+        bishopPair = config.getIntProp(BISHOP_PAIR);
+        knightPair = config.getIntProp(KNIGHT_PAIR);
+        rookPair = config.getIntProp(ROOK_PAIR);
     }
 
     public int adjust(BitChessBoard bb, Color who2Move) {
