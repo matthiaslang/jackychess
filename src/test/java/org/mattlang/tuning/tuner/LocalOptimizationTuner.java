@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.tools.MarkdownAppender;
 import org.mattlang.tuning.*;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 
@@ -63,6 +64,8 @@ public class LocalOptimizationTuner {
 
         // set output dir to pst config dir:
         outputDir = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase());
+        File mdFile = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase() + "/info.md");
+        MarkdownAppender markdownAppender = new MarkdownAppender(mdFile);
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");
@@ -77,8 +80,16 @@ public class LocalOptimizationTuner {
             LOGGER.info("Statistics after removing duplicates:");
             dataset.logInfos();
         }
+        // create info file with params, if it does not yet exists:
+        if (!mdFile.exists()) {
+            markdownAppender.append(w -> {
+                params.writeMarkdownInfos(w);
+                dataset.writeLogInfos(w);
+            });
+        }
 
-        TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(params.isTuneMaterial(), params.isTunePst());
+        TuneableEvaluateFunction evaluate =
+                new ParamTuneableEvaluateFunction(params.isTuneMaterial(), params.isTunePst());
 
         if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");
@@ -86,9 +97,17 @@ public class LocalOptimizationTuner {
             double k = optimizerK.optimize(evaluate, dataset);
             LOGGER.info("Scaling finished: K=" + k);
             dataset.setK(k);
+
+            markdownAppender.append(w -> {
+                w.paragraph("K adjusted to: " + k);
+            });
+        } else {
+            markdownAppender.append(w -> {
+                w.paragraph("K: " + dataset.getK());
+            });
         }
 
-        LocalOptimizer optimizer = new LocalOptimizer(outputDir);
+        LocalOptimizer optimizer = new LocalOptimizer(outputDir, markdownAppender);
 
         LOGGER.info("Initial Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());
