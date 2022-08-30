@@ -6,7 +6,7 @@ import static org.mattlang.jc.Main.initLogging;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,29 +20,28 @@ public class LocalOptimizationTuner {
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
 
     /**
-     * the paramset name to tune.
+     * Params, set to some standard params:
      */
-    public static final String EVAL_PARAM_SET = "TUNED03";
-    private final String[] args;
+    private OptParameters params = OptParameters.builder()
+            .evalParamSet("TUNED001")
+            .adjustK(false)
+            .multiThreading(true)
+            .threadCount(7)
+            .removeDuplicateFens(true)
+            .tunePst(true)
+            .tuneMaterial(true)
+            .build();
+    private File outputDir;
 
-    private boolean multiThreading = true;
-
-    private boolean adjustK = false;
-
-    private boolean tuneMaterial = false;
-
-    private boolean tunePst = true;
-
-    private boolean removeDuplicateFens = true;
-
-    private File outputDir = new File("./tuningoutput");
-
-    public static final int THREAD_COUNT = 7;
-
-    public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+    public static ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     public LocalOptimizationTuner(String[] args) {
-        this.args = args;
+        this.params = OptParameters.builder().inputFiles(Arrays.asList(args)).build();
+    }
+
+    public LocalOptimizationTuner(OptParameters params) {
+        this.params = params;
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -52,30 +51,36 @@ public class LocalOptimizationTuner {
 
     }
 
+    public static void run(OptParameters params) throws IOException {
+        LocalOptimizationTuner tuner = new LocalOptimizationTuner(params);
+        executorService = Executors.newFixedThreadPool(params.getThreadCount());
+        tuner.run();
+    }
+
     private void run() throws IOException {
 
-        System.setProperty("opt.evalParamSet", EVAL_PARAM_SET);
+        System.setProperty("opt.evalParamSet", params.getEvalParamSet());
 
         // set output dir to pst config dir:
-        outputDir = new File("./src/main/resources/config/" + EVAL_PARAM_SET.toLowerCase() + "/pst/");
+        outputDir = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase());
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");
         initLogging("/tuningLogging.properties");
 
         LOGGER.info("Load & Prepare Data...");
-        DataSet dataset = loadDataset(args);
-        dataset.setMultithreaded(multiThreading);
+        DataSet dataset = loadDataset(params.getInputFiles());
+        dataset.setMultithreaded(params.isMultiThreading());
         dataset.logInfos();
-        if (removeDuplicateFens) {
+        if (params.isRemoveDuplicateFens()) {
             dataset.removeDuplidateFens();
             LOGGER.info("Statistics after removing duplicates:");
             dataset.logInfos();
         }
 
-        TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(tuneMaterial, tunePst);
+        TuneableEvaluateFunction evaluate = new ParamTuneableEvaluateFunction(params.isTuneMaterial(), params.isTunePst());
 
-        if (adjustK) {
+        if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");
             LocalOptimizerK optimizerK = new LocalOptimizerK();
             double k = optimizerK.optimize(evaluate, dataset);
@@ -94,25 +99,20 @@ public class LocalOptimizationTuner {
 
         LOGGER.info("Optimized Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());
+        evaluate.writeParamDescr(outputDir);
 
         executorService.shutdown();
 
     }
 
-    private DataSet loadDataset(String[] args) throws IOException {
-        DatasetPreparer preparer = new DatasetPreparer();
-        if (args != null && args.length > 0) {
-            DataSet result = new DataSet();
-            for (String arg : args) {
-                LOGGER.info("parsing file " + arg);
-                result.add(preparer.prepareLoadFromFile(new File(arg)));
-            }
-            return result;
-        } else {
-
-            InputStream in = LocalOptimizationTuner.class.getResourceAsStream("/testpgn/example.pgn");
-            return preparer.prepareDatasetFromPgn(in);
+    private DataSet loadDataset(List<String> args) throws IOException {
+        DatasetPreparer preparer = new DatasetPreparer(params);
+        DataSet result = new DataSet(params);
+        for (String arg : args) {
+            LOGGER.info("parsing file " + arg);
+            result.add(preparer.prepareLoadFromFile(new File(arg)));
         }
+        return result;
     }
 
 }

@@ -79,7 +79,9 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
 
     @Override
     public void writeParamDef(File outputDir) {
-        File outFile = new File(outputDir, tableCsvName);
+        File pstOutDir = new File(outputDir, "pst");
+        pstOutDir.mkdir();
+        File outFile = new File(pstOutDir, tableCsvName);
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
             fos.write(createParamStr().getBytes());
         } catch (IOException e) {
