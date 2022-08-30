@@ -10,7 +10,7 @@ public class LocalOptExperiment02 {
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
-                .evalParamSet("TUNED01")
+                .evalParamSet("TUNED04")
                 .adjustK(false)
                 .multiThreading(true)
                 .threadCount(7)
