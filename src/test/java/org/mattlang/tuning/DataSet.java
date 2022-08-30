@@ -5,7 +5,6 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.tuning.tuner.LocalOptimizationTuner.THREAD_COUNT;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.util.*;
@@ -15,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.tuning.data.pgnparser.Ending;
 import org.mattlang.tuning.tuner.DatasetPreparer;
+import org.mattlang.tuning.tuner.OptParameters;
 
 import lombok.Data;
 
@@ -46,6 +46,12 @@ public class DataSet {
     private boolean multithreaded = false;
 
     private double k = K;
+
+    private OptParameters optParameters;
+
+    public DataSet(OptParameters optParameters) {
+        this.optParameters = optParameters;
+    }
 
     public double calcError(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
         this.evaluate = evaluate;
@@ -108,15 +114,15 @@ public class DataSet {
         // create if not alreay done:
         if (workers.size() == 0) {
 
-            for (int i = 0; i < THREAD_COUNT; i++) {
-                DataSet worker = new DataSet();
+            for (int i = 0; i < optParameters.getThreadCount(); i++) {
+                DataSet worker = new DataSet(optParameters);
                 worker.setEvaluate(evaluate.copy());
                 workers.add(worker);
             }
             // distribute the fens to the workers:
             int i = 0;
             for (FenEntry fen : fens) {
-                workers.get(i % THREAD_COUNT).addFen(fen);
+                workers.get(i % optParameters.getThreadCount()).addFen(fen);
                 i++;
             }
         }                                                                       

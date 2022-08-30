@@ -29,10 +29,15 @@ import org.mattlang.tuning.data.pgnparser.*;
 public class DatasetPreparer {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
+    private final OptParameters params;
 
     private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation();
 
     private CheckChecker checkChecker = new BBCheckCheckerImpl();
+
+    public DatasetPreparer(OptParameters params) {
+        this.params = params;
+    }
 
     /**
      * Prepares a data set from a pgn file as source.
@@ -61,7 +66,7 @@ public class DatasetPreparer {
     }
 
     private DataSet prepareFromEpd(File file) {
-        DataSet dataSet = new DataSet();
+        DataSet dataSet = new DataSet(params);
         try (Stream<String> stream = Files.lines(file.toPath())) {
 
             LOGGER.info("preparing Data now...");
@@ -108,7 +113,7 @@ public class DatasetPreparer {
 
     private DataSet prepareGames(List<PgnGame> games) {
         LOGGER.info("preparing Data now...");
-        DataSet dataSet = new DataSet();
+        DataSet dataSet = new DataSet(params);
         int counter = 0;
         Iterator<PgnGame> iterator = games.iterator();
         while (iterator.hasNext()) {
