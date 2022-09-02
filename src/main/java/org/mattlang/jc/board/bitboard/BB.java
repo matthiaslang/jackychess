@@ -1,8 +1,11 @@
 package org.mattlang.jc.board.bitboard;
 
+import static org.mattlang.jc.board.Color.WHITE;
+
 import java.util.Arrays;
 
 import org.mattlang.jc.board.BoardPrinter;
+import org.mattlang.jc.board.Color;
 
 import lombok.Getter;
 
@@ -200,6 +203,8 @@ public class BB {
     public static final long FGH_on_rank7 = FGH_File & rank7;
     public static final long FGH_on_rank6 = FGH_File & rank6;
 
+    public static final long CenterFiles = C | D | E | F;
+
     private static final long[] kingAttacks = new long[64];
     private static final long[] knightAttacks = new long[64];
 
@@ -370,6 +375,12 @@ public class BB {
         return soWeOne(bpawns);
     }
 
+    /**
+     * returns the squares attacked by pawns of the given color  from the squares in the given bitboard.
+     */
+    public static long pawnAttacks(Color color, long b) {
+        return color == WHITE ? noWeOne(b) | noEaOne(b) : soWeOne(b) | soEaOne(b);
+    }
 
     public static String toStrBoard(long bb) {
         return BoardPrinter.toStr((row, col) -> {

@@ -1,13 +1,28 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.FT_ALL;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
 
+/**
+ * Contains the intermediate results of the evaluation.
+ */
 @Getter
-public class EvalResult {
+public final class EvalResult {
+
+    /**
+     * non pawn material, sum of both sides.
+     */
+    public int nonPawnMat;
 
     /**
      * summed up mid game score.
@@ -24,6 +39,8 @@ public class EvalResult {
      */
     public int result;
 
+    private final long[][] attacks = new long[2][7];
+    private final long[] doubleAttacks = new long[2];
 
     private DetailedEvalResult details = new DetailedEvalResult();
 
@@ -31,6 +48,13 @@ public class EvalResult {
         midGame = 0;
         endGame = 0;
         result = 0;
+
+        for (int i = 0; i < 2; i++) {
+            doubleAttacks[i] = 0;
+            for (int j = 0; j < 7; j++) {
+                attacks[i][j] = 0L;
+            }
+        }
     }
 
     /**
@@ -42,5 +66,54 @@ public class EvalResult {
     public int calcCompleteScore(BoardRepresentation bitBoard) {
         int score = (int) scaleByPhase(bitBoard.getBoard(), midGame, endGame) + result;
         return score;
+    }
+
+    public void updateAttacks(final long attacs, final byte figureType, final int color) {
+        doubleAttacks[color] |= attacks[color][FT_ALL] & attacs;
+        attacks[color][FT_ALL] |= attacs;
+        attacks[color][figureType] |= attacs;
+    }
+
+    public void updatePawnAttacs(BitChessBoard bb) {
+
+        long wPawns = bb.getPieceSet(FT_PAWN, WHITE);
+        long bPieces = bb.getColorMask(BLACK);
+
+        long capturesEast = wPawns & BB.bPawnWestAttacks(bPieces);
+        long capturesWest = wPawns & BB.bPawnEastAttacks(bPieces);
+        updateAttacks(capturesEast | capturesWest, FT_PAWN, BitChessBoard.nWhite);
+
+        long bPawns = bb.getPieceSet(FT_PAWN, BLACK);
+        long wPieces = bb.getColorMask(WHITE);
+
+        capturesEast = bPawns & BB.wPawnWestAttacks(wPieces);
+        capturesWest = bPawns & BB.wPawnEastAttacks(wPieces);
+
+        updateAttacks(capturesEast | capturesWest, FT_PAWN, BitChessBoard.nBlack);
+
+    }
+
+    public long getAttacks(int color, byte figureType) {
+        return attacks[color][figureType];
+    }
+
+    public long getAttacks(Color color, byte figureType) {
+        return attacks[color.ordinal()][figureType];
+    }
+
+    public long getDoubleAttacks(Color color) {
+        return doubleAttacks[color.ordinal()];
+    }
+
+    public EvalResult plus(EvalScore evalTuple) {
+        this.midGame += evalTuple.getMidScore();
+        this.endGame += evalTuple.getEndScore();
+        return this;
+    }
+
+    public EvalResult minus(EvalScore evalTuple) {
+        this.midGame -= evalTuple.getMidScore();
+        this.endGame -= evalTuple.getEndScore();
+        return this;
     }
 }

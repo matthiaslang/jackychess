@@ -13,6 +13,11 @@ public class FigureConstants {
     public static final byte FT_QUEEN = 4;
     public static final byte FT_KING = 5;
 
+    /**
+     * virtual value for combined values of "all" figures.
+     */
+    public static final byte FT_ALL = 6;
+
     public static final byte W_PAWN = (byte) (FT_PAWN | Color.WHITE.code);
     public static final byte W_KNIGHT = (byte) (FT_KNIGHT | Color.WHITE.code);
     public static final byte W_BISHOP = (byte) (FT_BISHOP | Color.WHITE.code);

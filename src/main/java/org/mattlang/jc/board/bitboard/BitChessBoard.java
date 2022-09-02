@@ -241,6 +241,17 @@ public class BitChessBoard {
         throw new IllegalStateException("no valid bit mask code existing!");
     }
 
+    public byte getFigType(int i) {
+        long posMask = 1L << i;
+
+        for (int figType = 0; figType < 6; figType++) {
+            if ((pieceBB[figType] & posMask) != 0) {
+                return (byte) (figType);
+            }
+        }
+        return FigureConstants.FT_EMPTY;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

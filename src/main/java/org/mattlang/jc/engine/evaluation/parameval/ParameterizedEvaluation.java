@@ -35,6 +35,10 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Getter
     private ParameterizedPawnEvaluation pawnEvaluation;
 
+    private ParameterizedThreadsEvaluation threadsEvaluation;
+
+    private ParameterizedSpaceEvaluation spaceEvaluation;
+
     ParameterizedMaterialCorrectionEvaluation matCorrection;
 
     @Getter
@@ -73,6 +77,10 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
         adjustments = new ParameterizedAdjustmentsEvaluation(config);
+
+        threadsEvaluation = new ParameterizedThreadsEvaluation();
+
+        spaceEvaluation = new ParameterizedSpaceEvaluation();
     }
 
     /**
@@ -102,6 +110,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         result.clear();
 
+        // do mat evaluation first to have material values used for end game rules to decide the stronger side
         matEvaluation.eval(result, currBoard);
 
         if (endgameEvaluations) {
@@ -120,9 +129,13 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         }
 
         pstEvaluation.eval(result, currBoard);
+        // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
+
+        threadsEvaluation.eval(result, currBoard);
+        spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
 

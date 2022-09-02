@@ -62,16 +62,20 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     }
 
-    private void eval(BoardRepresentation bitBoard) {
+    private void evalMobility(EvalResult result, BoardRepresentation bitBoard) {
 
         clear();
 
-        // calc mobility of each piece.
-        // we do not count sqares which are attached by enemy pawns.
         BitChessBoard bb = bitBoard.getBoard();
 
-        eval(bb, Color.WHITE);
-        eval(bb, Color.BLACK);
+        // update pawn attacks
+        result.updatePawnAttacs(bb);
+        // calc mobility of each piece.
+        // we do not count sqares which are attached by enemy pawns.
+
+        // this update also the attacks information of each piece type
+        evalMobilityAndAttacks(result, bb, Color.WHITE);
+        evalMobilityAndAttacks(result, bb, Color.BLACK);
 
     }
 
@@ -80,7 +84,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         bResult.clear();
     }
 
-    public void eval(BitChessBoard bb, Color side) {
+    public void evalMobilityAndAttacks(EvalResult evalResult, BitChessBoard bb, Color side) {
 
         MobilityEvalResult result = side == WHITE ? wResult : bResult;
 
@@ -110,6 +114,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(bishop, oppKingPos);
 
+            evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
             result.countFigureVals(paramsBishop, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             bishopBB &= bishopBB - 1;
@@ -128,6 +133,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = knightAttack & ownFigsMask;
             int tropism = getTropism(knight, oppKingPos);
 
+            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
             result.countFigureVals(paramsKnight, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             knightBB &= knightBB - 1;
@@ -147,6 +153,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long kingZoneAttacs = attacks & oppKingZone;
             int tropism = getTropism(rook, oppKingPos);
 
+            evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
             result.countFigureVals(paramsRook, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             result.rookOpenFiles(rook, oppKingPos, ownPawns, oppPawns);
@@ -167,6 +174,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long connectivity = attacks & ownFigsMask;
             int tropism = getTropism(queen, oppKingPos);
 
+            evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
             result.countFigureVals(paramsQueen, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
             result.evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
@@ -186,6 +194,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long connectivity = kingAttack & ownFigsMask;
         int tropism = getTropism(king, oppKingPos);
 
+        evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
         result.countFigureVals(paramsKing, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
         result.blockedPieces(bb, side);
@@ -226,7 +235,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        eval(bitBoard);
+        evalMobility(result, bitBoard);
 
         result.midGame += (wResult.mobilityMG - bResult.mobilityMG);
         result.endGame += (wResult.mobilityEG - bResult.mobilityEG);
