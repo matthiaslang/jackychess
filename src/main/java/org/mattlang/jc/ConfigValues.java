@@ -1,6 +1,7 @@
 package org.mattlang.jc;
 
 import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_THREADS;
 
 import org.mattlang.jc.uci.*;
 
@@ -34,7 +35,7 @@ public class ConfigValues {
 
     public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
             "the maximum search threads when multi threading search is activated",
-            1, 8, 1);
+            1, MAX_THREADS, 1);
 
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");

@@ -14,7 +14,7 @@ import lombok.Getter;
  * This includes movelist and all heuristical data like killer heuristic, history heuristic, pv cache, etc.
  *
  * All structures which are needed by one search thread should be refactored in this class finally.
- * Once this is done we could think of implementing multi threaded Lazy SMP search.
+ *
  */
 public class SearchThreadContext {
 

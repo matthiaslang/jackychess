@@ -18,9 +18,13 @@ public class Constants {
     public static final int MAX_PLY = 64;
 
     /**
+     * maximum Threads supported.
+     */
+    public static final int MAX_THREADS = 8;
+
+    /**
      * max ply used to setup array structures.
      */
     public static final int MAX_PLY_INDEX = MAX_PLY + MAX_PLY;
-
 
 }

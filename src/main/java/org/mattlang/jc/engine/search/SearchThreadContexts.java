@@ -1,8 +1,10 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.Constants.MAX_THREADS;
+
 public class SearchThreadContexts {
 
-    private SearchThreadContext[] contexts = new SearchThreadContext[4];
+    private SearchThreadContext[] contexts = new SearchThreadContext[MAX_THREADS];
 
     public static SearchThreadContexts CONTEXTS = new SearchThreadContexts();
 
