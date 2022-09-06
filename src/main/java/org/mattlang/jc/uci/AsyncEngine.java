@@ -1,6 +1,7 @@
 package org.mattlang.jc.uci;
 
 import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.Constants.MAX_THREADS;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class AsyncEngine {
      */
     private Future<Move> future;
 
-    public static ExecutorService executorService = Executors.newFixedThreadPool(16);
+    public static ExecutorService executorService = Executors.newFixedThreadPool(2 * MAX_THREADS);
 
     public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
         GoParameter goParams = new GoParameter();
