@@ -14,7 +14,8 @@ import java.util.logging.Logger;
  */
 public class Gobbler {
 
-    Logger logger = Logger.getLogger("Gobbler");
+    public static final String GOBBLER_LOGNAME = "Gobbler";
+    Logger logger = Logger.getLogger(GOBBLER_LOGNAME);
 
     private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
 

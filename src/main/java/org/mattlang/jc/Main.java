@@ -3,10 +3,13 @@ package org.mattlang.jc;
 import static java.util.logging.Level.parse;
 import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.AppConfiguration.*;
+import static org.mattlang.jc.uci.Gobbler.GOBBLER_LOGNAME;
 
 import java.io.*;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.uci.UciProcessor;
@@ -25,6 +28,12 @@ public class Main {
             readLoggerConfig("/logging.properties");
         } else {
             readLoggerConfig("/nologging.properties");
+        }
+
+        // activate uci logging if flag is activated
+        if (APPCONFIG.getBooleanValue(LOG_UCI, false)){
+            Logger gobblerlogger = Logger.getLogger(GOBBLER_LOGNAME);
+            gobblerlogger.setLevel(Level.FINE);
         }
     }
 

@@ -20,6 +20,9 @@ public class AppConfiguration {
     public static final String LOGGING_LEVEL = "jacky.logging.level";
     public static final String LOGGING_FILE = "jacky.logging.file";
 
+    /** flag to activate uci logging (independently of the general log level of Handlers). */
+    public static final String LOG_UCI="jacky.logging.logUCI";
+
     public static final String CONFIG_FILE = "jacky.config";
 
     public static final AppConfiguration APPCONFIG = new AppConfiguration();
