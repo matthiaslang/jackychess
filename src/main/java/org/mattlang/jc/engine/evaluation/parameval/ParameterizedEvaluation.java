@@ -134,7 +134,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         pawnEvaluation.eval(result, currBoard);
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
-        threadsEvaluation.eval(result, currBoard);
+//        threadsEvaluation.eval(result, currBoard);
         spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
