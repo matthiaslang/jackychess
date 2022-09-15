@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mattlang.jc.engine.evaluation.parameval.ConfigParseException;
-import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.util.PropertyConfig;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,8 +37,8 @@ public class MobLinFun implements Function {
 
             String strFactor = matcher.group("factor");
             String strKoeff = matcher.group("koeff");
-            int factor = EvalConfig.parseInt(strFactor, "Factor");
-            int koeff = EvalConfig.parseInt(strKoeff, "Koefficient");
+            int factor = PropertyConfig.parseInt(strFactor, "Factor");
+            int koeff = PropertyConfig.parseInt(strKoeff, "Koefficient");
 
             return new MobLinFun(factor, koeff);
         } else {

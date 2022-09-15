@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mattlang.jc.engine.evaluation.parameval.ConfigParseException;
-import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.util.PropertyConfig;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class TropismFun implements Function {
         Matcher matcher = Pattern.compile(LIN_FUN_PATTERN).matcher(term);
         if (matcher.matches()) {
             String strFactor = matcher.group("factor");
-            int factor = EvalConfig.parseInt(strFactor, "Factor");
+            int factor = PropertyConfig.parseInt(strFactor, "Factor");
             return new TropismFun(factor);
         } else {
             throw new ConfigParseException("Cant parse " + term);
