@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
@@ -15,9 +16,14 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 public class ParameterizedSpaceEvaluation implements EvalComponent {
 
+    public static final long RANK_234 = BB.rank2 | BB.rank3 | BB.rank4;
+    public static final long RANK_567 = BB.rank7 | BB.rank6 | BB.rank5;
+
+    public static final long FILE_CDEF = BB.C | BB.D | BB.E | BB.F;
+
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        result.midGame += space(result, bitBoard, WHITE) - space(result, bitBoard, Color.BLACK);
+        result.midGame += space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK);
     }
 
     /**
@@ -142,4 +148,38 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
     //                rookEG * rooksDiff +
     //                queenEG * queensDiff;
     //    }
+
+    public static final int[] SPACE = { 0, 0, 124, 0, 0, -6, -6, -8, -7, -4, -4, -2, 0, -1, 0, 3, 7 };
+
+    private static int IX_SPACE = 12;
+
+    public static int calculateSpace(EvalResult result, BoardRepresentation bitBoard) {
+
+        BitChessBoard bb = bitBoard.getBoard();
+        final long whitePawns = bb.getPawns(BitChessBoard.nWhite);
+        final long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+
+        if (whitePawns == 0 && blackPawns == 0) {
+            return 0;
+        }
+
+        int score = 0;
+
+        score += IX_SPACE
+                * Long.bitCount((whitePawns >>> 8) & (bb.getKnights(nWhite) | bb.getBishops(nWhite)) & RANK_234);
+        score -= IX_SPACE
+                * Long.bitCount((blackPawns << 8) & (bb.getKnights(nBlack) | bb.getBishops(nBlack)) & RANK_567);
+
+        // idea taken from Laser
+        long space = whitePawns >>> 8;
+        space |= space >>> 8 | space >>> 16;
+        score += SPACE[Long.bitCount(bb.getPieceSet(nWhite))]
+                * Long.bitCount(space & ~whitePawns & ~result.getAttacks(BLACK, FT_PAWN) & FILE_CDEF);
+        space = blackPawns << 8;
+        space |= space << 8 | space << 16;
+        score -= SPACE[Long.bitCount(bb.getPieceSet(nBlack))]
+                * Long.bitCount(space & ~blackPawns & ~result.getAttacks(WHITE, FT_PAWN) & FILE_CDEF);
+
+        return score;
+    }
 }

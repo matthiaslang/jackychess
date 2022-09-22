@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.engine.evaluation.parameval.EvalScore.SCORE;
@@ -291,4 +292,115 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     }
     */
 
+    public static final int[] DOUBLE_ATTACKED = { 0, 16, 34, 72, 4, -14, 0 };
+
+    public static final int[] THREATS_MG = { 38, 66, 90, 16, 66, 38, 12, 16, -6 };
+    public static final int[] THREATS_EG = { 34, 20, -64, 16, 10, -48, 28, 4, 14 };
+    public static final int[] THREATS = new int[THREATS_MG.length];
+
+    public static final int IX_PAWN_PUSH_THREAT 			= 3;
+    public static final int IX_PAWN_ATTACKS 				= 1;
+    public static final int IX_MULTIPLE_PAWN_ATTACKS 		= 0;
+    public static final int IX_MAJOR_ATTACKED				= 6;
+    public static final int IX_PAWN_ATTACKED 				= 8;
+    public static final int IX_QUEEN_ATTACKED 				= 2;
+    public static final int IX_ROOK_ATTACKED 				= 4;
+    public static final int IX_QUEEN_ATTACKED_MINOR			= 5;
+
+    public static int calculateThreats(EvalResult result, EvalScore evalScore, BitChessBoard bb) {
+        int score = 0;
+        final long whites = bb.getPieceSet(BitChessBoard.nWhite);
+        final long whitePawns = bb.getPawns(BitChessBoard.nWhite);
+        final long blacks = bb.getPieceSet(BitChessBoard.nBlack);
+        final long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+        final long whiteAttacks = result.getAttacks(WHITE, FT_ALL);
+        final long whitePawnAttacks = result.getAttacks(WHITE, FT_PAWN);
+        final long whiteMinorAttacks = result.getAttacks(WHITE, FT_KNIGHT) | result.getAttacks(WHITE, FT_BISHOP);
+        final long blackAttacks = result.getAttacks(BLACK, FT_ALL);
+        final long blackPawnAttacks = result.getAttacks(BLACK, FT_PAWN);
+        final long blackMinorAttacks = result.getAttacks(BLACK, FT_KNIGHT) | result.getAttacks(BLACK, FT_BISHOP);
+
+        final long emptySpaces = ~whites & ~blacks;
+
+        // double attacked pieces
+        long piece = result.getDoubleAttacks(WHITE) & blacks;
+        while (piece != 0) {
+            score += DOUBLE_ATTACKED[bb.getFigType(Long.numberOfTrailingZeros(piece))];
+            piece &= piece - 1;
+        }
+        piece = result.getDoubleAttacks(BLACK) & whites;
+        while (piece != 0) {
+            score -= DOUBLE_ATTACKED[bb.getFigType(Long.numberOfTrailingZeros(piece))];
+            piece &= piece - 1;
+        }
+
+        // if we have pawns:
+        if ((whitePawns | blackPawns) != 0L) {
+
+            // unused outposts
+//            score += Long.bitCount(cb.passedPawnsAndOutposts & emptySpaces & whiteMinorAttacks & whitePawnAttacks)
+//                    * EvalConstants.THREATS[EvalConstants.IX_UNUSED_OUTPOST];
+//            score -= Long.bitCount(cb.passedPawnsAndOutposts & emptySpaces & blackMinorAttacks & blackPawnAttacks)
+//                    * EvalConstants.THREATS[EvalConstants.IX_UNUSED_OUTPOST];
+
+            // pawn push threat
+            piece = (whitePawns << 8) & emptySpaces & ~blackAttacks;
+            score += Long.bitCount(BB.pawnAttacks(WHITE, piece) & blacks)
+                    * THREATS[IX_PAWN_PUSH_THREAT];
+            piece = (blackPawns >>> 8) & emptySpaces & ~whiteAttacks;
+            score -= Long.bitCount(BB.pawnAttacks(BLACK, piece) & whites)
+                    * THREATS[IX_PAWN_PUSH_THREAT];
+
+            // piece attacked by pawn
+            score += Long.bitCount(whitePawnAttacks & blacks & ~blackPawns)
+                    * THREATS[IX_PAWN_ATTACKS];
+            score -= Long.bitCount(blackPawnAttacks & whites & ~whitePawns)
+                    * THREATS[IX_PAWN_ATTACKS];
+
+            // multiple pawn attacks possible
+            if (Long.bitCount(whitePawnAttacks & blacks) > 1) {
+                score += THREATS[IX_MULTIPLE_PAWN_ATTACKS];
+            }
+            if (Long.bitCount(blackPawnAttacks & whites) > 1) {
+                score -= THREATS[IX_MULTIPLE_PAWN_ATTACKS];
+            }
+
+            // pawn attacked
+            score += Long.bitCount(whiteAttacks & blackPawns) * THREATS[IX_PAWN_ATTACKED];
+            score -= Long.bitCount(blackAttacks & whitePawns) * THREATS[IX_PAWN_ATTACKED];
+
+        }
+
+        // minors attacked and not defended by a pawn
+        score += Long.bitCount(whiteAttacks & (bb.getKnights(BitChessBoard.nBlack) | bb.getBishops(BitChessBoard.nBlack) & ~blackAttacks))
+                * THREATS[IX_MAJOR_ATTACKED];
+        score -= Long.bitCount(blackAttacks & (bb.getKnights(BitChessBoard.nWhite) | bb.getBishops(BitChessBoard.nWhite) & ~whiteAttacks))
+                * THREATS[IX_MAJOR_ATTACKED];
+
+        if (bb.getQueens(BitChessBoard.nBlack) != 0) {
+            // queen attacked by rook
+            score += Long.bitCount(bb.getRooks(BitChessBoard.nWhite) & bb.getQueens(BitChessBoard.nBlack) )
+                    * THREATS[IX_QUEEN_ATTACKED];
+            // queen attacked by minors
+            score += Long.bitCount(whiteMinorAttacks & bb.getQueens(BitChessBoard.nBlack) )
+                    * THREATS[IX_QUEEN_ATTACKED_MINOR];
+        }
+
+        if (bb.getQueens(BitChessBoard.nWhite) != 0) {
+            // queen attacked by rook
+            score -= Long.bitCount(bb.getRooks(BitChessBoard.nBlack) & bb.getQueens(BitChessBoard.nWhite))
+                    * THREATS[IX_QUEEN_ATTACKED];
+            // queen attacked by minors
+            score -= Long.bitCount(blackMinorAttacks & bb.getQueens(BitChessBoard.nWhite))
+                    * THREATS[IX_QUEEN_ATTACKED_MINOR];
+        }
+
+        // rook attacked by minors
+        score += Long.bitCount(whiteMinorAttacks & bb.getRooks(BitChessBoard.nBlack))
+                * THREATS[IX_ROOK_ATTACKED];
+        score -= Long.bitCount(blackMinorAttacks & bb.getRooks(BitChessBoard.nWhite))
+                * THREATS[IX_ROOK_ATTACKED];
+
+        return score;
+    }
 }
