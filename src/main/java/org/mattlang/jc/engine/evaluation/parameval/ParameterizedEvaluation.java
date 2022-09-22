@@ -35,7 +35,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Getter
     private ParameterizedPawnEvaluation pawnEvaluation;
 
-    private ParameterizedThreadsEvaluation threadsEvaluation;
+    private ParameterizedThreatsEvaluation threatsEvaluation;
 
     private ParameterizedSpaceEvaluation spaceEvaluation;
 
@@ -78,7 +78,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
         adjustments = new ParameterizedAdjustmentsEvaluation(config);
 
-        threadsEvaluation = new ParameterizedThreadsEvaluation();
+        threatsEvaluation = new ParameterizedThreatsEvaluation();
 
         spaceEvaluation = new ParameterizedSpaceEvaluation();
     }
@@ -134,7 +134,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         pawnEvaluation.eval(result, currBoard);
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
-//        threadsEvaluation.eval(result, currBoard);
+        threatsEvaluation.eval(result, currBoard);
         spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);

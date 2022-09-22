@@ -11,7 +11,7 @@ import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 
-public class ParameterizedThreadsEvaluation implements EvalComponent {
+public class ParameterizedThreatsEvaluation implements EvalComponent {
 
     // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
     // which piece type attacks which one. Attacks on lesser pieces which are
