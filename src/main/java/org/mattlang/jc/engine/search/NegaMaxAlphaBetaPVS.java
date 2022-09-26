@@ -432,7 +432,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     bestMove = moveCursor.getMoveInt();
 
                     pvArray.set(bestMove, ply);
-                    searchContext.savePv(bestMove);
                     searchContext.updateRootBestMove(depth, bestMove, score);
 
                     if (max >= beta) {
@@ -701,7 +700,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
         List<Integer> pvMoves = expandPv
-                ? moveValidator.enrichPVList(pvArray.getPvMoves(), gameState, stc.getPvCache(), depth)
+                ? moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState, depth)
                 : pvArray.getPvMoves();
 
         NegaMaxResult rslt = new NegaMaxResult(directScore,

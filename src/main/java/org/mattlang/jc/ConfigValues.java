@@ -94,9 +94,6 @@ public class ConfigValues {
     public final UCICheckOption useMvvLvaSorting = moveOrder.createCheckOpt("useMvvLvaSorting",
             "should mvv lva sorting be used for move ordering",
             true);
-    public final UCICheckOption usePvSorting = moveOrder.createCheckOpt("usePvSorting",
-            "should principal variation information used for move ordering",
-            true);
 
     public final UCIGroup pruning =
             allOptions.createInternalGroup("Pruning", "Parameter influencing the pruning during alpha beta search");

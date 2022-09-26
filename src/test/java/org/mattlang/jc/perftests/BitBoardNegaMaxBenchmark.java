@@ -67,7 +67,6 @@ public class BitBoardNegaMaxBenchmark {
                 .config(c -> c.useHistoryHeuristic.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
                 .config(c -> c.useMvvLvaSorting.setValue(false))
-                .config(c -> c.usePvSorting.setValue(false))
                 .boards.set(() -> new BitBoard());
 
         return searchParameter;
@@ -83,7 +82,6 @@ public class BitBoardNegaMaxBenchmark {
                 .config(c -> c.aspiration.setValue(true))
                 .config(c -> c.useHistoryHeuristic.setValue(true))
                 .config(c -> c.useMvvLvaSorting.setValue(true))
-                .config(c -> c.usePvSorting.setValue(true))
                 .boards.set(() -> new BitBoard());
 
         return searchParameter;

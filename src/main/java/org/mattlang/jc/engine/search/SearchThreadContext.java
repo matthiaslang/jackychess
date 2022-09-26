@@ -5,7 +5,6 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderHints;
-import org.mattlang.jc.engine.tt.IntCache;
 
 import lombok.Getter;
 
@@ -34,8 +33,6 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
-    @Getter
-    private IntCache pvCache = new IntCache(16);
     private OrderHints orderHints = OrderHints.NO_HINTS;
 
     public SearchThreadContext() {

@@ -11,7 +11,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.engine.tt.IntCache;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -83,24 +82,18 @@ public class MoveValidator {
     }
 
     /**
-     * Since the pv list extracted from the triangular may be shortened if tt cach hits have been used,
-     * we try to fill missing entries via entries from the tt cache if they exist.
+     * Checks the pv list if it contains valid moves and shorten it if there are invalid moves.
      *
-     * The pv array as well as the pv cache might not fully contain the relevant pv moves so the enrichment could
-     * be incomplete.
+     * There seems to be an issue where cutechess reports invalid pv moves from our output.
+     * This method tries to correct this (as long as we do not know the real reason).
      *
      * @return
      */
 
-    public List<Integer> enrichPVList(List<Integer> pvs, GameState gameState, IntCache pvCache,
+    public List<Integer> validateAndCorrectPvList(List<Integer> pvs, GameState gameState,
             int depth) {
 
-        if (pvs.size() == depth) {
-            LOGGER.fine("pv == expected depth. everything ok");
-            return pvs; // nothing to enrich
-        }
-
-        // play all pv moves:
+        // play and validate all pv moves:
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
@@ -114,52 +107,13 @@ public class MoveValidator {
                 board.domove(move);
                 validatedPvs.add(moveI);
             } else {
-                LOGGER.fine("Illegal PV Move encountered during pv enrichment " + move.toStr());
+                LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toStr());
                 break;
             }
             who2Move = who2Move.invert();
         }
 
-        enrichWithPVCache(validatedPvs, pvCache, depth, board, who2Move);
-
-        if (validatedPvs.size() == depth) {
-            LOGGER.fine("pv enrichment successful");
-        } else {
-            LOGGER.info("could not enrich pv with pv cache!");
-        }
-
         return validatedPvs;
-    }
-
-    private void enrichWithPVCache(List<Integer> pvs, IntCache pvCache, int depth, BoardRepresentation board, Color who2Move) {
-        // now enrich the missing ones:
-        int size = pvs.size();
-        int extended=0;
-        for (int d = size; d < depth; d++) {
-            int tte = pvCache.find(board.getZobristHash());
-            if (tte != IntCache.NORESULT) {
-                Move move = new MoveImpl(tte);
-                boolean legal = isLegalMove(board, move, who2Move);
-
-                if (legal) {
-                    board.domove(move);
-                    pvs.add(tte);
-                    extended++;
-                } else {
-                    // old or weird entry... stop here
-                    LOGGER.fine("stopped extending pv: found non legal pv cache move! extended " + extended + " of " + (
-                            depth -size));
-                    break;
-
-                }
-                who2Move = who2Move.invert();
-            } else {
-                LOGGER.fine("stopped extending pv: no pv cache entry found! extended " + extended + " of " + (depth
-                        - size));
-                break; // stop here...
-            }
-
-        }
     }
 
     /**

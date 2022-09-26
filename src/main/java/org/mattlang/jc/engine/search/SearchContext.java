@@ -270,10 +270,6 @@ public final class SearchContext {
         return Weights.REPETITION_WEIGHT;
     }
 
-    public void savePv(int bestMove) {
-        stc.getPvCache().save(board.getZobristHash(), bestMove);
-    }
-
     // todo test that not in check because those heuristics make only for quiet pos sense...?
     public void updateCutOffHeuristics(int ply, int depth, Color color, int parentMove, int bestMove,
             MoveCursor moveCursor) {

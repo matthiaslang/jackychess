@@ -1,6 +1,5 @@
 package org.mattlang.jc.engine.sorting;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
@@ -13,10 +12,9 @@ import org.mattlang.jc.engine.see.SEE;
 import lombok.Getter;
 
 @Getter
-public class OrderCalculator {
+public final class OrderCalculator {
 
     public static final int HASHMOVE_SCORE = -1500_000_000;
-    public static final int PV_SCORE = -1000_000_000;
     public static final int GOOD_CAPTURES_SCORE = -100_000_000;
 
     public static final int KILLER_SCORE = -10_000_000;
@@ -44,7 +42,6 @@ public class OrderCalculator {
 
     private int ply;
     private boolean useMvvLva;
-    private Boolean usePvSorting;
 
     private OrderHints orderHints;
 
@@ -74,7 +71,6 @@ public class OrderCalculator {
         this.counterMoveHeuristic = other.orderHints.counterMoveHeuristic;
 
         this.useMvvLva = orderHints.useMvvLvaSorting;
-        this.usePvSorting = other.usePvSorting;
 
         this.hashMove = other.hashMove;
         this.parentMove = other.parentMove;
@@ -90,7 +86,6 @@ public class OrderCalculator {
         this.killerMoves = orderHints.killerMoves;
         this.counterMoveHeuristic = orderHints.counterMoveHeuristic;
         this.useMvvLva = orderHints.useMvvLvaSorting;
-        this.usePvSorting = Factory.getDefaults().getConfig().usePvSorting.getValue();
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
@@ -130,9 +125,7 @@ public class OrderCalculator {
      */
     public int calcOrder(Move m) {
         int moveInt = m.getMoveInt();
-        if (usePvSorting && pvMove == moveInt) {
-            return PV_SCORE;
-        } else if (hashMove == moveInt) {
+        if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
         } else {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;

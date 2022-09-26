@@ -74,7 +74,6 @@ public class AspirationWindowBenchmark {
                 .config(c -> c.useKillerMoves.setValue(true))
                 .config(c -> c.useHistoryHeuristic.setValue(true))
                 .config(c -> c.useMvvLvaSorting.setValue(true))
-                .config(c -> c.usePvSorting.setValue(true))
                 .boards.set(() -> new BitBoard());
 
         return searchParameter;

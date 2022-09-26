@@ -1,4 +1,10 @@
 # Versions
+                  
+### Version 0.12.0-003
+
+- remove pv sorting and all code which tries to extend the pv to the calculated depth as it is now anyway only for informational purpose
+
+
 
 ### Version 0.12.2
 

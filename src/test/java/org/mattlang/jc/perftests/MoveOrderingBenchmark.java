@@ -34,21 +34,15 @@ public class MoveOrderingBenchmark {
         // all opts deactivated
         runner.benchmarkExecute(everythingOff());
 
-        // only pv sorting
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.usePvSorting.setValue(true)));
 
         // pv sorting, pv search
         runner.benchmarkExecute(
                 everythingOff()
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.activatePvsSearch.setValue(true)));
 
         // pv sorting, pv search, mvvlva
         runner.benchmarkExecute(
                 everythingOff()
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.activatePvsSearch.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true)));
 
@@ -71,7 +65,6 @@ public class MoveOrderingBenchmark {
         runner.benchmarkExecute(
                 everythingOff()
                         .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.useKillerMoves.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useHistoryHeuristic.setValue(true)));
@@ -80,7 +73,6 @@ public class MoveOrderingBenchmark {
         runner.benchmarkExecute(
                 everythingOff()
                         .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.useKillerMoves.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useHistoryHeuristic.setValue(true))
@@ -90,7 +82,6 @@ public class MoveOrderingBenchmark {
         runner.benchmarkExecute(
                 everythingOff()
                         .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.useKillerMoves.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useHistoryHeuristic.setValue(true))
@@ -101,7 +92,6 @@ public class MoveOrderingBenchmark {
         runner.benchmarkExecute(
                 everythingOff()
                         .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.usePvSorting.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
 
@@ -123,7 +113,6 @@ public class MoveOrderingBenchmark {
                 .config(c -> c.useKillerMoves.setValue(false))
                 .config(c -> c.useHistoryHeuristic.setValue(false))
                 .config(c -> c.useMvvLvaSorting.setValue(false))
-                .config(c -> c.usePvSorting.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
                 .boards.set(() -> new BitBoard());
 

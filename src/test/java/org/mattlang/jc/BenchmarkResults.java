@@ -28,7 +28,6 @@ public class BenchmarkResults<T> {
 
     private final String evaluateFunction;
     private final Boolean useMvvLvaSorting;
-    private final Boolean usePvSorting;
     private final Boolean useTTCache;
     private final Boolean useKillerMoves;
     private final Boolean useHistoryHeuristic;
@@ -53,7 +52,6 @@ public class BenchmarkResults<T> {
         this.depth = config.maxDepth.getValue();
         this.evaluateFunction = config.evluateFunctions.getValue().name();
         this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
-        this.usePvSorting = config.usePvSorting.getValue();
         this.useTTCache = config.useTTCache.getValue();
         this.useKillerMoves = config.useKillerMoves.getValue();
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
