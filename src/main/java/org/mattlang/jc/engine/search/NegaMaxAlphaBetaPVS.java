@@ -25,7 +25,6 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -124,7 +123,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         searchWithScore(SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
                 ALPHA_START, BETA_START,
-                stopTime, OrderHints.NO_HINTS);
+                stopTime);
         return new MoveImpl(searchContext.getSavedMove());
     }
 
@@ -682,12 +681,12 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     public NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState,
             GameContext context,
             int depth,
-            int alpha, int beta, long stopTime, OrderHints orderHints) {
+            int alpha, int beta, long stopTime) {
 
         if (LOGGER.isLoggable(FINE)) {
             LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
         }
-        searchContext = new SearchContext(stc, gameState, context, orderHints, evaluate, depth, alpha);
+        searchContext = new SearchContext(stc, gameState, context, evaluate, depth, alpha);
 
         this.stopTime = stopTime;
 
@@ -702,8 +701,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
         NegaMaxResult rslt = new NegaMaxResult(directScore,
                 pvMoves, searchContext, nodesVisited,
                 quiescenceNodesVisited);
-
-        stc.setOrderHints(new OrderHints(rslt, stc,true));
 
         return rslt;
     }

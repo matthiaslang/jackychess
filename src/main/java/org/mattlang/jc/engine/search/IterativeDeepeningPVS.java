@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.search;
 import static java.lang.String.format;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
-import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,7 +18,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.evaluation.Weights;
-import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.LoggerUtils;
@@ -59,8 +57,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
     private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
-
-    private boolean useMvvLvaSorting = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
 
     private boolean useAspirationWindow = Factory.getDefaults().getConfig().aspiration.getValue();
 
@@ -105,7 +101,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         int startDepth = workerNumber == 0 ? 1 : 2;
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
-        IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
+        IterativeRoundResult lastResults = new IterativeRoundResult(null, new StopWatch());
         try {
             int currdepth = startDepth;
 
@@ -179,7 +175,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     static class IterativeRoundResult {
 
         private final NegaMaxResult rslt;
-        private final OrderHints orderHints;
         private final StopWatch roundWatch;
 
         public boolean isCheckMate() {
@@ -209,14 +204,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         if (useAspirationWindow && currdepth >= 3 && lastRoundResults.hasResults()) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
             rslt = searchWithAspirationWindow(stc, aspWindow, gameState, gameContext, stopTime,
-                    lastRoundResults.getOrderHints(),
                     currdepth);
 
         } else {
             rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
-                    stopTime, lastRoundResults.getOrderHints());
+                    stopTime);
         }
 
         if (rslt.savedMove != null) {
@@ -242,20 +236,19 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         stats.put("depth=" + currdepth, statOfDepth);
         negaMaxAlphaBeta.resetStatistics();
 
-        OrderHints orderHints = new OrderHints(rslt, stc, useMvvLvaSorting);
-        return new IterativeRoundResult(rslt, orderHints, roundWatch);
+        return new IterativeRoundResult(rslt, roundWatch);
     }
 
     private NegaMaxResult searchWithAspirationWindow(SearchThreadContext stc,
             Window aspWindow, GameState gameState, GameContext gameContext,
-            long stopTime, OrderHints orderHints, int currdepth) {
+            long stopTime, int currdepth) {
 
         LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
 
         NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                 currdepth,
                 aspWindow.getAlpha(), aspWindow.getBeta(),
-                stopTime, orderHints);
+                stopTime);
 
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
@@ -263,7 +256,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
             rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
-                    stopTime, orderHints);
+                    stopTime);
         }
         LOGGER.fine(format("aspiration stabilized: %s", aspWindow.descr()));
         return rslt;

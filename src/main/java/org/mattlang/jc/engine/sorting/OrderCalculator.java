@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.sorting;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
@@ -7,6 +8,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
+import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
 
 import lombok.Getter;
@@ -42,8 +44,6 @@ public final class OrderCalculator {
     private int ply;
     private boolean useMvvLva;
 
-    private OrderHints orderHints;
-
     private int hashMove;
     private int parentMove;
 
@@ -64,12 +64,11 @@ public final class OrderCalculator {
      * @todo maye be we should have an own order calculator for each move list instance...
      */
     public void init(OrderCalculator other) {
-        this.orderHints = other.orderHints;
-        this.historyHeuristic = other.orderHints.historyHeuristic;
-        this.killerMoves = other.orderHints.killerMoves;
-        this.counterMoveHeuristic = other.orderHints.counterMoveHeuristic;
+        this.historyHeuristic = other.historyHeuristic;
+        this.killerMoves = other.killerMoves;
+        this.counterMoveHeuristic = other.counterMoveHeuristic;
 
-        this.useMvvLva = orderHints.useMvvLvaSorting;
+        this.useMvvLva = other.useMvvLva;
 
         this.hashMove = other.hashMove;
         this.parentMove = other.parentMove;
@@ -78,12 +77,11 @@ public final class OrderCalculator {
         this.color = other.color;
     }
 
-    public OrderCalculator(OrderHints orderHints) {
-        this.orderHints = orderHints;
-        this.historyHeuristic = orderHints.historyHeuristic;
-        this.killerMoves = orderHints.killerMoves;
-        this.counterMoveHeuristic = orderHints.counterMoveHeuristic;
-        this.useMvvLva = orderHints.useMvvLvaSorting;
+    public OrderCalculator(SearchThreadContext stc) {
+        this.historyHeuristic = stc.getHistoryHeuristic();
+        this.killerMoves = stc.getKillerMoves();
+        this.counterMoveHeuristic = stc.getCounterMoveHeuristic();
+        this.useMvvLva = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
@@ -91,7 +89,6 @@ public final class OrderCalculator {
 
         this.hashMove = hashMove;
         this.parentMove = parentMove;
-        int index = ply - 1;
 
         this.ply = ply;
         this.color = color;

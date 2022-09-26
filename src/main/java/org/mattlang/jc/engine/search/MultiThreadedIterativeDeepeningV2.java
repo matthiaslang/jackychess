@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.search;
 import static java.lang.String.format;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
-import static org.mattlang.jc.engine.sorting.OrderHints.NO_HINTS;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,7 +19,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS.IterativeRoundResult;
-import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.uci.AsyncEngine;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -59,7 +57,6 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         for (int i = 0; i < maxThreads; i++) {
             negaMaxAlphaBeta[i].reset();
-            SearchThreadContexts.CONTEXTS.getContext(i).setOrderHints(NO_HINTS);
         }
 
         LOGGER.info("iterative search on " + gameState.getFenStr());
@@ -73,7 +70,7 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
         ebf.clear();
         ArrayList<IterativeRoundResult> rounds = new ArrayList<>();
 
-        IterativeRoundResult lastResults = new IterativeRoundResult(null, NO_HINTS, new StopWatch());
+        IterativeRoundResult lastResults = new IterativeRoundResult(null, new StopWatch());
         try {
             for (int currdepth = 1; currdepth <= maxDepth; currdepth++) {
 
@@ -172,7 +169,7 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
 //            negaMaxAlphaBeta[i].resetCaches();
         }
 
-        return new IterativeRoundResult(rslt, null, roundWatch);
+        return new IterativeRoundResult(rslt, roundWatch);
     }
 
     private NegaMaxResult negaMaxMultiThreaded(GameState gameState, GameContext gameContext, int depth,
@@ -231,7 +228,6 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
 
         GameState copiedGame = gameState.copy();
         SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(i);
-        OrderHints orderHints = stc.getOrderHints();
 
         NegaMaxAlphaBetaPVS negaMax = negaMaxAlphaBeta[i];
         return new Callable<NegaMaxResult>() {
@@ -241,7 +237,7 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
                 return negaMax.searchWithScore(stc, copiedGame, gameContext,
                         depth,
                         alpha, beta,
-                        stopTime, orderHints);
+                        stopTime);
             }
         };
     }

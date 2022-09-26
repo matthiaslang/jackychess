@@ -4,7 +4,6 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.sorting.OrderHints;
 
 import lombok.Getter;
 
@@ -33,8 +32,6 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
-    private OrderHints orderHints = OrderHints.NO_HINTS;
-
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {
             movelists[i] = Factory.getDefaults().moveList.create();
@@ -45,14 +42,6 @@ public class SearchThreadContext {
         MoveList moveList = movelists[ply];
         moveList.reset();
         return moveList;
-    }
-
-    public void setOrderHints(OrderHints orderHints) {
-        this.orderHints = orderHints;
-    }
-
-    public OrderHints getOrderHints() {
-        return orderHints;
     }
 
     public void resetMoveLists() {

@@ -15,7 +15,6 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-import org.mattlang.jc.engine.sorting.OrderHints;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.MoveGenerator;
@@ -101,13 +100,13 @@ public final class SearchContext {
 
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
-            OrderHints orderHints, EvaluateFunction evaluate,
+            EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
         this.stc = stc;
         this.board = gameState.getBoard();
 
-        this.orderCalculator = new OrderCalculator(orderHints);
+        this.orderCalculator = new OrderCalculator(stc);
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
         weAre = gameState.getWho2Move();
