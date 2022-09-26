@@ -90,8 +90,7 @@ public class MoveValidator {
      * @return
      */
 
-    public List<Integer> validateAndCorrectPvList(List<Integer> pvs, GameState gameState,
-            int depth) {
+    public List<Integer> validateAndCorrectPvList(List<Integer> pvs, GameState gameState) {
 
         // play and validate all pv moves:
         BoardRepresentation board = gameState.getBoard().copy();

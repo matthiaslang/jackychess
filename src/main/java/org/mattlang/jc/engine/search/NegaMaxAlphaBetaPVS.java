@@ -65,7 +65,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
     private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
     private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
-    private boolean expandPv = Factory.getDefaults().getConfig().expandPv.getValue();
     private boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
     private boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
 
@@ -463,12 +462,11 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
             boolean areWeInCheck) {
         boolean is_pv = !not_pv;
         int hashMove = searchContext.probeTTHashMove();
-        boolean hasPvMove = searchContext.hasPvMove(ply);
         // Internal iterative deepening
         // When there is no hash move available, it is sometimes worth doing a
         // shallow search to try and look for one
         // This is especially true at PV nodes and potential cut nodes
-        if (hashMove == 0 && !hasPvMove && !areWeInCheck
+        if (hashMove == 0  && !areWeInCheck
                 && ((is_pv && depth >= 7)
                 || (not_pv && depth >= 8))) {
             iterativeDeepeningCount++;
@@ -699,9 +697,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
-        List<Integer> pvMoves = expandPv
-                ? moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState, depth)
-                : pvArray.getPvMoves();
+        List<Integer> pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
 
         NegaMaxResult rslt = new NegaMaxResult(directScore,
                 pvMoves, searchContext, nodesVisited,

@@ -34,7 +34,6 @@ public final class OrderCalculator {
     private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
     private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 1000000;
 
-    private int pvMove;
     private HistoryHeuristic historyHeuristic;
     private KillerMoves killerMoves;
     private CounterMoveHeuristic counterMoveHeuristic;
@@ -76,7 +75,6 @@ public final class OrderCalculator {
         this.parentMove = other.parentMove;
 
         this.ply = other.ply;
-        this.pvMove = other.pvMove;
         this.color = other.color;
     }
 
@@ -96,15 +94,8 @@ public final class OrderCalculator {
         int index = ply - 1;
 
         this.ply = ply;
-        this.pvMove = orderHints.prevPvlist != null ? orderHints.prevPvlist.getMove(index) : 0;
         this.color = color;
         this.board = board;
-    }
-
-
-    public boolean hasPvMove(int ply){
-        int index=ply-1;
-        return orderHints.prevPvlist != null && orderHints.prevPvlist.getMove(index) != 0;
     }
 
     /**

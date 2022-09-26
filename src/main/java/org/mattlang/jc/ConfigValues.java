@@ -97,10 +97,6 @@ public class ConfigValues {
 
     public final UCIGroup pruning =
             allOptions.createInternalGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
-
-    public final UCICheckOption expandPv = internal.createCheckOpt("expandPv",
-            "should the found PV expand by cache entries? Otherwise they could be shorter than the depth caused by pruning.",
-            true);
     public final UCICheckOption mateDistancePruning = internal.createCheckOpt("mateDistancePruning",
             "should mate distance pruning be activated?",
             true);

@@ -293,10 +293,6 @@ public final class SearchContext {
         }
     }
 
-    public boolean hasPvMove(int ply) {
-        return orderCalculator.hasPvMove(ply);
-    }
-
     public boolean isDrawByMaterial() {
         return board.isDrawByMaterial();
     }

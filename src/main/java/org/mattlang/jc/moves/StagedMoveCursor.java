@@ -23,7 +23,7 @@ public class StagedMoveCursor implements MoveCursor {
     // testwise simpler stage config (as someting with the good/bad capture handling does not work..)
     //
     private static Stage[] STAGES_NORMAL =
-            new Stage[] { PV, HASH, ALL };
+            new Stage[] { HASH, ALL };
     private static Stage[] STAGES_QUIESCENCE =
             new Stage[] { PROMOTIONS, ALL_CAPTURES };
 
@@ -191,9 +191,6 @@ public class StagedMoveCursor implements MoveCursor {
             stageIndex++;
 //            LOGGER.info("checking next stage " + stages[stageIndex]);
             switch (stages[stageIndex]) {
-            case PV:
-                initPV();
-                break;
             case HASH:
                 initHash();
                 break;
@@ -263,11 +260,6 @@ public class StagedMoveCursor implements MoveCursor {
     private void initHash() {
         int hashMove = orderCalculator.getHashMove();
         currStageData.prepareMoveIfValid(hashMove);
-    }
-
-    private void initPV() {
-        int pvMove = orderCalculator.getPvMove();
-        currStageData.prepareMoveIfValid(pvMove);
     }
 
     @Override

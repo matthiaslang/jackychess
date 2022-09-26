@@ -5,7 +5,6 @@ package org.mattlang.jc.moves;
  */
 public enum Stage {
 
-    PV,
     HASH,
     KILLER1,
     KILLER2,
