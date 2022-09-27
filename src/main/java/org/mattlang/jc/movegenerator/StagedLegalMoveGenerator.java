@@ -5,7 +5,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.StagedMoveListImpl;
-import org.mattlang.jc.uci.GameContext;
 
 /**
  * a "pseude legal" move generator, means, not really a legal move generator by definition, but the contrary.
@@ -17,13 +16,13 @@ import org.mattlang.jc.uci.GameContext;
 public class StagedLegalMoveGenerator implements MoveGenerator {
 
     @Override
-    public void generate(GenMode mode, GameContext gameContext, OrderCalculator orderCalculator,
+    public void generate(GenMode mode, OrderCalculator orderCalculator,
             BoardRepresentation board,
             Color side, MoveList moveList) {
         if (!(moveList instanceof StagedMoveListImpl)) {
             throw new IllegalStateException("needs StagedMoveListImpl!");
         }
-        ((StagedMoveListImpl) moveList).init(mode, gameContext, orderCalculator, board, side);
+        ((StagedMoveListImpl) moveList).init(mode, orderCalculator, board, side);
     }
 
     @Override

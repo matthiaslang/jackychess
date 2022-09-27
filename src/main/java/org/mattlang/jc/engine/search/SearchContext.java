@@ -212,7 +212,7 @@ public final class SearchContext {
     public MoveList generateSortedMoves(GenMode mode, int ply, Color color,
             int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
-        generator.generate(mode, context, orderCalculator, board, color, moveList);
+        generator.generate(mode, orderCalculator, board, color, moveList);
         sortMoves(ply, color, parentMove, moveList);
 
         return moveList;

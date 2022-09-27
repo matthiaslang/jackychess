@@ -4,7 +4,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-import org.mattlang.jc.uci.GameContext;
 
 /**
  * interface for move generators.
@@ -29,14 +28,13 @@ public interface MoveGenerator {
      * Generate moves from a given position for a given side.
      *
      * @param mode            either all or only for quiescence search
-     * @param gameContext     the game context, holding e.g. hash moves
      * @param orderCalculator order information which might be used already for ordering the moves
      * @param board           the position
      * @param side            the side to generate the moves for
      * @param moveList        the resulting move list. given as argument. The Caller should reuse the movelist as much
      *                        as possible to prevent garbage collection
      */
-    default void generate(GenMode mode, GameContext gameContext,
+    default void generate(GenMode mode,
             OrderCalculator orderCalculator,
             BoardRepresentation board,
             Color side,

@@ -7,7 +7,6 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.uci.GameContext;
 
 import lombok.Getter;
 
@@ -18,7 +17,6 @@ public class StagedMoveListImpl implements MoveList {
 
     private StagedMoveCursor moveCursor = new StagedMoveCursor(this);
 
-    private GameContext gameContext;
     private OrderCalculator orderCalculator;
     private BoardRepresentation board;
     private Color side;
@@ -74,7 +72,6 @@ public class StagedMoveListImpl implements MoveList {
     }
 
     public void reset() {
-        gameContext = null;
         orderCalculator = null;
         board = null;
         side = null;
@@ -93,10 +90,9 @@ public class StagedMoveListImpl implements MoveList {
         return moveBoardIterator;
     }
 
-    public void init(MoveGenerator.GenMode mode, GameContext gameContext, OrderCalculator orderCalculator,
+    public void init(MoveGenerator.GenMode mode, OrderCalculator orderCalculator,
             BoardRepresentation board, Color side) {
         this.mode = mode;
-        this.gameContext = gameContext;
         this.orderCalculator = orderCalculator;
         this.board = board;
         this.side = side;
