@@ -106,7 +106,7 @@ public final class SearchContext {
         this.stc = stc;
         this.board = gameState.getBoard();
 
-        this.orderCalculator = new OrderCalculator(stc);
+        this.orderCalculator = stc.getOrderCalculator();
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
         weAre = gameState.getWho2Move();

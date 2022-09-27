@@ -4,6 +4,7 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 import lombok.Getter;
 
@@ -32,10 +33,14 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
+    @Getter
+    private OrderCalculator orderCalculator;
+
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {
             movelists[i] = Factory.getDefaults().moveList.create();
         }
+        orderCalculator = new OrderCalculator(this);
     }
 
     public MoveList getCleanedMoveList(int ply) {
