@@ -100,7 +100,6 @@ public final class SearchContext {
 
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
-            EvaluateFunction evaluate,
             int targetDepth, int alpha) {
 
         this.stc = stc;
@@ -111,7 +110,7 @@ public final class SearchContext {
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
         weAre = gameState.getWho2Move();
 
-        this.evaluate = evaluate;
+        this.evaluate = stc.getEvaluate();
 
         this.gameState = gameState;
         this.context = context;

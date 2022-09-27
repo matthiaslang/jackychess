@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
@@ -36,6 +37,8 @@ public class SearchThreadContext {
     @Getter
     private OrderCalculator orderCalculator;
 
+    private EvaluateFunction evaluate;
+
     public SearchThreadContext() {
         for (int i = 0; i < movelists.length; i++) {
             movelists[i] = Factory.getDefaults().moveList.create();
@@ -53,5 +56,17 @@ public class SearchThreadContext {
         for (int i = 0; i < movelists.length; i++) {
             movelists[i] = Factory.getDefaults().moveList.create();
         }
+    }
+
+    /**
+     * Returns an lazy initialized evaluation function which is hold for the thread during the complete game.
+     *
+     * @return
+     */
+    public EvaluateFunction getEvaluate() {
+        if (evaluate == null) {
+            evaluate = Factory.getDefaults().evaluateFunction.create();
+        }
+        return evaluate;
     }
 }
