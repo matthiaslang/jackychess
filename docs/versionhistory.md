@@ -1,8 +1,15 @@
 # Versions
                   
-### Version 0.12.0-003
+#### Version 0.12.0-003
 
-- remove pv sorting and all code which tries to extend the pv to the calculated depth as it is now anyway only for informational purpose
+- remove pv sorting and all code which tries to extend the pv line to the calculated depth as it is now anyway only for informational purpose
+  - sort order does not use pv for sorting anymore, since the sorting by tt move is a generalization of this concept.
+  - makes the code a bit cleaner and easier in that area
+  - pv line is only for informational purpose now, and only for UCI output
+  - pv line is now always checked for validity and shortened if necessary, so we have no cutechess warnings about this anymore
+  - gives some ELO points, I think because of reduced code in that area...
+
+Elo: +16-32
 
 
 
