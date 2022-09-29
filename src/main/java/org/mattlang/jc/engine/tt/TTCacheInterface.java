@@ -30,4 +30,6 @@ public interface TTCacheInterface extends StatisticsCollector {
     default boolean isUsableForLazySmp() {
         return false;
     }
+
+    void reset();
 }

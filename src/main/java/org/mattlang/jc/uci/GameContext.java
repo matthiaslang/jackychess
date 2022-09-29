@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.tt.TTCache;
+import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 
 import lombok.Getter;
@@ -23,11 +23,14 @@ public class GameContext {
     private HashMap<String, Object> context = new HashMap<>();
 
     public GameContext() {
-        ttCache = new TTCache();
+        ttCache = Caching.CACHING.getTtCache();
+        ttCache.reset();
     }
 
     public GameContext(ConfigValues configValues) {
-        ttCache = configValues.cacheImpls.getValue().createSupplier().get();
+        ttCache = Caching.CACHING.getTtCache();
+        ttCache.reset();
+        System.gc();
     }
 
     public <T> T getContext(String name) {

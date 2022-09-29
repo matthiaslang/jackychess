@@ -84,13 +84,15 @@ public final class TTCache3 implements TTCacheInterface {
 
 		keyShifts = 64 - POWER_2_TT_ENTRIES;
 		int maxEntries = (int) (1L << POWER_2_TT_ENTRIES + BUCKET_SIZE - 1) * 2;
-		LOGGER.info("allocating " + maxEntries + " longs;");
+		LOGGER.info("TT Cache: allocating " + maxEntries + " longs;");
 
 		keys = new long[maxEntries];
 	}
 
-	public void clearValues() {
+	@Override
+	public void reset() {
 		Arrays.fill(keys, 0);
+		checkUpdateCacheSize();
 	}
 
 	public long getValue(final long key) {
@@ -223,8 +225,6 @@ public final class TTCache3 implements TTCacheInterface {
 
 	@Override
 	public void updateAging(BoardRepresentation board) {
-		checkUpdateCacheSize();
-
 		LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
 		halfMoveCounter = aging.updateAging(board);
 		//		if (halfMoveCounter>512){

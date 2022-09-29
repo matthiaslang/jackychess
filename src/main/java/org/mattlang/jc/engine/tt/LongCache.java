@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.tt;
 
 import static org.mattlang.jc.engine.tt.TTResult.*;
 
+import java.util.Arrays;
+
 /**
  * A thread safe tt cache with a long as payload.
  * todo refactor other caches to use this (e.g. TTCache3)
@@ -108,5 +110,10 @@ public final class LongCache {
             return LOWERBOUND;
         else // a true minimax value
             return EXACT_VALUE;
+    }
+
+    public void reset() {
+        Arrays.fill(zobrists, 0);
+        Arrays.fill(scores, 0);
     }
 }

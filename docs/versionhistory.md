@@ -1,5 +1,13 @@
 # Versions
-                  
+
+#### Version 0.12.0-005
+
+- hold cache static and dont recreate after each game
+
+#### Version 0.12.0-004
+                            
+- code cleanup and refactorings
+
 #### Version 0.12.0-003
 
 - remove pv sorting and all code which tries to extend the pv line to the calculated depth as it is now anyway only for informational purpose

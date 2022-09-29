@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.tt;
+package org.mattlang.attic.tt;
 
 import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
 import static org.mattlang.jc.engine.tt.LongCache.toFlag;
@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.tt.LongCache;
+import org.mattlang.jc.engine.tt.TTAging;
+import org.mattlang.jc.engine.tt.TTCacheInterface;
+import org.mattlang.jc.engine.tt.TTResult;
 
 public final class TTCache implements TTCacheInterface {
 
@@ -143,5 +147,10 @@ public final class TTCache implements TTCacheInterface {
     @Override
     public boolean isUsableForLazySmp() {
         return true;
+    }
+
+    @Override
+    public void reset() {
+        cache.reset();
     }
 }
