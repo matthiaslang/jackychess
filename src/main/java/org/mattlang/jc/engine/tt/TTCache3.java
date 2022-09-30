@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.tt;
 
 import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
-import static org.mattlang.jc.engine.tt.LongCache.toFlag;
+import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 
 import java.util.Arrays;
 import java.util.Map;

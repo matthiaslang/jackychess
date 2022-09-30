@@ -1,6 +1,4 @@
-package org.mattlang.jc.engine.tt;
-
-import static org.mattlang.jc.engine.tt.TTResult.*;
+package org.mattlang.attic.tt;
 
 import java.util.Arrays;
 
@@ -101,15 +99,6 @@ public final class LongCache {
             }
         }
         return usage;
-    }
-
-    public static final byte toFlag(int max, int alpha, int beta) {
-        if (max <= alpha) // value below alpha, so we can only use it as an upper bound
-            return UPPERBOUND;
-        else if (max >= beta) // higher beta, so we can only use it as an lower bound
-            return LOWERBOUND;
-        else // a true minimax value
-            return EXACT_VALUE;
     }
 
     public void reset() {

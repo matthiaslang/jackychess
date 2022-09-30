@@ -28,4 +28,14 @@ public class TTResult {
     public boolean isUpperBound() {
         return type == UPPERBOUND;
     }
+
+
+    public static final byte toFlag(int max, int alpha, int beta) {
+        if (max <= alpha) // value below alpha, so we can only use it as an upper bound
+            return UPPERBOUND;
+        else if (max >= beta) // higher beta, so we can only use it as an lower bound
+            return LOWERBOUND;
+        else // a true minimax value
+            return EXACT_VALUE;
+    }
 }
