@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.search;
+package org.mattlang.attic.search;
 
 public class Repetitions {
 
