@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.tt;
+package org.mattlang.attic.tt;
 
 /**
  * A thread safe tt cache with an int as payload.
