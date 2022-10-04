@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.tt.TTAging;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
@@ -87,7 +86,7 @@ public final class TTCache implements TTCacheInterface {
     }
 
     @Override
-    public final void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
+    public final void storeTTEntry(BoardRepresentation currBoard, int max, int alpha, int beta,
             int depth, int move) {
             storeTTEntry(currBoard, max, toFlag(max, alpha, beta), depth, move);
     }

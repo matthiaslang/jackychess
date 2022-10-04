@@ -6,8 +6,10 @@ import org.junit.Test;
 import org.mattlang.attic.tt.IntCache;
 import org.mattlang.attic.tt.TTCache;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class TTCacheTest {
 
@@ -18,7 +20,7 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
+        cache.storeTTEntry(board, 500, 300, 900, 7, 0);
 
         TTResult entry=new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
@@ -30,6 +32,32 @@ public class TTCacheTest {
     }
 
     @Test
+    public void testHashMoveSaving() {
+        TTCache3 cache = new TTCache3();
+
+        BoardRepresentation board = new BitBoard();
+        board.setStartPosition();
+
+        MoveImpl normalMove = MoveImpl.createNormal(FigureType.Bishop.figureCode, 63, 63, Figure.B_Queen.figureCode);
+        int moveCode=normalMove.getMoveInt();
+
+
+        cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, moveCode);
+
+
+        long entry = cache.getValue(board.getZobristHash());
+
+        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
+
+        assertThat(cache.getDepth(entry)).isEqualTo(5);
+        assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
+        assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
+        assertThat(TTCache3.getMove(entry)).isEqualTo(moveCode);
+
+    }
+
+
+    @Test
     public void test2() {
         TTCache3 cache = new TTCache3();
 
@@ -39,12 +67,12 @@ public class TTCacheTest {
         cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 400000);
 
         board.switchSiteToMove();
-        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(0L);
+        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache3.NORESULT);
         board.switchSiteToMove();
 
         long entry = cache.getValue(board.getZobristHash());
 
-        assertThat(entry).isNotEqualTo(0L);
+        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
 
         assertThat(cache.getDepth(entry)).isEqualTo(5);
         assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);

@@ -25,12 +25,16 @@ public class LoggerUtils {
     }
 
     public static void logStats(Logger logger, String msg, Map<String, Object> stats) {
-        if (logger.isLoggable(Level.FINE)) {
+        logStats(logger, Level.FINE, msg, stats);
+    }
+
+    public static void logStats(Logger logger, Level level, String msg, Map<String, Object> stats) {
+        if (logger.isLoggable(level)) {
             StringWriter sw = new StringWriter();
             try (PrintWriter writer = new PrintWriter(sw)) {
                 logStatsRecursive(writer, 0, stats);
             }
-            logger.fine(msg + "\n" + sw.toString());
+            logger.log(level, msg + "\n" + sw.toString());
         }
     }
 

@@ -172,10 +172,10 @@ public final class SearchContext {
         return checkChecker.isInChess(board, color);
     }
 
-    public void storeTT(Color color, int max, int alpha, int beta, int depth,
+    public void storeTT(int max, int alpha, int beta, int depth,
             int move) {
         if (doCaching) {
-            ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
+            ttCache.storeTTEntry(board, max, alpha, beta, depth, move);
         }
     }
 
@@ -184,16 +184,6 @@ public final class SearchContext {
             return ttResult;
         }
         return null;
-    }
-
-    public int probeTTHashMove() {
-        if (doCaching) {
-            if (ttCache.findEntry(ttResult, board)) {
-                return ttResult.getMove();
-            }
-        }
-        return 0;
-
     }
 
     public void collectStatistics(Map stats) {
@@ -209,17 +199,17 @@ public final class SearchContext {
     }
 
     public MoveList generateSortedMoves(GenMode mode, int ply, Color color,
-            int parentMove) {
+           int hashMove, int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
         generator.generate(mode, orderCalculator, board, color, moveList);
-        sortMoves(ply, color, parentMove, moveList);
+        sortMoves(ply, color, hashMove, parentMove, moveList);
 
         return moveList;
     }
 
     public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color,
-            int parentMove) {
-        MoveList moveList = generateSortedMoves(mode, ply, color, parentMove);
+           int hashMove, int parentMove) {
+        MoveList moveList = generateSortedMoves(mode, ply, color, hashMove, parentMove);
         return moveList.iterateMoves(board, checkChecker);
     }
 
@@ -229,8 +219,7 @@ public final class SearchContext {
      * @param color
      * @param moves
      */
-    private void sortMoves(int ply, Color color, int parentMove, MoveList moves) {
-        int hashMove = probeTTHashMove();
+    private void sortMoves(int ply, Color color, int hashMove, int parentMove, MoveList moves) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
         moves.sort(orderCalculator);
     }

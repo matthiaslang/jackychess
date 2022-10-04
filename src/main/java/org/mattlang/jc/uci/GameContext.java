@@ -1,11 +1,16 @@
 package org.mattlang.jc.uci;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.engine.search.SearchStatistics;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
+import org.mattlang.jc.util.LoggerUtils;
 
 import lombok.Getter;
 
@@ -17,10 +22,14 @@ import lombok.Getter;
  */
 public class GameContext {
 
+    private static final Logger LOGGER = Logger.getLogger(GameContext.class.getSimpleName());
+
     @Getter
     public TTCacheInterface ttCache;
 
     private HashMap<String, Object> context = new HashMap<>();
+
+    private SearchStatistics statistics = new SearchStatistics();
 
     public GameContext() {
         ttCache = Caching.CACHING.getTtCache();
@@ -50,5 +59,15 @@ public class GameContext {
 
         /** update aging of tt cache. */
         ttCache.updateAging(gameState.getBoard());
+    }
+
+    public void addStatistics(SearchStatistics statistics) {
+        this.statistics.add(statistics);
+    }
+
+    public void logStatistics() {
+        LinkedHashMap stats = new LinkedHashMap();
+        statistics.collectStatistics(stats);
+        LoggerUtils.logStats(LOGGER, Level.INFO, "Game statistics", stats);
     }
 }

@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.tt;
 
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 
 public interface TTCacheInterface extends StatisticsCollector {
 
@@ -15,7 +14,7 @@ public interface TTCacheInterface extends StatisticsCollector {
      */
     boolean findEntry(TTResult result, BoardRepresentation board);
 
-    void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
+    void storeTTEntry(BoardRepresentation currBoard, int max, int alpha, int beta,
             int depth, int move);
 
     void updateAging(BoardRepresentation board);

@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 
 /**
  * Cache using only a long array to be faster and more memory efficient.
@@ -218,7 +217,7 @@ public final class TTCache3 implements TTCacheInterface {
 	}
 
 	@Override
-	public void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
+	public void storeTTEntry(BoardRepresentation currBoard, int max, int alpha, int beta, int depth,
 			int move) {
 		addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move);
 	}
