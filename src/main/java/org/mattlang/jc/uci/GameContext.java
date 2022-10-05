@@ -1,7 +1,6 @@
 package org.mattlang.jc.uci;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +9,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.search.SearchStatistics;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
-import org.mattlang.jc.util.LoggerUtils;
 
 import lombok.Getter;
 
@@ -66,8 +64,6 @@ public class GameContext {
     }
 
     public void logStatistics() {
-        LinkedHashMap stats = new LinkedHashMap();
-        statistics.collectStatistics(stats);
-        LoggerUtils.logStats(LOGGER, Level.INFO, "Game statistics", stats);
+        statistics.logStats(LOGGER, Level.INFO, "Game statistics");
     }
 }

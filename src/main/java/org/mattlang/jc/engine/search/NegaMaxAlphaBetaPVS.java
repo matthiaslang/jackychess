@@ -410,7 +410,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                     if (max >= beta) {
                         //                        if (!areWeInCheck) {
                         searchContext.updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
-                        statistics.countCutOff(moveCursor);
+                        statistics.countCutOff(moveCursor, searchedMoves);
                         break;
                     }
 

@@ -1,6 +1,11 @@
 package org.mattlang.jc.engine.search;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -41,6 +46,8 @@ public class SearchStatistics {
 
     public int cutOffByQuietCount;
 
+    public int[] searchedMoveIndexCount = new int[30];
+
     public void resetStatistics() {
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
@@ -62,10 +69,15 @@ public class SearchStatistics {
         cutOffByBadCaptureCount = 0;
         cutOffByHistoryCount = 0;
         cutOffByQuietCount = 0;
+        Arrays.fill(searchedMoveIndexCount, 0);
     }
 
-    public void countCutOff(MoveCursor moveCursor) {
+    public void countCutOff(MoveCursor moveCursor, int searchedMoves) {
         cutOff++;
+
+        if (searchedMoves < searchedMoveIndexCount.length) {
+            searchedMoveIndexCount[searchedMoves]++;
+        }
 
         int order = moveCursor.getOrder();
         if (OrderCalculator.isHashMove(order)) {
@@ -89,6 +101,47 @@ public class SearchStatistics {
                 cutOffByQuietCount++;
             }
 
+        }
+    }
+
+    public void logStats(Logger logger, Level level, String msg) {
+
+        if (logger.isLoggable(level)) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            PrintWriter w = new PrintWriter(bos);
+            w.println(msg);
+
+            w.printf("nodesVisited               %1\n", nodesVisited);
+
+            w.printf("quiescenceNodesVisited     %1\n", quiescenceNodesVisited);
+
+            w.printf("cutoff                     %1\n", cutOff);
+
+            w.printf("drawByMaterialDetected     %1\n", drawByMaterialDetected);
+            w.printf("drawByRepetionDetected     %1\n", drawByRepetionDetected);
+            w.printf("mateDistancePruningCount   %1\n", mateDistancePruningCount);
+            w.printf("ttPruningCount             %1\n", ttPruningCount);
+            w.printf("staticNullMovePruningCount %1\n", staticNullMovePruningCount);
+            w.printf("nullMovePruningCount       %1\n", nullMovePruningCount);
+            w.printf("razoringPruningCount       %1\n", razoringPruningCount);
+            w.printf("iterativeDeepeningCount    %1\n", iterativeDeepeningCount);
+            w.printf("futilityPruningCount       %1\n", futilityPruningCount);
+            w.printf("cutOffByHashMoveCount      %1\n", cutOffByHashMoveCount);
+            w.printf("cutOffByKillerCount        %1\n", cutOffByKillerCount);
+            w.printf("cutOffByGoodCaptureCount   %1\n", cutOffByGoodCaptureCount);
+            w.printf("cutOffByEqualCaptureCount  %1\n", cutOffByEqualCaptureCount);
+            w.printf("cutOffByBadCaptureCount    %1\n", cutOffByBadCaptureCount);
+            w.printf("cutOffByCounterMoveCount   %1\n", cutOffByCounterMoveCount);
+            w.printf("cutOffByHistoryCount       %1\n", cutOffByHistoryCount);
+            w.printf("cutOffByQuietCount         %1\n", cutOffByQuietCount);
+            for (int i = 1; i < searchedMoveIndexCount.length; i++) {
+                double percents = cutOff != 0 ? searchedMoveIndexCount[i] / cutOff : 0;
+                w.printf("searchedMoveIndexCount[" + i + "]    %1    %2\n", searchedMoveIndexCount[i], percents);
+            }
+
+            w.close();
+            String completeMsg = bos.toString();
+            logger.log(level, completeMsg);
         }
     }
 
@@ -117,7 +170,9 @@ public class SearchStatistics {
         rslts.put("cutOffByCounterMoveCount", cutOffByCounterMoveCount);
         rslts.put("cutOffByHistoryCount", cutOffByHistoryCount);
         rslts.put("cutOffByQuietCount", cutOffByQuietCount);
-
+        for (int i = 1; i < searchedMoveIndexCount.length; i++) {
+            rslts.put("searchedMoveIndexCount[" + i + "]", searchedMoveIndexCount[i]);
+        }
     }
 
     public void add(SearchStatistics statistics) {
@@ -140,5 +195,8 @@ public class SearchStatistics {
         cutOffByEqualCaptureCount += statistics.cutOffByEqualCaptureCount;
         cutOffByQuietCount += statistics.cutOffByQuietCount;
         cutOffByHistoryCount += statistics.cutOffByHistoryCount;
+        for (int i = 0; i < searchedMoveIndexCount.length; i++) {
+            searchedMoveIndexCount[i] += statistics.searchedMoveIndexCount[i];
+        }
     }
 }
