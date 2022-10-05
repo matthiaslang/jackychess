@@ -15,6 +15,8 @@ public class LongSorter {
 
     private int start = 0;
 
+    private int current=-1;
+
     private int swapCounter = 0;
     private boolean alreadyFullySorted = false;
 
@@ -27,6 +29,7 @@ public class LongSorter {
         this.orders = orders;
         this.size = size;
         start = 0;
+        current = -1;
         swapCounter = 0;
         alreadyFullySorted = false;
     }
@@ -50,7 +53,9 @@ public class LongSorter {
             sortRound();
         }
         size--;
-        return objects[start++];
+        current = start;
+        start++;
+        return objects[current];
     }
 
     /**
@@ -58,7 +63,7 @@ public class LongSorter {
      * @return
      */
     public int getOrder() {
-        return orders[start];
+        return orders[current];
     }
 
     private void sortRound() {
