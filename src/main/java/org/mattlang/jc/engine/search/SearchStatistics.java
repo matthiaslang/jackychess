@@ -111,34 +111,34 @@ public class SearchStatistics {
             PrintWriter w = new PrintWriter(bos);
             w.println(msg);
 
-            w.printf("nodesVisited               %1\n", nodesVisited);
+            w.printf("nodesVisited               %d\n", nodesVisited);
 
-            w.printf("quiescenceNodesVisited     %1\n", quiescenceNodesVisited);
+            w.printf("quiescenceNodesVisited     %d\n", quiescenceNodesVisited);
 
-            w.printf("cutoff                     %1\n", cutOff);
+            w.printf("cutoff                     %d\n", cutOff);
 
-            w.printf("drawByMaterialDetected     %1\n", drawByMaterialDetected);
-            w.printf("drawByRepetionDetected     %1\n", drawByRepetionDetected);
-            w.printf("mateDistancePruningCount   %1\n", mateDistancePruningCount);
-            w.printf("ttPruningCount             %1\n", ttPruningCount);
-            w.printf("staticNullMovePruningCount %1\n", staticNullMovePruningCount);
-            w.printf("nullMovePruningCount       %1\n", nullMovePruningCount);
-            w.printf("razoringPruningCount       %1\n", razoringPruningCount);
-            w.printf("iterativeDeepeningCount    %1\n", iterativeDeepeningCount);
-            w.printf("futilityPruningCount       %1\n", futilityPruningCount);
-            w.printf("cutOffByHashMoveCount      %1\n", cutOffByHashMoveCount);
-            w.printf("cutOffByKillerCount        %1\n", cutOffByKillerCount);
-            w.printf("cutOffByGoodCaptureCount   %1\n", cutOffByGoodCaptureCount);
-            w.printf("cutOffByEqualCaptureCount  %1\n", cutOffByEqualCaptureCount);
-            w.printf("cutOffByBadCaptureCount    %1\n", cutOffByBadCaptureCount);
-            w.printf("cutOffByCounterMoveCount   %1\n", cutOffByCounterMoveCount);
-            w.printf("cutOffByHistoryCount       %1\n", cutOffByHistoryCount);
-            w.printf("cutOffByQuietCount         %1\n", cutOffByQuietCount);
+            w.printf("drawByMaterialDetected     %d\n", drawByMaterialDetected);
+            w.printf("drawByRepetionDetected     %d\n", drawByRepetionDetected);
+            w.printf("mateDistancePruningCount   %d\n", mateDistancePruningCount);
+            w.printf("ttPruningCount             %d\n", ttPruningCount);
+            w.printf("staticNullMovePruningCount %d\n", staticNullMovePruningCount);
+            w.printf("nullMovePruningCount       %d\n", nullMovePruningCount);
+            w.printf("razoringPruningCount       %d\n", razoringPruningCount);
+            w.printf("iterativeDeepeningCount    %d\n", iterativeDeepeningCount);
+            w.printf("futilityPruningCount       %d\n", futilityPruningCount);
+            w.printf("cutOffByHashMoveCount      %d\n", cutOffByHashMoveCount);
+            w.printf("cutOffByKillerCount        %d\n", cutOffByKillerCount);
+            w.printf("cutOffByGoodCaptureCount   %d\n", cutOffByGoodCaptureCount);
+            w.printf("cutOffByEqualCaptureCount  %d\n", cutOffByEqualCaptureCount);
+            w.printf("cutOffByBadCaptureCount    %d\n", cutOffByBadCaptureCount);
+            w.printf("cutOffByCounterMoveCount   %d\n", cutOffByCounterMoveCount);
+            w.printf("cutOffByHistoryCount       %d\n", cutOffByHistoryCount);
+            w.printf("cutOffByQuietCount         %d\n", cutOffByQuietCount);
             for (int i = 1; i < searchedMoveIndexCount.length; i++) {
-                double percents = cutOff != 0 ? searchedMoveIndexCount[i] / cutOff : 0;
-                w.printf("searchedMoveIndexCount[" + i + "]    %1    %2\n", searchedMoveIndexCount[i], percents);
+                double percents = cutOff != 0 ? ((double) searchedMoveIndexCount[i]) / cutOff : 0.0;
+                w.printf("searchedMoveIndexCount[%d]    %d    %f\n", i, searchedMoveIndexCount[i], percents);
             }
-
+            w.flush();
             w.close();
             String completeMsg = bos.toString();
             logger.log(level, completeMsg);
