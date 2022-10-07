@@ -1,14 +1,28 @@
 # Versions
+                                                                                
 
-#### Version 0.12.0-005
+### Version 0.13.0
+
+Official Release after 0.12.0
+                             
+Sumarize of Changes: 
+                                                         
+- Using Java 11 as Minimum Java Version now
+- Tuning of Evaluation Parameter
+- fixing Timing issue found by GrahamCCRL 
+- Code Cleanup
+
+Should be ~80 more Elos compared to 0.12.0, so somewhere around ~2330
+
+#### Version 0.12.2-005
 
 - hold cache static and dont recreate after each game
 
-#### Version 0.12.0-004
+#### Version 0.12.2-004
                             
 - code cleanup and refactorings
 
-#### Version 0.12.0-003
+#### Version 0.12.2-003
 
 - remove pv sorting and all code which tries to extend the pv line to the calculated depth as it is now anyway only for informational purpose
   - sort order does not use pv for sorting anymore, since the sorting by tt move is a generalization of this concept.
