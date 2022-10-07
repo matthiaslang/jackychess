@@ -47,7 +47,7 @@ public class TimeCalc {
 
         // be a bit more generours, if we have more time than the opponent; in that case add a port of the diff
         // if we are behind subtract a bit:
-        time += calcBonusOrMalus(restTime, opponentRestTime);
+        time += calcBonus(restTime, opponentRestTime);
 
         // if we have restmoves given, scale by the rest moves:
         time += splitRestTime(restMoves, restTime, phase);
@@ -86,18 +86,16 @@ public class TimeCalc {
     }
 
     /**
-     * Calculate a bonus or malus time based if we have more time than the opponen or vice versa.
+     * Calculate a bonus time based if we have more time than the opponent.
      *
      * @param restTime
      * @param opponentRestTime
      * @return
      */
-    private static long calcBonusOrMalus(long restTime, long opponentRestTime) {
+    private static long calcBonus(long restTime, long opponentRestTime) {
         long diff = restTime - opponentRestTime;
         if (diff > 0) {
             return diff / 3;
-        } else if (diff < 0) {
-            return -diff / 3;
         } else {
             return 0;
         }

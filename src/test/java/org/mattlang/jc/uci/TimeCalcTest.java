@@ -29,7 +29,7 @@ public class TimeCalcTest {
         goparams.winc = 1000;
         goparams.binc = 1000;
         long result = TimeCalc.determineCalculationTime(gameState, goparams);
-        assertThat(result).isEqualTo(1641L);
+        assertThat(result).isEqualTo(957L);
         System.out.println(result);
     }
 
@@ -136,5 +136,42 @@ public class TimeCalcTest {
         assertThat(determineTime(60000, 60000, 0, 0, 0, 0)).isEqualTo(2900);
         // and also if we have more time than opponent we again get a bit more extra time:
         assertThat(determineTime(60000, 50000, 0, 0, 0, 0)).isEqualTo(3233);
+    }
+
+    @Test
+    public void testBug() {
+        // in opening we get a bit more than winc:
+        assertThat(determineTime(359781, 723623, 0, 0, 20, 1)).isEqualTo(17889);
+        assertThat(determineTime(1812, 559782, 0, 0, 12, 1)).isEqualTo(151);
+        assertThat(determineTime(658594, 794764, 0, 0, 25, 1)).isEqualTo(26243);
+        //
+        // bug where we calculated a "malus" when we have less time than the opponent, but the malus has accidently increased our calculated think time instead decreasing it...
+        // the "malus" idea was just a crazy try which doesnt bring anyting, so I have removed the code for it...
+        // (contrariry to a "bonus" if we have really more time than the opponent which we still use and is reasonable.
+        //
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 32 wtime 960000 btime 960000
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 31 wtime 931078 btime 929703
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 30 wtime 921859 btime 899125
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 29 wtime 914093 btime 861469
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 28 wtime 848530 btime 814250
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 27 wtime 841451 btime 773781
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 26 wtime 831123 btime 722641
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 25 wtime 794764 btime 658594
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 24 wtime 774795 btime 619844
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 23 wtime 765623 btime 573313
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 22 wtime 747576 btime 512844
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 21 wtime 735842 btime 436766
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 20 wtime 723623 btime 359781
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 19 wtime 712686 btime 256453
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 18 wtime 694624 btime 116500
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 17 wtime 666280 btime 58110
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 16 wtime 647046 btime 28922
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 15 wtime 625421 btime 14422
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 14 wtime 605000 btime 7187
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 13 wtime 584407 btime 3578
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 12 wtime 559782 btime 1812
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 11 wtime 525688 btime 640
+        //        (JackyChess 0.12.0 64-bit) -> go movestogo 10 wtime 500126 btime -95
+
     }
 }
