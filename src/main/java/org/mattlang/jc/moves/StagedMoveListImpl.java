@@ -105,8 +105,4 @@ public class StagedMoveListImpl implements MoveList {
         this.side = side;
         moveCursor.init(mode, orderCalculator);
     }
-
-    @Override
-    public void close() {
-    }
 }

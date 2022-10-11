@@ -130,11 +130,6 @@ public final class MoveListImpl implements MoveList {
         size = 0;
     }
 
-    @Override
-    public void close() {
-
-    }
-
     public void addMove(int aMove) {
         moves[size] = aMove;
         size++;

@@ -12,7 +12,7 @@ import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
-public interface MoveList extends MoveCollector, AutoCloseable {
+public interface MoveList extends MoveCollector {
 
     void generate(MoveGenerator.GenMode mode,
             OrderCalculator orderCalculator,
@@ -37,11 +37,6 @@ public interface MoveList extends MoveCollector, AutoCloseable {
      * @return
      */
     int size();
-
-    /**
-     * override autoclosable close to not throw any exception.
-     */
-    void close();
 
     /**
      * Extracts a java util ist with all moves a move objects.
