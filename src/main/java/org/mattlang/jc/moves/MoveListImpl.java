@@ -7,6 +7,7 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
@@ -14,6 +15,7 @@ import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.movegenerator.MoveGenerator;
 
 public final class MoveListImpl implements MoveList {
 
@@ -25,6 +27,8 @@ public final class MoveListImpl implements MoveList {
     private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl(this);
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+
+    private MoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     public MoveListImpl() {
     }
@@ -80,6 +84,14 @@ public final class MoveListImpl implements MoveList {
     }
 
     private MoveImpl moveWrapper = new MoveImpl("a1a2");
+
+    @Override
+    public void generate(MoveGenerator.GenMode mode, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, int hashMove, int parentMove, int ply) {
+        generator.generate(mode, orderCalculator, board, side, this);
+        orderCalculator.prepareOrder(side, hashMove, parentMove, ply, board);
+        sort(orderCalculator);
+    }
 
     public void sort(OrderCalculator orderCalculator) {
         for (int i = 0; i < size; i++) {

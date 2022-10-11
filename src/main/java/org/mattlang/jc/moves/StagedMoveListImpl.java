@@ -58,6 +58,13 @@ public class StagedMoveListImpl implements MoveList {
         throw new IllegalStateException("illegal state!");
     }
 
+    @Override
+    public void generate(MoveGenerator.GenMode mode, OrderCalculator orderCalculator, BoardRepresentation board,
+            Color side, int hashMove, int parentMove, int ply) {
+        init(mode, orderCalculator, board, side);
+        // todo hashmove, parentmove, ply are obviosly not set......
+    }
+
     public void sort(OrderCalculator orderCalculator) {
         if (orderCalculator == null) {
             this.orderCalculator = new OrderCalculator(orderCalculator);

@@ -17,7 +17,6 @@ import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -33,7 +32,6 @@ import lombok.Getter;
 public final class SearchContext {
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
-    private MoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 
@@ -208,11 +206,11 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateSortedMoves(GenMode mode, int ply, Color color,
+    private MoveList generateSortedMoves(GenMode mode, int ply, Color color,
             int parentMove) {
         MoveList moveList = stc.getCleanedMoveList(ply);
-        generator.generate(mode, orderCalculator, board, color, moveList);
-        sortMoves(ply, color, parentMove, moveList);
+        int hashMove = probeTTHashMove();
+        moveList.generate(mode, orderCalculator, board, color, hashMove, parentMove, ply);
 
         return moveList;
     }
@@ -221,18 +219,6 @@ public final class SearchContext {
             int parentMove) {
         MoveList moveList = generateSortedMoves(mode, ply, color, parentMove);
         return moveList.iterateMoves(board, checkChecker);
-    }
-
-    /**
-     * Sorts the move list by calculating the move order first.
-     *
-     * @param color
-     * @param moves
-     */
-    private void sortMoves(int ply, Color color, int parentMove, MoveList moves) {
-        int hashMove = probeTTHashMove();
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
-        moves.sort(orderCalculator);
     }
 
     public int eval(Color color) {
