@@ -15,12 +15,14 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
-public class MoveListImpl implements MoveList {
+public final class MoveListImpl implements MoveList {
 
-    private IntList moves = new IntList(MAX_MOVES);
+    private int[] moves = new int[MAX_MOVES];
     private int[] order = new int[MAX_MOVES];
 
-    private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
+    private int size = 0;
+
+    private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl(this);
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
@@ -28,7 +30,7 @@ public class MoveListImpl implements MoveList {
     }
 
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
-        moves.add(createNormalMove(figureType, from, to, capturedFigure));
+        addMove(createNormalMove(figureType, from, to, capturedFigure));
     }
 
     public static final boolean isOnLastLine(Color side, int to) {
@@ -42,59 +44,58 @@ public class MoveListImpl implements MoveList {
     public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
 
         if (isOnLastLine(side, to)) {
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
+            addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
         }
     }
 
     @Override
     public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
-        moves.add(createEnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
+        addMove(createEnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
     }
 
     @Override
     public void addRochadeLongWhite() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_LONG));
+        addMove(createCastlingMove(CastlingMove.CASTLING_WHITE_LONG));
     }
 
     @Override
     public void addRochadeShortWhite() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_SHORT));
+        addMove(createCastlingMove(CastlingMove.CASTLING_WHITE_SHORT));
     }
 
     @Override
     public void addRochadeShortBlack() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_SHORT));
+        addMove(createCastlingMove(CastlingMove.CASTLING_BLACK_SHORT));
     }
 
     @Override
     public void addRochadeLongBlack() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_LONG));
+        addMove(createCastlingMove(CastlingMove.CASTLING_BLACK_LONG));
     }
 
     private MoveImpl moveWrapper = new MoveImpl("a1a2");
 
     public void sort(OrderCalculator orderCalculator) {
-
-        for (int i = 0; i < moves.size(); i++) {
-            moveWrapper.fromLongEncoded(moves.get(i));
+        for (int i = 0; i < size; i++) {
+            moveWrapper.fromLongEncoded(moves[i]);
             order[i] = orderCalculator.calcOrder(moveWrapper);
         }
     }
 
     @Override
     public int size() {
-        return moves.size();
+        return size;
     }
 
     @Override
     public MoveCursor iterate() {
-        moveCursor.init(moves.getRaw(), moves.size(), order);
+        moveCursor.init(moves, size, order);
         return moveCursor;
     }
 
@@ -105,20 +106,16 @@ public class MoveListImpl implements MoveList {
         return moveBoardIterator;
     }
 
-    public final int get(int i) {
-        return moves.get(i);
+    public int get(int i) {
+        return moves[i];
     }
 
     public final int getOrder(int i) {
         return order[i];
     }
 
-    public void remove(int index) {
-        moves.remove(index);
-    }
-
     public void reset() {
-        moves.reset();
+        size = 0;
     }
 
     @Override
@@ -127,6 +124,51 @@ public class MoveListImpl implements MoveList {
     }
 
     public void addMove(int aMove) {
-        moves.add(aMove);
+        moves[size] = aMove;
+        size++;
     }
+
+    public void addMoveWithOrder(int aMove, int orderValue) {
+        moves[size] = aMove;
+        order[size] = orderValue;
+        size++;
+    }
+
+    /**
+     * Sorts the moves to swap the highes ordered move to the currIndex Position.
+     * (Highest Prio means lowes order value)
+     *
+     * @param currIndex curr Index where to start the search (till end of list) to find the highest prio move
+     *
+     *                  As a result the hightes prio move is swapped to the currIndex Position.
+     */
+    public void sort(int currIndex) {
+        if (currIndex >= size - 1) {
+            return;
+        }
+
+        int currLowest = Integer.MAX_VALUE;
+        int currLowestIndex = -1;
+        for (int i = currIndex; i < size; i++) {
+            if (order[i] < currLowest) {
+                currLowest = order[i];
+                currLowestIndex = i;
+            }
+        }
+        if (currLowestIndex != currIndex) {
+            swap(currIndex, currLowestIndex);
+        }
+
+    }
+
+    private void swap(int i, int j) {
+        int tmp = order[i];
+        order[i] = order[j];
+        order[j] = tmp;
+
+        tmp = moves[i];
+        moves[i] = moves[j];
+        moves[j] = tmp;
+    }
+    
 }

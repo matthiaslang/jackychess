@@ -3,23 +3,18 @@ package org.mattlang.jc.moves;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.sorting.LongSorter;
 
 public final class LazySortedMoveCursorImpl implements MoveCursor {
 
-    private LongSorter longSorter;
+    private MoveListImpl moveList;
 
     private int currMove;
     private int orderOfCurrentMove;
 
     private MoveImpl currMoveObj = new MoveImpl("a1a2");
 
-    public LazySortedMoveCursorImpl() {
-
-    }
-
-    public LazySortedMoveCursorImpl(LongSorter longSorter) {
-        this.longSorter = longSorter;
+    public LazySortedMoveCursorImpl(MoveListImpl moveList) {
+        this.moveList = moveList;
     }
 
     @Override
@@ -107,21 +102,21 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
         return currMoveObj.toStr();
     }
 
+    private int currIndex = -1;
+
     public void init(int[] moves, int size, int[] order) {
-        if (longSorter == null) {
-            longSorter = new LongSorter(moves, size, order);
-        } else {
-            longSorter.init(moves, size, order);
-        }
+        currIndex = -1;
     }
 
     public void next() {
-        currMove = longSorter.next();
-        orderOfCurrentMove = longSorter.getOrder();
+        currIndex++;
+        moveList.sort(currIndex);
+        currMove = moveList.get(currIndex);
+        orderOfCurrentMove = moveList.getOrder(currIndex);
         currMoveObj.fromLongEncoded(currMove);
     }
 
     public boolean hasNext() {
-        return longSorter.hasNext();
+        return currIndex < moveList.size()-1;
     }
 }
