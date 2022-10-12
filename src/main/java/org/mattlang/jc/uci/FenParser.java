@@ -10,7 +10,6 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
@@ -56,13 +55,13 @@ public class FenParser {
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
-            return MoveImpl.createCastling(CastlingMove.CASTLING_WHITE_SHORT);
+            return MoveImpl.createCastling(board.getCastlingWhiteShort());
         } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
-            return MoveImpl.createCastling(CastlingMove.CASTLING_WHITE_LONG);
+            return MoveImpl.createCastling(board.getCastlingWhiteLong());
         } else if ("e8g8".equals(moveStr) && board.isCastlingAllowed(BLACK, SHORT)) {
-            return MoveImpl.createCastling(CastlingMove.CASTLING_BLACK_SHORT);
+            return MoveImpl.createCastling(board.getCastlingBlackShort());
         } else if ("e8c8".equals(moveStr) && board.isCastlingAllowed(BLACK, LONG)) {
-            return MoveImpl.createCastling(CastlingMove.CASTLING_BLACK_LONG);
+            return MoveImpl.createCastling(board.getCastlingBlackLong());
         }
 
         if (moveStr.endsWith("q")) {

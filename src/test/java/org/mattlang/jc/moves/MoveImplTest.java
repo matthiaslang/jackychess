@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class MoveImplTest {
 
@@ -28,7 +29,9 @@ public class MoveImplTest {
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
 
-        m = MoveImpl.createCastling(CastlingMove.CASTLING_BLACK_LONG);
+        BitBoard board = new BitBoard();
+
+        m = MoveImpl.createCastling(board.getCastlingBlackLong());
         l = m.toLongEncoded();
 
         m2 = new MoveImpl(l);

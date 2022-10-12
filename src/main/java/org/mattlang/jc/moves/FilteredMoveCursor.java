@@ -41,8 +41,8 @@ public class FilteredMoveCursor implements MoveCursor {
     }
 
     @Override
-    public CastlingMove getCastlingMove() {
-        return delegate.getCastlingMove();
+    public byte getCastlingType() {
+        return delegate.getCastlingType();
     }
 
     @Override

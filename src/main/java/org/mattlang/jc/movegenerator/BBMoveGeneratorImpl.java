@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -73,7 +72,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         final int king = Long.numberOfTrailingZeros(kingBB);
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask);
 
-        generateRochade(board, side, collector);
+        board.generateCastlingMoves(side, collector);
     }
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,
@@ -170,27 +169,6 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
             quiet &= quiet - 1;
         }
 
-    }
-
-    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
-        switch (side) {
-        case WHITE:
-            if (ROCHADE_L_WHITE.checkRochade(board)) {
-                collector.addRochadeLongWhite();
-            }
-            if (ROCHADE_S_WHITE.checkRochade(board)) {
-                collector.addRochadeShortWhite();
-            }
-            break;
-        case BLACK:
-            if (ROCHADE_S_BLACK.checkRochade(board)) {
-                collector.addRochadeShortBlack();
-            }
-            if (ROCHADE_L_BLACK.checkRochade(board)) {
-                collector.addRochadeLongBlack();
-            }
-            break;
-        }
     }
 
     private void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {

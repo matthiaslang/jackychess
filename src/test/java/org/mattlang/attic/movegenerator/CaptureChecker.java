@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.movegenerator.MoveCollector;
+import org.mattlang.jc.moves.CastlingMove;
 
 public final class CaptureChecker implements MoveCollector {
 
@@ -19,6 +20,10 @@ public final class CaptureChecker implements MoveCollector {
         addCapture(capturedFigureCode);
     }
 
+    @Override
+    public void addCastlingMove(CastlingMove castlingMove) {
+        
+    }
 
     private void addCapture(byte capturedFigureCode) {
         if (capturedFigureCode != 0) {
@@ -27,25 +32,6 @@ public final class CaptureChecker implements MoveCollector {
         }
     }
 
-    @Override
-    public void addRochadeLongWhite() {
-
-    }
-
-    @Override
-    public void addRochadeShortWhite() {
-
-    }
-
-    @Override
-    public void addRochadeShortBlack() {
-
-    }
-
-    @Override
-    public void addRochadeLongBlack() {
-
-    }
 
     @Override
     public void genEnPassant(int i, int n, Color side, int enPassantCapturePos) {

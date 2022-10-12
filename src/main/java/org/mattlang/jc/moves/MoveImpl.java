@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 
 import lombok.Getter;
@@ -211,38 +210,38 @@ public final class MoveImpl implements Move {
      *
      * @return
      */
-    public String toLongAlgebraic() {
-        if (isCastling()) {
-            if (getCastlingMove() == CastlingMove.CASTLING_BLACK_LONG
-                    || getCastlingMove() == CastlingMove.CASTLING_WHITE_LONG) {
-                return "O-O-O";
-            } else {
-                return "O-O";
-            }
-        }
-        String coords;
-        if (isCapture()) {
-            coords = convert(fromIndex) + "x" + convert(toIndex);
-        } else {
-            coords = convert(fromIndex) + "-" + convert(toIndex);
-        }
-        for (FigureType value : FigureType.values()) {
-            if (getFigureType() == value.figureCode && getFigureType() != FigureType.Pawn.figureCode) {
-                coords = Character.toUpperCase(value.figureChar) + coords;
-
-            }
-        }
-        if (isPromotion()) {
-            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
-            coords += figureChar;
-        }
-        if (isEnPassant()) {
-            coords += " e.p";
-        }
-
-        return coords;
-
-    }
+//    public String toLongAlgebraic() {
+//        if (isCastling()) {
+//            if (getCastlingMove() == CastlingMove.CASTLING_BLACK_LONG
+//                    || getCastlingMove() == CastlingMove.CASTLING_WHITE_LONG) {
+//                return "O-O-O";
+//            } else {
+//                return "O-O";
+//            }
+//        }
+//        String coords;
+//        if (isCapture()) {
+//            coords = convert(fromIndex) + "x" + convert(toIndex);
+//        } else {
+//            coords = convert(fromIndex) + "-" + convert(toIndex);
+//        }
+//        for (FigureType value : FigureType.values()) {
+//            if (getFigureType() == value.figureCode && getFigureType() != FigureType.Pawn.figureCode) {
+//                coords = Character.toUpperCase(value.figureChar) + coords;
+//
+//            }
+//        }
+//        if (isPromotion()) {
+//            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
+//            coords += figureChar;
+//        }
+//        if (isEnPassant()) {
+//            coords += " e.p";
+//        }
+//
+//        return coords;
+//
+//    }
 
     @Override
     public boolean isEnPassant() {
@@ -286,18 +285,9 @@ public final class MoveImpl implements Move {
         return type - ENPASSANT_MOVE;
     }
 
-    public CastlingMove getCastlingMove() {
-        switch (type) {
-        case CASTLING_WHITE_LONG:
-            return CastlingMove.CASTLING_WHITE_LONG;
-        case CASTLING_WHITE_SHORT:
-            return CastlingMove.CASTLING_WHITE_SHORT;
-        case CASTLING_BLACK_SHORT:
-            return CastlingMove.CASTLING_BLACK_SHORT;
-        case CASTLING_BLACK_LONG:
-            return CastlingMove.CASTLING_BLACK_LONG;
-        }
-        throw new IllegalStateException("no castling move!");
+    @Override
+    public byte getCastlingType() {
+        return type;
     }
 
 

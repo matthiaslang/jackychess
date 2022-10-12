@@ -39,22 +39,7 @@ public class StagedMoveListImpl implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite() {
-        throw new IllegalStateException("illegal state!");
-    }
-
-    @Override
-    public void addRochadeShortWhite() {
-        throw new IllegalStateException("illegal state!");
-    }
-
-    @Override
-    public void addRochadeShortBlack() {
-        throw new IllegalStateException("illegal state!");
-    }
-
-    @Override
-    public void addRochadeLongBlack() {
+    public void addCastlingMove(CastlingMove castlingMove) {
         throw new IllegalStateException("illegal state!");
     }
 

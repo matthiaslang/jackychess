@@ -3,7 +3,6 @@ package org.mattlang.tuning.data.pgnparser;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.Tools.rankOf;
-import static org.mattlang.jc.moves.CastlingMove.*;
 import static org.mattlang.jc.moves.MoveImpl.createCastling;
 
 import java.util.List;
@@ -117,13 +116,13 @@ public class AlgebraicNotation {
     public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
-            MoveImpl castlingMove = createCastling(color == WHITE ? CASTLING_WHITE_SHORT : CASTLING_BLACK_SHORT);
+            MoveImpl castlingMove = createCastling(color == WHITE ? board.getCastlingWhiteShort() : board.getCastlingBlackShort());
             if (!board.isvalidmove(castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }
             return castlingMove;
         case CASTLING_LONG:
-            castlingMove = createCastling(color == WHITE ? CASTLING_WHITE_LONG : CASTLING_BLACK_LONG);
+            castlingMove = createCastling(color == WHITE ? board.getCastlingWhiteLong() : board.getCastlingBlackLong());
             if (!board.isvalidmove(castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }

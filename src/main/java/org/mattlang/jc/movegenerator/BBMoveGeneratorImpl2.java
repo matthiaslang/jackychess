@@ -7,7 +7,6 @@ import static org.mattlang.jc.board.bitboard.BB.getKingAttacs;
 import static org.mattlang.jc.board.bitboard.BB.getKnightAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
-import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -103,7 +102,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask, types);
 
         if (types == GenTypes.QUIET || types == GenTypes.ALL) {
-            generateRochade(board, side, collector);
+            board.generateCastlingMoves(side, collector);
         }
     }
 
@@ -213,27 +212,6 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             }
         }
 
-    }
-
-    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
-        switch (side) {
-        case WHITE:
-            if (ROCHADE_L_WHITE.check(board)) {
-                collector.addRochadeLongWhite();
-            }
-            if (ROCHADE_S_WHITE.check(board)) {
-                collector.addRochadeShortWhite();
-            }
-            break;
-        case BLACK:
-            if (ROCHADE_S_BLACK.check(board)) {
-                collector.addRochadeShortBlack();
-            }
-            if (ROCHADE_L_BLACK.check(board)) {
-                collector.addRochadeLongBlack();
-            }
-            break;
-        }
     }
 
     private void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {

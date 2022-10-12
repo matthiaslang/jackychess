@@ -101,8 +101,8 @@ public class StagedMoveCursor implements MoveCursor {
     }
 
     @Override
-    public CastlingMove getCastlingMove() {
-        return currMoveObj.getCastlingMove();
+    public byte getCastlingType() {
+        return currMoveObj.getCastlingType();
     }
 
     @Override

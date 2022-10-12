@@ -88,8 +88,8 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public CastlingMove getCastlingMove() {
-        return moveCursor.getCastlingMove();
+    public byte getCastlingType() {
+        return moveCursor.getCastlingType();
     }
 
     @Override

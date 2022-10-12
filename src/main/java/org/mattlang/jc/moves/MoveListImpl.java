@@ -58,23 +58,8 @@ public class MoveListImpl implements MoveList {
     }
 
     @Override
-    public void addRochadeLongWhite() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_LONG));
-    }
-
-    @Override
-    public void addRochadeShortWhite() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_WHITE_SHORT));
-    }
-
-    @Override
-    public void addRochadeShortBlack() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_SHORT));
-    }
-
-    @Override
-    public void addRochadeLongBlack() {
-        moves.add(createCastlingMove(CastlingMove.CASTLING_BLACK_LONG));
+    public void addCastlingMove(CastlingMove castlingMove) {
+        moves.add(createCastlingMove(castlingMove));
     }
 
     private MoveImpl moveWrapper = new MoveImpl("a1a2");

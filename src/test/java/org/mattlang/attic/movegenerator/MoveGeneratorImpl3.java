@@ -2,7 +2,6 @@ package org.mattlang.attic.movegenerator;
 
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.movegenerator.CastlingDef.*;
 
 import org.mattlang.attic.board.PieceList;
 import org.mattlang.jc.Factory;
@@ -124,7 +123,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
         int[] figOffsets = offset[figureCode];
         genPieceMoves(board, pieces.getKing(), collector, xside, figureCode, figOffsets, slide[figureCode]);
 
-        generateRochade(board, side, collector);
+        board.generateCastlingMoves(side, collector);
     }
 
     private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,
@@ -221,26 +220,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
         return false;
     }
 
-    private void generateRochade(BoardRepresentation board, Color side, MoveCollector collector) {
-        switch (side) {
-        case WHITE:
-            if (ROCHADE_L_WHITE.check(board)) {
-                collector.addRochadeLongWhite();
-            }
-            if (ROCHADE_S_WHITE.check(board)) {
-                collector.addRochadeShortWhite();
-            }
-            break;
-        case BLACK:
-            if (ROCHADE_S_BLACK.check(board)) {
-                collector.addRochadeShortBlack();
-            }
-            if (ROCHADE_L_BLACK.check(board)) {
-                collector.addRochadeLongBlack();
-            }
-            break;
-        }
-    }
+
 
     private void genPawnMoves(BoardRepresentation board, MoveCollector collector, int i, Color side) {
         boolean isOnBaseLine = false;

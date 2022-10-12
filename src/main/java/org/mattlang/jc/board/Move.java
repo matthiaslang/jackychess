@@ -1,7 +1,5 @@
 package org.mattlang.jc.board;
 
-import org.mattlang.jc.moves.CastlingMove;
-
 public interface Move {
 
     byte getCapturedFigure();
@@ -37,5 +35,5 @@ public interface Move {
 
     byte getPromotedFigureByte();
 
-    CastlingMove getCastlingMove();
+    byte getCastlingType();
 }
