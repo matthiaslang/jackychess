@@ -1,5 +1,9 @@
 # Versions
-                                                                                
+
+### Version 0.13.1
+
+- fixed promotion to knight bug 
+                                                          
 
 ### Version 0.13.0
 
