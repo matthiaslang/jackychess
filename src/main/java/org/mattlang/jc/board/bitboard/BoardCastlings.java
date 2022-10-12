@@ -33,6 +33,9 @@ public final class BoardCastlings {
             new Figure[] { W_Rook, EMPTY, EMPTY, EMPTY, W_King },
             new int[] { 2, 3, 4 });
 
+    private final CastlingMove castlingWhiteLong = new CastlingMove(castlingLWhite,
+            CASTLING_WHITE_LONG, 4, 2, 0, 3);
+
     private CastlingDef castlingSWhite = new CastlingDef(
             WHITE,
             RochadeType.SHORT,
@@ -54,8 +57,7 @@ public final class BoardCastlings {
             new Figure[] { B_Rook, EMPTY, EMPTY, EMPTY, B_King },
             new int[] { 58, 59, 60 });
 
-    private final CastlingMove castlingWhiteLong = new CastlingMove(castlingLWhite,
-            CASTLING_WHITE_LONG, 4, 2, 0, 3);
+
 
     private final CastlingMove castlingWhiteShort = new CastlingMove(castlingSWhite,
             CASTLING_WHITE_SHORT, 4, 6, 7, 5);
@@ -65,6 +67,8 @@ public final class BoardCastlings {
 
     private final CastlingMove castlingBlackLong = new CastlingMove(castlingLBlack,
             MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
+
+
 
     public void generateCastlingMoves(Color side, MoveCollector collector) {
         switch (side) {

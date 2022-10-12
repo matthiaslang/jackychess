@@ -392,7 +392,7 @@ public class BitBoard implements BoardRepresentation {
             set(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
             CastlingMove castlingMove = getCastlingMove(move);
-            move(FT_ROOK, castlingMove.getFromIndex2(), castlingMove.getToIndex2(),
+            move(FT_ROOK, castlingMove.getRookFrom(), castlingMove.getRookTo(),
                     (byte) 0);
         }
 
@@ -425,7 +425,7 @@ public class BitBoard implements BoardRepresentation {
             board.set(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
             CastlingMove castlingMove = getCastlingMove(move);
-            board.move(castlingMove.getToIndex2(), castlingMove.getFromIndex2(), FT_ROOK,
+            board.move(castlingMove.getRookTo(), castlingMove.getRookFrom(), FT_ROOK,
                     isWhiteFigure ? nWhite : nBlack, (byte) 0);
         }
 

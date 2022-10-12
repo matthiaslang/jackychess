@@ -143,8 +143,8 @@ public final class MoveImpl implements Move {
     private MoveImpl(CastlingMove castlingMove) {
         this.figureType = FT_KING;
         this.type = castlingMove.getType();
-        this.fromIndex = castlingMove.getFromIndex();
-        this.toIndex = castlingMove.getToIndex();
+        this.fromIndex = castlingMove.getKingFrom();
+        this.toIndex = castlingMove.getKingTo();
     }
 
     public static MoveImpl createCastling(CastlingMove castlingMove){
@@ -170,8 +170,8 @@ public final class MoveImpl implements Move {
     }
 
     public final static int createCastlingMove(CastlingMove castlingMove) {
-        return longRepresentation(castlingMove.getType(), FT_KING, castlingMove.getFromIndex(),
-                castlingMove.getToIndex(),
+        return longRepresentation(castlingMove.getType(), FT_KING, castlingMove.getKingFrom(),
+                castlingMove.getKingTo(),
                 (byte) 0);
     }
 

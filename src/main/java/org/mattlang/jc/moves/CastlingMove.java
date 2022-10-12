@@ -11,23 +11,23 @@ public class CastlingMove {
 
     private byte type;
 
-    private byte fromIndex;
+    private byte kingFrom;
 
-    private byte toIndex;
+    private byte kingTo;
 
-    private byte fromIndex2;
+    private byte rookFrom;
 
-    private byte toIndex2;
+    private byte rookTo;
 
 
 
-    public CastlingMove(CastlingDef def, byte type, int fromIndex, int toIndex, int fromIndex2, int toIndex2) {
+    public CastlingMove(CastlingDef def, byte type, int kingFrom, int kingTo, int rookFrom, int rookTo) {
         this.def = def;
         this.type = type;
-        this.fromIndex = (byte) fromIndex;
-        this.toIndex = (byte) toIndex;
-        this.fromIndex2 = (byte) fromIndex2;
-        this.toIndex2 = (byte) toIndex2;
+        this.kingFrom = (byte) kingFrom;
+        this.kingTo = (byte) kingTo;
+        this.rookFrom = (byte) rookFrom;
+        this.rookTo = (byte) rookTo;
     }
 
 }

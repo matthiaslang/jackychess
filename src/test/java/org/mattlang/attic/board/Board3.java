@@ -407,7 +407,7 @@ public class Board3 implements BoardRepresentation {
             setPos(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
             CastlingMove castlingMove = getCastlingMove(move);
-            move(castlingMove.getFromIndex2(), castlingMove.getToIndex2());
+            move(castlingMove.getRookFrom(), castlingMove.getRookTo());
         }
 
         switchSiteToMove();
@@ -430,7 +430,7 @@ public class Board3 implements BoardRepresentation {
             setPos(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
             CastlingMove castlingMove = getCastlingMove(move);
-            move(castlingMove.getToIndex2(), castlingMove.getFromIndex2());
+            move(castlingMove.getRookTo(), castlingMove.getRookFrom());
         }
 
         moveCounter--;
