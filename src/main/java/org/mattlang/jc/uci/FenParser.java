@@ -69,7 +69,7 @@ public class FenParser {
             return createPawnPromotion(moveStr, W_Queen, B_Queen);
         } else if (moveStr.endsWith("r")) {
             return createPawnPromotion(moveStr, W_Rook, B_Rook);
-        } else if (moveStr.endsWith("k")) {
+        } else if (moveStr.endsWith("n")) {
             return createPawnPromotion(moveStr, W_Knight, B_Knight);
         } else if (moveStr.endsWith("b")) {
             return createPawnPromotion(moveStr, W_Bishop, B_Bishop);
