@@ -31,7 +31,7 @@ public class MoveImplTest {
 
         BitBoard board = new BitBoard();
 
-        m = MoveImpl.createCastling(board.getCastlingBlackLong());
+        m = MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
         l = m.toLongEncoded();
 
         m2 = new MoveImpl(l);

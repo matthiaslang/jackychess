@@ -4,23 +4,19 @@ import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.board.bitboard.BitBoard.MAXMOVES;
-import static org.mattlang.jc.moves.MoveImpl.*;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.material.Material;
-import org.mattlang.jc.movegenerator.CastlingDef;
-import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
@@ -72,47 +68,7 @@ public class Board3 implements BoardRepresentation {
      */
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
-
-    private CastlingDef castlingLWhite = new CastlingDef(
-            WHITE,
-            RochadeType.LONG,
-            new int[] { 0, 1, 2, 3, 4 },
-            new Figure[] { W_Rook, EMPTY, EMPTY, EMPTY, W_King },
-            new int[] { 2, 3, 4 });
-
-    private CastlingDef castlingSWhite = new CastlingDef(
-            WHITE,
-            RochadeType.SHORT,
-            new int[] { 4, 5, 6, 7 },
-            new Figure[] { W_King, EMPTY, EMPTY, W_Rook },
-            new int[] { 4, 5, 6 });
-
-    private CastlingDef castlingSBlack = new CastlingDef(
-            BLACK,
-            RochadeType.SHORT,
-            new int[] { 60, 61, 62, 63 },
-            new Figure[] { B_King, EMPTY, EMPTY, B_Rook },
-            new int[] { 60, 61, 62 });
-
-    private CastlingDef castlingLBlack = new CastlingDef(
-            BLACK,
-            RochadeType.LONG,
-            new int[] { 56, 57, 58, 59, 60 },
-            new Figure[] { B_Rook, EMPTY, EMPTY, EMPTY, B_King },
-            new int[] { 58, 59, 60 });
-
-
-    private final CastlingMove castlingWhiteLong = new CastlingMove(castlingLWhite,
-            MoveImpl.CASTLING_WHITE_LONG, 4, 2, 0, 3);
-
-    private final CastlingMove castlingWhiteShort = new CastlingMove(castlingSWhite,
-            MoveImpl.CASTLING_WHITE_SHORT, 4, 6, 7, 5);
-
-    private final CastlingMove castlingBlackShort = new CastlingMove(castlingSBlack,
-            MoveImpl.CASTLING_BLACK_SHORT, 60, 62, 63, 61);
-
-    private final CastlingMove castlingBlackLong = new CastlingMove(castlingLBlack,
-            MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
+    private BoardCastlings boardCastlings = new BoardCastlings(this);
 
     public Board3() {
         for (int i = 0; i < 64; i++) {
@@ -450,7 +406,7 @@ public class Board3 implements BoardRepresentation {
         } else if (move.isPromotion()) {
             setPos(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
-            CastlingMove castlingMove = getCastlingMove(move.getCastlingType());
+            CastlingMove castlingMove = getCastlingMove(move);
             move(castlingMove.getFromIndex2(), castlingMove.getToIndex2());
         }
 
@@ -473,7 +429,7 @@ public class Board3 implements BoardRepresentation {
             Figure pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn : Figure.B_Pawn;
             setPos(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
-            CastlingMove castlingMove = getCastlingMove(move.getCastlingType());
+            CastlingMove castlingMove = getCastlingMove(move);
             move(castlingMove.getToIndex2(), castlingMove.getFromIndex2());
         }
 
@@ -542,60 +498,12 @@ public class Board3 implements BoardRepresentation {
         return false;
     }
 
-
     @Override
-    public void generateCastlingMoves(Color side, MoveCollector collector) {
-        switch (side) {
-        case WHITE:
-            if (castlingLWhite.check(this)) {
-                collector.addCastlingMove(castlingWhiteLong);
-            }
-            if (castlingSWhite.check(this)) {
-                collector.addCastlingMove(castlingWhiteShort);
-            }
-            break;
-        case BLACK:
-            if (castlingSBlack.check(this)) {
-                collector.addCastlingMove(castlingBlackShort);
-            }
-            if (castlingLBlack.check(this)) {
-                collector.addCastlingMove(castlingBlackLong);
-            }
-            break;
-        }
+    public BoardCastlings getBoardCastlings() {
+        return boardCastlings;
     }
 
-    public CastlingMove getCastlingMove(byte type) {
-        switch (type) {
-        case CASTLING_WHITE_LONG:
-            return castlingWhiteLong;
-        case CASTLING_WHITE_SHORT:
-            return castlingWhiteShort;
-        case CASTLING_BLACK_SHORT:
-            return castlingBlackShort;
-        case CASTLING_BLACK_LONG:
-            return castlingBlackLong;
-        }
-        throw new IllegalStateException("no castling move!");
-    }
-
-    @Override
-    public CastlingMove getCastlingWhiteLong() {
-        return castlingWhiteLong;
-    }
-
-    @Override
-    public CastlingMove getCastlingWhiteShort() {
-        return castlingWhiteShort;
-    }
-
-    @Override
-    public CastlingMove getCastlingBlackShort() {
-        return castlingBlackShort;
-    }
-
-    @Override
-    public CastlingMove getCastlingBlackLong() {
-        return castlingBlackLong;
+    private CastlingMove getCastlingMove(Move move) {
+        return boardCastlings.getCastlingMove(move.getCastlingType());
     }
 }

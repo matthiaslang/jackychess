@@ -72,7 +72,7 @@ public class BBMoveGeneratorImpl implements MoveGenerator {
         final int king = Long.numberOfTrailingZeros(kingBB);
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask);
 
-        board.generateCastlingMoves(side, collector);
+        board.getBoardCastlings().generateCastlingMoves(side, collector);
     }
 
     private void genKingMoves(BitChessBoard bb, int kingPos, MoveCollector collector, long ownFigsMask,

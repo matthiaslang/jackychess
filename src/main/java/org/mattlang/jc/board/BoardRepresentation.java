@@ -1,9 +1,8 @@
 package org.mattlang.jc.board;
 
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.material.Material;
-import org.mattlang.jc.movegenerator.MoveCollector;
-import org.mattlang.jc.moves.CastlingMove;
 
 public interface BoardRepresentation {
     void setStartPosition();
@@ -92,13 +91,5 @@ public interface BoardRepresentation {
 
     Material getMaterial();
 
-    void generateCastlingMoves(Color side, MoveCollector collector);
-
-    CastlingMove getCastlingWhiteLong();
-
-    CastlingMove getCastlingWhiteShort();
-
-    CastlingMove getCastlingBlackShort();
-
-    CastlingMove getCastlingBlackLong();
+    BoardCastlings getBoardCastlings();
 }

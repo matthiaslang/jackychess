@@ -116,13 +116,13 @@ public class AlgebraicNotation {
     public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
-            MoveImpl castlingMove = createCastling(color == WHITE ? board.getCastlingWhiteShort() : board.getCastlingBlackShort());
+            MoveImpl castlingMove = createCastling(color == WHITE ? board.getBoardCastlings().getCastlingWhiteShort() : board.getBoardCastlings().getCastlingBlackShort());
             if (!board.isvalidmove(castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }
             return castlingMove;
         case CASTLING_LONG:
-            castlingMove = createCastling(color == WHITE ? board.getCastlingWhiteLong() : board.getCastlingBlackLong());
+            castlingMove = createCastling(color == WHITE ? board.getBoardCastlings().getCastlingWhiteLong() : board.getBoardCastlings().getCastlingBlackLong());
             if (!board.isvalidmove(castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }

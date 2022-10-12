@@ -102,7 +102,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
         genKingMoves(bb, king, collector, ownFigsMask, opponentFigsMask, types);
 
         if (types == GenTypes.QUIET || types == GenTypes.ALL) {
-            board.generateCastlingMoves(side, collector);
+            board.getBoardCastlings().generateCastlingMoves(side, collector);
         }
     }
 

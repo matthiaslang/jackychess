@@ -123,7 +123,7 @@ public class MoveGeneratorImpl3 implements MoveGenerator {
         int[] figOffsets = offset[figureCode];
         genPieceMoves(board, pieces.getKing(), collector, xside, figureCode, figOffsets, slide[figureCode]);
 
-        board.generateCastlingMoves(side, collector);
+        board.getBoardCastlings().generateCastlingMoves(side, collector);
     }
 
     private static void genPieceMoves(BoardRepresentation board, int i, MoveCollector collector, Color xside,

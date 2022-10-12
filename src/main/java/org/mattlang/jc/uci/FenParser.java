@@ -55,13 +55,13 @@ public class FenParser {
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
-            return MoveImpl.createCastling(board.getCastlingWhiteShort());
+            return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteShort());
         } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
-            return MoveImpl.createCastling(board.getCastlingWhiteLong());
+            return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteLong());
         } else if ("e8g8".equals(moveStr) && board.isCastlingAllowed(BLACK, SHORT)) {
-            return MoveImpl.createCastling(board.getCastlingBlackShort());
+            return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackShort());
         } else if ("e8c8".equals(moveStr) && board.isCastlingAllowed(BLACK, LONG)) {
-            return MoveImpl.createCastling(board.getCastlingBlackLong());
+            return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
         }
 
         if (moveStr.endsWith("q")) {
