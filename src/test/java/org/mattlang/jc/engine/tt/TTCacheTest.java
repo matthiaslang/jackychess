@@ -39,12 +39,12 @@ public class TTCacheTest {
         cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 400000);
 
         board.switchSiteToMove();
-        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(0L);
+        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache3.NORESULT);
         board.switchSiteToMove();
 
         long entry = cache.getValue(board.getZobristHash());
 
-        assertThat(entry).isNotEqualTo(0L);
+        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
 
         assertThat(cache.getDepth(entry)).isEqualTo(5);
         assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
@@ -63,12 +63,12 @@ public class TTCacheTest {
         cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 0);
 
         board.switchSiteToMove();
-        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(0L);
+        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache3.NORESULT);
         board.switchSiteToMove();
 
         long entry = cache.getValue(board.getZobristHash());
 
-        assertThat(entry).isNotEqualTo(0L);
+        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
 
         assertThat(cache.getDepth(entry)).isEqualTo(5);
         assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
