@@ -2,14 +2,13 @@ package org.mattlang.jc.board.bitboard;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.RochadeType.LONG;
+import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.RochadeType;
-import org.mattlang.jc.movegenerator.CastlingDef;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
@@ -26,46 +25,16 @@ public final class BoardCastlings {
         this.board = board;
     }
 
-    private CastlingDef castlingLWhite = new CastlingDef(
-            WHITE,
-            RochadeType.LONG,
-            new int[] { 0, 1, 2, 3, 4 },
-            new Figure[] { W_Rook, EMPTY, EMPTY, EMPTY, W_King },
-            new int[] { 2, 3, 4 });
-
-    private final CastlingMove castlingWhiteLong = new CastlingMove(castlingLWhite,
+    private final CastlingMove castlingWhiteLong = createCastlingMove(WHITE, LONG,
             CASTLING_WHITE_LONG, 4, 2, 0, 3);
 
-    private CastlingDef castlingSWhite = new CastlingDef(
-            WHITE,
-            RochadeType.SHORT,
-            new int[] { 4, 5, 6, 7 },
-            new Figure[] { W_King, EMPTY, EMPTY, W_Rook },
-            new int[] { 4, 5, 6 });
-
-    private CastlingDef castlingSBlack = new CastlingDef(
-            BLACK,
-            RochadeType.SHORT,
-            new int[] { 60, 61, 62, 63 },
-            new Figure[] { B_King, EMPTY, EMPTY, B_Rook },
-            new int[] { 60, 61, 62 });
-
-    private CastlingDef castlingLBlack = new CastlingDef(
-            BLACK,
-            RochadeType.LONG,
-            new int[] { 56, 57, 58, 59, 60 },
-            new Figure[] { B_Rook, EMPTY, EMPTY, EMPTY, B_King },
-            new int[] { 58, 59, 60 });
-
-
-
-    private final CastlingMove castlingWhiteShort = new CastlingMove(castlingSWhite,
+    private final CastlingMove castlingWhiteShort = createCastlingMove(WHITE, SHORT,
             CASTLING_WHITE_SHORT, 4, 6, 7, 5);
 
-    private final CastlingMove castlingBlackShort = new CastlingMove(castlingSBlack,
+    private final CastlingMove castlingBlackShort = createCastlingMove(BLACK, SHORT,
             CASTLING_BLACK_SHORT, 60, 62, 63, 61);
 
-    private final CastlingMove castlingBlackLong = new CastlingMove(castlingLBlack,
+    private final CastlingMove castlingBlackLong = createCastlingMove(BLACK, LONG,
             MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
 
 
@@ -73,18 +42,18 @@ public final class BoardCastlings {
     public void generateCastlingMoves(Color side, MoveCollector collector) {
         switch (side) {
         case WHITE:
-            if (castlingLWhite.check(board)) {
+            if (castlingWhiteLong.getDef().check(board)) {
                 collector.addCastlingMove(castlingWhiteLong);
             }
-            if (castlingSWhite.check(board)) {
+            if (castlingWhiteShort.getDef().check(board)) {
                 collector.addCastlingMove(castlingWhiteShort);
             }
             break;
         case BLACK:
-            if (castlingSBlack.check(board)) {
+            if (castlingBlackShort.getDef().check(board)) {
                 collector.addCastlingMove(castlingBlackShort);
             }
-            if (castlingLBlack.check(board)) {
+            if (castlingBlackLong.getDef().check(board)) {
                 collector.addCastlingMove(castlingBlackLong);
             }
             break;
