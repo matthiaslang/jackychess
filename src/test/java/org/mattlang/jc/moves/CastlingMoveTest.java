@@ -76,4 +76,26 @@ public class CastlingMoveTest {
         assertThat(createCastlingMove(BLACK, SHORT, CASTLING_BLACK_SHORT, 60, 62, 63, 61))
                 .isEqualTo(castlingBlackShort);
     }
+
+    @Test
+    public void testTargets() {
+        assertThat(CastlingMove.gWKingTargetPos).isEqualTo(6);
+        assertThat(CastlingMove.gWRookTargetPos).isEqualTo(5);
+
+        assertThat(CastlingMove.cWKingTargetPos).isEqualTo(2);
+        assertThat(CastlingMove.cWRookTargetPos).isEqualTo(3);
+
+
+        assertThat(CastlingMove.gBKingTargetPos).isEqualTo(62);
+        assertThat(CastlingMove.gBRookTargetPos).isEqualTo(61);
+
+        assertThat(CastlingMove.cBKingTargetPos).isEqualTo(58);
+        assertThat(CastlingMove.cBRookTargetPos).isEqualTo(59);
+
+
+        assertThat(createCastlingMove(BLACK, LONG, CASTLING_BLACK_LONG, 60, 58, 56, 59))
+                .isEqualTo(castlingBlackLong);
+
+
+    }
 }

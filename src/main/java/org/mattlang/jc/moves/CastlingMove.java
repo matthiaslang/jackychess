@@ -5,15 +5,33 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import java.util.Objects;
 
+import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.RochadeType;
+import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
 import lombok.Getter;
 
 @Getter
 public class CastlingMove {
+
+    /* small castling (g Side) white king target pos.*/
+    public static int gWKingTargetPos = Long.numberOfTrailingZeros(BB.G & BB.rank1);
+    public static int gWRookTargetPos = Long.numberOfTrailingZeros(BB.F & BB.rank1);
+
+    /* small castling (g Side) black king target pos.*/
+    public static int gBKingTargetPos = Long.numberOfTrailingZeros(BB.G & BB.rank8);
+    public static int gBRookTargetPos = Long.numberOfTrailingZeros(BB.F & BB.rank8);
+
+    /* long castling (c Side) white king target pos.*/
+    public static int cWKingTargetPos = Long.numberOfTrailingZeros(BB.C & BB.rank1);
+    public static int cWRookTargetPos = Long.numberOfTrailingZeros(BB.D & BB.rank1);
+
+    /* long castling (c Side) black king target pos.*/
+    public static int cBKingTargetPos = Long.numberOfTrailingZeros(BB.C & BB.rank8);
+    public static int cBRookTargetPos = Long.numberOfTrailingZeros(BB.D & BB.rank8);
 
     private final CastlingDef def;
 
@@ -36,10 +54,18 @@ public class CastlingMove {
         this.rookTo = (byte) rookTo;
     }
 
+    public static CastlingMove createCastlingMove(CastlingType castlingType, int kingFrom, int rookFrom) {
+        CastlingDef defintion = createDef(castlingType.getColor(), castlingType.getRochadeType(),
+                castlingType.getCastlingMoveType(), kingFrom, castlingType.getKingTargetPos(), rookFrom,
+                castlingType.getRookTargetPos());
+        return new CastlingMove(defintion, castlingType.getCastlingMoveType(), kingFrom,
+                castlingType.getKingTargetPos(), rookFrom, castlingType.getRookTargetPos());
+    }
+
     public static CastlingMove createCastlingMove(Color side, RochadeType rochadeType, byte type, int kingFrom,
             int kingTo, int rookFrom, int rookTo) {
-        return new CastlingMove(createDef(side, rochadeType, type, kingFrom, kingTo, rookFrom, rookTo), type, kingFrom,
-                kingTo, rookFrom, rookTo);
+        CastlingDef defintion = createDef(side, rochadeType, type, kingFrom, kingTo, rookFrom, rookTo);
+        return new CastlingMove(defintion, type, kingFrom, kingTo, rookFrom, rookTo);
     }
 
     private static CastlingDef createDef(Color side, RochadeType rochadeType, byte type, int kingFrom, int kingTo,

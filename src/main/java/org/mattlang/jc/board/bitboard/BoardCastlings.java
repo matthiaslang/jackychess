@@ -8,6 +8,7 @@ import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.CastlingMove;
@@ -25,16 +26,16 @@ public final class BoardCastlings {
         this.board = board;
     }
 
-    private final CastlingMove castlingWhiteLong = createCastlingMove(WHITE, LONG,
+    private CastlingMove castlingWhiteLong = createCastlingMove(WHITE, LONG,
             CASTLING_WHITE_LONG, 4, 2, 0, 3);
 
-    private final CastlingMove castlingWhiteShort = createCastlingMove(WHITE, SHORT,
+    private CastlingMove castlingWhiteShort = createCastlingMove(WHITE, SHORT,
             CASTLING_WHITE_SHORT, 4, 6, 7, 5);
 
-    private final CastlingMove castlingBlackShort = createCastlingMove(BLACK, SHORT,
+    private CastlingMove castlingBlackShort = createCastlingMove(BLACK, SHORT,
             CASTLING_BLACK_SHORT, 60, 62, 63, 61);
 
-    private final CastlingMove castlingBlackLong = createCastlingMove(BLACK, LONG,
+    private CastlingMove castlingBlackLong = createCastlingMove(BLACK, LONG,
             MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
 
 
@@ -90,4 +91,27 @@ public final class BoardCastlings {
         return castlingBlackLong;
     }
 
+    public void setCastlingMove(CastlingType castlingType, CastlingMove castlingMove) {
+        switch (castlingType) {
+        case WHITE_SHORT:
+            castlingWhiteShort = castlingMove;
+            break;
+        case WHITE_LONG:
+            castlingWhiteLong = castlingMove;
+            break;
+        case BLACK_SHORT:
+            castlingBlackShort = castlingMove;
+            break;
+        case BLACK_LONG:
+            castlingBlackLong = castlingMove;
+            break;
+        }
+    }
+
+    public void initFrom(BoardCastlings boardCastlings) {
+        this.castlingWhiteShort = boardCastlings.getCastlingWhiteShort();
+        this.castlingWhiteLong = boardCastlings.getCastlingWhiteLong();
+        this.castlingBlackShort = boardCastlings.getCastlingBlackShort();
+        this.castlingBlackLong = boardCastlings.getCastlingBlackLong();
+    }
 }

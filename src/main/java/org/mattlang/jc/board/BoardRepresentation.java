@@ -3,6 +3,7 @@ package org.mattlang.jc.board;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.material.Material;
+import org.mattlang.jc.moves.CastlingMove;
 
 public interface BoardRepresentation {
     void setStartPosition();
@@ -63,7 +64,7 @@ public interface BoardRepresentation {
 
     boolean isCastlingAllowed(Color color, RochadeType type);
 
-    void setCastlingAllowed(Color color, RochadeType type);
+    void setCastlingAllowed(CastlingType castlingType, CastlingMove castlingMove);
 
     byte getCastlingRights();
 

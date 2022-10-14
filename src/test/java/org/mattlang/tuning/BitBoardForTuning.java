@@ -366,10 +366,12 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public void setCastlingAllowed(Color color, RochadeType type) {
+    public void setCastlingAllowed(CastlingType castlingType, CastlingMove castlingMove) {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.setAllowed(color, type);
+        castlingRights.setAllowed(castlingType);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+
+        boardCastlings.setCastlingMove(castlingType, castlingMove);
     }
 
     @Override

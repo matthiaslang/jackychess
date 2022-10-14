@@ -1,8 +1,8 @@
 package org.mattlang.jc.board;
 
-import java.util.Objects;
-
 import static org.mattlang.jc.board.RochadeType.SHORT;
+
+import java.util.Objects;
 
 public class CastlingRights {
 
@@ -22,6 +22,11 @@ public class CastlingRights {
 
     public void setAllowed(Color color, RochadeType type) {
         int mask = createMask(color, type);
+        castlingRights |= mask;
+    }
+
+    public void setAllowed(CastlingType castlingType) {
+        int mask = createMask(castlingType.getColor(), castlingType.getRochadeType());
         castlingRights |= mask;
     }
 

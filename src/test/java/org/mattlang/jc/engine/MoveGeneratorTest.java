@@ -23,7 +23,7 @@ public class MoveGeneratorTest {
     @Test
     public void testPawnPromotionAndUndoing1() {
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen 8/P7/8/2K5/5k2/8/p7/8 b k - 2 17 ";
+        String fen = "position fen 8/P7/8/2K5/5k2/8/p7/8 b - - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
@@ -66,7 +66,7 @@ public class MoveGeneratorTest {
     public void testPawnPromotionAndUndoing2() {
 
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen pp6/P7/K7/8/8/k7/p7/PP6 b k - 2 17 ";
+        String fen = "position fen pp6/P7/K7/8/8/k7/p7/PP6 b - - 2 17 ";
         board.setFenPosition(fen);
 
         System.out.println(board.toUniCodeStr());
@@ -175,7 +175,7 @@ public class MoveGeneratorTest {
     @Test
     public void enPassant() {
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen k7/3p4/8/2P1P3/2p1p3/8/3P4/K7 b k - 2 17 ";
+        String fen = "position fen k7/3p4/8/2P1P3/2p1p3/8/3P4/K7 b - - 2 17 ";
         board.setFenPosition(fen);
 
         BoardRepresentation copy = board.copy();
@@ -215,7 +215,7 @@ public class MoveGeneratorTest {
     @Test
     public void enPassantFromFEN() {
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen k7/3p4/8/2P1P3/2pPp3/8/8/K7 b k d3 2 17 ";
+        String fen = "position fen k7/3p4/8/2P1P3/2pPp3/8/8/K7 b - d3 2 17 ";
         board.setFenPosition(fen);
 
         BoardRepresentation copy = board.copy();

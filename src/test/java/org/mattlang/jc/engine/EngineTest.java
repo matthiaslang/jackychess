@@ -264,7 +264,7 @@ public class EngineTest {
         // now starting engine:
         Engine engine = new Engine();
 
-        GameState gameState = engine.getBoard().setFenPosition("position fen 7k/P7/8/8/8/8/K7/8 w k - 2 17 ");
+        GameState gameState = engine.getBoard().setFenPosition("position fen 7k/P7/8/8/8/8/K7/8 w - - 2 17 ");
 
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go(gameState, new GameContext());
@@ -305,7 +305,7 @@ public class EngineTest {
 
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
-        GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b k - 2 17 ", board);
+        GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b - - 2 17 ", board);
 
         System.out.println(board.toUniCodeStr());
 

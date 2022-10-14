@@ -113,6 +113,7 @@ public class Board3 implements BoardRepresentation {
         moveCounter=0;
         siteToMove=WHITE;
         castlingRights = new CastlingRights();
+        boardCastlings=new BoardCastlings(this);
         zobristHash = Zobrist.hash(this);
     }
 
@@ -315,6 +316,7 @@ public class Board3 implements BoardRepresentation {
         copied.historyCastling=historyCastling.clone();
         copied.historyZobrist=historyZobrist.clone();
         copied.historyEp=historyEp.clone();
+        copied.boardCastlings.initFrom(boardCastlings);
         copied.moveCounter=moveCounter;
         return copied;
     }
@@ -377,10 +379,12 @@ public class Board3 implements BoardRepresentation {
     }
 
     @Override
-    public void setCastlingAllowed(Color color, RochadeType type) {
+    public void setCastlingAllowed(CastlingType castlingType, CastlingMove castlingMove) {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.setAllowed(color, type);
+        castlingRights.setAllowed(castlingType);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+
+        boardCastlings.setCastlingMove(castlingType, castlingMove);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.mattlang.jc.uci;
 
+import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
@@ -10,6 +11,7 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
@@ -117,20 +119,64 @@ public class FenParser {
         }
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {
-                board.setCastlingAllowed(WHITE, SHORT);
+                int wKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(WHITE));
+                long rooks = board.getBoard().getRooks(WHITE);
+                int rook = searchBiggerRook(wKingPos, rooks);
+
+                CastlingMove castlingMove = CastlingMove.createCastlingMove(WHITE_SHORT, wKingPos, rook);
+                board.setCastlingAllowed(WHITE_SHORT, castlingMove);
+
             }
             if (rochade.contains("Q")) {
-                board.setCastlingAllowed(WHITE, LONG);
+                int wKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(WHITE));
+                long rooks = board.getBoard().getRooks(WHITE);
+                int rook = searchSmallerRook(wKingPos, rooks);
+
+                CastlingMove castlingMove = CastlingMove.createCastlingMove(WHITE_LONG, wKingPos, rook);
+                board.setCastlingAllowed(WHITE_LONG, castlingMove);
+
             }
             if (rochade.contains("k")) {
-                board.setCastlingAllowed(BLACK, SHORT);
+                int bKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(BLACK));
+                long rooks = board.getBoard().getRooks(BLACK);
+                int rook = searchBiggerRook(bKingPos, rooks);
+
+                CastlingMove castlingMove = CastlingMove.createCastlingMove(BLACK_SHORT, bKingPos, rook);
+                board.setCastlingAllowed(BLACK_SHORT, castlingMove);
             }
             if (rochade.contains("q")) {
-                board.setCastlingAllowed(BLACK, LONG);
+                int bKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(BLACK));
+                long rooks = board.getBoard().getRooks(BLACK);
+                int rook = searchSmallerRook(bKingPos, rooks);
+
+                CastlingMove castlingMove = CastlingMove.createCastlingMove(BLACK_LONG, bKingPos, rook);
+                board.setCastlingAllowed(BLACK_LONG, castlingMove);
             }
         }
         if ("b".equals(zug)) {
             board.switchSiteToMove();
         }
+    }
+
+    private int searchSmallerRook(int kingPos, long rooks) {
+        while (rooks != 0) {
+            final int rook = Long.numberOfTrailingZeros(rooks);
+            if (rook < kingPos) {
+                return rook;
+            }
+            rooks &= rooks - 1;
+        }
+        throw new IllegalArgumentException("Unable to find smaller Rook pos for Castling!");
+    }
+
+    private int searchBiggerRook(int kingPos, long rooks) {
+        while (rooks != 0) {
+            final int rook = Long.numberOfTrailingZeros(rooks);
+            if (rook > kingPos) {
+                return rook;
+            }
+            rooks &= rooks - 1;
+        }
+        throw new IllegalArgumentException("Unable to find bigger Rook pos for Castling!");
     }
 }
