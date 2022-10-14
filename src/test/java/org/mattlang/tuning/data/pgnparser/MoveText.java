@@ -5,6 +5,7 @@ import static org.mattlang.tuning.data.pgnparser.AlgebraicNotation.toIndex;
 import static org.mattlang.tuning.data.pgnparser.PgnMoveDescrType.*;
 
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.uci.FenConstants;
 
 import lombok.Getter;
 
@@ -61,9 +62,9 @@ public class MoveText extends TextualSymbol {
         if (str.contains("#")) {
             checkMateHint = true;
         }
-        if (str.startsWith("0-0-0") || str.startsWith("O-O-O")) {
+        if (str.startsWith(FenConstants.CASTLING_LONG1) || str.startsWith(FenConstants.CASTLING_LONG2)) {
             type = CASTLING_LONG;
-        } else if (str.startsWith("0-0") || str.startsWith("O-O")) {
+        } else if (str.startsWith(FenConstants.CASTLING_SHORT1) || str.startsWith(FenConstants.CASTLING_SHORT2)) {
             type = CASTLING_SHORT;
         } else {
             type = NORMAL;

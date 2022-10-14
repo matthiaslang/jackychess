@@ -65,6 +65,20 @@ public class FenParser {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackShort());
         } else if ("e8c8".equals(moveStr) && board.isCastlingAllowed(BLACK, LONG)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
+        } else if (FenConstants.isCastlingShort(moveStr)) {
+            switch (board.getSiteToMove()) {
+            case WHITE:
+                return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteShort());
+            case BLACK:
+                return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackShort());
+            }
+        } else if (FenConstants.isCastlingLong(moveStr)) {
+            switch (board.getSiteToMove()) {
+            case WHITE:
+                return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteLong());
+            case BLACK:
+                return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
+            }
         }
 
         if (moveStr.endsWith("q")) {
