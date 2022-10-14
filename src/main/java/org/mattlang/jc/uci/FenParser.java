@@ -9,6 +9,7 @@ import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.board.FigureType.Pawn;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.CastlingMove;
@@ -123,7 +124,7 @@ public class FenParser {
                 long rooks = board.getBoard().getRooks(WHITE);
                 int rook = searchBiggerRook(wKingPos, rooks);
 
-                CastlingMove castlingMove = CastlingMove.createCastlingMove(WHITE_SHORT, wKingPos, rook);
+                CastlingMove castlingMove = createCastlingMove(WHITE_SHORT, wKingPos, rook);
                 board.setCastlingAllowed(WHITE_SHORT, castlingMove);
 
             }
@@ -132,7 +133,7 @@ public class FenParser {
                 long rooks = board.getBoard().getRooks(WHITE);
                 int rook = searchSmallerRook(wKingPos, rooks);
 
-                CastlingMove castlingMove = CastlingMove.createCastlingMove(WHITE_LONG, wKingPos, rook);
+                CastlingMove castlingMove = createCastlingMove(WHITE_LONG, wKingPos, rook);
                 board.setCastlingAllowed(WHITE_LONG, castlingMove);
 
             }
@@ -141,7 +142,7 @@ public class FenParser {
                 long rooks = board.getBoard().getRooks(BLACK);
                 int rook = searchBiggerRook(bKingPos, rooks);
 
-                CastlingMove castlingMove = CastlingMove.createCastlingMove(BLACK_SHORT, bKingPos, rook);
+                CastlingMove castlingMove = createCastlingMove(BLACK_SHORT, bKingPos, rook);
                 board.setCastlingAllowed(BLACK_SHORT, castlingMove);
             }
             if (rochade.contains("q")) {
@@ -149,7 +150,7 @@ public class FenParser {
                 long rooks = board.getBoard().getRooks(BLACK);
                 int rook = searchSmallerRook(bKingPos, rooks);
 
-                CastlingMove castlingMove = CastlingMove.createCastlingMove(BLACK_LONG, bKingPos, rook);
+                CastlingMove castlingMove = createCastlingMove(BLACK_LONG, bKingPos, rook);
                 board.setCastlingAllowed(BLACK_LONG, castlingMove);
             }
         }
