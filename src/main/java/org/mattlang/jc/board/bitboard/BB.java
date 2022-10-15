@@ -11,6 +11,20 @@ import lombok.Getter;
  */
 public class BB {
 
+    public static long fileFromChar(char ch) {
+        switch (Character.toUpperCase(ch)) {
+            case 'A': return A;
+            case 'B': return B;
+            case 'C': return C;
+            case 'D': return D;
+            case 'E': return E;
+            case 'F': return F;
+            case 'G': return G;
+            case 'H': return H;
+        }
+        throw new IllegalStateException("cant map file from char sym!");
+    }
+
     /**
      * all squares numbered starting with 0 as enums:
      */

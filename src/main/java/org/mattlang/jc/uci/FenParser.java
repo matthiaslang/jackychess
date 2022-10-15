@@ -12,6 +12,7 @@ import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -167,10 +168,36 @@ public class FenParser {
                 CastlingMove castlingMove = createCastlingMove(BLACK_LONG, bKingPos, rook);
                 board.setCastlingAllowed(BLACK_LONG, castlingMove);
             }
+            parseSchredderFenCastlingDef(rochade, board);
         }
         if ("b".equals(zug)) {
             board.switchSiteToMove();
         }
+    }
+
+    private void parseSchredderFenCastlingDef(String rochade, BoardRepresentation board) {
+        for (int i = 0; i < rochade.length(); i++) {
+            char ch = rochade.charAt(i);
+            if (isSchredderCastlingSym(ch)) {
+                Color color = Character.isLowerCase(ch) ? BLACK : WHITE;
+                long file = BB.fileFromChar(ch);
+                int kingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(color));
+                long rank = color == WHITE ? BB.rank1 : BB.rank8;
+                long rookBB = file & rank;
+                int rook = Long.numberOfTrailingZeros(rookBB);
+
+                RochadeType rochadeType = (rook < kingPos) ? LONG : SHORT;
+                CastlingType castlingType = CastlingType.of(color, rochadeType);
+
+                CastlingMove castlingMove = createCastlingMove(castlingType, kingPos, rook);
+                board.setCastlingAllowed(castlingType, castlingMove);
+            }
+        }
+    }
+
+    private boolean isSchredderCastlingSym(char ch) {
+        char upper = Character.toUpperCase(ch);
+        return upper >= 'A' && upper <= 'H';
     }
 
     private int searchSmallerRook(int kingPos, long rooks) {

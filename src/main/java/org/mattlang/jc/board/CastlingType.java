@@ -35,4 +35,13 @@ public enum CastlingType {
         this.kingTargetPos = kingTargetPos;
         this.rookTargetPos = rookTargetPos;
     }
+
+    public static CastlingType of(Color color, RochadeType rochadeType) {
+        for (CastlingType castlingType : CastlingType.values()) {
+            if (castlingType.getColor() == color && castlingType.getRochadeType() == rochadeType) {
+                return castlingType;
+            }
+        }
+        throw new IllegalStateException("no matching castling type!");
+    }
 }
