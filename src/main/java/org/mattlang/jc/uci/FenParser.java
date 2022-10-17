@@ -58,6 +58,8 @@ public class FenParser {
     }
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
+        IndexConversion.MoveFromTo movePos = IndexConversion.parseMoveStr(moveStr);
+
         if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteShort());
         } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
@@ -80,6 +82,8 @@ public class FenParser {
             case BLACK:
                 return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
             }
+        } else if (isCastlingByKingCapturesRook(board, movePos)) {
+            return castlingByKingCapturesRook(board, movePos);
         }
 
         if (moveStr.endsWith("q")) {
@@ -93,27 +97,46 @@ public class FenParser {
         }
 
         // en passant:
-        Move tmp = new MoveImpl(moveStr);
-        Figure fig = board.getFigure(tmp.getFromIndex());
-        Figure target = board.getFigure(tmp.getToIndex());
 
-        if (fig.figureType == Pawn && board.isEnPassantCapturePossible(tmp.getToIndex())) {
-            Color side = board.getFigure(tmp.getFromIndex()).color;
+        Figure fig = board.getFigure(movePos.getFrom());
+        Figure target = board.getFigure(movePos.getTo());
+
+        if (fig.figureType == Pawn && board.isEnPassantCapturePossible(movePos.getTo())) {
+            Color side = board.getFigure(movePos.getFrom()).color;
             byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
-            return MoveImpl.createEnPassant(tmp.getFromIndex(), tmp.getToIndex(), otherSidePawn,
+            return MoveImpl.createEnPassant(movePos.getFrom(), movePos.getTo(), otherSidePawn,
                     board.getEnPassantCapturePos());
         }
 
         // normal move:
-        byte captureFig = target==EMPTY? (byte)0: target.figureCode;
-        return new MoveImpl(fig.figureType.figureCode, tmp.getFromIndex(), tmp.getToIndex(), captureFig);
+        byte captureFig = target == EMPTY ? (byte) 0 : target.figureCode;
+        return new MoveImpl(fig.figureType.figureCode, movePos.getFrom(), movePos.getTo(), captureFig);
+    }
+
+    private Move castlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+        for (CastlingType castlingType : CastlingType.values()) {
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(castlingType);
+            if (castlingMove.getKingFrom() == movePos.getFrom() && castlingMove.getRookFrom() == movePos.getTo()) {
+                return MoveImpl.createCastling(castlingMove);
+            }
+        }
+        throw new IllegalArgumentException(
+                "internal error creating castling move from king captures rook description!");
+    }
+
+    private boolean isCastlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+        Figure figFrom = board.getFigure(movePos.getFrom());
+        Figure figTo = board.getFigure(movePos.getTo());
+        return figFrom.figureType == FigureType.King
+                && figTo.figureType == FigureType.Rook
+                && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
     private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
-        Move parsed = new MoveImpl(moveStr);
-        Figure figure = parsed.getToIndex() >= 56 && parsed.getToIndex() <= 63 ? wProm : bProm;
+        IndexConversion.MoveFromTo parsed = IndexConversion.parseMoveStr(moveStr);
+        Figure figure = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
         // todo not correct: we do not care about capture during promotion...!!
-        return MoveImpl.createPromotion(parsed.getFromIndex(), parsed.getToIndex(), (byte) 0, figure);
+        return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), (byte) 0, figure);
     }
 
     private void setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,

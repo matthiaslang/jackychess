@@ -108,6 +108,20 @@ public final class BoardCastlings {
         }
     }
 
+    public CastlingMove getCastlingMove(CastlingType castlingType) {
+        switch (castlingType) {
+        case WHITE_SHORT:
+            return castlingWhiteShort;
+        case WHITE_LONG:
+            return castlingWhiteLong;
+        case BLACK_SHORT:
+            return castlingBlackShort;
+        case BLACK_LONG:
+            return castlingBlackLong;
+        }
+        throw new IllegalArgumentException("unknown castling type!");
+    }
+
     public void initFrom(BoardCastlings boardCastlings) {
         this.castlingWhiteShort = boardCastlings.getCastlingWhiteShort();
         this.castlingWhiteLong = boardCastlings.getCastlingWhiteLong();
