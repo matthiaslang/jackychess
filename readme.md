@@ -7,7 +7,12 @@ It started as a simple proof of concept experiment within a weekend, but is now 
 
 I got a lot of inspiration from other resources in the web, mainly the great https://www.chessprogramming.org/ wiki
 and several open source engines, just to name a few of them: cpw, stockfish, fruit, chess22k.
-
+                      
+## Features
+                                 
+- regular Chess
+- Fischer Random Chess (Chess960)
+- Multithreading
 
 ## Goals of the engine
 
@@ -37,16 +42,18 @@ to select the jar file directly.
 You should have a few UCI options able to set in the UI then.
 
 ## CCRL Rating
-                       
 
-| Version | Elo Rating |
-|---------|------------|
-| 0.12.0  | 2251       |
-| 0.10.0  | 2082       |
-| 0.9.14  | 1440       |       
 
- - The engine Version 0.10.0 has an rating of 2078 ELO in the CCRL Blitz index, see http://ccrl.chessdom.com/ccrl/404/
+Overview of rating results on http://ccrl.chessdom.com/ccrl/404/:          
 
+| Version | CCRL Blitz |
+|---------|-----------|
+| 0.13.0  | 2377      |
+| 0.12.0  | 2251      |
+| 0.10.0  | 2082      |
+| 0.9.14  | 1440      |       
+
+ 
 
 ## License
 
@@ -89,9 +96,16 @@ The chess engine uses following technics/algorithms
 
 ## UCI Parameter
 
-The engine has some UCI parameter and several options mainly to set for develop purpose. 
+The engine has some UCI parameter which can be set either by the user interface or via configuration.
+
 Find more information under [UCI Parameter](docs/uciparameter.md)
 
+## Internal Parameters
+
+The engine has a lot of parameters which are mainly for developing and testing purpose and should not changed
+by a regular user.
+
+[Parameter Documentation](docs/internalparameter.md)
 
 
 
