@@ -68,4 +68,13 @@ public class CastlingRights {
     public int hashCode() {
         return Objects.hash(castlingRights);
     }
+
+    /**
+     * Are there still any castling rights anyway?
+     * If not we can save us some cpu cycles by checking if any right gets lost by a doMove
+     * @return
+     */
+    public boolean hasAnyCastlings() {
+        return castlingRights!=0;
+    }
 }

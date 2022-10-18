@@ -69,6 +69,22 @@ public class Perft {
         softly.assertAll();
     }
 
+    public void assertPerft(MoveGenerator generator, BoardRepresentation board, Color color, int depth,
+            int expectedNodes) {
+        perftReset();
+        perft(generator, board, color, depth);
+        long stop = System.currentTimeMillis();
+        long duration = stop - start;
+        if (duration != 0) {
+            long nodesPerSecond = (long) nodes * 1000 / duration;
+            System.out.println("Nodes/s = " + nodesPerSecond);
+        }
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(nodes).as("Leave Nodes").isEqualTo(expectedNodes);
+
+        softly.assertAll();
+    }
+
     public void perft(MoveGenerator generator,
             BoardRepresentation board,
             Color color,

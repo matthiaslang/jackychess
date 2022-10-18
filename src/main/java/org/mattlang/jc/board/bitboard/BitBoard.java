@@ -208,38 +208,34 @@ public class BitBoard implements BoardRepresentation {
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
 
         // remove castling rights when rooks or kings are moved:
-        if (figType == FT_KING) {
-            if (isWhiteFigure) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(WHITE, SHORT);
-                castlingRights.retain(WHITE, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, SHORT);
-                castlingRights.retain(BLACK, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            }
-        } else if (figType == FT_ROOK) {
-            if (isWhiteFigure) {
-                if (from == 0) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                } else if (from == 7) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        if (castlingRights.hasAnyCastlings()) {
+            if (figType == FT_KING) {
+                if (isWhiteFigure) {
+                    removeWhiteCastlingRights();
+                } else {
+                    removeBlackCastlingRights();
                 }
-            } else {
-                if (from == 56) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                } else if (from == 63) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            } else if (figType == FT_ROOK) {
+                if (isWhiteFigure) {
+                    if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                        castlingRights.retain(WHITE, LONG);
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                        castlingRights.retain(WHITE, SHORT);
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    }
+                } else {
+                    if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                        castlingRights.retain(BLACK, LONG);
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                        castlingRights.retain(BLACK, SHORT);
+                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+                    }
                 }
             }
         }
@@ -266,6 +262,20 @@ public class BitBoard implements BoardRepresentation {
                 setEnPassantOption((from + to) / 2);
             }
         }
+    }
+
+    private void removeWhiteCastlingRights() {
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        castlingRights.retain(WHITE, SHORT);
+        castlingRights.retain(WHITE, LONG);
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+    }
+
+    private void removeBlackCastlingRights() {
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        castlingRights.retain(BLACK, SHORT);
+        castlingRights.retain(BLACK, LONG);
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
     @Override
@@ -385,17 +395,37 @@ public class BitBoard implements BoardRepresentation {
     public void domove(Move move) {
         pushHistory();
 
-        move(move.getFigureType(), move.getFromIndex(), move.getToIndex(),
-                move.isEnPassant() ? 0 : move.getCapturedFigure());
-
+        if (!move.isCastling()) {
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(),
+                    move.isEnPassant() ? 0 : move.getCapturedFigure());
+        }
         if (move.isEnPassant()) {
             set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
         } else if (move.isPromotion()) {
             set(move.getToIndex(), move.getPromotedFigureByte());
         } else if (move.isCastling()) {
+
+            /**
+             * do a castling move by unsetting the rook and the king, and then setting the rook/king again.
+             * We do this instead direkt moving, since this would not work in case of fisher random in all cases, e.g. when
+             * just changing rook & king or when e.g. the king does not even move.
+             */
             CastlingMove castlingMove = getCastlingMove(move);
-            move(FT_ROOK, castlingMove.getRookFrom(), castlingMove.getRookTo(),
-                    (byte) 0);
+            byte rook = getFigureCode(castlingMove.getRookFrom());
+            set(castlingMove.getRookFrom(), FigureConstants.FT_EMPTY);
+
+            Figure king = getFigure(castlingMove.getKingFrom());
+            set(castlingMove.getKingFrom(), FigureConstants.FT_EMPTY);
+
+            set(castlingMove.getRookTo(), rook);
+            set(castlingMove.getKingTo(), king.figureCode);
+
+            if (king.color == WHITE) {
+                removeWhiteCastlingRights();
+            } else {
+                removeBlackCastlingRights();
+            }
+            resetEnPassant();
         }
 
         switchSiteToMove();
@@ -411,7 +441,9 @@ public class BitBoard implements BoardRepresentation {
         if (move.isPromotion()) {
             figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
         }
-        board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+        if (!move.isCastling()) {
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+        }
 
         if (move.getCapturedFigure() != 0) {
             board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
@@ -427,8 +459,19 @@ public class BitBoard implements BoardRepresentation {
             board.set(move.getFromIndex(), pawn);
         } else if (move.isCastling()) {
             CastlingMove castlingMove = getCastlingMove(move);
-            board.move(castlingMove.getRookTo(), castlingMove.getRookFrom(), FT_ROOK,
-                    isWhiteFigure ? nWhite : nBlack, (byte) 0);
+
+            /**
+             * unset and set the figures to work properly in fischerandom when e.g king/rook switch or king is on identical position after castling
+             */
+            byte rook = getFigureCode(castlingMove.getRookTo());
+            board.set(castlingMove.getRookTo(), FigureConstants.FT_EMPTY);
+
+            byte king = getFigureCode(castlingMove.getKingTo());
+            board.set(castlingMove.getKingTo(), FigureConstants.FT_EMPTY);
+
+            board.set(castlingMove.getRookFrom(), rook);
+            board.set(castlingMove.getKingFrom(), king);
+
         }
 
         siteToMove = siteToMove.invert();

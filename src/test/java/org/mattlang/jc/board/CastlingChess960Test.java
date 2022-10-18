@@ -60,5 +60,16 @@ public class CastlingChess960Test {
 
     }
 
+    @Test
+    public void testIssue02() {
+        BoardRepresentation board = new BitBoard();
+        board.setFenPosition("position fen nqbbrkrn/pppppppp/8/8/8/8/PPPPPPPP/NQBBRKRN w GEge - 0 1 moves d2d4 a8b6 e2e4 e7e5 a1b3 e5d4 f1g1");
+        BoardPrinter.printBoard(board);
+
+        // last move was black castling move (g) encoded as king captures rook:
+        assertThat(board.getFigure(parsePos("f1"))).isEqualTo(W_Rook);
+        assertThat(board.getFigure(parsePos("g1"))).isEqualTo(W_King);
+
+    }
 
 }
