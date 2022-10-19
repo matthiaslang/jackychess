@@ -13,7 +13,7 @@ public class ConfigValues {
     private final UCIOptions allOptions = new UCIOptions();
 
     public final UCIGroup common = allOptions.createGroup("Common", "Common parameter");
-    public final UCIGroup modes = allOptions.createGroup("Game Modes", "Game Mode parameter");
+    public final UCIGroup variants = allOptions.createGroup("Variants", "Game Variant parameter");
     public final UCIGroup experimental =
             allOptions.createInternalGroup("Experimental", "Experimental parameter used during development");
 
@@ -38,8 +38,8 @@ public class ConfigValues {
             "the maximum search threads when multi threading search is activated",
             1, MAX_THREADS, 1);
 
-    /** to inform the gui that we support chess960. There is no other uci support from our side necessary. */
-    public final UCICheckOption uciChess960 = modes.createCheckOpt("UCI_Chess960",
+    /** to inform the gui that we support chess960. There is no other uci support from our side necessary, since the board representation and fen parser itself is "compatible" with frc by itself. */
+    public final UCICheckOption uciChess960 = variants.createCheckOpt("UCI_Chess960",
             "indicates support for Chess960",
             false);
 
