@@ -3,7 +3,7 @@
 # internal options of the engine.
 
  These options is mainly only for testing and development. These options can be set via system properties or a configuration property file
-## Group Move Order
+## Move Order
 Parameter influencing the move order in alpha beta search
 ### Option useHistoryHeuristic
 should history heuristic be used for move ordering
@@ -33,7 +33,7 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.useMvvLvaSorting
-## Group Internal
+## Internal
 Internal Test Parameter for Development
 ### Option useTTCache
 Flag, if the tt cache to store scores should be activated
@@ -56,7 +56,7 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.iid
-## Group Search
+## Search
 Parameter that influence search.
 ### Option activatePvsSearch
 should principal variation search be used
@@ -79,7 +79,7 @@ default value: CURRENT
 
 #### Declaration
     You can set a value via Property opt.evalParamSet
-## Group Pruning
+## Pruning
 Parameter influencing the pruning during alpha beta search
 ### Option aspiration
 should aspiration windows be used during iterative deepening
@@ -130,7 +130,7 @@ default value: true
 
 #### Declaration
     You can set a value via Property opt.useLateMoveReductions
-## Group Extensions
+## Extensions
 Parameter influencing the extension of the search tree
 ### Option useCheckExtension
 on check, extend the search depth

@@ -50,7 +50,7 @@ public class GenUciParamDocs {
     }
 
     private void writeGroup(BufferedWriter fw, UCIGroup group, List<UCIOption> options) throws IOException {
-        fw.write("## Group " + group.getName());
+        fw.write("## " + group.getName());
         fw.newLine();
         fw.write(group.getDescription());
 

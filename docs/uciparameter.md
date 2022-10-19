@@ -1,6 +1,15 @@
 # UCI Options
 List of all UCI options of the engine.
-## Group Caching
+## Variants
+Game Variant parameter
+### Option UCI_Chess960
+indicates support for Chess960
+
+default value: false
+
+#### Declaration
+    option name UCI_Chess960 type check default false
+## Caching
 Parameter for caching of information during search.
 ### Option Hash
 TT Hash Size in MB
@@ -18,7 +27,7 @@ default value: STANDARD
 
 #### Declaration
     option name TTCacheImpl type combo default STANDARD var STANDARD
-## Group Limits
+## Limits
 Parameter which limit the search or search time in some way.
 ### Option thinktime
 the think time in milliseconds; this time is used if no other time restrictions are give by the uci go command.
@@ -63,7 +72,7 @@ default value: MULTITHREAD
 
 #### Declaration
     option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD var STAGED_MOVE_GEN
-## Group Common
+## Common
 Common parameter
 ### Option moveListImpl
 internally. Only for development testing
@@ -72,13 +81,4 @@ default value: OPTIMIZED
 
 #### Declaration
     option name moveListImpl type combo default OPTIMIZED var OPTIMIZED var STAGED
-## Group Game Modes
-Game Mode parameter
-### Option UCI_Chess960
-indicates support for Chess960
-
-default value: false
-
-#### Declaration
-    option name UCI_Chess960 type check default false
 
