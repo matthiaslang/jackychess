@@ -62,7 +62,7 @@ public class PerfChess960Tests {
         perft.assertPerft(generator, board, WHITE, 3, 11213);
         perft.assertPerft(generator, board, WHITE, 4, 279993);
         perft.assertPerft(generator, board, WHITE, 5, 7015419);
-        perft.assertPerft(generator, board, WHITE, 6, 187564853);
+//        perft.assertPerft(generator, board, WHITE, 6, 187564853);
     }
 
 
@@ -76,15 +76,15 @@ public class PerfChess960Tests {
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
-        board.setFenPosition("position fen bqnb1rkr/pp3ppp/3ppn2/2p5/5P2/P2P4/NPP1P1PP/BQ1BNRKR w HFhf - 2 9");
+        board.setFenPosition("position fen q1brnknr/pp1pp1p1/8/2p2p1p/5b2/P4N2/1PPPP1PP/QBBRK1NR w hd - 0 9");
         System.out.println(board.toUniCodeStr());
 
-        perft.assertPerft(generator, board, WHITE, 1, 21);
-        perft.assertPerft(generator, board, WHITE, 2, 528);
-        perft.assertPerft(generator, board, WHITE, 3, 12189);
-        perft.assertPerft(generator, board, WHITE, 4, 326672);
-        perft.assertPerft(generator, board, WHITE, 5, 8146062);
-        perft.assertPerft(generator, board, WHITE, 6, 227689589);
+        perft.assertPerft(generator, board, WHITE, 1, 22);
+        perft.assertPerft(generator, board, WHITE, 2, 675);
+        perft.assertPerft(generator, board, WHITE, 3, 15778);
+        perft.assertPerft(generator, board, WHITE, 4, 473994);
+//        perft.assertPerft(generator, board, WHITE, 5, 12077228);
+//        perft.assertPerft(generator, board, WHITE, 6, 368479752);
     }
 
     @Test
@@ -97,14 +97,14 @@ public class PerfChess960Tests {
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
-        board.setFenPosition("position fen bqnb1rkr/pp3ppp/3ppn2/2p5/5P2/P2P4/NPP1P1PP/BQ1BNRKR w HFhf - 2 9");
+        board.setFenPosition("position fen qbbrkn1r/pppppp1p/8/6p1/2P1Pn1P/6N1/PP1P1PP1/QBBRKNR1 w GDd - 3 9");
         System.out.println(board.toUniCodeStr());
 
-        perft.assertPerft(generator, board, WHITE, 1, 21);
-        perft.assertPerft(generator, board, WHITE, 2, 528);
-        perft.assertPerft(generator, board, WHITE, 3, 12189);
-        perft.assertPerft(generator, board, WHITE, 4, 326672);
-        perft.assertPerft(generator, board, WHITE, 5, 8146062);
-        perft.assertPerft(generator, board, WHITE, 6, 227689589);
+        perft.assertPerft(generator, board, WHITE, 1, 20);
+        perft.assertPerft(generator, board, WHITE, 2, 532);
+        perft.assertPerft(generator, board, WHITE, 3, 11581);
+        perft.assertPerft(generator, board, WHITE, 4, 303586);
+//        perft.assertPerft(generator, board, WHITE, 5, 7512432);
+//        perft.assertPerft(generator, board, WHITE, 6, 202967948);
     }
 }
