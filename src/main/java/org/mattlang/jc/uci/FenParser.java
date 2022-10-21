@@ -59,14 +59,15 @@ public class FenParser {
 
     public Move parseMove(BoardRepresentation board, String moveStr) {
         IndexConversion.MoveFromTo movePos = IndexConversion.parseMoveStr(moveStr);
+        Figure fig = board.getFigure(movePos.getFrom());
 
-        if ("e1g1".equals(moveStr) && board.isCastlingAllowed(WHITE, SHORT)) {
+        if ("e1g1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE, SHORT)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteShort());
-        } else if ("e1c1".equals(moveStr) && board.isCastlingAllowed(WHITE, LONG)) {
+        } else if ("e1c1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE, LONG)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteLong());
-        } else if ("e8g8".equals(moveStr) && board.isCastlingAllowed(BLACK, SHORT)) {
+        } else if ("e8g8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK, SHORT)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackShort());
-        } else if ("e8c8".equals(moveStr) && board.isCastlingAllowed(BLACK, LONG)) {
+        } else if ("e8c8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK, LONG)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
         } else if (FenConstants.isCastlingShort(moveStr)) {
             switch (board.getSiteToMove()) {
@@ -86,21 +87,21 @@ public class FenParser {
             return castlingByKingCapturesRook(board, movePos);
         }
 
+        // check target pos & capturing:
+        Figure target = board.getFigure(movePos.getTo());
+        byte captureFig = target == EMPTY ? (byte) 0 : target.figureCode;
+
         if (moveStr.endsWith("q")) {
-            return createPawnPromotion(moveStr, W_Queen, B_Queen);
+            return createPawnPromotion(movePos, W_Queen, B_Queen, captureFig);
         } else if (moveStr.endsWith("r")) {
-            return createPawnPromotion(moveStr, W_Rook, B_Rook);
+            return createPawnPromotion(movePos, W_Rook, B_Rook, captureFig);
         } else if (moveStr.endsWith("n")) {
-            return createPawnPromotion(moveStr, W_Knight, B_Knight);
+            return createPawnPromotion(movePos, W_Knight, B_Knight, captureFig);
         } else if (moveStr.endsWith("b")) {
-            return createPawnPromotion(moveStr, W_Bishop, B_Bishop);
+            return createPawnPromotion(movePos, W_Bishop, B_Bishop, captureFig);
         }
 
         // en passant:
-
-        Figure fig = board.getFigure(movePos.getFrom());
-        Figure target = board.getFigure(movePos.getTo());
-
         if (fig.figureType == Pawn && board.isEnPassantCapturePossible(movePos.getTo())) {
             Color side = board.getFigure(movePos.getFrom()).color;
             byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
@@ -109,7 +110,6 @@ public class FenParser {
         }
 
         // normal move:
-        byte captureFig = target == EMPTY ? (byte) 0 : target.figureCode;
         return new MoveImpl(fig.figureType.figureCode, movePos.getFrom(), movePos.getTo(), captureFig);
     }
 
@@ -132,11 +132,9 @@ public class FenParser {
                 && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
-    private Move createPawnPromotion(String moveStr, Figure wProm, Figure bProm) {
-        IndexConversion.MoveFromTo parsed = IndexConversion.parseMoveStr(moveStr);
+    private Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm, byte captureFig) {
         Figure figure = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
-        // todo not correct: we do not care about capture during promotion...!!
-        return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), (byte) 0, figure);
+        return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
     }
 
     private void setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
