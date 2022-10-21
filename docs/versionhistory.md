@@ -1,5 +1,9 @@
 # Versions
 
+### Version 0.13.2
+
+- supports Fischer Random Chess (Chess960) as variant
+
 ### Version 0.13.1
 
 - fixed promotion to knight bug 
