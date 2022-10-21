@@ -47,18 +47,11 @@ public class PerfChess960AllVariantsTests {
         this.d6Comb = d6Comb;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection loadCombinations() throws IOException {
-
         return Files.lines(new File(PerfChess960AllVariantsTests.class.getResource("/chess960perfts.csv").getFile()).toPath())
                 .map(line -> parse(line))
                 .collect(Collectors.toList());
-        //        return Arrays.asList(new Object[][] {
-        //                { 2, true },
-        //                { 6, false },
-        //                { 19, true },
-        //                { 22, false },
-        //                { 23, true }
     }
 
     private static Object parse(String line) {
@@ -84,6 +77,7 @@ public class PerfChess960AllVariantsTests {
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen " + fen);
+        System.out.println("position fen " + fen);
         System.out.println(board.toUniCodeStr());
 
         perft.assertPerft(generator, board, WHITE, 1, (int)d1Comb);
