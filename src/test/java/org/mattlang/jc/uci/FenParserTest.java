@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.IndexConversion;
 import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class FenParserTest {
@@ -27,6 +28,17 @@ public class FenParserTest {
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigurePos(0, 6)).isEqualTo(Figure.W_Knight);
+
+    }
+
+    @Test
+    public void testKnightPromotionWithCaptureParsing() {
+        FenParser p = new FenParser();
+        BoardRepresentation board = new BitBoard();
+        p.setPosition("position fen 4k2q/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1q g7h8n", board);
+        System.out.println(board.toUniCodeStr());
+
+        assertThat(board.getPos(IndexConversion.parsePos("h8"))).isEqualTo(Figure.W_Knight);
 
     }
 
