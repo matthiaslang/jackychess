@@ -604,6 +604,11 @@ public class BitBoard implements BoardRepresentation {
         return boardCastlings;
     }
 
+    @Override
+    public void clearCastlingRights() {
+        castlingRights.clearCastlingRights();
+    }
+
     private CastlingMove getCastlingMove(Move move) {
         return boardCastlings.getCastlingMove(move.getCastlingType());
     }

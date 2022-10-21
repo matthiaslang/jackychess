@@ -547,4 +547,9 @@ public class BitBoardForTuning implements BoardRepresentation {
     private CastlingMove getCastlingMove(Move move) {
         return boardCastlings.getCastlingMove(move.getCastlingType());
     }
+
+    @Override
+    public void clearCastlingRights() {
+        castlingRights.clearCastlingRights();
+    }
 }

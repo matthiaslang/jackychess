@@ -154,6 +154,8 @@ public class FenParser {
             int enpassantOpt = IndexConversion.parsePos(enpassant);
             board.setEnPassantOption(enpassantOpt);
         }
+        board.clearCastlingRights();
+
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {
                 int wKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(WHITE));

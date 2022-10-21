@@ -93,4 +93,6 @@ public interface BoardRepresentation {
     Material getMaterial();
 
     BoardCastlings getBoardCastlings();
+
+    void clearCastlingRights();
 }

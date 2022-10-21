@@ -510,4 +510,9 @@ public class Board3 implements BoardRepresentation {
     private CastlingMove getCastlingMove(Move move) {
         return boardCastlings.getCastlingMove(move.getCastlingType());
     }
+
+    @Override
+    public void clearCastlingRights() {
+        castlingRights.clearCastlingRights();
+    }
 }
