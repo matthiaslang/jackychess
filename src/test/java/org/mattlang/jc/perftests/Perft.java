@@ -10,10 +10,10 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
-import org.mattlang.jc.moves.MoveListImpl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -107,8 +107,7 @@ public class Perft {
             }
             return;
         }
-
-        MoveList moves = new MoveListImpl();
+        MoveList moves = SearchThreadContexts.CONTEXTS.getContext(0).getCleanedMoveList(depth);
         generator.generate(board, color, moves);
 
         try (MoveBoardIterator iterator = moves.iterateMoves(board, checkChecker)) {
