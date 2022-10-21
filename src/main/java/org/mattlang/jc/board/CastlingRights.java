@@ -72,9 +72,14 @@ public class CastlingRights {
     /**
      * Are there still any castling rights anyway?
      * If not we can save us some cpu cycles by checking if any right gets lost by a doMove
+     *
      * @return
      */
     public boolean hasAnyCastlings() {
-        return castlingRights!=0;
+        return castlingRights != 0;
+    }
+
+    public void clearCastlingRights() {
+        castlingRights = 0;
     }
 }
