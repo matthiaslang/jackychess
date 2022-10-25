@@ -146,7 +146,7 @@ public class MoveGeneratorTest {
     public void testRochade() {
 
         BoardRepresentation board = new BitBoard();
-        String fen = "position fen r3k2r/8/8/8/8/8/8/R3K2R b k - 2 17 ";
+        String fen = "position fen r3k2r/8/8/8/8/8/8/R3K2R b KQ - 2 17 ";
         board.setFenPosition(fen);
         System.out.println(board.toUniCodeStr());
 
