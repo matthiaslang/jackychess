@@ -2,6 +2,9 @@ package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.board.Color.WHITE;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -106,5 +109,31 @@ public class PerfChess960Tests {
         perft.assertPerft(generator, board, WHITE, 4, 303586);
 //        perft.assertPerft(generator, board, WHITE, 5, 7512432);
 //        perft.assertPerft(generator, board, WHITE, 6, 202967948);
+    }
+
+    /**
+     * same as PerftChess960AllVariants. this is to measure the performance.
+     * @throws IOException
+     */
+    @Test
+    public void testAllVariants() throws IOException {
+        List<PerfChess960AllVariantsTests.Chess960Perft> chess960Perfts =
+                PerfChess960AllVariantsTests.loadAllChess960Perfts();
+
+        for (PerfChess960AllVariantsTests.Chess960Perft chess960Perft : chess960Perfts) {
+            PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
+            Perft perft = new Perft();
+            Factory.setDefaults(Factory.createStable());
+
+            BitBoard board = new BitBoard();
+            board.setFenPosition("position fen " + chess960Perft.fen);
+
+
+            perft.assertPerft(generator, board, WHITE, 1, (int)chess960Perft.d1);
+            perft.assertPerft(generator, board, WHITE, 2, (int)chess960Perft.d2);
+            perft.assertPerft(generator, board, WHITE, 3, (int)chess960Perft.d3);
+            perft.assertPerft(generator, board, WHITE, 4, (int)chess960Perft.d4);
+        }
+
     }
 }

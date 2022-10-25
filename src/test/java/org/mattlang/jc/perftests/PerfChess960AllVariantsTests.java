@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -14,6 +15,8 @@ import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+
+import lombok.AllArgsConstructor;
 
 /**
  * PerfTests for fischer random chess.
@@ -49,12 +52,35 @@ public class PerfChess960AllVariantsTests {
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection loadCombinations() throws IOException {
+        return loadAllChess960Perfts().stream()
+                .map(c -> new Object[]{c.fen, c.d1, c.d2, c.d3, c.d4, c.d5 , c.d6})
+                .collect(Collectors.toList());
+    }
+
+    public static List<Chess960Perft> loadAllChess960Perfts() throws IOException {
         return Files.lines(new File(PerfChess960AllVariantsTests.class.getResource("/chess960perfts.csv").getFile()).toPath())
                 .map(line -> parse(line))
                 .collect(Collectors.toList());
     }
 
-    private static Object parse(String line) {
+    @AllArgsConstructor
+
+    public static class Chess960Perft{
+        String fen;
+         long d1;
+
+         long d2;
+
+         long d3;
+
+         long d4;
+
+        long d5;
+
+         long d6;
+    }
+
+    private static Chess960Perft parse(String line) {
         String[] parts = line.split(";");
 
         String fen = parts[0];
@@ -65,7 +91,7 @@ public class PerfChess960AllVariantsTests {
         long d5 = Long.parseLong(parts[5].replace("D5", "").trim());
         long d6 = Long.parseLong(parts[6].replace("D6", "").trim());
 
-        return new Object[] { fen, d1, d2, d3, d4, d5, d6 };
+        return new Chess960Perft( fen, d1, d2, d3, d4, d5, d6 );
     }
 
     @Test
