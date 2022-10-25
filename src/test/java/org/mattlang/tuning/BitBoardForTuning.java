@@ -488,7 +488,7 @@ public class BitBoardForTuning implements BoardRepresentation {
                 return false;
             }
         } else if (move.isCastling()) {
-            if (!getCastlingMove(move).getDef().checkRochade(this)) {
+            if (!getCastlingMove(move).getDef().check(this)) {
                 return false;
             }
         } else {

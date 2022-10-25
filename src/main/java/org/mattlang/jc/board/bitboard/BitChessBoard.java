@@ -159,6 +159,10 @@ public class BitChessBoard {
         return colorBB[color];
     }
 
+    public long getAllPieces() {
+        return colorBB[nWhite] | colorBB[nBlack];
+    }
+
     public void set(int i, byte figureCode) {
         long posMask = 1L << i;
 

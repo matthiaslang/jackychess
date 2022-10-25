@@ -21,7 +21,7 @@ import org.mattlang.jc.zobrist.Zobrist;
 
 import lombok.Getter;
 
-public class BitBoard implements BoardRepresentation {
+public final class BitBoard implements BoardRepresentation {
 
     public static final String[] FEN_START_POSITION = {
             "rnbqkbnr",
@@ -577,7 +577,7 @@ public class BitBoard implements BoardRepresentation {
                 return false;
             }
         } else if (move.isCastling()) {
-            if (!getCastlingMove(move).getDef().checkRochade(this)) {
+            if (!getCastlingMove(move).getDef().check(this)) {
                 return false;
             }
         } else {
@@ -595,7 +595,7 @@ public class BitBoard implements BoardRepresentation {
                     return false;
                 }
             }
-            long allPieces = board.getColorMask(nWhite) | board.getColorMask(nBlack);
+            long allPieces = board.getAllPieces();
             if (move.getFigureType() == FigureType.Bishop.figureCode
                     || move.getFigureType() == FigureType.Rook.figureCode
                     || move.getFigureType() == FigureType.Queen.figureCode) {

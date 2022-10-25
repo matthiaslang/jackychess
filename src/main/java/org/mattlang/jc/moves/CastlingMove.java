@@ -75,6 +75,7 @@ public class CastlingMove {
 
         int[] fieldPos = rangeClosed(minField, maxField).toArray();
 
+        long emptyMask=0L;
         Figure[] fieldPosFigs = new Figure[fieldPos.length];
         for (int i = 0; i < fieldPosFigs.length; i++) {
             int pos = fieldPos[i];
@@ -84,6 +85,7 @@ public class CastlingMove {
                 fieldPosFigs[i] = side == Color.WHITE ? Figure.W_Rook : Figure.B_Rook;
             } else {
                 fieldPosFigs[i] = Figure.EMPTY;
+                emptyMask |= 1L << pos;
             }
         }
 
@@ -91,7 +93,11 @@ public class CastlingMove {
         int maxKing = Integer.max(kingFrom, kingTo);
         int[] fieldCheckTst = rangeClosed(minKing, maxKing).toArray();
 
-        return new CastlingDef(side, rochadeType, fieldPos, fieldPosFigs, fieldCheckTst);
+        long rookFromMask = 1L << rookFrom;
+        long kingFromMask = 1L << kingFrom;
+
+
+        return new CastlingDef(side, rochadeType, fieldPos, fieldPosFigs, fieldCheckTst, rookFromMask, kingFromMask, emptyMask);
     }
 
     private static int min(int... vals) {

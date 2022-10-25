@@ -7,8 +7,9 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.RochadeType;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 
-public class CastlingDef {
+public final class CastlingDef {
 
     private Color side;
     private RochadeType rochadeType;
@@ -17,13 +18,22 @@ public class CastlingDef {
     private Figure[] fieldPosFigures;
     private int[] fieldCheckTst;
 
+    private final long rookFromMask;
+    private final long kingFromMask;
+    private final long emptyMask;
+
     public CastlingDef(Color side, RochadeType rochadeType, int[] fieldPos, Figure[] fieldPosFigures,
-            int[] fieldCheckTst) {
+            int[] fieldCheckTst, long rookFromMask, long kingFromMask, long emptyMask) {
         this.side = side;
         this.rochadeType = rochadeType;
         this.fieldPos = fieldPos;
         this.fieldPosFigures = fieldPosFigures;
         this.fieldCheckTst = fieldCheckTst;
+
+        this.rookFromMask = rookFromMask;
+
+        this.kingFromMask = kingFromMask;
+        this.emptyMask = emptyMask;
     }
 
     /**
@@ -32,7 +42,6 @@ public class CastlingDef {
      * @param board
      * @return
      */
-    @Deprecated
     public boolean check(BoardRepresentation board) {
         // check if rochade is still allowed:
         if (board.isCastlingAllowed(side, rochadeType)) {
@@ -51,38 +60,10 @@ public class CastlingDef {
     }
 
     private boolean checkPos(BoardRepresentation board) {
-        for (int i = 0; i < fieldPos.length; i++) {
-            Figure figure = board.getPos(fieldPos[i]);
-            if (fieldPosFigures[i] != figure) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Checks if this rochade is allowed using bitboard stuff.
-     *
-     * @param board
-     * @return
-     */
-
-    // todo implement via bitboard comparisons
-    public boolean checkRochade(BoardRepresentation board) {
-        // check if rochade is still allowed:
-        if (board.isCastlingAllowed(side, rochadeType)) {
-            // check that the relevant figures and empty fields are as needs to be for castling:
-            if (checkPos(board)) {
-                // check that king pos and moves are not in check:
-                for (int pos : fieldCheckTst) {
-                    if (Captures.canFigureCaptured(board, pos, side)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
+        BitChessBoard bb = board.getBoard();
+        return kingFromMask == bb.getKings(side)
+                && (rookFromMask & bb.getRooks(side)) != 0
+                && (~bb.getAllPieces() & emptyMask) == emptyMask;
     }
 
     @Override
