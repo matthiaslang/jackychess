@@ -119,6 +119,37 @@ public class BitBoard implements BoardRepresentation {
     }
 
     /**
+     * Optimized set(..) variant when we want to clear a field (from the effect identical to set(pos,
+     * FigureConstants.FT_EMPTY).
+     *
+     * @param pos
+     */
+    private void setEmpty(int pos) {
+        byte oldFigure = board.get(pos);
+        board.setEmpty(pos);
+        // remove from piece list, if this is a "override/capture" of this field:
+        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
+            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+            material.subtract(oldFigure);
+        }
+    }
+
+    /**
+     * An optimized variant of set(..) when we know definitively that the field we set the figure on is empty.
+     *
+     * @param pos
+     * @param figureCode
+     */
+    private void setOnEmptyField(int pos, byte figureCode) {
+        board.setOnEmptyField(pos, figureCode);
+        // add this piece to piece list:
+        if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
+            zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
+            material.add(figureCode);
+        }
+    }
+
+    /**
      * Sets position based on coordinate system (0,0 is the left lower corner, the white left corner)
      *
      * @param row
@@ -395,16 +426,7 @@ public class BitBoard implements BoardRepresentation {
     public void domove(Move move) {
         pushHistory();
 
-        if (!move.isCastling()) {
-            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(),
-                    move.isEnPassant() ? 0 : move.getCapturedFigure());
-        }
-        if (move.isEnPassant()) {
-            set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
-        } else if (move.isPromotion()) {
-            set(move.getToIndex(), move.getPromotedFigureByte());
-        } else if (move.isCastling()) {
-
+        if (move.isCastling()) {
             /**
              * do a castling move by unsetting the rook and the king, and then setting the rook/king again.
              * We do this instead direkt moving, since this would not work in case of fisher random in all cases, e.g. when
@@ -412,13 +434,13 @@ public class BitBoard implements BoardRepresentation {
              */
             CastlingMove castlingMove = getCastlingMove(move);
             byte rook = getFigureCode(castlingMove.getRookFrom());
-            set(castlingMove.getRookFrom(), FigureConstants.FT_EMPTY);
+            setEmpty(castlingMove.getRookFrom());
 
             Figure king = getFigure(castlingMove.getKingFrom());
-            set(castlingMove.getKingFrom(), FigureConstants.FT_EMPTY);
+            setEmpty(castlingMove.getKingFrom());
 
-            set(castlingMove.getRookTo(), rook);
-            set(castlingMove.getKingTo(), king.figureCode);
+            setOnEmptyField(castlingMove.getRookTo(), rook);
+            setOnEmptyField(castlingMove.getKingTo(), king.figureCode);
 
             if (king.color == WHITE) {
                 removeWhiteCastlingRights();
@@ -426,6 +448,14 @@ public class BitBoard implements BoardRepresentation {
                 removeBlackCastlingRights();
             }
             resetEnPassant();
+        } else if (move.isEnPassant()) {
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), (byte) 0);
+            set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+        } else if (move.isPromotion()) {
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
+            set(move.getToIndex(), move.getPromotedFigureByte());
+        } else {
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
         }
 
         switchSiteToMove();
@@ -450,7 +480,7 @@ public class BitBoard implements BoardRepresentation {
         }
         if (move.isEnPassant()) {
             // override the "default" overrider field with empty..
-            board.set(move.getToIndex(), FigureConstants.FT_EMPTY);
+            board.setEmpty(move.getToIndex());
             // because we have the special en passant capture pos which we need to reset with the captured figure
             board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
         } else if (move.isPromotion()) {
@@ -464,13 +494,13 @@ public class BitBoard implements BoardRepresentation {
              * unset and set the figures to work properly in fischerandom when e.g king/rook switch or king is on identical position after castling
              */
             byte rook = getFigureCode(castlingMove.getRookTo());
-            board.set(castlingMove.getRookTo(), FigureConstants.FT_EMPTY);
+            board.setEmpty(castlingMove.getRookTo());
 
             byte king = getFigureCode(castlingMove.getKingTo());
-            board.set(castlingMove.getKingTo(), FigureConstants.FT_EMPTY);
+            board.setEmpty(castlingMove.getKingTo());
 
-            board.set(castlingMove.getRookFrom(), rook);
-            board.set(castlingMove.getKingFrom(), king);
+            board.setOnEmptyField(castlingMove.getRookFrom(), rook);
+            board.setOnEmptyField(castlingMove.getKingFrom(), king);
 
         }
 

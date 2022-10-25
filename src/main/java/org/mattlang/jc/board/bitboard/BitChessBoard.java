@@ -188,6 +188,20 @@ public class BitChessBoard {
     }
 
     /**
+     * Clears a field. equal to calling set(i, FigureConstants.FT_EMPTY), but maybe a bit faster.
+     *
+     * @param i
+     */
+    public void setEmpty(int i) {
+        long invPosMask = ~(1L << i);
+        colorBB[nWhite] &= invPosMask;
+        colorBB[nBlack] &= invPosMask;
+        for (int figType = 0; figType < 6; figType++) {
+            pieceBB[figType] &= invPosMask;
+        }
+    }
+
+    /**
      * Set a figure on an EMPTY field.
      * Note it does not take care to clear the field before, because it assumes it is empty.
      * the set(..) method on the other hand takes care for that (does a implicit remove of a figure that is on the field
