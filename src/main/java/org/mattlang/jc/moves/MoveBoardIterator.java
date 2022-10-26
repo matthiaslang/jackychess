@@ -42,11 +42,15 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
             undoMove();
         }
         if (moveCursor.hasNext()) {
-            doMove();
+            if (!doNextValidMove()) {
+                return false;
+            }
             while (checkChecker.isInChess(board, siteToMove)) {
                 undoMove();
                 if (moveCursor.hasNext()) {
-                    doMove();
+                    if (!doNextValidMove()) {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
@@ -56,15 +60,31 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
         return false;
     }
 
+    private boolean isValidCastling() {
+        if (moveCursor.isCastling()) {
+            return board.getBoardCastlings().getCastlingMove(moveCursor.getCastlingType()).getDef().check(board);
+        } else {
+            return true;
+        }
+    }
+
     private void undoMove() {
         moveCursor.undoMove(board);
         moveDone = false;
     }
 
-    private void doMove() {
+    private boolean doNextValidMove() {
         moveCursor.next();
+        while (!isValidCastling()) {
+            if (moveCursor.hasNext()) {
+                moveCursor.next();
+            } else {
+                return false;
+            }
+        }
         moveCursor.move(board);
         moveDone = true;
+        return true;
     }
 
     @Override

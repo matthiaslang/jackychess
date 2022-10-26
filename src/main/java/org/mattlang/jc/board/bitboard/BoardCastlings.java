@@ -43,18 +43,18 @@ public final class BoardCastlings {
     public void generateCastlingMoves(Color side, MoveCollector collector) {
         switch (side) {
         case WHITE:
-            if (castlingWhiteLong.getDef().check(board)) {
+            if (castlingWhiteLong.getDef().partialCheck(board)) {
                 collector.addCastlingMove(castlingWhiteLong);
             }
-            if (castlingWhiteShort.getDef().check(board)) {
+            if (castlingWhiteShort.getDef().partialCheck(board)) {
                 collector.addCastlingMove(castlingWhiteShort);
             }
             break;
         case BLACK:
-            if (castlingBlackShort.getDef().check(board)) {
+            if (castlingBlackShort.getDef().partialCheck(board)) {
                 collector.addCastlingMove(castlingBlackShort);
             }
-            if (castlingBlackLong.getDef().check(board)) {
+            if (castlingBlackLong.getDef().partialCheck(board)) {
                 collector.addCastlingMove(castlingBlackLong);
             }
             break;
@@ -127,5 +127,9 @@ public final class BoardCastlings {
         this.castlingWhiteLong = boardCastlings.getCastlingWhiteLong();
         this.castlingBlackShort = boardCastlings.getCastlingBlackShort();
         this.castlingBlackLong = boardCastlings.getCastlingBlackLong();
+    }
+
+    public boolean isValidCastlingMove(int moveInt) {
+        return false;
     }
 }

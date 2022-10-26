@@ -37,8 +37,9 @@ public final class CastlingDef {
     }
 
     /**
-     * Checks if this rochade is allowed on the board.
-     * Old version
+     * Full Checks if this rochade is allowed on the board.
+     * This is done right before doing the move on the board.
+     *
      * @param board
      * @return
      */
@@ -57,6 +58,11 @@ public final class CastlingDef {
             }
         }
         return false;
+    }
+
+    public boolean partialCheck(BoardRepresentation board) {
+        // check if rochade is still allowed:
+        return board.isCastlingAllowed(side, rochadeType);
     }
 
     private boolean checkPos(BoardRepresentation board) {
