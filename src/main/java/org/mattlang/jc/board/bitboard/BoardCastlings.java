@@ -20,7 +20,7 @@ import org.mattlang.jc.moves.MoveImpl;
  */
 public final class BoardCastlings {
 
-    private BoardRepresentation board;
+    private final BoardRepresentation board;
 
     public BoardCastlings(BoardRepresentation board) {
         this.board = board;

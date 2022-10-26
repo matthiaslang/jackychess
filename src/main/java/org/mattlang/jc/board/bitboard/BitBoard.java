@@ -37,13 +37,13 @@ public final class BitBoard implements BoardRepresentation {
     public static final int MAXMOVES = 1024;
 
     @Getter
-    private BitChessBoard board = new BitChessBoard();
+    private final BitChessBoard board;
 
-    private CastlingRights castlingRights = new CastlingRights();
+    private final CastlingRights castlingRights;
 
     private long zobristHash = 0L;
 
-    private Material material = new Material();
+    private final Material material = new Material();
 
     @Getter
     private Color siteToMove;
@@ -60,9 +60,11 @@ public final class BitBoard implements BoardRepresentation {
      */
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
-    private BoardCastlings boardCastlings = new BoardCastlings(this);
+    private final BoardCastlings boardCastlings = new BoardCastlings(this);
 
     public BitBoard() {
+        board = new BitChessBoard();
+        castlingRights = new CastlingRights();
         for (int i = 0; i < 64; i++) {
             board.set(i, FT_EMPTY);
         }
@@ -70,11 +72,10 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     public BitBoard(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos, Color siteToMove) {
-        this.board = board;
-        this.castlingRights = castlingRights;
+        this.board = board.copy();
+        this.castlingRights = castlingRights.copy();
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
         this.siteToMove = siteToMove;
-
     }
 
     @Override
@@ -92,7 +93,7 @@ public final class BitBoard implements BoardRepresentation {
         }
         moveCounter = 0;
         siteToMove = WHITE;
-        castlingRights = new CastlingRights();
+        castlingRights.setAllCasltingRights();
         zobristHash = Zobrist.hash(this);
         material.init(this);
     }
@@ -343,7 +344,7 @@ public final class BitBoard implements BoardRepresentation {
 
     @Override
     public BitBoard copy() {
-        BitBoard copied = new BitBoard(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
+        BitBoard copied = new BitBoard(board, castlingRights, enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
         copied.historyCastling=historyCastling.clone();

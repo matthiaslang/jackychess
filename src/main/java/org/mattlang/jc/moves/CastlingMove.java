@@ -15,7 +15,7 @@ import org.mattlang.jc.movegenerator.CastlingDef;
 import lombok.Getter;
 
 @Getter
-public class CastlingMove {
+public final class CastlingMove {
 
     /* small castling (g Side) white king target pos.*/
     public static int gWKingTargetPos = Long.numberOfTrailingZeros(BB.G & BB.rank1);
@@ -35,15 +35,15 @@ public class CastlingMove {
 
     private final CastlingDef def;
 
-    private byte type;
+    private final byte type;
 
-    private byte kingFrom;
+    private final byte kingFrom;
 
-    private byte kingTo;
+    private final byte kingTo;
 
-    private byte rookFrom;
+    private final byte rookFrom;
 
-    private byte rookTo;
+    private final byte rookTo;
 
     public CastlingMove(CastlingDef def, byte type, int kingFrom, int kingTo, int rookFrom, int rookTo) {
         this.def = requireNonNull(def);

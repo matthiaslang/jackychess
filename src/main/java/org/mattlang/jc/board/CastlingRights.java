@@ -82,4 +82,8 @@ public class CastlingRights {
     public void clearCastlingRights() {
         castlingRights = 0;
     }
+
+    public void setAllCasltingRights() {
+        castlingRights = 0b1111;
+    }
 }
