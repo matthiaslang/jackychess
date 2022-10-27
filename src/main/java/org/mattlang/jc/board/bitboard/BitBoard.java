@@ -638,7 +638,9 @@ public final class BitBoard implements BoardRepresentation {
 
     @Override
     public void clearCastlingRights() {
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         castlingRights.clearCastlingRights();
+        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
     private CastlingMove getCastlingMove(Move move) {
