@@ -1,9 +1,5 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
@@ -26,16 +22,16 @@ public final class BoardCastlings {
         this.board = board;
     }
 
-    private CastlingMove castlingWhiteLong = createCastlingMove(WHITE, LONG,
+    private CastlingMove castlingWhiteLong = createCastlingMove(CastlingType.WHITE_LONG,
             CASTLING_WHITE_LONG, 4, 2, 0, 3);
 
-    private CastlingMove castlingWhiteShort = createCastlingMove(WHITE, SHORT,
+    private CastlingMove castlingWhiteShort = createCastlingMove(CastlingType.WHITE_SHORT,
             CASTLING_WHITE_SHORT, 4, 6, 7, 5);
 
-    private CastlingMove castlingBlackShort = createCastlingMove(BLACK, SHORT,
+    private CastlingMove castlingBlackShort = createCastlingMove(CastlingType.BLACK_SHORT,
             CASTLING_BLACK_SHORT, 60, 62, 63, 61);
 
-    private CastlingMove castlingBlackLong = createCastlingMove(BLACK, LONG,
+    private CastlingMove castlingBlackLong = createCastlingMove(CastlingType.BLACK_LONG,
             MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
 
 
