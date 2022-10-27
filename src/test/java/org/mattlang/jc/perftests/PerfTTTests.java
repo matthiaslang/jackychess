@@ -8,10 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mattlang.attic.tt.TTCache;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.tt.TTCache3;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.MoveGenerator;
@@ -30,7 +30,7 @@ public class PerfTTTests {
         initLogging();
         UCI.instance.attachStreams();
         
-        testCache(new TTCache(), 5);
+        testCache(new TTCache3(), 5);
     }
 
     public void testCache(TTCacheInterface ttCache, int depth) {

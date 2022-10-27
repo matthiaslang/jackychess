@@ -3,8 +3,6 @@ package org.mattlang.jc.engine.tt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mattlang.attic.tt.IntCache;
-import org.mattlang.attic.tt.TTCache;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -13,7 +11,7 @@ public class TTCacheTest {
 
     @Test
     public void test() {
-        TTCache cache = new TTCache();
+        TTCache3 cache = new TTCache3();
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
@@ -79,38 +77,32 @@ public class TTCacheTest {
     @Test
     public void testIntCaches() {
 
-        IntCache intCache=new IntCache(20);
         IntIntCache intIntCache=new IntIntCache(20);
 
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        intCache.save(board.getZobristHash(), -500);
         intIntCache.save(board.getZobristHash(), -500);
 
         board.switchSiteToMove();
-        assertThat(intCache.find(board.getZobristHash())).isEqualTo(IntCache.NORESULT);
         assertThat(intIntCache.find(board.getZobristHash())).isEqualTo(IntIntCache.NORESULT);
         board.switchSiteToMove();
 
-        int entry = intCache.find(board.getZobristHash());
-        assertThat(entry).isEqualTo(-500);
-
-         entry = intIntCache.find(board.getZobristHash());
+        int entry = intIntCache.find(board.getZobristHash());
         assertThat(entry).isEqualTo(-500);
 
     }
     @Test
     public void testSizeCalc() {
-        assertThat(TTCache.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
+        assertThat(TTCache3.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
 
-        assertThat(TTCache.determineCacheBitSizeFromMb(1, 16)).isEqualTo(16);
+        assertThat(TTCache3.determineCacheBitSizeFromMb(1, 16)).isEqualTo(16);
 
-        assertThat(TTCache.determineCacheBitSizeFromMb(256, 16)).isEqualTo(24);
+        assertThat(TTCache3.determineCacheBitSizeFromMb(256, 16)).isEqualTo(24);
 
         // take smaller or higer bit??
-        assertThat(TTCache.determineCacheBitSizeFromMb(192, 16)).isEqualTo(23);
+        assertThat(TTCache3.determineCacheBitSizeFromMb(192, 16)).isEqualTo(23);
     }
 
 }
