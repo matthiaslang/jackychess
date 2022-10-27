@@ -8,6 +8,7 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
@@ -39,6 +40,8 @@ public final class BitBoard implements BoardRepresentation {
 
     private final CastlingRights castlingRights;
 
+    private final int[] castlingMasks = new int[64];
+
     private long zobristHash = 0L;
 
     private final Material material = new Material();
@@ -67,6 +70,8 @@ public final class BitBoard implements BoardRepresentation {
             board.set(i, FT_EMPTY);
         }
         siteToMove = WHITE;
+
+        initCastlingMasks();
     }
 
     public BitBoard(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos, Color siteToMove) {
@@ -239,35 +244,9 @@ public final class BitBoard implements BoardRepresentation {
 
         // remove castling rights when rooks or kings are moved:
         if (castlingRights.hasAnyCastlings()) {
-            if (figType == FT_KING) {
-                if (isWhiteFigure) {
-                    removeWhiteCastlingRights();
-                } else {
-                    removeBlackCastlingRights();
-                }
-            } else if (figType == FT_ROOK) {
-                if (isWhiteFigure) {
-                    if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(CastlingType.WHITE_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(CastlingType.WHITE_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
-                } else {
-                    if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(CastlingType.BLACK_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(CastlingType.BLACK_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
-                }
-            }
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeMask(castlingMasks[from]);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         }
 
         board.move(from, to, figType, isWhiteFigure ? nWhite : nBlack, capturedFigure);
@@ -349,6 +328,7 @@ public final class BitBoard implements BoardRepresentation {
         copied.historyZobrist=historyZobrist.clone();
         copied.historyEp=historyEp.clone();
         copied.boardCastlings.initFrom(boardCastlings);
+        copied.initCastlingMasks();
         copied.moveCounter=moveCounter;
         return copied;
     }
@@ -410,6 +390,24 @@ public final class BitBoard implements BoardRepresentation {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
 
         boardCastlings.setCastlingMove(castlingType, castlingMove);
+
+        initCastlingMasks();
+
+    }
+
+    /**
+     * initialize the castlingmasks.
+     * We do this all the time a castlingmove is newly assigned to this board to be in sync.
+     *
+     */
+    private void initCastlingMasks() {
+        Arrays.fill(castlingMasks, 0);
+        for (CastlingType castlingType : CastlingType.values()) {
+            int mask = castlingType.getRightsMask();
+            CastlingMove castlingMove = boardCastlings.getCastlingMove(castlingType);
+            castlingMasks[castlingMove.getKingFrom()] |= mask;
+            castlingMasks[castlingMove.getRookFrom()] |= mask;
+        }
     }
 
     @Override

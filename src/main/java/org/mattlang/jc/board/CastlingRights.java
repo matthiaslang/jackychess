@@ -77,4 +77,8 @@ public class CastlingRights {
     public void setAllCasltingRights() {
         castlingRights = ALL_CASTLING_RIGHTS;
     }
+
+    public void removeMask(int castlingMask) {
+        castlingRights &= 0xFF - castlingMask;
+    }
 }
