@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
@@ -128,11 +129,13 @@ public class PerfChess960Tests {
             BitBoard board = new BitBoard();
             board.setFenPosition("position fen " + chess960Perft.fen);
 
+            // use gamestate to test that "copy" of board works correct:
+            GameState gameState=new GameState(board, chess960Perft.fen);
 
-            perft.assertPerft(generator, board, WHITE, 1, (int)chess960Perft.d1);
-            perft.assertPerft(generator, board, WHITE, 2, (int)chess960Perft.d2);
-            perft.assertPerft(generator, board, WHITE, 3, (int)chess960Perft.d3);
-            perft.assertPerft(generator, board, WHITE, 4, (int)chess960Perft.d4);
+            perft.assertPerft(generator, gameState.getBoard(), WHITE, 1, (int)chess960Perft.d1);
+            perft.assertPerft(generator, gameState.getBoard(), WHITE, 2, (int)chess960Perft.d2);
+            perft.assertPerft(generator, gameState.getBoard(), WHITE, 3, (int)chess960Perft.d3);
+            perft.assertPerft(generator, gameState.getBoard(), WHITE, 4, (int)chess960Perft.d4);
         }
 
     }

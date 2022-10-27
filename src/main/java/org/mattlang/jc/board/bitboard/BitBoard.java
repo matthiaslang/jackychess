@@ -350,6 +350,7 @@ public final class BitBoard implements BoardRepresentation {
         copied.historyCastling=historyCastling.clone();
         copied.historyZobrist=historyZobrist.clone();
         copied.historyEp=historyEp.clone();
+        copied.boardCastlings.initFrom(boardCastlings);
         copied.moveCounter=moveCounter;
         return copied;
     }
