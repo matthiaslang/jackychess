@@ -1,5 +1,12 @@
 # Versions
 
+### Version 0.13.3
+
+- some low level optimizations around castling due to changes of FRC support
+  - the FRC changes in 0.13.2 slowed down the version a bit.
+  - performance should be now again nearly equal to 0.13.1.
+
+
 ### Version 0.13.2
 
 - supports Fischer Random Chess (Chess960) as variant
