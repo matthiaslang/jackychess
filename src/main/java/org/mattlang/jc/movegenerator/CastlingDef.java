@@ -3,29 +3,28 @@ package org.mattlang.jc.movegenerator;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.RochadeType;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 public final class CastlingDef {
 
-    private Color side;
-    private RochadeType rochadeType;
+    private final CastlingType castlingType;
+    private final Color side;
+    private final RochadeType rochadeType;
 
-    private int[] fieldPos;
-    private Figure[] fieldPosFigures;
-    private int[] fieldCheckTst;
+    private final int[] fieldPos;
+    private final Figure[] fieldPosFigures;
+    private final int[] fieldCheckTst;
 
     private final long rookFromMask;
     private final long kingFromMask;
     private final long emptyMask;
 
-    public CastlingDef(Color side, RochadeType rochadeType, int[] fieldPos, Figure[] fieldPosFigures,
+    public CastlingDef(CastlingType castlingType, int[] fieldPos, Figure[] fieldPosFigures,
             int[] fieldCheckTst, long rookFromMask, long kingFromMask, long emptyMask) {
-        this.side = side;
-        this.rochadeType = rochadeType;
+        this.side = castlingType.getColor();
+        this.rochadeType = castlingType.getRochadeType();
+        this.castlingType = castlingType;
         this.fieldPos = fieldPos;
         this.fieldPosFigures = fieldPosFigures;
         this.fieldCheckTst = fieldCheckTst;
@@ -44,7 +43,7 @@ public final class CastlingDef {
      */
     public boolean check(BoardRepresentation board) {
         // check if rochade is still allowed:
-        if (board.isCastlingAllowed(side, rochadeType)) {
+        if (board.isCastlingAllowed(castlingType)) {
             // check that the relevant figures and empty fields are as needs to be for castling:
             if (checkPos(board)) {
                 // check that king pos and moves are not in check:

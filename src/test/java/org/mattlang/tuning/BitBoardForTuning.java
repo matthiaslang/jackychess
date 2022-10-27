@@ -5,8 +5,6 @@ import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
@@ -208,34 +206,34 @@ public class BitBoardForTuning implements BoardRepresentation {
         if (figType == FT_KING) {
             if (isWhiteFigure) {
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(WHITE, SHORT);
-                castlingRights.retain(WHITE, LONG);
+                castlingRights.retain(CastlingType.WHITE_SHORT);
+                castlingRights.retain(CastlingType.WHITE_LONG);
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             } else {
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, SHORT);
-                castlingRights.retain(BLACK, LONG);
+                castlingRights.retain(CastlingType.BLACK_SHORT);
+                castlingRights.retain(CastlingType.BLACK_LONG);
                 zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             }
         } else if (figType == FT_ROOK) {
             if (isWhiteFigure) {
                 if (from == 0) {
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, LONG);
+                    castlingRights.retain(CastlingType.WHITE_LONG);
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                 } else if (from == 7) {
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, SHORT);
+                    castlingRights.retain(CastlingType.WHITE_SHORT);
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                 }
             } else {
                 if (from == 56) {
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, LONG);
+                    castlingRights.retain(CastlingType.BLACK_LONG);
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                 } else if (from == 63) {
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, SHORT);
+                    castlingRights.retain(CastlingType.BLACK_SHORT);
                     zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                 }
             }
@@ -361,8 +359,8 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public boolean isCastlingAllowed(Color color, RochadeType type) {
-        return castlingRights.isAllowed(color, type);
+    public boolean isCastlingAllowed(CastlingType castlingType) {
+        return castlingRights.isAllowed(castlingType);
     }
 
     @Override

@@ -1,12 +1,17 @@
 package org.mattlang.jc.board;
 
-import static org.mattlang.jc.board.RochadeType.SHORT;
-
 import java.util.Objects;
 
 public class CastlingRights {
 
-    private byte castlingRights = 0b1111;
+    public static final byte WHITE_LONG_MASK = (byte) (1 << 0);
+    public static final byte WHITE_SHORT_MASK = (byte) (1 << 1);
+    public static final byte BLACK_LONG_MASK = (byte) (1 << 2);
+    public static final byte BLACK_SHORT_MASK = (byte) (1 << 3);
+    public static final int ALL_CASTLING_RIGHTS =
+            WHITE_LONG_MASK | WHITE_SHORT_MASK | BLACK_LONG_MASK | BLACK_SHORT_MASK;
+
+    private byte castlingRights = ALL_CASTLING_RIGHTS;
 
     public CastlingRights() {
     }
@@ -15,33 +20,19 @@ public class CastlingRights {
         this.castlingRights = castlingRights;
     }
 
-    public boolean isAllowed(Color color, RochadeType type) {
-        int allowedMask = createMask(color, type);
-        return (castlingRights & allowedMask) != 0;
-    }
-
-    public void setAllowed(Color color, RochadeType type) {
-        int mask = createMask(color, type);
-        castlingRights |= mask;
+    public boolean isAllowed(CastlingType castlingType) {
+        int mask = castlingType.getRightsMask();
+        return (castlingRights & mask) != 0;
     }
 
     public void setAllowed(CastlingType castlingType) {
-        int mask = createMask(castlingType.getColor(), castlingType.getRochadeType());
+        int mask = castlingType.getRightsMask();
         castlingRights |= mask;
     }
 
-    public void retain(Color color, RochadeType type) {
-        int mask = createMask(color, type);
-        castlingRights &= 0xFF-mask;
-    }
-
-    private byte createMask(Color color, RochadeType type) {
-        int idx = type == SHORT ? 0 : 1;
-        if (color == Color.BLACK) {
-            idx += 2;
-        }
-        byte allowedMask = (byte) (1 << idx);
-        return allowedMask;
+    public void retain(CastlingType castlingType) {
+        int mask = castlingType.getRightsMask();
+        castlingRights &= 0xFF - mask;
     }
 
     public byte getRights() {
@@ -84,6 +75,6 @@ public class CastlingRights {
     }
 
     public void setAllCasltingRights() {
-        castlingRights = 0b1111;
+        castlingRights = ALL_CASTLING_RIGHTS;
     }
 }

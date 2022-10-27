@@ -1,12 +1,13 @@
 package org.mattlang.jc.util;
 
+import static org.mattlang.jc.board.CastlingType.*;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.RochadeType;
 
 /**
  * Class to build a fen string from a board position.
@@ -72,16 +73,16 @@ public class FenComposer {
 
     private String rochade(BoardRepresentation board) {
         StringBuilder b = new StringBuilder();
-        if (board.isCastlingAllowed(Color.WHITE, RochadeType.SHORT)) {
+        if (board.isCastlingAllowed(WHITE_SHORT)) {
             b.append("K");
         }
-        if (board.isCastlingAllowed(Color.WHITE, RochadeType.LONG)) {
+        if (board.isCastlingAllowed(WHITE_LONG)) {
             b.append("Q");
         }
-        if (board.isCastlingAllowed(Color.BLACK, RochadeType.SHORT)) {
+        if (board.isCastlingAllowed(BLACK_SHORT)) {
             b.append("k");
         }
-        if (board.isCastlingAllowed(Color.BLACK, RochadeType.LONG)) {
+        if (board.isCastlingAllowed(BLACK_LONG)) {
             b.append("q");
         }
         if (b.length() == 0) {
