@@ -243,7 +243,7 @@ public final class BitBoard implements BoardRepresentation {
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
 
         // remove castling rights when rooks or kings are moved:
-        if (castlingRights.hasAnyCastlings()) {
+        if (castlingRights.hasAnyCastlings() && castlingMasks[from] != 0) {
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.removeMask(castlingMasks[from]);
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
