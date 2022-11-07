@@ -1,7 +1,6 @@
 package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.Main.initLogging;
-import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -68,7 +67,7 @@ public class PerfTTTests {
 
         // fill cache
         fillWatch.start();
-        perft.perft(generator, board, WHITE, depth);
+        perft.perft(generator, board, board.getSiteToMove(), depth);
         fillWatch.stop();
 
         // read from cache:
@@ -83,7 +82,7 @@ public class PerfTTTests {
 
         });
 
-        perft.perft(generator, board, WHITE, depth);
+        perft.perft(generator, board, board.getSiteToMove(), depth);
         readWatch.stop();
 
         System.out.println("counts " + count[0] + " hits " + hits[0] + "hits: %" + (((long) hits[0]) * 100 / count[0]));
