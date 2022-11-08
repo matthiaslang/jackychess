@@ -1,9 +1,10 @@
 # Versions
-                   
-###
+
+### Version 0.13.4
+                  
+Official release which supports Fischer Random Chess (Chess960) as variant
 
 - fixed board copy issue in FRC
-- 
 
 ### Version 0.13.3
 

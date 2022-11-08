@@ -43,15 +43,18 @@ You should have a few UCI options able to set in the UI then.
 
 ## CCRL Rating
 
+Many thanks to the CCRL team for rating my engine. You can find the details 
+on http://ccrl.chessdom.com/ccrl/404/:          
 
-Overview of rating results on http://ccrl.chessdom.com/ccrl/404/:          
+Here is a quick overview of the ratings of the tested versions and their results (maybe outdated):
 
-| Version | CCRL Blitz |
-|---------|-----------|
-| 0.13.0  | 2377      |
-| 0.12.0  | 2251      |
-| 0.10.0  | 2082      |
-| 0.9.14  | 1440      |       
+| Version | CCRL Blitz | 40/15 |
+|---------|------------|-------|
+| 0.13.1  | --         | 2403  |
+| 0.13.0  | 2361       | --    |
+| 0.12.0  | 2251       | --    |
+| 0.10.0  | 2082       | --    |
+| 0.9.14  | 1440       | --    |
 
  
 
