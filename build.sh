@@ -9,10 +9,14 @@ MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 JARFILE=jackychess-${MVNVERSION}.jar
 
+LOCALARENAFOLDER=../jcversions/
+LOCALTESTPROJFOLDER=../jackyChessDockerTesting
+ENGINESFILE=${LOCALTESTPROJFOLDER}/scripts/engines.json
+
 # copy to our folders where the test programs have access:
 echo "copy to test folders"
-cp -v target/jackychess*   ../jcversions/
-cp -v target/jackychess*   ../jackyChessDockerTesting/jackychess
+cp -v target/jackychess*   $LOCALARENAFOLDER
+cp -v target/jackychess*   ${LOCALTESTPROJFOLDER}/jackychess
 
 # copy a windows bat file for the arena test folder with some log settings
 BATFILE=jc-${MVNVERSION}.bat
@@ -33,3 +37,34 @@ TAGNAME=${MVNVERSION}_${GITDESCR}
 
 echo "creating tag"
 git tag ${TAGNAME}
+
+
+
+# add the new version to the cutechess engines.json in our test project
+if grep -q "$JARFILE" "$ENGINESFILE"; then
+  echo "engines config already added..."
+else
+
+  # create the cutechess engine definition in a temp file:
+  cat << EOF > ${ENGINESFILE}.insert
+  {
+    "workingDirectory": "/jackychess",
+    "command": "java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/logs -jar /jackychess/$JARFILE",
+    "name": "jacky${MVNVERSION}",
+    "protocol": "uci",
+    "options": [
+      {
+        "name": "maxThreads",
+        "value": "1"
+      },
+      {
+        "name": "Hash",
+        "value": "128"
+      }
+    ]
+  },
+EOF
+# insert the temp file after the first match of "[" in the config file:
+    sed -i.bak -e "0,/\[/r${ENGINESFILE}.insert" $ENGINESFILE
+
+fi
