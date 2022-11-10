@@ -68,3 +68,6 @@ EOF
     sed -i.bak -e "0,/\[/r${ENGINESFILE}.insert" $ENGINESFILE
 
 fi
+
+# add the created jar to the git repository of the cutechess test project:
+git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$JARFILE
