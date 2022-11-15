@@ -15,6 +15,8 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
  */
 public class SearchStatistics {
 
+    private static final Logger LOGGER = Logger.getLogger(SearchStatistics.class.getSimpleName());
+
     public int nodesVisited = 0;
     public int quiescenceNodesVisited = 0;
 
@@ -46,6 +48,8 @@ public class SearchStatistics {
 
     public int deltaCutoffCount;
 
+    public int skipLowPromotionsCount;
+
     public int[] searchedMoveIndexCount = new int[30];
 
     public void resetStatistics() {
@@ -69,6 +73,7 @@ public class SearchStatistics {
         cutOffByHistoryCount = 0;
         cutOffByQuietCount = 0;
         deltaCutoffCount = 0;
+        skipLowPromotionsCount = 0;
         Arrays.fill(searchedMoveIndexCount, 0);
     }
 
@@ -79,27 +84,33 @@ public class SearchStatistics {
             searchedMoveIndexCount[searchedMoves]++;
         }
 
-        int order = moveCursor.getOrder();
-        if (OrderCalculator.isHashMove(order)) {
-            cutOffByHashMoveCount++;
-        } else if (OrderCalculator.isKillerMove(order)) {
-            cutOffByKillerCount++;
-        } else if (OrderCalculator.isCounterMove(order)) {
-            cutOffByCounterMoveCount++;
-        } else if (moveCursor.isCapture()) {
-            if (OrderCalculator.isGoodCapture(order)) {
-                cutOffByGoodCaptureCount++;
+        if (LOGGER.isLoggable(Level.INFO)) {
+            int order = moveCursor.getOrder();
+            if (OrderCalculator.isHashMove(order)) {
+                cutOffByHashMoveCount++;
+            } else if (OrderCalculator.isKillerMove(order)) {
+                cutOffByKillerCount++;
+            } else if (OrderCalculator.isCounterMove(order)) {
+                cutOffByCounterMoveCount++;
+            } else if (moveCursor.isCapture()) {
+                if (OrderCalculator.isGoodCapture(order)) {
+                    cutOffByGoodCaptureCount++;
+                } else {
+                    cutOffByBadCaptureCount++;
+                }
             } else {
-                cutOffByBadCaptureCount++;
-            }
-        } else {
-            if (OrderCalculator.isHistory(order)) {
-                cutOffByHistoryCount++;
-            } else {
-                cutOffByQuietCount++;
-            }
+                if (OrderCalculator.isHistory(order)) {
+                    cutOffByHistoryCount++;
+                } else {
+                    cutOffByQuietCount++;
+                }
 
+            }
         }
+    }
+
+    public void logStatistics() {
+        logStats(LOGGER, Level.INFO, "Game statistics");
     }
 
     public void logStats(Logger logger, Level level, String msg) {
@@ -112,9 +123,10 @@ public class SearchStatistics {
             w.printf("nodesVisited               %d\n", nodesVisited);
 
             w.printf("quiescenceNodesVisited     %d\n", quiescenceNodesVisited);
+            w.printf("deltaCutoffCount           %d\n", deltaCutoffCount);
+            w.printf("skipLowPromotionsCount     %d\n", skipLowPromotionsCount);
 
             w.printf("cutoff                     %d\n", cutOff);
-            w.printf("deltaCutoffCount           %d\n", cutOff);
 
             w.printf("drawByMaterialDetected     %d\n", drawByMaterialDetected);
             w.printf("drawByRepetionDetected     %d\n", drawByRepetionDetected);
@@ -125,6 +137,8 @@ public class SearchStatistics {
             w.printf("razoringPruningCount       %d\n", razoringPruningCount);
             w.printf("iterativeDeepeningCount    %d\n", iterativeDeepeningCount);
             w.printf("futilityPruningCount       %d\n", futilityPruningCount);
+
+
             w.printf("cutOffByHashMoveCount      %d\n", cutOffByHashMoveCount);
             w.printf("cutOffByKillerCount        %d\n", cutOffByKillerCount);
             w.printf("cutOffByGoodCaptureCount   %d\n", cutOffByGoodCaptureCount);
@@ -151,6 +165,7 @@ public class SearchStatistics {
 
         rslts.put("cutoff", cutOff);
         rslts.put("deltacutoffCount", deltaCutoffCount);
+        rslts.put("skipLowPromotionsCount", skipLowPromotionsCount);
 
         rslts.put("drawByMaterialDetected", drawByMaterialDetected);
         rslts.put("drawByRepetionDetected", drawByRepetionDetected);
@@ -178,6 +193,7 @@ public class SearchStatistics {
         quiescenceNodesVisited += statistics.quiescenceNodesVisited;
         cutOff += statistics.cutOff;
         deltaCutoffCount += statistics.deltaCutoffCount;
+        skipLowPromotionsCount += statistics.skipLowPromotionsCount;
         drawByMaterialDetected += statistics.drawByMaterialDetected;
         drawByRepetionDetected += statistics.drawByRepetionDetected;
         mateDistancePruningCount += statistics.mateDistancePruningCount;

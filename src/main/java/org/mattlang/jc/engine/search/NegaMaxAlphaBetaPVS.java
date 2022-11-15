@@ -37,7 +37,7 @@ import lombok.Getter;
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
  * Supports TT Cache
  */
-public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
+public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
@@ -60,39 +60,37 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
      */
     private static final int LMR_N_MOVES_REDUCE_MORE = 6;
 
-    private int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
+    private final int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
-    private boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
-    private boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
-    private boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
+    private final boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
+    private final boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
+    private final  boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
 
-    private PVTriangularArray pvArray = new PVTriangularArray();
+    private final PVTriangularArray pvArray = new PVTriangularArray();
 
     private long stopTime = 0;
 
     private int extensionCounter = 0;
 
-    private boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
+    private final boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
 
-    private boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
-    private boolean staticNullMove = Factory.getDefaults().getConfig().staticNullMove.getValue();
-    private boolean razoring = Factory.getDefaults().getConfig().razoring.getValue();
-    private boolean deltaCutOff = Factory.getDefaults().getConfig().deltaCutoff.getValue();
-    private boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
-    private boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
+    private final boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
+    private final boolean staticNullMove = Factory.getDefaults().getConfig().staticNullMove.getValue();
+    private final boolean razoring = Factory.getDefaults().getConfig().razoring.getValue();
+    private final boolean deltaCutOff = Factory.getDefaults().getConfig().deltaCutoff.getValue();
+    private final boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
+    private final boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
-    private int[] parentMoves = new int[MAX_PLY];
-
-    private ExtensionsInfo extensionsInfo = new ExtensionsInfo();
+    private final int[] parentMoves = new int[MAX_PLY];
 
     private SearchContext searchContext;
 
     private boolean debug = true;
 
-    private MoveValidator moveValidator = new MoveValidator();
+    private final MoveValidator moveValidator = new MoveValidator();
 
     @Getter
-    private SearchStatistics statistics = new SearchStatistics();
+    private final SearchStatistics statistics = new SearchStatistics();
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -111,7 +109,6 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
 
     public void resetStatistics() {
         statistics.resetStatistics();
-        extensionsInfo = new ExtensionsInfo();
     }
 
     public void reset() {
@@ -597,6 +594,7 @@ public class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCol
                 // skip low promotions
                 if (moveCursor.isPromotion()
                         && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
+                    statistics.skipLowPromotionsCount++;
                     continue;
                 }
 

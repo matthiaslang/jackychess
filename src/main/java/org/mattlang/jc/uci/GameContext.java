@@ -1,7 +1,6 @@
 package org.mattlang.jc.uci;
 
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
@@ -65,6 +64,6 @@ public class GameContext {
     }
 
     public void logStatistics() {
-        statistics.logStats(LOGGER, Level.INFO, "Game statistics");
+        statistics.logStatistics();
     }
 }
