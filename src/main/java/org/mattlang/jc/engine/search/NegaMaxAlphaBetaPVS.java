@@ -417,6 +417,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, Statist
                 // update "bad" heuristic
                 searchContext.updateBadHeuristic(depth, color, moveCursor);
             }
+            statistics.noCutOffFoundCount++;
 
             if (searchedMoves == 0) {
                 return determineCheckMateOrPatt(ply, areWeInCheck);

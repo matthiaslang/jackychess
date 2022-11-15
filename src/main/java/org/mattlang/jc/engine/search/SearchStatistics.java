@@ -20,7 +20,10 @@ public class SearchStatistics {
     public int nodesVisited = 0;
     public int quiescenceNodesVisited = 0;
 
+    /** number of cut offs.*/
     public int cutOff;
+    /** number of times we have not found a cut off.*/
+    public int noCutOffFoundCount;
 
     public int drawByMaterialDetected;
     public int drawByRepetionDetected;
@@ -60,6 +63,7 @@ public class SearchStatistics {
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
         cutOff = 0;
+        noCutOffFoundCount=0;
         drawByMaterialDetected = 0;
         drawByRepetionDetected = 0;
         mateDistancePruningCount = 0;
@@ -90,7 +94,7 @@ public class SearchStatistics {
             searchedMoveIndexCount[searchedMoves]++;
         }
 
-        if (LOGGER.isLoggable(Level.INFO)) {
+//        if (LOGGER.isLoggable(Level.INFO)) {
             int order = moveCursor.getOrder();
             if (OrderCalculator.isHashMove(order)) {
                 cutOffByHashMoveCount++;
@@ -112,7 +116,7 @@ public class SearchStatistics {
                 }
 
             }
-        }
+        //        }
     }
 
     public void logStatistics() {
@@ -120,11 +124,19 @@ public class SearchStatistics {
     }
 
     public void logStats(Logger logger, Level level, String msg) {
-
         if (logger.isLoggable(level)) {
-            String completeMsg = formatStats(msg);
-            logger.log(level, completeMsg);
+            if (hasStatistics()) {
+                String completeMsg = formatStats(msg);
+                logger.log(level, completeMsg);
+            } else {
+                logger.log(level, "no statistics yet...");
+            }
         }
+    }
+
+    private boolean hasStatistics() {
+        // we have no statistics if we havent at least the node visited counter set:
+        return nodesVisited != 0;
     }
 
     public String formatStats(String msg) {
@@ -135,7 +147,8 @@ public class SearchStatistics {
         w.printf("nodesVisited               %12d\n", nodesVisited);
         w.printf("---------------------------------------------------------------------\n");
         w.printf("quiescenceNodesVisited     %12d\n", quiescenceNodesVisited);
-        w.printf("deltaCutoffCount           %12d     %7.8f\n", deltaCutoffCount, ratio(deltaCutoffCount, quiescenceNodesVisited));
+        w.printf("deltaCutoffCount           %12d     %7.8f\n", deltaCutoffCount,
+                ratio(deltaCutoffCount, quiescenceNodesVisited));
         w.printf("skipLowPromotionsCount     %12d     %7.8f\n", skipLowPromotionsCount, ratio(skipLowPromotionsCount, quiescenceNodesVisited));
 
 
@@ -158,6 +171,7 @@ public class SearchStatistics {
         w.printf("---------------------------------------------------------------------\n");
 
         w.printf("cutoff                     %12d\n", cutOff);
+        w.printf("noCutOffFoundCount         %12d\n", noCutOffFoundCount);
 
         w.printf("cutOffByHashMoveCount      %12d     %7.8f\n", cutOffByHashMoveCount, ratio(cutOffByHashMoveCount, cutOff));
         w.printf("cutOffByKillerCount        %12d     %7.8f\n", cutOffByKillerCount, ratio(cutOffByKillerCount, cutOff));
@@ -187,6 +201,7 @@ public class SearchStatistics {
         rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
 
         rslts.put("cutoff", cutOff);
+        rslts.put("noCutOffFoundCount", noCutOffFoundCount);
         rslts.put("deltacutoffCount", deltaCutoffCount);
         rslts.put("skipLowPromotionsCount", skipLowPromotionsCount);
 
@@ -217,6 +232,7 @@ public class SearchStatistics {
         nodesVisited += statistics.nodesVisited;
         quiescenceNodesVisited += statistics.quiescenceNodesVisited;
         cutOff += statistics.cutOff;
+        noCutOffFoundCount += statistics.noCutOffFoundCount;
         deltaCutoffCount += statistics.deltaCutoffCount;
         skipLowPromotionsCount += statistics.skipLowPromotionsCount;
         drawByMaterialDetected += statistics.drawByMaterialDetected;
