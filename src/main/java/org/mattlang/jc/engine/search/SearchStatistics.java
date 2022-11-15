@@ -27,7 +27,10 @@ public class SearchStatistics {
     public int mateDistancePruningCount;
     public int ttPruningCount;
     public int staticNullMovePruningCount;
+
+    public int nullMoveTryCount;
     public int nullMovePruningCount;
+    public int razoringTryCount;
     public int razoringPruningCount;
     public int iterativeDeepeningCount;
     public int futilityPruningCount;
@@ -52,6 +55,7 @@ public class SearchStatistics {
 
     public int[] searchedMoveIndexCount = new int[30];
 
+
     public void resetStatistics() {
         nodesVisited = 0;
         quiescenceNodesVisited = 0;
@@ -61,8 +65,10 @@ public class SearchStatistics {
         mateDistancePruningCount = 0;
         ttPruningCount = 0;
         staticNullMovePruningCount = 0;
+        nullMoveTryCount = 0;
         nullMovePruningCount = 0;
         razoringPruningCount = 0;
+        razoringTryCount=0;
         iterativeDeepeningCount = 0;
         futilityPruningCount = 0;
         cutOffByHashMoveCount = 0;
@@ -116,45 +122,62 @@ public class SearchStatistics {
     public void logStats(Logger logger, Level level, String msg) {
 
         if (logger.isLoggable(level)) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            PrintWriter w = new PrintWriter(bos);
-            w.println(msg);
-
-            w.printf("nodesVisited               %d\n", nodesVisited);
-
-            w.printf("quiescenceNodesVisited     %d\n", quiescenceNodesVisited);
-            w.printf("deltaCutoffCount           %d\n", deltaCutoffCount);
-            w.printf("skipLowPromotionsCount     %d\n", skipLowPromotionsCount);
-
-            w.printf("cutoff                     %d\n", cutOff);
-
-            w.printf("drawByMaterialDetected     %d\n", drawByMaterialDetected);
-            w.printf("drawByRepetionDetected     %d\n", drawByRepetionDetected);
-            w.printf("mateDistancePruningCount   %d\n", mateDistancePruningCount);
-            w.printf("ttPruningCount             %d\n", ttPruningCount);
-            w.printf("staticNullMovePruningCount %d\n", staticNullMovePruningCount);
-            w.printf("nullMovePruningCount       %d\n", nullMovePruningCount);
-            w.printf("razoringPruningCount       %d\n", razoringPruningCount);
-            w.printf("iterativeDeepeningCount    %d\n", iterativeDeepeningCount);
-            w.printf("futilityPruningCount       %d\n", futilityPruningCount);
-
-
-            w.printf("cutOffByHashMoveCount      %d\n", cutOffByHashMoveCount);
-            w.printf("cutOffByKillerCount        %d\n", cutOffByKillerCount);
-            w.printf("cutOffByGoodCaptureCount   %d\n", cutOffByGoodCaptureCount);
-            w.printf("cutOffByBadCaptureCount    %d\n", cutOffByBadCaptureCount);
-            w.printf("cutOffByCounterMoveCount   %d\n", cutOffByCounterMoveCount);
-            w.printf("cutOffByHistoryCount       %d\n", cutOffByHistoryCount);
-            w.printf("cutOffByQuietCount         %d\n", cutOffByQuietCount);
-            for (int i = 1; i < searchedMoveIndexCount.length; i++) {
-                double percents = cutOff != 0 ? ((double) searchedMoveIndexCount[i]) / cutOff : 0.0;
-                w.printf("searchedMoveIndexCount[%d]    %d    %f\n", i, searchedMoveIndexCount[i], percents);
-            }
-            w.flush();
-            w.close();
-            String completeMsg = bos.toString();
+            String completeMsg = formatStats(msg);
             logger.log(level, completeMsg);
         }
+    }
+
+    public String formatStats(String msg) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        PrintWriter w = new PrintWriter(bos);
+        w.println(msg);
+
+        w.printf("nodesVisited               %12d\n", nodesVisited);
+        w.printf("---------------------------------------------------------------------\n");
+        w.printf("quiescenceNodesVisited     %12d\n", quiescenceNodesVisited);
+        w.printf("deltaCutoffCount           %12d     %7.8f\n", deltaCutoffCount, ratio(deltaCutoffCount, quiescenceNodesVisited));
+        w.printf("skipLowPromotionsCount     %12d     %7.8f\n", skipLowPromotionsCount, ratio(skipLowPromotionsCount, quiescenceNodesVisited));
+
+
+        w.printf("---------------------------------------------------------------------\n");
+        w.printf("drawByMaterialDetected     %12d\n", drawByMaterialDetected);
+        w.printf("drawByRepetionDetected     %12d\n", drawByRepetionDetected);
+        w.printf("mateDistancePruningCount   %12d\n", mateDistancePruningCount);
+        w.printf("ttPruningCount             %12d\n", ttPruningCount);
+        w.printf("---------------------------------------------------------------------\n");
+        w.printf("staticNullMovePruningCount %12d\n", staticNullMovePruningCount);
+        w.printf("nullMoveTryCount           %12d\n", nullMoveTryCount);
+        w.printf("nullMovePruningCount       %12d     %7.8f\n", nullMovePruningCount, ratio(nullMovePruningCount, nullMoveTryCount));
+
+        w.printf("---------------------------------------------------------------------\n");
+        w.printf("razoringTryCount           %12d\n", razoringTryCount);
+        w.printf("razoringPruningCount       %12d     %7.8f\n", razoringPruningCount, ratio(razoringPruningCount, razoringTryCount));
+        w.printf("---------------------------------------------------------------------\n");
+        w.printf("iterativeDeepeningCount    %12d\n", iterativeDeepeningCount);
+        w.printf("futilityPruningCount       %12d\n", futilityPruningCount);
+        w.printf("---------------------------------------------------------------------\n");
+
+        w.printf("cutoff                     %12d\n", cutOff);
+
+        w.printf("cutOffByHashMoveCount      %12d     %7.8f\n", cutOffByHashMoveCount, ratio(cutOffByHashMoveCount, cutOff));
+        w.printf("cutOffByKillerCount        %12d     %7.8f\n", cutOffByKillerCount, ratio(cutOffByKillerCount, cutOff));
+        w.printf("cutOffByGoodCaptureCount   %12d     %7.8f\n", cutOffByGoodCaptureCount, ratio(cutOffByGoodCaptureCount, cutOff));
+        w.printf("cutOffByBadCaptureCount    %12d     %7.8f\n", cutOffByBadCaptureCount, ratio(cutOffByBadCaptureCount, cutOff));
+        w.printf("cutOffByCounterMoveCount   %12d     %7.8f\n", cutOffByCounterMoveCount, ratio(cutOffByCounterMoveCount, cutOff));
+        w.printf("cutOffByHistoryCount       %12d     %7.8f\n", cutOffByHistoryCount, ratio(cutOffByHistoryCount, cutOff));
+        w.printf("cutOffByQuietCount         %12d     %7.8f\n", cutOffByQuietCount, ratio(cutOffByQuietCount, cutOff));
+        for (int i = 1; i < searchedMoveIndexCount.length; i++) {
+            w.printf("searchedMoveIndexCount[%2d]    %12d    %7.8f\n", i, searchedMoveIndexCount[i], ratio(searchedMoveIndexCount[i], cutOff));
+        }
+        w.flush();
+        w.close();
+        String completeMsg = bos.toString();
+        return completeMsg;
+    }
+
+    private double ratio(int divident, int divisor){
+        double percents = divisor != 0 ? ((double) divident) / divisor : 0.0;
+        return percents;
     }
 
     public void collectStatistics(Map rslts) {
@@ -173,7 +196,9 @@ public class SearchStatistics {
         rslts.put("ttPruningCount", ttPruningCount);
         rslts.put("staticNullMovePruningCount", staticNullMovePruningCount);
         rslts.put("nullMovePruningCount", nullMovePruningCount);
+        rslts.put("nullMoveTryCount", nullMoveTryCount);
         rslts.put("razoringPruningCount", razoringPruningCount);
+        rslts.put("razoringTryCount", razoringTryCount);
         rslts.put("iterativeDeepeningCount", iterativeDeepeningCount);
         rslts.put("futilityPruningCount", futilityPruningCount);
         rslts.put("cutOffByHashMoveCount", cutOffByHashMoveCount);
@@ -200,7 +225,9 @@ public class SearchStatistics {
         ttPruningCount += statistics.ttPruningCount;
         staticNullMovePruningCount += statistics.staticNullMovePruningCount;
         nullMovePruningCount += statistics.nullMovePruningCount;
+        nullMoveTryCount += statistics.nullMoveTryCount;
         razoringPruningCount += statistics.razoringPruningCount;
+        razoringTryCount += statistics.razoringTryCount;
         iterativeDeepeningCount += statistics.iterativeDeepeningCount;
         futilityPruningCount += statistics.futilityPruningCount;
         cutOffByHashMoveCount += statistics.cutOffByHashMoveCount;

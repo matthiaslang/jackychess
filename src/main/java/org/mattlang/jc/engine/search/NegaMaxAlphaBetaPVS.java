@@ -169,9 +169,10 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, Statist
         if (tte != null) {
             hashMove = tte.getMove();
             if (tte.getDepth() >= depth && ply != 1) {
-                if (tte.isExact()) // stored value is exact
+                if (tte.isExact()) {// stored value is exact
+                    statistics.ttPruningCount++;
                     return adjustScore(tte.getScore(), ply);
-                if (tte.isLowerBound() && tte.getScore() > alpha)
+                } else if (tte.isLowerBound() && tte.getScore() > alpha)
                     alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
                 else if (tte.isUpperBound() && tte.getScore() < beta)
                     beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
@@ -227,7 +228,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, Statist
                 searchContext.doPrepareNullMove();
                 int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1);
                 searchContext.undoNullMove();
-
+                statistics.nullMoveTryCount++;
                 if (eval >= beta) {
                     statistics.nullMovePruningCount++;
                     return eval;
@@ -247,6 +248,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, Statist
                 int threshold = alpha - 300 - (depth - 1) * 60;
                 if (staticEval < threshold) {
                     int val = quiesce(ply + 1, -1, color, alpha, beta);
+                    statistics.razoringTryCount++;
                     if (val < threshold) {
                         statistics.razoringPruningCount++;
                         return alpha;
