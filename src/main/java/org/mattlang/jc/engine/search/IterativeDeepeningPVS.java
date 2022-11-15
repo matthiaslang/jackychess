@@ -85,6 +85,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
     @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
+        negaMaxAlphaBeta.resetStatistics();
         SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(workerNumber);
 
         LOGGER.info("iterative search on " + gameState.getFenStr());
@@ -130,7 +131,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
                 UCILogger.log(ebfReport);
             }
             IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
+            gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
             logIsr(isr);
+            LoggerUtils.logStats(LOGGER, "iterative deepening statistics" , stats);
             return isr;
         } catch (Exception e) {
             throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
@@ -144,6 +147,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
 
         IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
         logIsr(isr);
+        gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
         LoggerUtils.logStats(LOGGER, "iterative deepening statistics" , stats);
         return isr;
     }
@@ -234,7 +238,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         Map statOfDepth = new LinkedHashMap();
         negaMaxAlphaBeta.collectStatistics(statOfDepth);
         stats.put("depth=" + currdepth, statOfDepth);
-        negaMaxAlphaBeta.resetStatistics();
 
         return new IterativeRoundResult(rslt, roundWatch);
     }

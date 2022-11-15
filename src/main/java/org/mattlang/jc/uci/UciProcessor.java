@@ -91,12 +91,16 @@ public class UciProcessor {
     }
 
     private GameContext createNewGameContext() {
+        gameContext.logStatistics();
+
         LOGGER.info("start new game");
         SearchThreadContexts.CONTEXTS.reset();
         return new GameContext(configValues);
     }
 
     private void quit() {
+        gameContext.logStatistics();
+
         UCI.instance.quit();
         finished = true;
         AsyncEngine.executorService.shutdownNow();

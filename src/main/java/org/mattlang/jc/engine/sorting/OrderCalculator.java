@@ -27,14 +27,20 @@ public final class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
-    public static final int QUIET = -100_000;
+    public static final int HISTORY_DIFF = 100000;
+    public static final int QUIET = -HISTORY_DIFF;
 
     public static final int BAD_CAPTURES_SCORE = -500_000;
 
     public static final int LATE_MOVE_REDUCTION_BORDER = 0;
 
-    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 1000000;
-    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 1000000;
+    private static final int MVVLVA_MAX_DIFF = 500;
+
+    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - MVVLVA_MAX_DIFF;
+    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + MVVLVA_MAX_DIFF;
+
+    private static final int HISTORY_LOWER = OrderCalculator.HISTORY_SCORE - HISTORY_DIFF;
+    private static final int HISTORY_UPPER = OrderCalculator.HISTORY_SCORE + HISTORY_DIFF;
 
     private HistoryHeuristic historyHeuristic;
     private KillerMoves killerMoves;
@@ -155,6 +161,22 @@ public final class OrderCalculator {
     }
 
     public static boolean isGoodCapture(int order) {
-        return order > GOOD_CAPT_LOWER;
+        return order > GOOD_CAPT_LOWER && order < GOOD_CAPT_UPPER;
+    }
+
+    public static boolean isHistory(int order) {
+        return order > HISTORY_LOWER && order < HISTORY_UPPER;
+    }
+
+    public static boolean isHashMove(int order) {
+        return order == HASHMOVE_SCORE;
+    }
+
+    public static boolean isKillerMove(int order) {
+        return order == KILLER_SCORE;
+    }
+
+    public static boolean isCounterMove(int order) {
+        return order == COUNTER_MOVE_SCORE;
     }
 }
