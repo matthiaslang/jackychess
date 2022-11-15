@@ -170,8 +170,9 @@ public class SearchStatistics {
         w.printf("futilityPruningCount       %12d\n", futilityPruningCount);
         w.printf("---------------------------------------------------------------------\n");
 
-        w.printf("cutoff                     %12d\n", cutOff);
+
         w.printf("noCutOffFoundCount         %12d\n", noCutOffFoundCount);
+        w.printf("cutoff                     %12d     %7.8f\n", cutOff, ratio(cutOff, noCutOffFoundCount));
 
         w.printf("cutOffByHashMoveCount      %12d     %7.8f\n", cutOffByHashMoveCount, ratio(cutOffByHashMoveCount, cutOff));
         w.printf("cutOffByKillerCount        %12d     %7.8f\n", cutOffByKillerCount, ratio(cutOffByKillerCount, cutOff));
