@@ -5,12 +5,9 @@ import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
@@ -20,13 +17,12 @@ import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
-import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public class IterativeDeepeningPVS implements IterativeDeepeningSearch, StatisticsCollector {
+public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
@@ -133,7 +129,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
             IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
             gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
             logIsr(isr);
-            LoggerUtils.logStats(LOGGER, "iterative deepening statistics" , stats);
             return isr;
         } catch (Exception e) {
             throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
@@ -148,7 +143,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         IterativeSearchResult isr = new IterativeSearchResult(rounds, ebfReport);
         logIsr(isr);
         gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
-        LoggerUtils.logStats(LOGGER, "iterative deepening statistics" , stats);
         return isr;
     }
 
@@ -226,19 +220,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
             UCILogger.log("no result from negamax for window: " + aspWindow.descr());
             LOGGER.warning("no result from negamax on iteration depth:" + currdepth);
             LOGGER.info("negamax result: " + rslt);
-            Map statOfDepth = new LinkedHashMap();
-            negaMaxAlphaBeta.collectStatistics(statOfDepth);
-
-            LOGGER.info("statistics: " + statOfDepth);
+            negaMaxAlphaBeta.getStatistics().logStatistics();
         }
 
         roundWatch.stop();
         ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
-
-        Map statOfDepth = new LinkedHashMap();
-        negaMaxAlphaBeta.collectStatistics(statOfDepth);
-        stats.put("depth=" + currdepth, statOfDepth);
-
         return new IterativeRoundResult(rslt, roundWatch);
     }
 
@@ -288,15 +274,4 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, Statisti
         }
     }
 
-    private Map stats = new LinkedHashMap();
-
-    @Override
-    public void collectStatistics(Map stats) {
-        stats.put("it.deep", this.stats);
-    }
-
-    @Override
-    public void resetStatistics() {
-        stats = new LinkedHashMap();
-    }
 }

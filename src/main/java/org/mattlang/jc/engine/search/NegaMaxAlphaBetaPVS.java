@@ -8,13 +8,10 @@ import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.GameState;
@@ -37,7 +34,7 @@ import lombok.Getter;
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
  * Supports TT Cache
  */
-public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, StatisticsCollector {
+public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
@@ -687,20 +684,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod, Statist
 
     public int getNodesVisited() {
         return statistics.nodesVisited;
-    }
-
-    @Override
-    public void collectStatistics(Map stats) {
-
-        Map rslts = new LinkedHashMap();
-        stats.put("negamax alpha/beta", rslts);
-
-        statistics.collectStatistics(rslts);
-
-        Map searchstatsMap = new LinkedHashMap();
-        searchContext.collectStatistics(searchstatsMap);
-        rslts.put("search", searchstatsMap);
-
     }
 
     public static boolean canRefineEval(final TTResult tte, final int eval) {

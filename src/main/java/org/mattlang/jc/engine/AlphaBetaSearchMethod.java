@@ -1,12 +1,11 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.uci.GameContext;
 
-public interface AlphaBetaSearchMethod extends SearchMethod, StatisticsCollector {
+public interface AlphaBetaSearchMethod extends SearchMethod {
 
     void reset();
 
