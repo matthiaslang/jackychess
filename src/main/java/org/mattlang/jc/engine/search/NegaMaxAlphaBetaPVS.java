@@ -12,10 +12,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;
@@ -37,6 +36,8 @@ import lombok.Getter;
 public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
+
+    private static final int[] RAZORING_MARGIN = { 0, 240, 280, 300 };
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
@@ -236,19 +237,19 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              *  RAZORING - if a node is close to the leaf and its static score is low, *
              *  we drop directly to the quiescence search.                             *
              **************************************************************************/
-
             if (razoring
                     && tte == null
                     && searchContext.getNullMoveCounter() == 0
-                    //	&&  !(bbPc(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-                    && depth <= 3) {
-                int threshold = alpha - 300 - (depth - 1) * 60;
-                if (staticEval < threshold) {
-                    int val = quiesce(ply + 1, -1, color, alpha, beta);
+                    && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
+                    && depth < RAZORING_MARGIN.length
+                    && Math.abs(alpha) < KING_WEIGHT) {
+                int razorMarginOfDepth = RAZORING_MARGIN[depth];
+                if (staticEval + razorMarginOfDepth < alpha) {
                     statistics.razoringTryCount++;
-                    if (val < threshold) {
+                    int val = quiesce(ply + 1, -1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
+                    if (val + razorMarginOfDepth <= alpha) {
                         statistics.razoringPruningCount++;
-                        return alpha;
+                        return val;
                     }
                 }
             }
@@ -694,5 +695,15 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true if the site to move does not have any pawn promotion moves (probably).
+     * @param board
+     * @return
+     */
+    private static boolean noPawnPromotions(BoardRepresentation board){
+        return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(BitChessBoard.nWhite) & BB.rank7)==0
+                || board.getSiteToMove() == Color.BLACK && (board.getBoard().getPawns(BitChessBoard.nBlack) & BB.rank2)==0;
     }
 }

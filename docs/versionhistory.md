@@ -1,5 +1,8 @@
 # Versions
 
+#### Version 0.13.4-101
+
+- fixed razoring
 
 #### Version 0.13.4-100
 
