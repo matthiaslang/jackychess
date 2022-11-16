@@ -63,6 +63,22 @@ else
       }
     ]
   },
+    {
+      "workingDirectory": "/jackychess",
+      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=INFO -Duser.home=/logs -jar /jackychess/$JARFILE",
+      "name": "jacky${MVNVERSION}INFO",
+      "protocol": "uci",
+      "options": [
+        {
+          "name": "maxThreads",
+          "value": "1"
+        },
+        {
+          "name": "Hash",
+          "value": "128"
+        }
+      ]
+    },
 EOF
 # insert the temp file after the first match of "[" in the config file:
     sed -i.bak -e "0,/\[/r${ENGINESFILE}.insert" $ENGINESFILE

@@ -1,5 +1,10 @@
 # Versions
 
+
+#### Version 0.13.4-100
+
+- reworked statistics logging
+
 ### Version 0.13.4
                   
 Official release which supports Fischer Random Chess (Chess960) as variant
