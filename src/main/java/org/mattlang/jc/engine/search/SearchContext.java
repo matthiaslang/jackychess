@@ -259,7 +259,7 @@ public final class SearchContext {
         // the issues we had with draws was caused by wrong board copy logic, so we it looks like we do
         // not have to do any special logic here...
 
-//        int staticEval = eval(color);
+        //        int staticEval = eval(color);
 //        if (staticEval >= WINNING_WEIGHT && weAre == WHITE) {
 //            return -DRAW_IS_VERY_BAD;
 //        } else if (staticEval <= -WINNING_WEIGHT && weAre == BLACK) {
@@ -293,5 +293,29 @@ public final class SearchContext {
 
     public boolean isDrawByMaterial() {
         return board.isDrawByMaterial();
+    }
+
+    /**
+     * Tries to find out if the side is not in zugzwang.
+     *
+     * This is just a simple approach which states that the side to move has non-pawn material, it doesn´t have
+     * zugzwang....
+     *
+     * @return
+     */
+    public boolean isNoZugzwang() {
+        return isNoZugwang(getBoard());
+    }
+
+    /**
+     * Tries to find out if the side is not in zugzwang.
+     *
+     * This is just a simple approach which states that the side to move has non-pawn material, it doesn´t have
+     * zugzwang....
+     *
+     * @return
+     */
+    public static boolean isNoZugwang(BoardRepresentation board){
+        return board.getMaterial().hasNonPawnMat(board.getSiteToMove());
     }
 }

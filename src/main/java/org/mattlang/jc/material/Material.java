@@ -201,4 +201,9 @@ public class Material {
 
         return b.toString();
     }
+
+    public boolean hasNonPawnMat(Color color) {
+        int nonPawnMatOfColor = material & MASK_OUT_PAWNS & (color == WHITE ? MASK_WHITE_PART : MASK_BLACK_PART);
+        return nonPawnMatOfColor > 0;
+    }
 }

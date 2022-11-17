@@ -213,13 +213,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              * null move reduction:
              * only, for non pv nodes,
              * and no null move has already been chosen in this row
-             * and we are not in end game (because of zugzwang issues)
+             * and we have non pawn material (because of zugzwang issues)
              * and we are not in check (also for zugzwang)
              */
             if (useNullMoves &&
                     depth > 2 &&
                     searchContext.getNullMoveCounter() == 0 &&
-                    searchContext.isOpeningOrMiddleGame()
+                    searchContext.isNoZugzwang()
             ) {
                 int R = (depth > 6) ? 3 : 2;
 
