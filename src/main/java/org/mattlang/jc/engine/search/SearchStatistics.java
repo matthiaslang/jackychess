@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.search;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,11 +10,17 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 /**
- * Some statistic values collected during negamax search.
+ * Some statistic values collected during negamax search for debugging purpose.
  */
 public class SearchStatistics {
 
     private static final Logger LOGGER = Logger.getLogger(SearchStatistics.class.getSimpleName());
+
+    /**
+     * final flag to let remove the statistics code from bytecode when deactivated.
+     * Usually this is only activated (hartcoded) during local tests or in special test versions.
+     */
+    public static final boolean STATS_ACTIVATED = false;
 
     public int nodesVisited = 0;
     public int quiescenceNodesVisited = 0;
@@ -88,6 +93,9 @@ public class SearchStatistics {
     }
 
     public void countCutOff(MoveCursor moveCursor, int searchedMoves) {
+        if (!STATS_ACTIVATED) {
+            return;
+        }
         cutOff++;
 
         if (searchedMoves < searchedMoveIndexCount.length) {
@@ -125,11 +133,11 @@ public class SearchStatistics {
 
     public void logStats(Logger logger, Level level, String msg) {
         if (logger.isLoggable(level)) {
-            if (hasStatistics()) {
+            if (hasStatistics() && STATS_ACTIVATED) {
                 String completeMsg = formatStats(msg);
                 logger.log(level, completeMsg);
             } else {
-                logger.log(level, "no statistics yet...");
+                logger.log(level, "no statistics ...");
             }
         }
     }
@@ -140,6 +148,9 @@ public class SearchStatistics {
     }
 
     public String formatStats(String msg) {
+        if (!STATS_ACTIVATED) {
+            return "";
+        }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintWriter w = new PrintWriter(bos);
         w.println(msg);
@@ -195,41 +206,11 @@ public class SearchStatistics {
         return percents;
     }
 
-    public void collectStatistics(Map rslts) {
-
-        rslts.put("nodesVisited", nodesVisited);
-
-        rslts.put("quiescenceNodesVisited", quiescenceNodesVisited);
-
-        rslts.put("cutoff", cutOff);
-        rslts.put("noCutOffFoundCount", noCutOffFoundCount);
-        rslts.put("deltacutoffCount", deltaCutoffCount);
-        rslts.put("skipLowPromotionsCount", skipLowPromotionsCount);
-
-        rslts.put("drawByMaterialDetected", drawByMaterialDetected);
-        rslts.put("drawByRepetionDetected", drawByRepetionDetected);
-        rslts.put("mateDistancePruningCount", mateDistancePruningCount);
-        rslts.put("ttPruningCount", ttPruningCount);
-        rslts.put("staticNullMovePruningCount", staticNullMovePruningCount);
-        rslts.put("nullMovePruningCount", nullMovePruningCount);
-        rslts.put("nullMoveTryCount", nullMoveTryCount);
-        rslts.put("razoringPruningCount", razoringPruningCount);
-        rslts.put("razoringTryCount", razoringTryCount);
-        rslts.put("iterativeDeepeningCount", iterativeDeepeningCount);
-        rslts.put("futilityPruningCount", futilityPruningCount);
-        rslts.put("cutOffByHashMoveCount", cutOffByHashMoveCount);
-        rslts.put("cutOffByKillerCount", cutOffByKillerCount);
-        rslts.put("cutOffByGoodCaptureCount", cutOffByGoodCaptureCount);
-        rslts.put("cutOffByBadCaptureCount", cutOffByBadCaptureCount);
-        rslts.put("cutOffByCounterMoveCount", cutOffByCounterMoveCount);
-        rslts.put("cutOffByHistoryCount", cutOffByHistoryCount);
-        rslts.put("cutOffByQuietCount", cutOffByQuietCount);
-        for (int i = 1; i < searchedMoveIndexCount.length; i++) {
-            rslts.put("searchedMoveIndexCount[" + i + "]", searchedMoveIndexCount[i]);
-        }
-    }
-
     public void add(SearchStatistics statistics) {
+        if (!STATS_ACTIVATED){
+            return;
+        }
+
         nodesVisited += statistics.nodesVisited;
         quiescenceNodesVisited += statistics.quiescenceNodesVisited;
         cutOff += statistics.cutOff;
