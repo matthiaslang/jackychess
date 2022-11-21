@@ -16,7 +16,7 @@ public class LocalOptExperiment02 {
                 .threadCount(7)
                 .removeDuplicateFens(true)
                 .tunePst(true)
-                .tuneMaterial(true)
+                .tuneMaterial(false)
                 .tuneAdjustments(true)
                 .inputFiles(Arrays.asList(
                         "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
