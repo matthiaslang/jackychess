@@ -1,5 +1,9 @@
 # Versions
 
+#### Version 0.13.4-102
+
+- null move: changed condition for "zugzwang": brings ~15-20 Elos
+
 #### Version 0.13.4-101
 
 - fixed razoring
