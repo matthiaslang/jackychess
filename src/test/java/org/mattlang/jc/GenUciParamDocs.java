@@ -25,24 +25,12 @@ public class GenUciParamDocs {
                 writeGroup(bw, entry.getKey(), entry.getValue());
             }
 
+        }
+        try (FileWriter fw = new FileWriter("docs/internalparameter.md");
+                MarkdownWriter bw = new MarkdownWriter(fw)) {
             bw.h1("internal options of the engine.");
             bw.paragraph(
                     "These options is mainly only for testing and development. These options can be set via system properties or a configuration property file");
-
-
-
-        }
-        try (FileWriter fw = new FileWriter("docs/internalparameter.md");
-                BufferedWriter bw = new BufferedWriter(fw)) {
-            bw.write("# Internal Parameter");
-            bw.newLine();
-
-
-
-            bw.newLine();
-
-            bw.write("# internal options of the engine.\n\n These options is mainly only for testing and development. These options can be set via system properties or a configuration property file");
-            bw.newLine();
             for (Map.Entry<UCIGroup, List<UCIOption>> entry : all.getInternalOptionsByGroup().entrySet()) {
                 writeGroup(bw, entry.getKey(), entry.getValue());
             }
@@ -51,7 +39,7 @@ public class GenUciParamDocs {
     }
 
     private void writeGroup(MarkdownWriter fw, UCIGroup group, List<UCIOption> options) throws IOException {
-        fw.h2("Group " + group.getName());
+        fw.h2(group.getName());
 
         fw.paragraph(group.getDescription());
 
