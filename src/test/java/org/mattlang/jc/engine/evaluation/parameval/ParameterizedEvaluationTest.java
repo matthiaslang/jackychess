@@ -8,11 +8,34 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.parameval.functions.Function;
 
 public class ParameterizedEvaluationTest {
 
     @Test
-    public void configParseTest(){
+    public void convertFormulasTest() {
+
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
+        ParameterizedEvaluation pe = new ParameterizedEvaluation();
+
+        System.out.println(convertFunction(14 + 1, pe.getMobEvaluation().getParamsRook().mobilityMG));
+
+    }
+
+    private String convertFunction(int max, Function function) {
+        int[] data = new int[max];
+        for (int i = 0; i < max; i++) {
+            data[i] = function.calc(i);
+        }
+        ArrayFunction arrayFunction = new ArrayFunction(data);
+
+        return arrayFunction.convertDataToString();
+
+    }
+
+    @Test
+    public void configParseTest() {
 
         // try load/parse the default config:
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.DEFAULT);
@@ -22,6 +45,9 @@ public class ParameterizedEvaluationTest {
         pe = new ParameterizedEvaluation();
 
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL);
+        pe = new ParameterizedEvaluation();
+
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
         pe = new ParameterizedEvaluation();
     }
 

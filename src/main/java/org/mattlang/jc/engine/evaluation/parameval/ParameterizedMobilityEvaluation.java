@@ -14,9 +14,12 @@ import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
+import lombok.Getter;
+
 /**
  * Paremeterized Mobility Evaluation.
  */
+@Getter
 public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     private static int[] SAFETYTABLE = {
