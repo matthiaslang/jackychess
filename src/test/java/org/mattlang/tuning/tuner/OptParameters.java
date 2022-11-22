@@ -28,6 +28,7 @@ public class OptParameters {
 
     private boolean tuneMaterial = true;
 
+    private boolean tuneMobility = true;
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;
 

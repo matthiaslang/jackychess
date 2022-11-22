@@ -35,4 +35,16 @@ public class ArrayFunction implements Function {
                 .mapToObj(v -> Integer.toString(v))
                 .collect(Collectors.joining(", "));
     }
+
+    public ArrayFunction copy() {
+        return ArrayFunction.parse(convertDataToString());
+    }
+
+    public int getSize() {
+        return funVals.length;
+    }
+
+    public void setVal(int index, int val) {
+        funVals[index] = val;
+    }
 }

@@ -13,10 +13,9 @@ import java.util.Set;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.*;
+import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
@@ -100,13 +99,73 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                     ParameterizedPstEvaluation::getQueenEG));
             groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
                     ParameterizedPstEvaluation::getKingEG));
-            
+        }
+
+        if (optParams.isTuneMobility()) {
+            ParameterizedMobilityEvaluation mobEval = parameterizedEvaluation.getMobEvaluation();
+
+            if (mobEval.getParamsKnight().mobilityMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityMg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityMG)));
+            }
+            if (mobEval.getParamsKnight().mobilityEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityEg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityEG)));
+            }
+
+            if (mobEval.getParamsBishop().mobilityMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityMg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityMG)));
+            }
+            if (mobEval.getParamsBishop().mobilityEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityEg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityEG)));
+            }
+
+            if (mobEval.getParamsRook().mobilityMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityMg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityMG)));
+            }
+            if (mobEval.getParamsRook().mobilityEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityEg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityEG)));
+            }
+
+            if (mobEval.getParamsQueen().mobilityMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityMg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityMG)));
+            }
+            if (mobEval.getParamsQueen().mobilityEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityEg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityEG)));
+            }
         }
 
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
         }
 
+    }
+
+    private void addMobGroups(ArrayList<TuningParameterGroup> groups, MobFigParams mobFigParams) {
+        if (mobFigParams.mobilityMG instanceof ArrayFunction) {
+            ArrayFunction funMg = (ArrayFunction) mobFigParams.mobilityMG;
+            groups.add(new ArrayFunctionParameterGroup(mobFigParams.propertyMobilityMg, parameterizedEvaluation,
+                    e -> funMg));
+        }
+        if (mobFigParams.mobilityEG instanceof ArrayFunction) {
+            ArrayFunction funEg = (ArrayFunction) mobFigParams.mobilityEG;
+            groups.add(new ArrayFunctionParameterGroup(mobFigParams.propertyMobilityEg, parameterizedEvaluation,
+                    e -> funEg));
+        }
     }
 
     private ParamTuneableEvaluateFunction(ArrayList<TuningParameterGroup> groups, ArrayList<TuningParameter> params,

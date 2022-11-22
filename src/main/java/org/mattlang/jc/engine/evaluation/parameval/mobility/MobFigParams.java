@@ -12,10 +12,14 @@ public class MobFigParams {
     public final Function tropismEG;
 
     public final Function kingAtt;
+    public final String propertyMobilityMg;
+    public final String propertyMobilityEg;
 
     public MobFigParams(EvalConfig config, String propBaseName) {
-        mobilityMG = config.parseFunction(propBaseName + "MobMG");
-        mobilityEG = config.parseFunction(propBaseName + "MobEG");
+        propertyMobilityMg = propBaseName + "MobMG";
+        mobilityMG = config.parseFunction(propertyMobilityMg);
+        propertyMobilityEg = propBaseName + "MobEG";
+        mobilityEG = config.parseFunction(propertyMobilityEg);
 
         tropismMG = config.parseFunction(propBaseName + "TropismMG");
         tropismEG = config.parseFunction(propBaseName + "TropismEG");

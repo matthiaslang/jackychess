@@ -49,6 +49,7 @@ public class ParameterizedEvaluationTest {
 
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
         pe = new ParameterizedEvaluation();
+        pe.getMobEvaluation();
     }
 
     @Test
