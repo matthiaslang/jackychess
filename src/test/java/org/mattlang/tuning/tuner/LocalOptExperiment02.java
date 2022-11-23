@@ -14,6 +14,8 @@ public class LocalOptExperiment02 {
                 .adjustK(false)
                 .multiThreading(true)
                 .threadCount(7)
+                .delta(0.00000001)
+                .stepGranularity( new int[]{ /*20, 15, 10,*/ 5, 3, 1 })
                 .removeDuplicateFens(true)
                 .tunePst(false)
                 .tuneMaterial(false)

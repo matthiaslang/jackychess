@@ -93,7 +93,7 @@ public class LocalOptimizationTuner {
 
         if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");
-            LocalOptimizerK optimizerK = new LocalOptimizerK();
+            LocalOptimizerK optimizerK = new LocalOptimizerK(params);
             double k = optimizerK.optimize(evaluate, dataset);
             LOGGER.info("Scaling finished: K=" + k);
             dataset.setK(k);
@@ -107,7 +107,7 @@ public class LocalOptimizationTuner {
             });
         }
 
-        LocalOptimizer optimizer = new LocalOptimizer(outputDir, markdownAppender);
+        LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);
 
         LOGGER.info("Initial Parameter values:");
         LOGGER.info(evaluate.collectParamDescr());

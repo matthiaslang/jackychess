@@ -28,6 +28,15 @@ public class OptParameters {
 
     private boolean tuneMaterial = true;
 
+    /**
+     * safety delta value to ensure that error is not only better by a minor calculation precision issue.
+     */
+    private double delta = 0.00000001;
+    /**
+     * Steps for increment which should be used in sequence to optimize the error value.
+     */
+    private int[] stepGranularity = { /*20, 15, 10,*/ 5, 3, 1 };
+
     private boolean tuneMobility = true;
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;

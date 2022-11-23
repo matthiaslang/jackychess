@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
+import org.mattlang.tuning.tuner.OptParameters;
 
 /**
  * Optimizer to optimize the scaling Constant K.
@@ -13,15 +14,18 @@ import org.mattlang.jc.StopWatch;
 public class LocalOptimizerK  {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizerK.class.getSimpleName());
+    private final double delta;
 
-    /**
-     * safety delta value to ensure that error is not only better by a minor calculation precision issue.
-     */
-    public static final double DELTA = 0.00000001;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
 
+    private OptParameters params;
+
+    public LocalOptimizerK(OptParameters params) {
+        this.params = params;
+        this.delta = params.getDelta();
+    }
 
     public double optimize(TuneableEvaluateFunction evaluate, DataSet dataSet) {
         this.dataSet = dataSet;
@@ -52,13 +56,13 @@ public class LocalOptimizerK  {
             }
             dataSet.setK(dataSet.getK() + KDELTA);
             double newE = e(bestParValues);
-            if (newE < bestE - DELTA) {
+            if (newE < bestE - delta) {
                 bestE = newE;
                 improved = true;
             } else {
                 dataSet.setK(dataSet.getK() - 2 * KDELTA);
                 newE = e(bestParValues);
-                if (newE < bestE - DELTA) {
+                if (newE < bestE - delta) {
                     bestE = newE;
                     improved = true;
                 } else {

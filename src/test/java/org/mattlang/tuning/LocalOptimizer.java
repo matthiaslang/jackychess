@@ -6,24 +6,27 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.tuning.tuner.OptParameters;
 
 public class LocalOptimizer implements Optimizer {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizer.class.getSimpleName());
 
-    public static final int[] stepGranularity = { /*20, 15, 10,*/ 5, 3, 1 };
-    /**
-     * safety delta value to ensure that error is not only better by a minor calculation precision issue.
-     */
-    public static final double DELTA = 0.00000001;
+    public final int[] stepGranularity;
+
+    public final double delta;
     private final File outputDir;
     private final MarkdownAppender markdownAppender;
+    private final OptParameters params;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
 
-    public LocalOptimizer(File outputDir, MarkdownAppender markdownAppender) {
+    public LocalOptimizer(File outputDir, OptParameters params, MarkdownAppender markdownAppender) {
         this.outputDir = outputDir;
+        this.params = params;
+        this.delta = params.getDelta();
+        this.stepGranularity = params.getStepGranularity();
         this.markdownAppender = markdownAppender;
     }
 
@@ -63,13 +66,13 @@ public class LocalOptimizer implements Optimizer {
 
                 param.change(step);
                 double newE = e(params);
-                if (newE < bestE - DELTA) {
+                if (newE < bestE - delta) {
                     bestE = newE;
                     improved = true;
                 } else {
                     param.change(-2 * step);
                     newE = e(params);
-                    if (newE < bestE - DELTA) {
+                    if (newE < bestE - delta) {
                         bestE = newE;
                         improved = true;
                     } else {
