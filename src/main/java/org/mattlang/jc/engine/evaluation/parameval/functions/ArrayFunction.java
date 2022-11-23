@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * A function which is backed by an array to lookup the values.
  */
-public class ArrayFunction implements Function {
+public final class ArrayFunction implements Function {
 
     private final int[] funVals;
 

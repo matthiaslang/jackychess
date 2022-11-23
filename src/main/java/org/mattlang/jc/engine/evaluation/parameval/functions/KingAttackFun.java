@@ -14,7 +14,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class KingAttackFun implements Function {
+public final class KingAttackFun implements Function {
 
     /**
      * pattern for a linear formular like "2 * att"

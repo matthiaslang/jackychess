@@ -14,7 +14,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class MobLinFun implements Function {
+public final class MobLinFun implements Function {
 
     /**
      * pattern for a linear formular like "2*(mob-14)"

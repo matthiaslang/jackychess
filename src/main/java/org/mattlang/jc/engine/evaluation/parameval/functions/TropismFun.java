@@ -14,7 +14,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class TropismFun implements Function {
+public final class TropismFun implements Function {
 
     /**
      * pattern for a linear formular like "2 * tropism"
