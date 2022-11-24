@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.mattlang.jc.tools.MarkdownWriter;
@@ -35,7 +36,7 @@ public class OptParameters {
     /**
      * Steps for increment which should be used in sequence to optimize the error value.
      */
-    private int[] stepGranularity = { /*20, 15, 10,*/ 5, 3, 1 };
+    private List<Integer> stepGranularity = Arrays.asList( /*20, 15, 10,*/ 5, 3, 1 );
 
     private boolean tuneMobility = true;
     private boolean tuneKingAttack = true;

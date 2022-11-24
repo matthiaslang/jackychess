@@ -12,7 +12,7 @@ public class LocalOptimizer implements Optimizer {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizer.class.getSimpleName());
 
-    public final int[] stepGranularity;
+    public final List<Integer> stepGranularity;
 
     public final double delta;
     private final File outputDir;

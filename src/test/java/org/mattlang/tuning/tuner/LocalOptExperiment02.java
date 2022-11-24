@@ -1,7 +1,8 @@
 package org.mattlang.tuning.tuner;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
-import java.util.Arrays;
 
 public class LocalOptExperiment02 {
 
@@ -15,14 +16,14 @@ public class LocalOptExperiment02 {
                 .multiThreading(true)
                 .threadCount(7)
                 .delta(0.00000001)
-                .stepGranularity( new int[]{ /*20, 15, 10,*/ 5, 3, 1 })
+                .stepGranularity( asList( /*20, 15, 10,*/ 5, 3, 1 ))
                 .removeDuplicateFens(true)
                 .tunePst(false)
                 .tuneMaterial(false)
                 .tuneAdjustments(false)
                 .tuneMobility(false)
                 .tuneKingAttack(true)
-                .inputFiles(Arrays.asList(
+                .inputFiles(asList(
                         "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
                 .build();
 
