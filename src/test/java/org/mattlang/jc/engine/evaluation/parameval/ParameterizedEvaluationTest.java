@@ -19,7 +19,7 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
-        System.out.println(convertFunction(14 + 1, pe.getMobEvaluation().getParamsRook().mobilityMG));
+        System.out.println(convertFunction(12, pe.getMobEvaluation().getParamsKing().kingAtt));
 
     }
 

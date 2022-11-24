@@ -248,10 +248,14 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
             bResult.kingAttWeight = 0;
 
-        result.result += (SAFETYTABLE[wResult.kingAttWeight] - SAFETYTABLE[bResult.kingAttWeight]);
+        result.result += (getSafetyValue(wResult.kingAttWeight) - getSafetyValue(bResult.kingAttWeight));
 
         result.result += (wResult.positionalThemes - bResult.positionalThemes);
 
         result.result += (wResult.blockages - bResult.blockages);
+    }
+
+    private int getSafetyValue(int kingAtt){
+        return kingAtt< SAFETYTABLE.length? SAFETYTABLE[wResult.kingAttWeight]: 500;
     }
 }

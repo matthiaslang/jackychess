@@ -20,7 +20,8 @@ public class LocalOptExperiment02 {
                 .tunePst(false)
                 .tuneMaterial(false)
                 .tuneAdjustments(false)
-                .tuneMobility(true)
+                .tuneMobility(false)
+                .tuneKingAttack(true)
                 .inputFiles(Arrays.asList(
                         "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
                 .build();

@@ -5,8 +5,11 @@ import java.util.function.Function;
 
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.tuning.Intervall;
 
 public class MaterialValueParam extends IntegerValueParam {
+
+    private static final Intervall MATERIAL_VALUE_INTERVAL = new Intervall(0, 2000);
 
     private final BiConsumer<ParameterizedMaterialEvaluation, Integer> saver;
 
@@ -28,7 +31,8 @@ public class MaterialValueParam extends IntegerValueParam {
             public void accept(ParameterizedEvaluation parameterizedEvaluation, Integer integer) {
                     saver.accept(parameterizedEvaluation.getMatEvaluation(), integer);
             }
-        });
+        },
+                MATERIAL_VALUE_INTERVAL);
        this.saver=saver;
        this.getter=getter;
     }

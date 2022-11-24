@@ -14,6 +14,9 @@ public class MobFigParams {
     public final Function kingAtt;
     public final String propertyMobilityMg;
     public final String propertyMobilityEg;
+    public final String propertyKingAtt;
+    public final String propertyTropismMg;
+    public final String propertyTropismEg;
 
     public MobFigParams(EvalConfig config, String propBaseName) {
         propertyMobilityMg = propBaseName + "MobMG";
@@ -21,9 +24,12 @@ public class MobFigParams {
         propertyMobilityEg = propBaseName + "MobEG";
         mobilityEG = config.parseFunction(propertyMobilityEg);
 
-        tropismMG = config.parseFunction(propBaseName + "TropismMG");
-        tropismEG = config.parseFunction(propBaseName + "TropismEG");
+        propertyTropismMg = propBaseName + "TropismMG";
+        tropismMG = config.parseFunction(propertyTropismMg);
+        propertyTropismEg = propBaseName + "TropismEG";
+        tropismEG = config.parseFunction(propertyTropismEg);
 
-        kingAtt = config.parseFunction(propBaseName + "KingAttack");
+        propertyKingAtt = propBaseName + "KingAttack";
+        kingAtt = config.parseFunction(propertyKingAtt);
     }
 }

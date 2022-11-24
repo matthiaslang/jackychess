@@ -64,20 +64,23 @@ public class LocalOptimizer implements Optimizer {
                     progressInfo(step, bestE, round, stopWatch);
                 }
 
-                param.change(step);
-                double newE = e(params);
-                if (newE < bestE - delta) {
-                    bestE = newE;
-                    improved = true;
-                } else {
-                    param.change(-2 * step);
-                    newE = e(params);
+                if (param.isChangePossible(step)) {
+
+                    param.change(step);
+                    double newE = e(params);
                     if (newE < bestE - delta) {
                         bestE = newE;
                         improved = true;
                     } else {
-                        // reset change:
-                        param.change(step);
+                        param.change(-2 * step);
+                        newE = e(params);
+                        if (newE < bestE - delta) {
+                            bestE = newE;
+                            improved = true;
+                        } else {
+                            // reset change:
+                            param.change(step);
+                        }
                     }
                 }
             }

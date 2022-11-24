@@ -38,6 +38,7 @@ public class OptParameters {
     private int[] stepGranularity = { /*20, 15, 10,*/ 5, 3, 1 };
 
     private boolean tuneMobility = true;
+    private boolean tuneKingAttack = true;
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;
 

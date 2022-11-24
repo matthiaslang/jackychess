@@ -13,11 +13,13 @@ import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
+import org.mattlang.tuning.Intervall;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
 
 public class PstPatternParameterGroup implements TuningParameterGroup {
 
+    private final static Intervall PST_VALUE_INTERVAL=new Intervall(-500, +500);
     private final String tableCsvName;
 
     private final Function<ParameterizedPstEvaluation, Pattern> getter;
@@ -42,7 +44,7 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
                 int mirroredPos = mirroredPos(pos);
                 if (!alreadyHandled.contains(pos) && !alreadyHandled.contains(mirroredPos)) {
 
-                    parameters.add(new PstValueParam(this, pos, mirroredPos, pattern.getRawVal(pos)));
+                    parameters.add(new PstValueParam(this, pos, mirroredPos, pattern.getRawVal(pos), PST_VALUE_INTERVAL));
                 }
                 alreadyHandled.add(pos);
                 alreadyHandled.add(mirroredPos);
@@ -50,7 +52,7 @@ public class PstPatternParameterGroup implements TuningParameterGroup {
 
         } else {
             for (int pos = 0; pos < 64; pos++) {
-                parameters.add(new PstValueParam(this, pos, pattern.getRawVal(pos)));
+                parameters.add(new PstValueParam(this, pos, pattern.getRawVal(pos), PST_VALUE_INTERVAL));
             }
         }
     }
