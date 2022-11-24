@@ -256,6 +256,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     private int getSafetyValue(int kingAtt){
-        return kingAtt< SAFETYTABLE.length? SAFETYTABLE[wResult.kingAttWeight]: 500;
+        return kingAtt< SAFETYTABLE.length? SAFETYTABLE[kingAtt]: 500;
     }
 }
