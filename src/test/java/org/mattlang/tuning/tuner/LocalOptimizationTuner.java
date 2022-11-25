@@ -109,15 +109,13 @@ public class LocalOptimizationTuner {
 
         LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);
 
-        LOGGER.info("Initial Parameter values:");
-        LOGGER.info(evaluate.collectParamDescr());
+        LOGGER.info("Initial Parameter values:\n" + evaluate.collectParamDescr());
         evaluate.writeParamDescr(outputDir);
 
         LOGGER.info("Opimizing...");
         List<TuningParameter> optimizedParams = optimizer.optimize(evaluate, dataset);
 
-        LOGGER.info("Optimized Parameter values:");
-        LOGGER.info(evaluate.collectParamDescr());
+        LOGGER.info("Optimized Parameter values:\n" + evaluate.collectParamDescr());
         evaluate.writeParamDescr(outputDir);
 
         executorService.shutdown();

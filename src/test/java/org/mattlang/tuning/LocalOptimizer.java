@@ -64,6 +64,7 @@ public class LocalOptimizer implements Optimizer {
                     progressInfo(step, bestE, round, stopWatch);
                 }
 
+                // if we are within bounds do a step change
                 if (param.isChangePossible(step)) {
 
                     param.change(step);
@@ -71,7 +72,8 @@ public class LocalOptimizer implements Optimizer {
                     if (newE < bestE - delta) {
                         bestE = newE;
                         improved = true;
-                    } else {
+                    } else if (param.isChangePossible(-2 * step)) {
+                        // otherwise try the step in the different direction (if allowed):
                         param.change(-2 * step);
                         newE = e(params);
                         if (newE < bestE - delta) {
@@ -81,6 +83,9 @@ public class LocalOptimizer implements Optimizer {
                             // reset change:
                             param.change(step);
                         }
+                    } else {
+                        // change back
+                        param.change(-step);
                     }
                 }
             }

@@ -255,7 +255,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.result += (wResult.blockages - bResult.blockages);
     }
 
-    private int getSafetyValue(int kingAtt){
-        return kingAtt< SAFETYTABLE.length? SAFETYTABLE[kingAtt]: 500;
+    private static int getSafetyValue(int kingAtt) {
+        return kingAtt < SAFETYTABLE.length ? SAFETYTABLE[kingAtt] : 500;
     }
 }

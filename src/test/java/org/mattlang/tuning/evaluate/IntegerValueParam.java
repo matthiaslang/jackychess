@@ -63,6 +63,6 @@ public class IntegerValueParam implements TuningParameter, TuningParameterGroup 
 
     @Override
     public boolean isChangePossible(int step) {
-        return intervall.isInIntervall(value + step) && intervall.isInIntervall(value - step);
+        return intervall.isInIntervall(value + step);
     }
 }

@@ -35,6 +35,6 @@ public class ArrayFunctionParam implements TuningParameter {
 
     @Override
     public boolean isChangePossible(int step) {
-        return intervall.isInIntervall(val+step) && intervall.isInIntervall(val-step);
+        return intervall.isInIntervall(val + step);
     }
 }
