@@ -37,172 +37,187 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         this.optParams = optParams;
 
         if (optParams.isTuneAdjustments()) {
-            groups.add(new AdjustmentValueParam(TEMPO, parameterizedEvaluation,
-                    ParameterizedAdjustmentsEvaluation::getTempo, ParameterizedAdjustmentsEvaluation::setTempo));
-            groups.add(new AdjustmentValueParam(BISHOP_PAIR, parameterizedEvaluation,
-                    ParameterizedAdjustmentsEvaluation::getBishopPair,
-                    ParameterizedAdjustmentsEvaluation::setBishopPair));
-            groups.add(new AdjustmentValueParam(KNIGHT_PAIR, parameterizedEvaluation,
-                    ParameterizedAdjustmentsEvaluation::getKnightPair,
-                    ParameterizedAdjustmentsEvaluation::setKnightPair));
-            groups.add(new AdjustmentValueParam(ROOK_PAIR, parameterizedEvaluation,
-                    ParameterizedAdjustmentsEvaluation::getRookPair, ParameterizedAdjustmentsEvaluation::setRookPair));
-
+            addAdjustmentParameters();
         }
 
         if (optParams.isTuneMaterial()) {
-            groups.add(new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getPawnMG, ParameterizedMaterialEvaluation::setPawnMG));
-            groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getKnightMG, ParameterizedMaterialEvaluation::setKnightMG));
-            groups.add(new MaterialValueParam(MAT_BISHOP_MG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getBishopMG, ParameterizedMaterialEvaluation::setBishopMG));
-            groups.add(new MaterialValueParam(MAT_ROOK_MG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getRookMG, ParameterizedMaterialEvaluation::setRookMG));
-            groups.add(new MaterialValueParam(MAT_QUEEN_MG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getQueenMG, ParameterizedMaterialEvaluation::setQueenMG));
-
-            groups.add(new MaterialValueParam(MAT_PAWN_EG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getPawnEG, ParameterizedMaterialEvaluation::setPawnEG));
-            groups.add(new MaterialValueParam(MAT_KNIGHT_EG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getKnightEG, ParameterizedMaterialEvaluation::setKnightEG));
-            groups.add(new MaterialValueParam(MAT_BISHOP_EG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getBishopEG, ParameterizedMaterialEvaluation::setBishopEG));
-            groups.add(new MaterialValueParam(MAT_ROOK_EG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getRookEG, ParameterizedMaterialEvaluation::setRookEG));
-            groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
-                    ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
+            addMaterialParameters();
         }
 
         if (optParams.isTunePst()) {
-            boolean mirrored = true;
-            groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getPawnMG));
-            groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getBishopMG));
-            groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getKnightMG));
-            groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getRookMG));
-            groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getQueenMG));
-            groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getKingMG));
-
-            groups.add(new PstPatternParameterGroup(PAWN_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getPawnEG));
-            groups.add(new PstPatternParameterGroup(BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getBishopEG));
-            groups.add(new PstPatternParameterGroup(KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getKnightEG));
-            groups.add(new PstPatternParameterGroup(ROOK_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getRookEG));
-            groups.add(new PstPatternParameterGroup(QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getQueenEG));
-            groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
-                    ParameterizedPstEvaluation::getKingEG));
+            addPstParameters();
         }
         ParameterizedMobilityEvaluation mobEval = parameterizedEvaluation.getMobEvaluation();
 
         if (optParams.isTuneMobility()) {
-
-            if (mobEval.getParamsKnight().mobilityMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityMg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityMG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-            if (mobEval.getParamsKnight().mobilityEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityEg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityEG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsBishop().mobilityMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityMg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityMG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-            if (mobEval.getParamsBishop().mobilityEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityEg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityEG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsRook().mobilityMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityMg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityMG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-            if (mobEval.getParamsRook().mobilityEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityEg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityEG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsQueen().mobilityMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityMg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityMG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-            if (mobEval.getParamsQueen().mobilityEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityEg,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityEG),
-                        MOBILITY_VALUE_INTERVAL));
-            }
-
+            addMobilityParameters(mobEval);
         }
 
         if (optParams.isTuneKingAttack()) {
-
-            if (mobEval.getParamsKnight().kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyKingAtt,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsBishop().kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyKingAtt,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsRook().kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyKingAtt,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsQueen().kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyKingAtt,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
-            }
-
-            if (mobEval.getParamsKing().kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKing().propertyKingAtt,
-                        parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getParamsKing().kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
-            }
-
+            addKingAttackParameters(mobEval);
         }
 
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
         }
 
+    }
+
+    private void addKingAttackParameters(ParameterizedMobilityEvaluation mobEval) {
+        if (mobEval.getParamsKnight().kingAtt instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyKingAtt,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().kingAtt),
+                    KINGATTACK_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsBishop().kingAtt instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyKingAtt,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().kingAtt),
+                    KINGATTACK_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsRook().kingAtt instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyKingAtt,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().kingAtt),
+                    KINGATTACK_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsQueen().kingAtt instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyKingAtt,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().kingAtt),
+                    KINGATTACK_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsKing().kingAtt instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKing().propertyKingAtt,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKing().kingAtt),
+                    KINGATTACK_VALUE_INTERVAL));
+        }
+    }
+
+    private void addMobilityParameters(ParameterizedMobilityEvaluation mobEval) {
+        if (mobEval.getParamsKnight().mobilityMG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityMg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityMG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+        if (mobEval.getParamsKnight().mobilityEG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityEg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityEG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsBishop().mobilityMG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityMg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityMG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+        if (mobEval.getParamsBishop().mobilityEG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityEg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityEG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsRook().mobilityMG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityMg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityMG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+        if (mobEval.getParamsRook().mobilityEG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityEg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityEG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+
+        if (mobEval.getParamsQueen().mobilityMG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityMg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityMG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+        if (mobEval.getParamsQueen().mobilityEG instanceof ArrayFunction) {
+            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityEg,
+                    parameterizedEvaluation,
+                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityEG),
+                    MOBILITY_VALUE_INTERVAL));
+        }
+    }
+
+    private void addPstParameters() {
+        boolean mirrored = true;
+        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getPawnMG));
+        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getBishopMG));
+        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKnightMG));
+        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getRookMG));
+        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getQueenMG));
+        groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKingMG));
+
+        groups.add(new PstPatternParameterGroup(PAWN_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getPawnEG));
+        groups.add(new PstPatternParameterGroup(BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getBishopEG));
+        groups.add(new PstPatternParameterGroup(KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKnightEG));
+        groups.add(new PstPatternParameterGroup(ROOK_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getRookEG));
+        groups.add(new PstPatternParameterGroup(QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getQueenEG));
+        groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKingEG));
+    }
+
+    private void addMaterialParameters() {
+        groups.add(new MaterialValueParam(MAT_PAWN_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getPawnMG, ParameterizedMaterialEvaluation::setPawnMG));
+        groups.add(new MaterialValueParam(MAT_KNIGHT_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getKnightMG, ParameterizedMaterialEvaluation::setKnightMG));
+        groups.add(new MaterialValueParam(MAT_BISHOP_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getBishopMG, ParameterizedMaterialEvaluation::setBishopMG));
+        groups.add(new MaterialValueParam(MAT_ROOK_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getRookMG, ParameterizedMaterialEvaluation::setRookMG));
+        groups.add(new MaterialValueParam(MAT_QUEEN_MG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getQueenMG, ParameterizedMaterialEvaluation::setQueenMG));
+
+        groups.add(new MaterialValueParam(MAT_PAWN_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getPawnEG, ParameterizedMaterialEvaluation::setPawnEG));
+        groups.add(new MaterialValueParam(MAT_KNIGHT_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getKnightEG, ParameterizedMaterialEvaluation::setKnightEG));
+        groups.add(new MaterialValueParam(MAT_BISHOP_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getBishopEG, ParameterizedMaterialEvaluation::setBishopEG));
+        groups.add(new MaterialValueParam(MAT_ROOK_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getRookEG, ParameterizedMaterialEvaluation::setRookEG));
+        groups.add(new MaterialValueParam(MAT_QUEEN_EG, parameterizedEvaluation,
+                ParameterizedMaterialEvaluation::getQueenEG, ParameterizedMaterialEvaluation::setQueenEG));
+    }
+
+    private void addAdjustmentParameters() {
+        groups.add(new AdjustmentValueParam(TEMPO, parameterizedEvaluation,
+                ParameterizedAdjustmentsEvaluation::getTempo, ParameterizedAdjustmentsEvaluation::setTempo));
+        groups.add(new AdjustmentValueParam(BISHOP_PAIR, parameterizedEvaluation,
+                ParameterizedAdjustmentsEvaluation::getBishopPair,
+                ParameterizedAdjustmentsEvaluation::setBishopPair));
+        groups.add(new AdjustmentValueParam(KNIGHT_PAIR, parameterizedEvaluation,
+                ParameterizedAdjustmentsEvaluation::getKnightPair,
+                ParameterizedAdjustmentsEvaluation::setKnightPair));
+        groups.add(new AdjustmentValueParam(ROOK_PAIR, parameterizedEvaluation,
+                ParameterizedAdjustmentsEvaluation::getRookPair, ParameterizedAdjustmentsEvaluation::setRookPair));
     }
 
     private ParamTuneableEvaluateFunction(ArrayList<TuningParameterGroup> groups, ArrayList<TuningParameter> params,
