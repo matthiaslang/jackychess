@@ -1,6 +1,8 @@
 package org.mattlang.tuning.evaluate;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
+import static org.mattlang.jc.board.FigureType.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
@@ -13,8 +15,10 @@ import java.util.Set;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.parameval.*;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.tuning.Intervall;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
@@ -64,93 +68,34 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     private void addKingAttackParameters(ParameterizedMobilityEvaluation mobEval) {
-        if (mobEval.getParamsKnight().kingAtt instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyKingAtt,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().kingAtt),
-                    KINGATTACK_VALUE_INTERVAL));
+        for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
+
+            if (mobEval.getMobFigParams(type).kingAtt instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAtt,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).kingAtt),
+                        KINGATTACK_VALUE_INTERVAL));
+            }
         }
 
-        if (mobEval.getParamsBishop().kingAtt instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyKingAtt,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().kingAtt),
-                    KINGATTACK_VALUE_INTERVAL));
-        }
-
-        if (mobEval.getParamsRook().kingAtt instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyKingAtt,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().kingAtt),
-                    KINGATTACK_VALUE_INTERVAL));
-        }
-
-        if (mobEval.getParamsQueen().kingAtt instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyKingAtt,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().kingAtt),
-                    KINGATTACK_VALUE_INTERVAL));
-        }
-
-        if (mobEval.getParamsKing().kingAtt instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKing().propertyKingAtt,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKing().kingAtt),
-                    KINGATTACK_VALUE_INTERVAL));
-        }
     }
 
     private void addMobilityParameters(ParameterizedMobilityEvaluation mobEval) {
-        if (mobEval.getParamsKnight().mobilityMG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityMg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityMG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-        if (mobEval.getParamsKnight().mobilityEG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsKnight().propertyMobilityEg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsKnight().mobilityEG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
+        for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
 
-        if (mobEval.getParamsBishop().mobilityMG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityMg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityMG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-        if (mobEval.getParamsBishop().mobilityEG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsBishop().propertyMobilityEg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsBishop().mobilityEG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-
-        if (mobEval.getParamsRook().mobilityMG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityMg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityMG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-        if (mobEval.getParamsRook().mobilityEG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsRook().propertyMobilityEg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsRook().mobilityEG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-
-        if (mobEval.getParamsQueen().mobilityMG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityMg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityMG),
-                    MOBILITY_VALUE_INTERVAL));
-        }
-        if (mobEval.getParamsQueen().mobilityEG instanceof ArrayFunction) {
-            groups.add(new ArrayFunctionParameterGroup(mobEval.getParamsQueen().propertyMobilityEg,
-                    parameterizedEvaluation,
-                    e -> ((ArrayFunction) e.getMobEvaluation().getParamsQueen().mobilityEG),
-                    MOBILITY_VALUE_INTERVAL));
+            MobFigParams figParams = mobEval.getMobFigParams(type);
+            if (figParams.mobilityMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityMg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).mobilityMG),
+                        MOBILITY_VALUE_INTERVAL));
+            }
+            if (figParams.mobilityEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityEg,
+                        parameterizedEvaluation,
+                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).mobilityEG),
+                        MOBILITY_VALUE_INTERVAL));
+            }
         }
     }
 
