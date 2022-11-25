@@ -4,7 +4,7 @@ import static org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalR
 
 import org.junit.Test;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 
 public class BBTest {
 
@@ -24,11 +24,11 @@ public class BBTest {
         long kingMask = 1L << 63;
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
-        long fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.WHITE);
+        long fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.WHITE);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
-        fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.BLACK);
+        fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.BLACK);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
@@ -39,11 +39,11 @@ public class BBTest {
         long kingMask = 1L << 1;
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
-        long fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.WHITE);
+        long fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.WHITE);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
-        fileFilled = ParameterizedMobilityEvaluation.createKingZoneMask(kingMask, Color.BLACK);
+        fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.BLACK);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 

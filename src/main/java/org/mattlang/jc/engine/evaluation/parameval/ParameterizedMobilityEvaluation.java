@@ -3,7 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BB.*;
+import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -91,8 +91,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long occupancy = ownFigsMask | opponentFigsMask;
 
         long oppKingMask = bb.getPieceSet(FT_KING, xside);
-        long oppKingZone = createKingZoneMask(oppKingMask, xside);
         int oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
+        long oppKingZone = getKingZoneMask(xside.ordinal(), oppKingPos);
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
         long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
@@ -188,11 +188,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.countFigureVals(paramsKing, mobility, captures, connectivity, kingZoneAttacs, tropism);
 
         result.blockedPieces(bb, side);
-    }
-
-    public static long createKingZoneMask(long oppKingMask, Color xside) {
-        long frontMask = xside == WHITE ? kingAttacks(nortOne(oppKingMask)) : kingAttacks(soutOne(oppKingMask));
-        return kingAttacks(oppKingMask) | frontMask;
     }
 
     /**
