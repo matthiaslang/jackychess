@@ -67,7 +67,9 @@ public class MobilityEvalResult {
     private int c3KnightPenalty;
     private int returningBishop;
 
-    public MobilityEvalResult(EvalConfig config) {
+    private boolean blockEvalDeactivated = false;
+
+    public MobilityEvalResult(boolean forTuning, EvalConfig config) {
 
         rookOpen = config.getPosIntProp(ROOK_OPEN);
         rookHalf = config.getPosIntProp(ROOK_HALF);
@@ -85,8 +87,11 @@ public class MobilityEvalResult {
 
         returningBishop = config.getPosIntProp(RETURNING_BISHOP);
 
+        blockEvalDeactivated = !forTuning &&
+                kingBlocksRookPenalty + blockCentralPawnPenalty + bishopTrappedA7Penalty + bishopTrappedA6Penalty
+                        + knightTrappedA8Penalty + knightTrappedA7Penalty
+                        + c3KnightPenalty + returningBishop == 0;
     }
-
     public void clear() {
         mobilityMG = 0;
         mobilityEG = 0;
@@ -174,6 +179,9 @@ public class MobilityEvalResult {
      ******************************************************************************/
 
     public void blockedPieces(BitChessBoard bb, Color side) {
+        if (blockEvalDeactivated) {
+            return;
+        }
 
         Color oppo = side.invert();
 

@@ -80,13 +80,11 @@ public class LocalOptimizationTuner {
             LOGGER.info("Statistics after removing duplicates:");
             dataset.logInfos();
         }
-        // create info file with params, if it does not yet exists:
-        if (!mdFile.exists()) {
-            markdownAppender.append(w -> {
-                params.writeMarkdownInfos(w);
-                dataset.writeLogInfos(w);
-            });
-        }
+        // write or append the general infos for this run
+        markdownAppender.append(w -> {
+            params.writeMarkdownInfos(w);
+            dataset.writeLogInfos(w);
+        });
 
         TuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);

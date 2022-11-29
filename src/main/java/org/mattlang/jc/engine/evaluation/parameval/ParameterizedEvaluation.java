@@ -46,16 +46,26 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private boolean endgameEvaluations = false;
 
+    @Getter
+    /**
+     * set in tuning runs.
+     */
+    private boolean forTuning = false;
+
     private IntIntCache evalCache = EvalCache.instance;
 
     public ParameterizedEvaluation() {
+        this(false);
+    }
 
+    public ParameterizedEvaluation(boolean forTuning) {
+        this.forTuning = forTuning;
         EvalConfig config = new EvalConfig();
 
         caching = config.getBoolProp("caching.active");
         endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
-        matEvaluation = new ParameterizedMaterialEvaluation(config);
+        matEvaluation = new ParameterizedMaterialEvaluation(forTuning, config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
 
         mobEvaluation = new ParameterizedMobilityEvaluation(config);
@@ -72,7 +82,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      */
     public static ParameterizedEvaluation createForTuning() {
         //
-        ParameterizedEvaluation eval = new ParameterizedEvaluation();
+        ParameterizedEvaluation eval = new ParameterizedEvaluation(true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)

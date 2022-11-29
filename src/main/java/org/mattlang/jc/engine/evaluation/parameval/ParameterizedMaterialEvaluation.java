@@ -41,7 +41,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     private boolean deactivated = false;
 
-    public ParameterizedMaterialEvaluation(EvalConfig config) {
+    public ParameterizedMaterialEvaluation(boolean forTuning, EvalConfig config) {
 
         pawnMG = config.getIntProp(MAT_PAWN_MG);
         knightMG = config.getIntProp(MAT_KNIGHT_MG);
@@ -59,7 +59,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
          * some configs might not use material properties, but use only PST for the material evaluation.
          * In that case the properties are all 0, and we can disable this evaluation.
          */
-        deactivated =
+        deactivated = !forTuning &&
                 pawnMG + knightMG + bishopMG + rookMG + queenMG + pawnEG + knightEG + bishopEG + rookEG + queenEG == 0;
     }
 
