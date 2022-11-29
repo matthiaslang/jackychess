@@ -68,7 +68,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         matEvaluation = new ParameterizedMaterialEvaluation(forTuning, config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
 
-        mobEvaluation = new ParameterizedMobilityEvaluation(config);
+        mobEvaluation = new ParameterizedMobilityEvaluation(forTuning, config);
         pawnEvaluation = new ParameterizedPawnEvaluation(config);
 
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);

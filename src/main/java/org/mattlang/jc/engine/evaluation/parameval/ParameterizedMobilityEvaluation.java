@@ -49,7 +49,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private MobFigParams paramsQueen;
     private MobFigParams paramsKing;
 
-    public ParameterizedMobilityEvaluation(EvalConfig config) {
+    public ParameterizedMobilityEvaluation(boolean forTuning, EvalConfig config) {
 
         paramsKnight = new MobFigParams(config, "knight");
         paramsBishop = new MobFigParams(config, "bishop");
@@ -57,8 +57,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         paramsQueen = new MobFigParams(config, "queen");
         paramsKing = new MobFigParams(config, "king");
 
-        wResult = new MobilityEvalResult(config);
-        bResult = new MobilityEvalResult(config);
+        wResult = new MobilityEvalResult(forTuning, config);
+        bResult = new MobilityEvalResult(forTuning, config);
 
     }
 
