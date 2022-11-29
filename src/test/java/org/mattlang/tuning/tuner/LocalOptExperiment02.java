@@ -22,6 +22,7 @@ public class LocalOptExperiment02 {
                 .tuneMaterial(false)
                 .tuneAdjustments(false)
                 .tuneMobility(false)
+                .tunePositional(true)
                 .tunePawnEval(true)
                 .tuneKingAttack(true)
                 .inputFiles(asList(

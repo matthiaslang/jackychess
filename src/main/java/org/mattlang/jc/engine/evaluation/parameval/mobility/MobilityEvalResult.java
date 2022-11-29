@@ -29,6 +29,17 @@ public class MobilityEvalResult {
     public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
     public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
     public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
+    public static final String ROOK_OPEN = "rookOpen";
+    public static final String ROOK_HALF = "rookHalf";
+    public static final String EARLY_QUEEN_PENALTY = "earlyQueenPenalty";
+    public static final String KING_BLOCKS_ROOK_PENALTY = "kingBlocksRookPenalty";
+    public static final String BLOCK_CENTRAL_PAWN_PENALTY = "blockCentralPawnPenalty";
+    public static final String BISHOP_TRAPPED_A_7_PENALTY = "bishopTrappedA7Penalty";
+    public static final String BISHOP_TRAPPED_A_6_PENALTY = "bishopTrappedA6Penalty";
+    public static final String KNIGHT_TRAPPED_A_8_PENALTY = "knightTrappedA8Penalty";
+    public static final String KNIGHT_TRAPPED_A_7_PENALTY = "knightTrappedA7Penalty";
+    public static final String C_3_KNIGHT_PENALTY = "c3KnightPenalty";
+    public static final String RETURNING_BISHOP = "returningBishop";
 
     public int mobilityMG;
     public int mobilityEG;
@@ -43,36 +54,36 @@ public class MobilityEvalResult {
 
     // parameters:
 
-    private final int rookOpen;
-    private final int rookHalf;
-    private final int earlyQueenPenalty;
+    private int rookOpen;
+    private int rookHalf;
+    private int earlyQueenPenalty;
 
-    private final int kingBlocksRookPenalty;
-    private final int blockCentralPawnPenalty;
-    private final int bishopTrappedA7Penalty;
-    private final int bishopTrappedA6Penalty;
-    private final int knightTrappedA8Penalty;
-    private final int knightTrappedA7Penalty;
-    private final int c3KnightPenalty;
-    private final int returningBishop;
+    private int kingBlocksRookPenalty;
+    private int blockCentralPawnPenalty;
+    private int bishopTrappedA7Penalty;
+    private int bishopTrappedA6Penalty;
+    private int knightTrappedA8Penalty;
+    private int knightTrappedA7Penalty;
+    private int c3KnightPenalty;
+    private int returningBishop;
 
     public MobilityEvalResult(EvalConfig config) {
 
-        rookOpen = config.getPosIntProp("rookOpen");
-        rookHalf = config.getPosIntProp("rookHalf");
-        earlyQueenPenalty = config.getPosIntProp("earlyQueenPenalty");
+        rookOpen = config.getPosIntProp(ROOK_OPEN);
+        rookHalf = config.getPosIntProp(ROOK_HALF);
+        earlyQueenPenalty = config.getPosIntProp(EARLY_QUEEN_PENALTY);
 
         /* trapped and blocked pieces */
-        kingBlocksRookPenalty = config.getPosIntProp("kingBlocksRookPenalty");
-        blockCentralPawnPenalty = config.getPosIntProp("blockCentralPawnPenalty");
-        bishopTrappedA7Penalty = config.getPosIntProp("bishopTrappedA7Penalty");
-        bishopTrappedA6Penalty = config.getPosIntProp("bishopTrappedA6Penalty");
-        knightTrappedA8Penalty = config.getPosIntProp("knightTrappedA8Penalty");
-        knightTrappedA7Penalty = config.getPosIntProp("knightTrappedA7Penalty");
+        kingBlocksRookPenalty = config.getPosIntProp(KING_BLOCKS_ROOK_PENALTY);
+        blockCentralPawnPenalty = config.getPosIntProp(BLOCK_CENTRAL_PAWN_PENALTY);
+        bishopTrappedA7Penalty = config.getPosIntProp(BISHOP_TRAPPED_A_7_PENALTY);
+        bishopTrappedA6Penalty = config.getPosIntProp(BISHOP_TRAPPED_A_6_PENALTY);
+        knightTrappedA8Penalty = config.getPosIntProp(KNIGHT_TRAPPED_A_8_PENALTY);
+        knightTrappedA7Penalty = config.getPosIntProp(KNIGHT_TRAPPED_A_7_PENALTY);
 
-        c3KnightPenalty = config.getPosIntProp("c3KnightPenalty");
+        c3KnightPenalty = config.getPosIntProp(C_3_KNIGHT_PENALTY);
 
-        returningBishop = config.getPosIntProp("returningBishop");
+        returningBishop = config.getPosIntProp(RETURNING_BISHOP);
 
     }
 

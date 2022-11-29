@@ -39,6 +39,7 @@ public class OptParameters {
     private List<Integer> stepGranularity = Arrays.asList( /*20, 15, 10,*/ 5, 3, 1 );
 
     private boolean tuneMobility = true;
+    private boolean tunePositional = true;
     private boolean tunePawnEval = true;
     private boolean tuneKingAttack = true;
     private boolean tunePst = true;
