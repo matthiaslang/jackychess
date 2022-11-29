@@ -6,18 +6,21 @@ import org.mattlang.tuning.TuningParameter;
 
 import lombok.Getter;
 
+/**
+ * Tuning parameter of a single value of a 64 field pattern.
+ */
 @Getter
-public class PstValueParam implements TuningParameter {
+public class PatternValueParam implements TuningParameter {
 
     private final int pos;
-    private final PstPatternParameterGroup group;
+    private final PatternParameterGroup group;
     private final boolean mirrored;
     private final Intervall intervall;
 
     private int mirroredPos;
     private int val;
 
-    public PstValueParam(PstPatternParameterGroup group, int pos, int val, Intervall intervall) {
+    public PatternValueParam(PatternParameterGroup group, int pos, int val, Intervall intervall) {
         this.group = group;
         this.pos = pos;
         this.val = val;
@@ -25,7 +28,7 @@ public class PstValueParam implements TuningParameter {
         this.intervall=intervall;
     }
 
-    public PstValueParam(PstPatternParameterGroup group, int pos, int mirroredPos, int val, Intervall intervall) {
+    public PatternValueParam(PatternParameterGroup group, int pos, int mirroredPos, int val, Intervall intervall) {
         this.group = group;
         this.pos = pos;
         this.mirroredPos = mirroredPos;

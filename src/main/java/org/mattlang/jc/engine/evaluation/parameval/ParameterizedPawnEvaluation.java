@@ -11,14 +11,29 @@ import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Paremeterized Pawn Evaluation.
  *
  *
  * see also https://www.chessprogramming.org/Pawns_and_Files_(Bitboards)  for bitboard actions.
  */
+@Getter
+@Setter
 public class ParameterizedPawnEvaluation implements EvalComponent {
 
+    public static final String PAWN_SHIELD_2 = "pawnShield2";
+    public static final String PAWN_SHIELD_3 = "pawnShield3";
+    public static final String DOUBLE_PAWN_PENALTY = "doublePawnPenalty";
+    public static final String ATTACKED_PAWN_PENALTY = "attackedPawnPenalty";
+
+    public static final String PAWN_CONFIG_SUB_DIR = "pawn";
+
+    public static final String WEAK_PAWN_FILE = "weakPawn.csv";
+    public static final String PASSED_PAWN_FILE = "passedPawn.csv";
+    public static final String PROTECTED_PASSER_CSV = "protectedPasser.csv";
     private final Pattern weakPawnPst;
 
     private final Pattern passedPawnPst;
@@ -32,14 +47,15 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private int attackedPawnPenalty = 4;
 
     public ParameterizedPawnEvaluation(EvalConfig config) {
-        shield2 = config.getPosIntProp("pawnShield2");
-        shield3 = config.getPosIntProp("pawnShield3");
-        doublePawnPenalty = config.getPosIntProp("doublePawnPenalty");
-        attackedPawnPenalty = config.getPosIntProp("attackedPawnPenalty");
+        shield2 = config.getPosIntProp(PAWN_SHIELD_2);
+        shield3 = config.getPosIntProp(PAWN_SHIELD_3);
+        doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
+        attackedPawnPenalty = config.getPosIntProp(ATTACKED_PAWN_PENALTY);
 
-        weakPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + "pawn/weakPawn.csv");
-        passedPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + "pawn/passedPawn.csv");
-        protectedPasserPst = Pattern.loadFromFullPath(config.getConfigDir() + "pawn/protectedPasser.csv");
+        weakPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
+        passedPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE);
+        protectedPasserPst =
+                Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV);
     }
 
     @Override

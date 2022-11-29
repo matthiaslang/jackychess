@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.board.FigureType.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     private static final Intervall MOBILITY_VALUE_INTERVAL = new Intervall(-500, +500);
     private static final Intervall KINGATTACK_VALUE_INTERVAL = new Intervall(0, +50);
+    public static final Intervall PAWN_PARAMS_INTERVALl = new Intervall(0, 100);
     private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
 
     ArrayList<TuningParameterGroup> groups = new ArrayList<>();
@@ -39,6 +41,10 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     public ParamTuneableEvaluateFunction(OptParameters optParams) {
         this.optParams = optParams;
+
+        if (optParams.isTunePawnEval()) {
+            addPawnParameters();
+        }
 
         if (optParams.isTuneAdjustments()) {
             addAdjustmentParameters();
@@ -64,6 +70,43 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
         }
+
+    }
+
+    private void addPawnParameters() {
+        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.PAWN_SHIELD_2, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getShield2(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setShield2(val),
+                PAWN_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.PAWN_SHIELD_3, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getShield3(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setShield3(val),
+                PAWN_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.ATTACKED_PAWN_PENALTY, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getAttackedPawnPenalty(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation()
+                        .setAttackedPawnPenalty(val),
+                PAWN_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.DOUBLE_PAWN_PENALTY, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getDoublePawnPenalty(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setDoublePawnPenalty(val),
+                PAWN_PARAMS_INTERVALl));
+
+        boolean mirrored = true;
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getWeakPawnPst()));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getProtectedPasserPst()));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnPst()));
 
     }
 

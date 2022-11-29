@@ -22,6 +22,7 @@ public class LocalOptExperiment02 {
                 .tuneMaterial(false)
                 .tuneAdjustments(false)
                 .tuneMobility(false)
+                .tunePawnEval(true)
                 .tuneKingAttack(true)
                 .inputFiles(asList(
                         "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
