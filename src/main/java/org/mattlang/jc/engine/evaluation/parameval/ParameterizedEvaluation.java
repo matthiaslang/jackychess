@@ -35,6 +35,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Getter
     private ParameterizedPawnEvaluation pawnEvaluation;
 
+    @Getter
     private ParameterizedThreatsEvaluation threatsEvaluation;
 
     private ParameterizedSpaceEvaluation spaceEvaluation;
@@ -135,7 +136,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
         threatsEvaluation.eval(result, currBoard);
-        spaceEvaluation.eval(result, currBoard);
+//        spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
 
