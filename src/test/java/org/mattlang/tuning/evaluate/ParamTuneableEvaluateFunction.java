@@ -32,6 +32,8 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     private static final Intervall MOBILITY_VALUE_INTERVAL = new Intervall(-500, +500);
     private static final Intervall KINGATTACK_VALUE_INTERVAL = new Intervall(0, +50);
     public static final Intervall PAWN_PARAMS_INTERVALl = new Intervall(0, 100);
+
+    public static final Intervall THREATS_PARAMS_INTERVALl = new Intervall(0, 200);
     private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
 
     ArrayList<TuningParameterGroup> groups = new ArrayList<>();
@@ -64,6 +66,10 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
             addMobilityParameters(mobEval);
         }
 
+        if (optParams.isTuneThreats()){
+            addThreatsParameters(parameterizedEvaluation);
+        }
+
         if (optParams.isTunePositional()) {
             addPositionalParameters(parameterizedEvaluation);
         }
@@ -75,6 +81,111 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
         }
+
+    }
+
+    private void addThreatsParameters(ParameterizedEvaluation parameterizedEvaluation) {
+
+        groups.add(new ArrayFunctionParameterGroup(
+                ParameterizedThreatsEvaluation.THREAT_BY_MINOR_MG,
+                parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByMinorMg(),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new ArrayFunctionParameterGroup(
+                ParameterizedThreatsEvaluation.THREAT_BY_MINOR_EG,
+                parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByMinorEg(),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new ArrayFunctionParameterGroup(
+                ParameterizedThreatsEvaluation.THREAT_BY_ROOK_MG,
+                parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByRookMg(),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new ArrayFunctionParameterGroup(
+                ParameterizedThreatsEvaluation.THREAT_BY_ROOK_EG,
+                parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByRookEg(),
+                THREATS_PARAMS_INTERVALl));
+
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_KING_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByKingMg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatByKingMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_KING_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByKingEg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatByKingEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.HANGING_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getHangingMg(),
+                (e, val) -> e.getThreatsEvaluation().setHangingMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.HANGING_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getHangingEg(),
+                (e, val) -> e.getThreatsEvaluation().setHangingEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.WEAK_QUEEN_PROTECTION_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getWeakQueenProtectionMg(),
+                (e, val) -> e.getThreatsEvaluation().setWeakQueenProtectionMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.WEAK_QUEEN_PROTECTION_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getWeakQueenProtectionEg(),
+                (e, val) -> e.getThreatsEvaluation().setWeakQueenProtectionEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.RESTRICTED_PIECE_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getRestrictedPieceMg(),
+                (e, val) -> e.getThreatsEvaluation().setRestrictedPieceMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.RESTRICTED_PIECE_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getRestrictedPieceEg(),
+                (e, val) -> e.getThreatsEvaluation().setRestrictedPieceEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_PAWN_PUSH_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByPawnPushMg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatByPawnPushMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_PAWN_PUSH_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByPawnPushEg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatByPawnPushEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_SAFE_PAWN_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatBySafePawnMg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatBySafePawnMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_SAFE_PAWN_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatBySafePawnEg(),
+                (e, val) -> e.getThreatsEvaluation().setThreatBySafePawnEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.SLIDER_ON_QUEEN_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getSliderOnQueenMg(),
+                (e, val) -> e.getThreatsEvaluation().setSliderOnQueenMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.SLIDER_ON_QUEEN_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getSliderOnQueenEg(),
+                (e, val) -> e.getThreatsEvaluation().setSliderOnQueenEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.KNIGHT_ON_QUEEN_MG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getKnightOnQueenMg(),
+                (e, val) -> e.getThreatsEvaluation().setKnightOnQueenMg(val),
+                THREATS_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.KNIGHT_ON_QUEEN_EG, parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getKnightOnQueenEg(),
+                (e, val) -> e.getThreatsEvaluation().setKnightOnQueenEg(val),
+                THREATS_PARAMS_INTERVALl));
+
+
+
 
     }
 
