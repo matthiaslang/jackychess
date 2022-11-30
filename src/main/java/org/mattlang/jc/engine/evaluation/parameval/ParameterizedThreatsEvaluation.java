@@ -12,8 +12,33 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ParameterizedThreatsEvaluation implements EvalComponent {
 
+    public static final String THREAT_BY_MINOR_MG = "threads.ThreatByMinorMg";
+    public static final String THREAT_BY_MINOR_EG = "threads.ThreatByMinorEg";
+    public static final String THREAT_BY_ROOK_MG = "threads.ThreatByRookMg";
+    public static final String THREAT_BY_ROOK_EG = "threads.ThreatByRookEg";
+    public static final String THREAT_BY_KING_MG = "threads.ThreatByKingMg";
+    public static final String THREAT_BY_KING_EG = "threads.ThreatByKingEg";
+    public static final String HANGING_MG = "threads.HangingMg";
+    public static final String HANGING_EG = "threads.HangingEg";
+    public static final String WEAK_QUEEN_PROTECTION_MG = "threads.WeakQueenProtectionMg";
+    public static final String WEAK_QUEEN_PROTECTION_EG = "threads.WeakQueenProtectionEg";
+    public static final String RESTRICTED_PIECE_MG = "threads.RestrictedPieceMg";
+    public static final String RESTRICTED_PIECE_EG = "threads.RestrictedPieceEg";
+    public static final String THREAT_BY_PAWN_PUSH_MG = "threads.ThreatByPawnPushMg";
+    public static final String THREAT_BY_PAWN_PUSH_EG = "threads.ThreatByPawnPushEg";
+    public static final String THREAT_BY_SAFE_PAWN_MG = "threads.ThreatBySafePawnMg";
+    public static final String THREAT_BY_SAFE_PAWN_EG = "threads.ThreatBySafePawnEg";
+    public static final String SLIDER_ON_QUEEN_MG = "threads.SliderOnQueenMg";
+    public static final String SLIDER_ON_QUEEN_EG = "threads.SliderOnQueenEg";
+    public static final String KNIGHT_ON_QUEEN_MG = "threads.KnightOnQueenMg";
+    public static final String KNIGHT_ON_QUEEN_EG = "threads.KnightOnQueenEg";
     private final ArrayFunction threatByMinorMg;
     private final ArrayFunction threatByMinorEg;
     private final ArrayFunction threatByRookMg;
@@ -43,37 +68,37 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     private EvalScore blackThreats = new EvalScore();
 
     public ParameterizedThreatsEvaluation(boolean forTuning, EvalConfig config) {
-        active = !forTuning && config.getBoolProp("threads.active");
+        active = forTuning || config.getBoolProp("threads.active");
 
-        threatByMinorMg = config.parseArray("threads.ThreatByMinorMg");
-        threatByMinorEg = config.parseArray("threads.ThreatByMinorEg");
+        threatByMinorMg = config.parseArray(THREAT_BY_MINOR_MG);
+        threatByMinorEg = config.parseArray(THREAT_BY_MINOR_EG);
 
-        threatByRookMg = config.parseArray("threads.ThreatByRookMg");
-        threatByRookEg = config.parseArray("threads.ThreatByRookEg");
+        threatByRookMg = config.parseArray(THREAT_BY_ROOK_MG);
+        threatByRookEg = config.parseArray(THREAT_BY_ROOK_EG);
 
-        threatByKingMg = config.getPosIntProp("threads.ThreatByKingMg");
-        threatByKingEg = config.getPosIntProp("threads.ThreatByKingEg");
+        threatByKingMg = config.getPosIntProp(THREAT_BY_KING_MG);
+        threatByKingEg = config.getPosIntProp(THREAT_BY_KING_EG);
 
-        hangingMg = config.getPosIntProp("threads.HangingMg");
-        hangingEg = config.getPosIntProp("threads.HangingEg");
+        hangingMg = config.getPosIntProp(HANGING_MG);
+        hangingEg = config.getPosIntProp(HANGING_EG);
 
-        weakQueenProtectionMg = config.getPosIntProp("threads.WeakQueenProtectionMg");
-        weakQueenProtectionEg = config.getPosIntProp("threads.WeakQueenProtectionEg");
+        weakQueenProtectionMg = config.getPosIntProp(WEAK_QUEEN_PROTECTION_MG);
+        weakQueenProtectionEg = config.getPosIntProp(WEAK_QUEEN_PROTECTION_EG);
 
-        restrictedPieceMg = config.getPosIntProp("threads.RestrictedPieceMg");
-        restrictedPieceEg = config.getPosIntProp("threads.RestrictedPieceEg");
+        restrictedPieceMg = config.getPosIntProp(RESTRICTED_PIECE_MG);
+        restrictedPieceEg = config.getPosIntProp(RESTRICTED_PIECE_EG);
 
-        threatByPawnPushMg = config.getPosIntProp("threads.ThreatByPawnPushMg");
-        threatByPawnPushEg = config.getPosIntProp("threads.ThreatByPawnPushEg");
+        threatByPawnPushMg = config.getPosIntProp(THREAT_BY_PAWN_PUSH_MG);
+        threatByPawnPushEg = config.getPosIntProp(THREAT_BY_PAWN_PUSH_EG);
 
-        threatBySafePawnMg = config.getPosIntProp("threads.ThreatBySafePawnMg");
-        threatBySafePawnEg = config.getPosIntProp("threads.ThreatBySafePawnEg");
+        threatBySafePawnMg = config.getPosIntProp(THREAT_BY_SAFE_PAWN_MG);
+        threatBySafePawnEg = config.getPosIntProp(THREAT_BY_SAFE_PAWN_EG);
 
-        sliderOnQueenMg = config.getPosIntProp("threads.SliderOnQueenMg");
-        sliderOnQueenEg = config.getPosIntProp("threads.SliderOnQueenEg");
+        sliderOnQueenMg = config.getPosIntProp(SLIDER_ON_QUEEN_MG);
+        sliderOnQueenEg = config.getPosIntProp(SLIDER_ON_QUEEN_EG);
 
-        knightOnQueenMg = config.getPosIntProp("threads.KnightOnQueenMg");
-        knightOnQueenEg = config.getPosIntProp("threads.KnightOnQueenEg");
+        knightOnQueenMg = config.getPosIntProp(KNIGHT_ON_QUEEN_MG);
+        knightOnQueenEg = config.getPosIntProp(KNIGHT_ON_QUEEN_EG);
 
     }
 
