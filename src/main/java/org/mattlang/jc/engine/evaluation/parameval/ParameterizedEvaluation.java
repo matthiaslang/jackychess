@@ -78,7 +78,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
         adjustments = new ParameterizedAdjustmentsEvaluation(config);
 
-        threatsEvaluation = new ParameterizedThreatsEvaluation();
+        threatsEvaluation = new ParameterizedThreatsEvaluation(forTuning, config);
 
         spaceEvaluation = new ParameterizedSpaceEvaluation();
     }

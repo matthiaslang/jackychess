@@ -4,74 +4,84 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.engine.evaluation.parameval.EvalScore.SCORE;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
+import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 
 public class ParameterizedThreatsEvaluation implements EvalComponent {
 
-    // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
-    // which piece type attacks which one. Attacks on lesser pieces which are
-    // pawn-defended are not considered.
+    private final ArrayFunction threatByMinorMg;
+    private final ArrayFunction threatByMinorEg;
+    private final ArrayFunction threatByRookMg;
+    private final ArrayFunction threatByRookEg;
 
-    private static final EvalScore[] ThreatByMinor = {
-            SCORE(0, 0), SCORE(5, 32), SCORE(55, 41), SCORE(77, 56), SCORE(89, 119), SCORE(79, 162)
-    };
+    private final boolean active;
 
-    private static final EvalScore[] ThreatByRook = {
-            SCORE(0, 0), SCORE(3, 44), SCORE(37, 68), SCORE(42, 60), SCORE(0, 39), SCORE(58, 43)
-    };
-    private static final EvalScore ThreatByKing = SCORE(24, 89);
-
-    private static final EvalScore Hanging = SCORE(69, 36);
-
-    private static final EvalScore WeakQueenProtection = SCORE(14, 0);
-
-    private static final EvalScore RestrictedPiece = SCORE(7, 7);
-
-    private static final EvalScore ThreatByPawnPush = SCORE(48, 39);
-    private static final EvalScore ThreatBySafePawn = SCORE(173, 94);
-
-    private static final EvalScore SliderOnQueen = SCORE(60, 18);
-
-    private static final EvalScore KnightOnQueen = SCORE(16, 11);
-    /*
-
-
-    constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-        S(0, 0), S(5, 32), S(55, 41), S(77, 56), S(89, 119), S(79, 162)
-    };
-
-    constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-        S(0, 0), S(3, 44), S(37, 68), S(42, 60), S(0, 39), S(58, 43)
-    };
-
-      constexpr Score ThreatByKing        = S( 24, 89);
-
-       constexpr Score Hanging             = S( 69, 36);
-
-        constexpr Score WeakQueenProtection = S( 14,  0);
-
-        constexpr Score RestrictedPiece     = S(  7,  7);
-
-          constexpr Score ThreatByPawnPush    = S( 48, 39);
-  constexpr Score ThreatBySafePawn    = S(173, 94);
-
-    constexpr Score SliderOnQueen       = S( 60, 18);
-
-      constexpr Score KnightOnQueen       = S( 16, 11);
-    */
+    private int threatByKingMg;
+    private int threatByKingEg;
+    private int hangingMg;
+    private int hangingEg;
+    private int weakQueenProtectionMg;
+    private int weakQueenProtectionEg;
+    private int restrictedPieceMg;
+    private int restrictedPieceEg;
+    private int threatByPawnPushMg;
+    private int threatByPawnPushEg;
+    private int threatBySafePawnMg;
+    private int threatBySafePawnEg;
+    private int sliderOnQueenMg;
+    private int sliderOnQueenEg;
+    private int knightOnQueenMg;
+    private int knightOnQueenEg;
 
     private EvalScore whiteThreats = new EvalScore();
 
     private EvalScore blackThreats = new EvalScore();
 
+    public ParameterizedThreatsEvaluation(boolean forTuning, EvalConfig config) {
+        active = !forTuning && config.getBoolProp("threads.active");
+
+        threatByMinorMg = config.parseArray("threads.ThreatByMinorMg");
+        threatByMinorEg = config.parseArray("threads.ThreatByMinorEg");
+
+        threatByRookMg = config.parseArray("threads.ThreatByRookMg");
+        threatByRookEg = config.parseArray("threads.ThreatByRookEg");
+
+        threatByKingMg = config.getPosIntProp("threads.ThreatByKingMg");
+        threatByKingEg = config.getPosIntProp("threads.ThreatByKingEg");
+
+        hangingMg = config.getPosIntProp("threads.HangingMg");
+        hangingEg = config.getPosIntProp("threads.HangingEg");
+
+        weakQueenProtectionMg = config.getPosIntProp("threads.WeakQueenProtectionMg");
+        weakQueenProtectionEg = config.getPosIntProp("threads.WeakQueenProtectionEg");
+
+        restrictedPieceMg = config.getPosIntProp("threads.RestrictedPieceMg");
+        restrictedPieceEg = config.getPosIntProp("threads.RestrictedPieceEg");
+
+        threatByPawnPushMg = config.getPosIntProp("threads.ThreatByPawnPushMg");
+        threatByPawnPushEg = config.getPosIntProp("threads.ThreatByPawnPushEg");
+
+        threatBySafePawnMg = config.getPosIntProp("threads.ThreatBySafePawnMg");
+        threatBySafePawnEg = config.getPosIntProp("threads.ThreatBySafePawnEg");
+
+        sliderOnQueenMg = config.getPosIntProp("threads.SliderOnQueenMg");
+        sliderOnQueenEg = config.getPosIntProp("threads.SliderOnQueenEg");
+
+        knightOnQueenMg = config.getPosIntProp("threads.KnightOnQueenMg");
+        knightOnQueenEg = config.getPosIntProp("threads.KnightOnQueenEg");
+
+    }
+
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
+        if (!active) {
+            return;
+        }
 
         evalThreads(result, whiteThreats, bitBoard.getBoard(), WHITE);
         evalThreads(result, blackThreats, bitBoard.getBoard(), Color.BLACK);
@@ -103,31 +113,43 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         if ((defended | weak) != 0L) {
             long b = (defended | weak) & (result.getAttacks(us, FT_KNIGHT) | result.getAttacks(us, FT_BISHOP));
             while (b != 0L) {
-                score.plus(ThreatByMinor[bb.getFigType(Long.numberOfTrailingZeros(b))]);
+                byte figType = bb.getFigType(Long.numberOfTrailingZeros(b));
+                score.plusMg(threatByMinorMg.calc(figType));
+                score.plusEg(threatByMinorEg.calc(figType));
                 b &= b - 1;
             }
 
             b = weak & result.getAttacks(us, FT_ROOK);
             while (b != 0L) {
-                score.plus(ThreatByRook[bb.getFigType(Long.numberOfTrailingZeros(b))]);
+                byte figType = bb.getFigType(Long.numberOfTrailingZeros(b));
+                score.plusMg(threatByRookMg.calc(figType));
+                score.plusEg(threatByRookEg.calc(figType));
                 b &= b - 1;
             }
-            if ((weak & result.getAttacks(us, FT_KING)) != 0L)
-                score.plus(ThreatByKing);
+            if ((weak & result.getAttacks(us, FT_KING)) != 0L) {
+                score.plusMg(threatByKingMg);
+                score.plusEg(threatByKingEg);
+            }
 
             b = ~result.getAttacks(them, FT_ALL)
                     | (nonPawnEnemies & result.getDoubleAttacks(us));
-            score.plusMult(Hanging, bitCount(weak & b));
+            int bitcount = bitCount(weak & b);
+            score.plusMg(hangingMg * bitcount);
+            score.plusEg(hangingEg * bitcount);
 
             // Additional bonus if weak piece is only protected by a queen
-            score.plusMult(WeakQueenProtection, bitCount(weak & result.getAttacks(them, FT_QUEEN)));
+            bitcount = bitCount(weak & result.getAttacks(them, FT_QUEEN));
+            score.plusMg(weakQueenProtectionMg * bitcount);
+            score.plusEg(weakQueenProtectionEg * bitcount);
         }
 
         // Bonus for restricting their piece moves
         long b = result.getAttacks(them, FT_ALL)
                 & ~stronglyProtected
                 & result.getAttacks(us, FT_ALL);
-        score.plusMult(RestrictedPiece, bitCount(b));
+        int bitcount = bitCount(b);
+        score.plusMg(restrictedPieceMg * bitcount);
+        score.plusEg(restrictedPieceEg * bitcount);
 
         // Protected or unattacked squares
         long safe = ~result.getAttacks(them, FT_ALL) | result.getAttacks(us, FT_ALL);
@@ -135,7 +157,9 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         // Bonus for attacking enemy pieces with our relatively safe pawns
         b = bb.getPawns(us) & safe;
         b = BB.pawnAttacks(us, b) & nonPawnEnemies;
-        score.plusMult(ThreatBySafePawn, bitCount(b));
+        bitcount = bitCount(b);
+        score.plusMg(threatBySafePawnMg * bitcount);
+        score.plusEg(threatBySafePawnEg * bitcount);
 
         // Find squares where our pawns can push on the next move
         switch (us) {
@@ -154,7 +178,9 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
 
         // Bonus for safe pawn threats on the next move
         b = BB.pawnAttacks(us, b) & nonPawnEnemies;
-        score.plusMult(ThreatByPawnPush, bitCount(b));
+        bitcount = bitCount(b);
+        score.plusMg(threatByPawnPushMg * bitcount);
+        score.plusEg(threatByPawnPushEg * bitcount);
 
         // Bonus for threats on the next moves against enemy queen
         if (bb.getQueensCount(them) == 1) {
@@ -166,13 +192,15 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
                     & ~stronglyProtected;
 
             b = result.getAttacks(us, FT_KNIGHT) & BB.getKnightAttacs(s);
-
-            score.plusMult(KnightOnQueen, bitCount(b & safe) * (1 + queenImbalance));
+            int factor = bitCount(b & safe) * (1 + queenImbalance);
+            score.plusMg(knightOnQueenMg * factor);
+            score.plusEg(knightOnQueenEg * factor);
 
             b = (result.getAttacks(us, FT_BISHOP) & MagicBitboards.genBishopAttacs(s, bb.getPieces()))
                     | (result.getAttacks(us, FT_ROOK) & MagicBitboards.genRookAttacs(s, bb.getPieces()));
-
-            score.plusMult(SliderOnQueen, bitCount(b & safe & result.getDoubleAttacks(us)) * (1 + queenImbalance));
+            factor = bitCount(b & safe & result.getDoubleAttacks(us)) * (1 + queenImbalance);
+            score.plusMg(sliderOnQueenMg * factor);
+            score.plusEg(sliderOnQueenEg * factor);
         }
     }
 

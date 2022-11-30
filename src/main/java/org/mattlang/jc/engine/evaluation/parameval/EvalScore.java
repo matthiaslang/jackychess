@@ -28,6 +28,16 @@ public class EvalScore {
         return this;
     }
 
+    public EvalScore plusMg(int mg) {
+        this.midScore += mg;
+        return this;
+    }
+
+    public EvalScore plusEg(int eg) {
+        this.endScore += eg;
+        return this;
+    }
+
     public EvalScore plusMult(EvalScore score, int count) {
         this.midScore += score.getMidScore() * count;
         this.endScore += score.getEndScore() * count;
