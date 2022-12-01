@@ -1,7 +1,9 @@
 package org.mattlang.tuning;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
@@ -17,16 +19,21 @@ public class LocalOptimizer implements Optimizer {
     public final double delta;
     private final File outputDir;
     private final MarkdownAppender markdownAppender;
-    private final OptParameters params;
+    private final OptParameters optParameters;
+    private final boolean shuffle;
     private DataSet dataSet;
 
     private TuneableEvaluateFunction evaluate;
+    private static Random random=new Random(4713112713L);
 
-    public LocalOptimizer(File outputDir, OptParameters params, MarkdownAppender markdownAppender) {
+    public LocalOptimizer(File outputDir, OptParameters optParameters, MarkdownAppender markdownAppender) {
         this.outputDir = outputDir;
-        this.params = params;
-        this.delta = params.getDelta();
-        this.stepGranularity = params.getStepGranularity();
+        this.optParameters = optParameters;
+        this.delta = optParameters.getDelta();
+        this.stepGranularity = optParameters.getStepGranularity();
+        this.shuffle=optParameters.isShuffleTuningParameter();
+
+
         this.markdownAppender = markdownAppender;
     }
 
@@ -58,6 +65,10 @@ public class LocalOptimizer implements Optimizer {
         boolean improved = true;
         while (improved) {
             improved = false;
+            if (shuffle) {
+                Collections.shuffle(params, random);
+            }
+
             for (TuningParameter param : params) {
                 round++;
                 if (round % 100 == 0 && stopWatch.timeElapsed(5 * 60000)) {

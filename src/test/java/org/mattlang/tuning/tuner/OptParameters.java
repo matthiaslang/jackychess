@@ -50,6 +50,9 @@ public class OptParameters {
 
     private int threadCount = 7;
 
+    /** shuffle parameters before each optimization round to randomize local optimization. */
+    private boolean shuffleTuningParameter=false;
+
     public void writeMarkdownInfos(MarkdownWriter mdWriter)
             throws IOException {
         mdWriter.h1("Tuning Options");
