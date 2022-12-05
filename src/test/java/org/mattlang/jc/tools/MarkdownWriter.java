@@ -80,4 +80,9 @@ public class MarkdownWriter extends Writer {
     public void unOrderedList(String... list) throws IOException {
         unOrderedList(Arrays.asList(list));
     }
+
+    public void writeTable(MarkdownTable table) throws IOException {
+        table.writeTable(writer);
+    }
+
 }
