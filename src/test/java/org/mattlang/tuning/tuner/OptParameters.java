@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
 
 import lombok.Builder;
@@ -57,12 +58,17 @@ public class OptParameters {
             throws IOException {
         mdWriter.h1("Tuning Options");
         try {
+            MarkdownTable mtable = new MarkdownTable();
+            mtable.header("Parameter", "Value");
+
             for (PropertyDescriptor pd : Introspector.getBeanInfo(OptParameters.class).getPropertyDescriptors()) {
                 if (pd.getReadMethod() != null && !"class".equals(pd.getName())) {
                     Object value = pd.getReadMethod().invoke(this);
-                    mdWriter.paragraph(pd.getName() + " = " + value);
+                    mtable.row(pd.getName(), value);
                 }
             }
+
+            mdWriter.writeTable(mtable);
         } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

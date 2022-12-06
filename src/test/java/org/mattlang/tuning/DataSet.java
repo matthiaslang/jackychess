@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.tuning.data.pgnparser.Ending;
 import org.mattlang.tuning.tuner.DatasetPreparer;
@@ -195,15 +196,17 @@ public class DataSet {
 
         w.h1("Dataset Information");
 
-        w.unOrderedList("Num Fens = " + fens.size());
+        MarkdownTable table = new MarkdownTable().header("", "");
+
+        table.row("Num Fens", fens.size());
 
         Map<Ending, Long> countsByEnding = fens.stream()
                 .map(f -> f.getEnding())
                 .collect(groupingBy(identity(), counting()));
 
-        w.unOrderedList("MATE White: " + countsByEnding.get(Ending.MATE_WHITE));
-        w.unOrderedList("MATE Black: " + countsByEnding.get(Ending.MATE_BLACK));
-        w.unOrderedList("Draws: " + countsByEnding.get(Ending.DRAW));
+        table.row("MATE White", countsByEnding.get(Ending.MATE_WHITE));
+        table.row("MATE Black", countsByEnding.get(Ending.MATE_BLACK));
+        table.row("Draws", countsByEnding.get(Ending.DRAW));
 
         Long dupCount = fens.stream()
                 .collect(groupingBy(f -> f.getBoard().getZobristHash(), counting()))
@@ -213,7 +216,9 @@ public class DataSet {
                 .map(v -> v - 1)    // remove one from count to get the right numer of duplicates
                 .reduce(new Long(0), (a, b) -> a + b);
 
-        w.unOrderedList("Duplicate Fens: " + dupCount);
+        table.row("Duplicate Fens", dupCount);
+
+        w.writeTable(table);
 
     }
 }
