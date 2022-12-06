@@ -1,10 +1,14 @@
 package org.mattlang.jc.tools;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.Getter;
 
@@ -25,11 +29,12 @@ public class MarkdownTable {
         return this;
     }
 
-    public MarkdownTable row(String... row) {
+    public MarkdownTable row(Object... row) {
         if (row.length != header.size()) {
             throw new IllegalArgumentException("Row has different size than headers!");
         }
-        rows.add(Arrays.asList(row));
+        List<String> rowAsStrings = stream(row).map(Objects::toString).collect(toList());
+        rows.add(rowAsStrings);
         return this;
     }
 
@@ -37,14 +42,13 @@ public class MarkdownTable {
         StringBuilder b = new StringBuilder();
         b.append("|");
         for (int i = 0; i < row.size(); i++) {
-            b.append(formatCell(row.get(i), i));
+            b.append(formatCell(row.get(i), widths.get(i)));
             b.append("|");
         }
         return b.toString();
     }
 
-    private String formatCell(String s, int i) {
-        int width = widths.get(i);
+    private String formatCell(String s, int width) {
         int fillSize = width - s.length();
         return pad(1) + s + pad(fillSize - 1);
     }
@@ -62,21 +66,23 @@ public class MarkdownTable {
 
         writer.write(formatTableRow(getHeader()) + "\n");
 
-        writer.write(createSeparator());
+        writer.write(createSeparator() + "\n");
 
         for (List<String> row : getRows()) {
             writer.write(formatTableRow(row) + "\n");
         }
+
+        writer.write("\n\n");
     }
 
     private void determineWidths() {
-        widths.clear();
+        widths = new ArrayList<>(header.size());
         for (int i = 0; i < header.size(); i++) {
             int width = header.get(i).length();
-            for (int i1 = 0; i1 < rows.size(); i1++) {
-                width = Math.max(width, rows.get(i1).get(i).length());
+            for (int j = 0; j < rows.size(); j++) {
+                width = Math.max(width, rows.get(j).get(i).length());
             }
-            widths.set(i, width + 2);
+            widths.add(Math.min(30, width + 2));
         }
 
     }
@@ -85,7 +91,10 @@ public class MarkdownTable {
         StringBuilder b = new StringBuilder();
         b.append("|");
         for (int i = 0; i < widths.size(); i++) {
-            b.append(formatCell("", widths.get(i)));
+            for (int j = 0; j < widths.get(i); j++) {
+                b.append("-");
+            }
+
             b.append("|");
         }
         return b.toString();
