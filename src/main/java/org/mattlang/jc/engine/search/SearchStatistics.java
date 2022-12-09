@@ -42,6 +42,8 @@ public class SearchStatistics {
     public int razoringPruningCount;
     public int iterativeDeepeningCount;
     public int futilityPruningCount;
+    public int lateMovePruningCount;
+    public int seePruningCount;
 
     public int cutOffByHashMoveCount;
 
@@ -80,6 +82,8 @@ public class SearchStatistics {
         razoringTryCount=0;
         iterativeDeepeningCount = 0;
         futilityPruningCount = 0;
+        lateMovePruningCount = 0;
+        seePruningCount = 0;
         cutOffByHashMoveCount = 0;
         cutOffByKillerCount = 0;
         cutOffByCounterMoveCount = 0;
@@ -179,6 +183,8 @@ public class SearchStatistics {
         w.printf("---------------------------------------------------------------------\n");
         w.printf("iterativeDeepeningCount    %12d\n", iterativeDeepeningCount);
         w.printf("futilityPruningCount       %12d\n", futilityPruningCount);
+        w.printf("lateMovePruningCount       %12d\n", lateMovePruningCount);
+        w.printf("seePruningCount            %12d\n", seePruningCount);
         w.printf("---------------------------------------------------------------------\n");
 
 
@@ -228,6 +234,7 @@ public class SearchStatistics {
         razoringTryCount += statistics.razoringTryCount;
         iterativeDeepeningCount += statistics.iterativeDeepeningCount;
         futilityPruningCount += statistics.futilityPruningCount;
+        seePruningCount += statistics.seePruningCount;
         cutOffByHashMoveCount += statistics.cutOffByHashMoveCount;
         cutOffByKillerCount += statistics.cutOffByKillerCount;
         cutOffByCounterMoveCount += statistics.cutOffByCounterMoveCount;

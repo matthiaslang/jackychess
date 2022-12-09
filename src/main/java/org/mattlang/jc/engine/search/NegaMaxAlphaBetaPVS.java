@@ -185,7 +185,9 @@ private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400,
 
         boolean applyFutilityPruning = false;
 
-        if (not_pv && !areWeInCheck) {
+        boolean pruneable =  not_pv && !areWeInCheck;
+
+        if (pruneable) {
 
             int staticEval = searchContext.eval(color);
 
@@ -321,35 +323,31 @@ private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400,
                  *  prune insufficient captures as well, but that seems too risky.     *
                  **********************************************************************/
 
+                boolean quietMove=!moveCursor.isCapture() && !moveCursor.isPromotion();
 
                 // todo the condition that it gives check is now out-commented...
                 if (applyFutilityPruning
                         && searchedMoves > 0
-                        && !moveCursor.isCapture()
-                        && !moveCursor.isPromotion()
+                        && quietMove
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                         /*&& !searchContext.isInCheck(color.invert())*/) {
                     statistics.futilityPruningCount++;
                     continue;
                 }
 
-                // Futility pruning using SEE
-//                int pruneDepth = Math.max(0, depth - 3); // shortcut, maybe fine tune this...
-//
-//                if (moveIsPrunable
-//                        && pruneDepth <= 6
-//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -24 * pruneDepth * pruneDepth))
-//                    continue;
-
-//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
-//
-//                if (moveIsPrunable
-//                        && not_pv
-//                        && !isHashMove
-//                        && max > -32000 && max > alpha
-//                        && depth <= 5
-//                        && !see.see_ge(searchContext.getBoard(), moveCursor, -100 * depth))
-//                    continue;
+                if (pruneable && searchedMoves > 0) {
+                    /* late move pruning */
+                    if (quietMove && depth <= 4 && searchedMoves >= depth * 3 + 3) {
+                        statistics.lateMovePruningCount++;
+                        continue;
+                    }
+                    /** SEE Pruning*/
+                    if (moveCursor.isCapture() && !moveCursor.isPromotion() && depth <= 6
+                            && see.see_ge(searchContext.getBoard(), moveCursor, -20 * depth * depth)) {
+                        statistics.seePruningCount++;
+                        continue;
+                    }
+                }
 
                 if (moveCursor.doValidMove()) {
 
