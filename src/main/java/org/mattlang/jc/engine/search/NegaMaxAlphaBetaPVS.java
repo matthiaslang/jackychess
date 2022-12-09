@@ -289,7 +289,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
             int searchedMoves = 0;
 
-            while (moveCursor.doNextMove()) {
+            while (moveCursor.nextMove()) {
 
                 parentMoves[ply] = moveCursor.getMoveInt();
 
@@ -321,12 +321,14 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                  *  prune insufficient captures as well, but that seems too risky.     *
                  **********************************************************************/
 
+
+                // todo the condition that it gives check is now out-commented...
                 if (applyFutilityPruning
                         && searchedMoves > 0
                         && !moveCursor.isCapture()
                         && !moveCursor.isPromotion()
 //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
-                        && !searchContext.isInCheck(color.invert())) {
+                        /*&& !searchContext.isInCheck(color.invert())*/) {
                     statistics.futilityPruningCount++;
                     continue;
                 }
@@ -349,71 +351,74 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 //                        && !see.see_ge(searchContext.getBoard(), moveCursor, -100 * depth))
 //                    continue;
 
-                searchedMoves++;
+                if (moveCursor.doValidMove()) {
 
-                /**
-                 * Late move reduction
-                 */
-                int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
+                    searchedMoves++;
 
-                boolean redo = false;
-                int score;
-                do {
-                    if (firstChild) {
-                        /**
-                         * do full search (for pvs search on the first move, or if pvs search is deactivated)
-                         */
-                        score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
-                        if (doPVSSearch) {
-                            firstChild = false;
-                        }
-                    } else {
-                        // pvs try 0 window
-                        score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -max - 1, -max);
+                    /**
+                     * Late move reduction
+                     */
+                    int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
 
-                        /**
-                         * do a full window search in pvs search if score is out of our max, beta window:
-                         */
-                        if (max < score && score < beta) {
+                    boolean redo = false;
+                    int score;
+                    do {
+                        if (firstChild) {
+                            /**
+                             * do full search (for pvs search on the first move, or if pvs search is deactivated)
+                             */
                             score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
+                            if (doPVSSearch) {
+                                firstChild = false;
+                            }
+                        } else {
+                            // pvs try 0 window
+                            score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -max - 1, -max);
+
+                            /**
+                             * do a full window search in pvs search if score is out of our max, beta window:
+                             */
+                            if (max < score && score < beta) {
+                                score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
+                            }
                         }
+
+                        /**********************************************************************
+                         *  Sometimes reduced search brings us above alpha. This is unusual,   *
+                         *  since we expected reduced move to be bad in first place. It is     *
+                         *  not certain now, so let's search to the full, unreduced depth.     *
+                         **********************************************************************/
+                        redo = false;
+                        if (r > 0 && score > max) {
+                            r = 0;
+                            redo = true;
+                        }
+                    } while (redo);
+
+                    /** save score for all root moves: */
+                    searchContext.updateRootMoveScore(depth, moveCursor.getMoveInt(), score,
+                            statistics.nodesVisited - currSearchedNodes);
+
+                    if (score > max) {
+                        max = score;
+
+                        bestMove = moveCursor.getMoveInt();
+
+                        pvArray.set(bestMove, ply);
+                        searchContext.updateRootBestMove(depth, bestMove, score);
+
+                        if (max >= beta) {
+                            //                        if (!areWeInCheck) {
+                            searchContext.updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
+                            statistics.countCutOff(moveCursor, searchedMoves);
+                            break;
+                        }
+
                     }
 
-                    /**********************************************************************
-                     *  Sometimes reduced search brings us above alpha. This is unusual,   *
-                     *  since we expected reduced move to be bad in first place. It is     *
-                     *  not certain now, so let's search to the full, unreduced depth.     *
-                     **********************************************************************/
-                    redo = false;
-                    if (r > 0 && score > max) {
-                        r = 0;
-                        redo = true;
-                    }
-                } while (redo);
-
-                /** save score for all root moves: */
-                searchContext.updateRootMoveScore(depth, moveCursor.getMoveInt(), score,
-                        statistics.nodesVisited - currSearchedNodes);
-
-                if (score > max) {
-                    max = score;
-
-                    bestMove = moveCursor.getMoveInt();
-
-                    pvArray.set(bestMove, ply);
-                    searchContext.updateRootBestMove(depth, bestMove, score);
-
-                    if (max >= beta) {
-                        //                        if (!areWeInCheck) {
-                        searchContext.updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
-                        statistics.countCutOff(moveCursor, searchedMoves);
-                        break;
-                    }
-
+                    // update "bad" heuristic
+                    searchContext.updateBadHeuristic(depth, color, moveCursor);
                 }
-
-                // update "bad" heuristic
-                searchContext.updateBadHeuristic(depth, color, moveCursor);
             }
             statistics.noCutOffFoundCount++;
 
@@ -587,10 +592,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             statistics.quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
-            int searchedMoves = 0;
             /* loop through the capture moves */
 
-            while (moveCursor.doNextMove()) {
+            while (moveCursor.nextMove()) {
 
                 // skip low promotions
                 if (moveCursor.isPromotion()
@@ -619,23 +623,25 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         continue;
                     }
 
-                    //Do not search moves with negative SEE values
-                    //                    boolean seeGood =
-                    //                            moveCursor.getOrder() >= GOOD_CAPT_LOWER && moveCursor.getOrder() <= GOOD_CAPT_UPPER;
-                    //                    if (x > alphaStart
-                    //                            && !moveCursor.isPawnPromotion()
-                    //                            && searchContext.isOpeningOrMiddleGame()
-                    //                            && !seeGood) {
-                    //                        searchContext.undoMove(moveCursor);
-                    //                        continue;
-                    //                    }
+                    if (moveCursor.doValidMove()) {
+                        //Do not search moves with negative SEE values
+                        //                    boolean seeGood =
+                        //                            moveCursor.getOrder() >= GOOD_CAPT_LOWER && moveCursor.getOrder() <= GOOD_CAPT_UPPER;
+                        //                    if (x > alphaStart
+                        //                            && !moveCursor.isPawnPromotion()
+                        //                            && searchContext.isOpeningOrMiddleGame()
+                        //                            && !seeGood) {
+                        //                        searchContext.undoMove(moveCursor);
+                        //                        continue;
+                        //                    }
 
-                    x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
-                    if (x > alpha) {
-                        if (x >= beta) {
-                            return beta;
+                        x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                        if (x > alpha) {
+                            if (x >= beta) {
+                                return beta;
+                            }
+                            alpha = x;
                         }
-                        alpha = x;
                     }
                 }
 

@@ -72,7 +72,7 @@ public class MoveValidator {
         movegen.generate(board, who2Move, moveList);
 
         try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
-            while (iterator.doNextMove()) {
+            while (iterator.doNextValidMove()) {
                 if (iterator.getMoveInt() == move) {
                     return true;
                 }
@@ -127,7 +127,7 @@ public class MoveValidator {
 
         boolean hasLegalMoves = false;
         try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
-            while (iterator.doNextMove()) {
+            while (iterator.doNextValidMove()) {
                 hasLegalMoves = true;
                 break;
             }

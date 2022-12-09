@@ -16,7 +16,7 @@ public class MoveBoardIteratorTest {
         board.setStartPosition();
         CheckChecker checkchecker = new BBCheckCheckerImpl();
         try (MoveBoardIterator mbi = new MoveBoardIterator(moves.iterate(), board, checkchecker)) {
-            while (mbi.doNextMove()) {
+            while (mbi.doNextValidMove()) {
 
 
 
