@@ -46,8 +46,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 
     private static final SEE see = new SEE();
-
-    private static final int[] FUTILITY_MARGIN = { 0, 200, 300, 500 };
+    private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
     /**
      * number of searched moves to start LMR if activated.
@@ -263,7 +262,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
             if (futilityPruning &&
                     //                ply > 3 &&
-                    depth <= 3
+                    depth < FUTILITY_MARGIN.length
                     && abs(alpha) < 9000
                     && staticEval + FUTILITY_MARGIN[depth] <= alpha) {
                 applyFutilityPruning = true;
