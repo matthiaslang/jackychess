@@ -113,7 +113,7 @@ public class Perft {
         try (MoveBoardIterator iterator = moves.iterateMoves(board, checkChecker)) {
 
 
-            while (iterator.doNextMove()) {
+            while (iterator.doNextValidMove()) {
 
                 if (depth == 1) {
                     if (iterator.isCapture()) {

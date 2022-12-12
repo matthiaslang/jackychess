@@ -9,7 +9,7 @@ import org.mattlang.jc.engine.MoveCursor;
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
  */
-public class MoveBoardIterator implements MoveCursor, AutoCloseable {
+public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     private MoveCursor moveCursor;
     private BoardRepresentation board;
@@ -19,6 +19,8 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     private boolean moveDone = false;
 
+    private boolean nextStepped = false;
+
     public MoveBoardIterator() {
     }
 
@@ -27,6 +29,7 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
         this.board = board;
         siteToMove = board.getSiteToMove();
         this.checkChecker = checkChecker;
+        nextStepped = false;
     }
 
     public void init(MoveCursor moveCursor, BoardRepresentation board, CheckChecker checkChecker) {
@@ -35,9 +38,10 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
         siteToMove = board.getSiteToMove();
         this.checkChecker = checkChecker;
         moveDone = false;
+        nextStepped = false;
     }
 
-    public boolean doNextMove() {
+    public boolean doNextValidMove() {
         if (moveDone) {
             undoMove();
         }
@@ -54,6 +58,38 @@ public class MoveBoardIterator implements MoveCursor, AutoCloseable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * steps to the next move if a next move is available.
+     * @return
+     */
+    public boolean nextMove() {
+        if (moveDone) {
+            undoMove();
+        }
+        if (moveCursor.hasNext()) {
+            moveCursor.next();
+            nextStepped = true;
+            return true;
+        }
+        nextStepped = false;
+        return false;
+    }
+
+    /**
+     * tries to move the current move on the board if it is a valid legal move.
+     * Requires that a move is set via nextMove.
+     *
+     * @return true, if its a legal move and done on the board, false otherwise
+     */
+    public boolean doValidMove() {
+        if (!nextStepped) {
+            return false;
+        }
+        moveCursor.move(board);
+        moveDone = true;
+        return !checkChecker.isInChess(board, siteToMove);
     }
 
     private void undoMove() {
