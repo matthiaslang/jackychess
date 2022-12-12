@@ -46,6 +46,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 
     private static final SEE see = new SEE();
+private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
     /**
@@ -198,13 +199,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              **************************************************************************/
 
             if (staticNullMove
-                    && depth < 3
+                    && depth < STATIC_NULLMOVE_MARGIN.length
                     && abs(beta - 1) > ALPHA_START + 100) {
 
-                int eval_margin = 120 * depth;
+                int eval_margin = STATIC_NULLMOVE_MARGIN[depth];
                 if (staticEval - eval_margin >= beta) {
                     statistics.staticNullMovePruningCount++;
-                    return staticEval - eval_margin;
+                    return staticEval;
                 }
             }
 
