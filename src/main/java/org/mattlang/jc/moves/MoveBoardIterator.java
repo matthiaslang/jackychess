@@ -41,6 +41,12 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         nextStepped = false;
     }
 
+    /**
+     * Steps to the next valid move (if available) and moves the move on the board.
+     * This way all valid moves can easily iterated and done/undone on the board in one loop.
+     *
+     * @return
+     */
     public boolean doNextValidMove() {
         if (moveDone) {
             undoMove();
