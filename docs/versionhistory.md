@@ -1,16 +1,18 @@
 # Versions
-                    
-### 0.13.5-030
 
-- experimental: reworked move iteration
+### 0.13.6
+    
+#### 0.13.5-030
+
+- experimental: reworked move iteration, to skip moves before doing them on the board. seems to give some elos.
 
 #### 0.13.5-020
 
-- experiment: static null move margins and return value adjusted
+- experiment: static null move margins and return value adjusted. seem to give some elos
 
 #### 0.13.5-010
 
-- experiment: futility margins ajdusted
+- experiment: futility margins ajdusted. seem to give some Elos
 
 ### Version 0.13.5
 
