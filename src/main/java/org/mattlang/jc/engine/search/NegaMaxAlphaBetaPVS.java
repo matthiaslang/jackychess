@@ -335,9 +335,13 @@ private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400,
                     continue;
                 }
 
-                if (pruneable && searchedMoves > 0) {
+                // todo additional checks: no discovering move...
+                // && !cb.isDiscoveredMove(MoveUtil.getFromIndex(move)), order rel. below...?
+                if (pruneable && searchedMoves > 0 && !OrderCalculator.isRelevantMove(moveCursor.getOrder())) {
                     /* late move pruning */
-                    if (quietMove && depth <= 4 && searchedMoves >= depth * 3 + 3) {
+                    if (quietMove
+                            && depth <= 4
+                            && searchedMoves >= depth * 3 + 3) {
                         statistics.lateMovePruningCount++;
                         continue;
                     }

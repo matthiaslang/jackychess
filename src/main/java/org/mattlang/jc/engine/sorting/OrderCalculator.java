@@ -179,4 +179,16 @@ public final class OrderCalculator {
     public static boolean isCounterMove(int order) {
         return order == COUNTER_MOVE_SCORE;
     }
+
+    /**
+     * Is this a "relevant" move in the sense, that we have any kind of statistical relevance for this move?
+     * So, is it either a hash move, good capture, killer, counter, or a move with move history statistics?
+     *
+     * This is used, to prune "non relevant" moves with certain criterias.
+     * @param order
+     * @return
+     */
+    public static boolean isRelevantMove(int order){
+        return  order < HISTORY_UPPER;
+    }
 }
