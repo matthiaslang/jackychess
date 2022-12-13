@@ -46,7 +46,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 
     private static final SEE see = new SEE();
-private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
+    private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
     /**
@@ -294,28 +294,6 @@ private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400,
             while (moveCursor.nextMove()) {
 
                 parentMoves[ply] = moveCursor.getMoveInt();
-
-                // late move pruning does not bring any benefit so far...
-                //                if (applyFutilityPruning && moveCursor.getOrder() > OrderCalculator.HISTORY_SCORE + 1000) {
-                //                    /* late move pruning */
-                //                    if (depth <= 4
-                //                            && searchedMoves >= depth * 4 + 3
-                //                            && !moveCursor.isCapture()
-                //                            && !moveCursor.isPawnPromotion()
-                //                            //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
-                //                            && !searchContext.isInCheck(color.invert())
-                //                    ) {
-                //                        searchContext.undoMove(moveCursor);
-                //                        continue;
-                //                    }
-                //                }
-//                boolean isHashMove = tte != null && tte.getMove() == moveCursor.getMoveInt();
-//                boolean moveIsPrunable = searchedMoves > 0
-//                        && !isHashMove
-//                        && !moveCursor.isCapture()
-//                        && !moveCursor.isPromotion()
-//                        && !areWeInCheck
-//                        && !searchContext.isInCheck(color.invert());
 
                 /**********************************************************************
                  *  When the futility pruning flag is set, prune moves which do not    *
