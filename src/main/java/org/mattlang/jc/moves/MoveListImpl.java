@@ -15,10 +15,12 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
-public class MoveListImpl implements MoveList {
+public final class MoveListImpl implements MoveList {
 
-    private IntList moves = new IntList(MAX_MOVES);
+    private int[] moves = new int[MAX_MOVES];
     private int[] order = new int[MAX_MOVES];
+
+    private int size = 0;
 
     private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
 
@@ -28,10 +30,10 @@ public class MoveListImpl implements MoveList {
     }
 
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
-        moves.add(createNormalMove(figureType, from, to, capturedFigure));
+        addMove(createNormalMove(figureType, from, to, capturedFigure));
     }
 
-    public static final boolean isOnLastLine(Color side, int to) {
+    public static boolean isOnLastLine(Color side, int to) {
         if (side == WHITE) {
             return to >= 56 && to <= 63;
         } else {
@@ -42,44 +44,44 @@ public class MoveListImpl implements MoveList {
     public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
 
         if (isOnLastLine(side, to)) {
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
-            moves.add(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
+            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
         } else {
-            moves.add(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
+            addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
         }
     }
 
     @Override
     public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
-        moves.add(createEnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
+        addMove(createEnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
     }
 
     @Override
     public void addCastlingMove(CastlingMove castlingMove) {
-        moves.add(createCastlingMove(castlingMove));
+        addMove(createCastlingMove(castlingMove));
     }
 
     private MoveImpl moveWrapper = new MoveImpl("a1a2");
 
     public void sort(OrderCalculator orderCalculator) {
 
-        for (int i = 0; i < moves.size(); i++) {
-            moveWrapper.fromLongEncoded(moves.get(i));
+        for (int i = 0; i < size; i++) {
+            moveWrapper.fromLongEncoded(moves[i]);
             order[i] = orderCalculator.calcOrder(moveWrapper);
         }
     }
 
     @Override
     public int size() {
-        return moves.size();
+        return size;
     }
 
     @Override
     public MoveCursor iterate() {
-        moveCursor.init(moves.getRaw(), moves.size(), order);
+        moveCursor.init(this);
         return moveCursor;
     }
 
@@ -90,20 +92,16 @@ public class MoveListImpl implements MoveList {
         return moveBoardIterator;
     }
 
-    public final int get(int i) {
-        return moves.get(i);
+    public int get(int i) {
+        return moves[i];
     }
 
-    public final int getOrder(int i) {
+    public int getOrder(int i) {
         return order[i];
     }
 
-    public void remove(int index) {
-        moves.remove(index);
-    }
-
     public void reset() {
-        moves.reset();
+        size = 0;
     }
 
     @Override
@@ -112,6 +110,24 @@ public class MoveListImpl implements MoveList {
     }
 
     public void addMove(int aMove) {
-        moves.add(aMove);
+        moves[size] = aMove;
+        size++;
+    }
+
+    public void addMoveWithOrder(int aMove, int orderVal) {
+        moves[size] = aMove;
+        order[size] = orderVal;
+        size++;
+    }
+
+    public void swap(int i, int j) {
+
+        int tmp = order[i];
+        order[i] = order[j];
+        order[j] = tmp;
+
+        int ttmp = moves[i];
+        moves[i] = moves[j];
+        moves[j] = ttmp;
     }
 }

@@ -1,41 +1,34 @@
 package org.mattlang.jc.engine.sorting;
 
+import org.mattlang.jc.moves.MoveListImpl;
+
 /**
- * Sorts objects by a separate orders array.
- * Does this lazy, to safe time when e.g. not all moves are needed when a cut off happened.
- * Kind of lazy merge sort to prevent sorting the complete array.
+ * Move picker which does a partial sort and picks the next move by its order priority from a move list.
  */
-public class LongSorter {
+public final class MovePicker {
 
-
-    private int[] objects;
-    private int[] orders;
+    private MoveListImpl moveList;
 
     private int size = 0;
 
     private int start = 0;
 
-    private int current=-1;
+    private int current = -1;
 
     private int swapCounter = 0;
     private boolean alreadyFullySorted = false;
 
-    public LongSorter(int[] objects, int size, int[] orders) {
-        init(objects, size, orders);
+    public MovePicker(MoveListImpl moveList, int start) {
+        init(moveList, start);
     }
 
-    public void init(int[] objects, int size, int[] orders) {
-        this.objects = objects;
-        this.orders = orders;
-        this.size = size;
-        start = 0;
-        current = -1;
+    public void init(MoveListImpl moveList, int start) {
+        this.moveList = moveList;
+        this.size = moveList.size();
+        this.start = start;
+        current = start - 1;
         swapCounter = 0;
         alreadyFullySorted = false;
-    }
-
-    public static void sort(int[] data, int size, int[] order) {
-        new LongSorter(data, size, order).sortData();
     }
 
     private void sortData() {
@@ -55,15 +48,20 @@ public class LongSorter {
         size--;
         current = start;
         start++;
-        return objects[current];
+        return moveList.get(current);
+    }
+
+    public int getCurrentIndex() {
+        return current;
     }
 
     /**
      * returns the order of the current move.
+     *
      * @return
      */
     public int getOrder() {
-        return orders[current];
+        return moveList.getOrder(current);
     }
 
     private void sortRound() {
@@ -74,12 +72,12 @@ public class LongSorter {
         int currLowest = -1;
         int currLowestIndex = -1;
         for (int i = start; i < size - 1; i++) {
-            if (orders[i] > orders[i + 1]) {
+            if (moveList.getOrder(i) > moveList.getOrder(i + 1)) {
                 swap(i, i + 1);
 
             }
-            if (orders[i] < currLowest || currLowest == -1) {
-                currLowest = orders[i];
+            if (moveList.getOrder(i) < currLowest || currLowest == -1) {
+                currLowest = moveList.getOrder(i);
                 currLowestIndex = i;
             }
 
@@ -95,12 +93,6 @@ public class LongSorter {
 
     private void swap(int i, int j) {
         swapCounter++;
-        int tmp = orders[i];
-        orders[i] = orders[j];
-        orders[j] = tmp;
-
-        int ttmp = objects[i];
-        objects[i] = objects[j];
-        objects[j] = ttmp;
+        moveList.swap(i, j);
     }
 }
