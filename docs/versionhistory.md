@@ -1,5 +1,13 @@
 # Versions
 
+#### 0.13.6-010
+
+- reworked late move reduction using reduction table with higher reductions. seem to bring ~30 Elos
+
+#### 0.13.6-001
+
+- add late move pruning and see pruning. brings >50 Elos.
+
 ### 0.13.6
     
 #### 0.13.5-030

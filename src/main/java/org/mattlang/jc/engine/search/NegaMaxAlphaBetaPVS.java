@@ -1,10 +1,13 @@
 package org.mattlang.jc.engine.search;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.min;
 import static java.util.logging.Level.FINE;
 import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
@@ -49,14 +52,17 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
-    /**
-     * number of searched moves to start LMR if activated.
-     */
-    private static final int LMR_AFTER_N_SEARCHED_MOVES = 3;
-    /**
-     * number of additional searched moves to do a higher reduction for LMR.
-     */
-    private static final int LMR_N_MOVES_REDUCE_MORE = 6;
+    /** predefined LMR reductions per depth and performed moves.*/
+    private static final int[][] LMR_TABLE = new int[64][64];
+
+    static {
+        // Ethereal LMR formula with depth and number of performed moves
+        for (int depth = 1; depth < 64; depth++) {
+            for (int moveNumber = 1; moveNumber < 64; moveNumber++) {
+                LMR_TABLE[depth][moveNumber] = (int) (0.6f + Math.log(depth) * Math.log(moveNumber * 1.2f) / 2.5f);
+            }
+        }
+    }
 
     private final int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
 
@@ -307,8 +313,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 if (applyFutilityPruning
                         && searchedMoves > 0
                         && quietMove
-//                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
-                        /*&& !searchContext.isInCheck(color.invert())*/) {
+                    //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
+                    /*&& !searchContext.isInCheck(color.invert())*/) {
                     statistics.futilityPruningCount++;
                     continue;
                 }
@@ -338,7 +344,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     /**
                      * Late move reduction
                      */
-                    int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck);
+                    int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, not_pv);
 
                     boolean redo = false;
                     int score;
@@ -457,25 +463,49 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      * @return
      */
     private int determineLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
-            boolean areWeInCheck) {
+            boolean areWeInCheck, boolean not_pv) {
         if (useLateMoveReductions &&
-                searchedMoves > LMR_AFTER_N_SEARCHED_MOVES &&
+                searchedMoves > 3 &&
                 depth > 3 &&
                 !moveCursor.isCapture() &&
                 !moveCursor.isPromotion() &&
+                !isPawnPush(moveCursor) &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
                 moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
 
-            if (searchedMoves > LMR_N_MOVES_REDUCE_MORE) {
-                return 2;
-            } else {
-                return 1;
+            int reduction = LMR_TABLE[min(depth, 63)][min(searchedMoves, 63)];
+
+            if (isHashMove(moveCursor.getOrder())
+                    || isKillerMove(moveCursor.getOrder())
+                    || isCounterMove(moveCursor.getOrder())) {
+                reduction--;
             }
+            if (not_pv) {
+                reduction++;
+            }
+            if (reduction <= 0) {
+                reduction = 0;
+            }
+            if (reduction > depth - 1) {
+                reduction = depth - 1;
+            }
+
+            return reduction;
 
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Is the move a pawn push to rank7 or rank2 with option to promote quickly within the next move?
+     *
+     * @param moveCursor
+     * @return
+     */
+    private boolean isPawnPush(MoveCursor moveCursor) {
+        return moveCursor.getFigureType() == FT_PAWN && (moveCursor.getToIndex() > 47 || moveCursor.getToIndex() < 16);
     }
 
     /**
@@ -526,7 +556,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (tte != null) {
             hashMove = tte.getMove();
 
-            if (tte.getDepth() >= depth && ply != 1) {
+            if (tte.getDepth() >= depth) {
                 if (tte.isExact()) {// stored value is exact
                     statistics.ttPruningCount++;
                     return adjustScore(tte.getScore(), ply);
@@ -626,7 +656,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 }
 
             }
-            
+
         }
 
         return alpha;
