@@ -67,8 +67,11 @@ public final class MoveListImpl implements MoveList {
     private MoveImpl moveWrapper = new MoveImpl("a1a2");
 
     public void sort(OrderCalculator orderCalculator) {
+        sort(orderCalculator, 0);
+    }
 
-        for (int i = 0; i < size; i++) {
+    public void sort(OrderCalculator orderCalculator, int start) {
+        for (int i = start; i < size; i++) {
             moveWrapper.fromLongEncoded(moves[i]);
             order[i] = orderCalculator.calcOrder(moveWrapper);
         }
@@ -82,6 +85,11 @@ public final class MoveListImpl implements MoveList {
     @Override
     public MoveCursor iterate() {
         moveCursor.init(this);
+        return moveCursor;
+    }
+
+    public MoveCursor iterate(int startPos) {
+        moveCursor.init(this, startPos);
         return moveCursor;
     }
 

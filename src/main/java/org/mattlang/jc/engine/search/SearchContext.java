@@ -21,6 +21,7 @@ import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
 import lombok.Getter;
@@ -208,19 +209,19 @@ public final class SearchContext {
 
     }
 
-    public MoveList generateSortedMoves(GenMode mode, int ply, Color color,
+    public MoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color,
             int parentMove) {
-        MoveList moveList = stc.getCleanedMoveList(ply);
-        generator.generate(mode, orderCalculator, board, color, moveList);
-        sortMoves(ply, color, parentMove, moveList);
+        int hashMove = probeTTHashMove();
 
-        return moveList;
+        MoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
+        preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove);
+        return preparer;
     }
 
     public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color,
             int parentMove) {
-        MoveList moveList = generateSortedMoves(mode, ply, color, parentMove);
-        return moveList.iterateMoves(board, checkChecker);
+        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, parentMove);
+        return preparer.iterateMoves();
     }
 
     /**

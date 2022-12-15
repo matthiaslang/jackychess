@@ -18,6 +18,9 @@ public final class MovePicker {
     private int swapCounter = 0;
     private boolean alreadyFullySorted = false;
 
+    public MovePicker() {
+    }
+
     public MovePicker(MoveListImpl moveList, int start) {
         init(moveList, start);
     }

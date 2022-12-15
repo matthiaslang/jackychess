@@ -4,8 +4,8 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.moves.MoveIterationPreparer;
 
 import lombok.Getter;
 
@@ -23,7 +23,7 @@ public class SearchThreadContext {
      * Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
      * which are always reused during recursive search.
      */
-    private MoveList[] movelists = new MoveList[MAX_PLY_INDEX];
+    private MoveIterationPreparer[] moveIterationPreparers = new MoveIterationPreparer[MAX_PLY_INDEX];
 
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
@@ -40,21 +40,17 @@ public class SearchThreadContext {
     private EvaluateFunction evaluate;
 
     public SearchThreadContext() {
-        for (int i = 0; i < movelists.length; i++) {
-            movelists[i] = Factory.getDefaults().moveList.create();
-        }
+        resetMoveLists();
         orderCalculator = new OrderCalculator(this);
     }
 
-    public MoveList getCleanedMoveList(int ply) {
-        MoveList moveList = movelists[ply];
-        moveList.reset();
-        return moveList;
+    public MoveIterationPreparer getMoveIterationPreparer(int ply) {
+        return moveIterationPreparers[ply];
     }
 
     public void resetMoveLists() {
-        for (int i = 0; i < movelists.length; i++) {
-            movelists[i] = Factory.getDefaults().moveList.create();
+        for (int i = 0; i < moveIterationPreparers.length; i++) {
+            moveIterationPreparers[i] = new MoveIterationPreparer();
         }
     }
 

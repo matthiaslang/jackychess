@@ -7,7 +7,7 @@ import org.mattlang.jc.engine.sorting.MovePicker;
 
 public final class LazySortedMoveCursorImpl implements MoveCursor {
 
-    private MovePicker movePicker;
+    private MovePicker movePicker = new MovePicker();
 
     private int currMove;
     private int orderOfCurrentMove;
@@ -103,11 +103,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     public void init(MoveListImpl moveList) {
-        if (movePicker == null) {
-            movePicker = new MovePicker(moveList, 0);
-        } else {
-            movePicker.init(moveList, 0);
-        }
+        init(moveList, 0);
+    }
+
+    public void init(MoveListImpl moveList, int startPos) {
+        movePicker.init(moveList, startPos);
     }
 
     public void next() {
