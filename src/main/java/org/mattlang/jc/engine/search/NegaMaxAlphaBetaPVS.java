@@ -465,13 +465,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private int determineLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
             boolean areWeInCheck, boolean not_pv) {
         if (useLateMoveReductions &&
-                searchedMoves > 3 &&
-                depth > 3 &&
+                searchedMoves > 1 &&
+                depth > 2 &&
                 !moveCursor.isCapture() &&
                 !moveCursor.isPromotion() &&
                 !isPawnPush(moveCursor) &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
-                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
+//                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
 
             int reduction = LMR_TABLE[min(depth, 63)][min(searchedMoves, 63)];
