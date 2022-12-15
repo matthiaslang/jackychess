@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mattlang.jc.CacheImpls;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.MoveListImpls;
+import org.mattlang.jc.MoveIterationImpls;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -32,7 +32,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(9)));
         // now starting engine:
@@ -66,7 +66,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
@@ -95,7 +95,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
@@ -131,7 +131,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepeningV2())
                 .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
@@ -194,7 +194,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(21))
@@ -218,7 +218,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveList.set(MoveListImpls.OPTIMIZED.createSupplier())
+                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.timeout.setValue(2000))
                 .config(c -> c.maxDepth.setValue(20))

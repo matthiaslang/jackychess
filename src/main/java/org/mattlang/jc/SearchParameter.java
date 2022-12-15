@@ -13,12 +13,10 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -30,15 +28,13 @@ public class SearchParameter {
 
     private ConfigValues config = new ConfigValues();
 
-    public final Impl<MoveList> moveList = new Impl<>(this, MoveListImpls.OPTIMIZED.createSupplier());
+    public final Impl<MoveIterationPreparer> moveiterationPreparer = new Impl<>(this, MoveIterationImpls.NORMAL.createSupplier());
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 
     public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new MinimalPstEvaluation());
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
-
-    public final Impl<MoveGenerator> legalMoveGenerator = new Impl<>(this, PseudoLegalMoveGenerator::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
@@ -66,7 +62,6 @@ public class SearchParameter {
         LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
         LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        LOGGER.info("Legal Move Gen: " + legalMoveGenerator.instance().getClass().getSimpleName());
         LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         for (UCIOption option : config.getAllOptions().getAllOptions()) {
             LOGGER.info(option.getName() + ": " + option.getValue());
@@ -80,8 +75,6 @@ public class SearchParameter {
         b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         b.append("\n");
         b.append("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        b.append("\n");
-        b.append("Legal Move Gen: " + legalMoveGenerator.instance().getClass().getSimpleName());
         b.append("\n");
         b.append("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         b.append("\n");

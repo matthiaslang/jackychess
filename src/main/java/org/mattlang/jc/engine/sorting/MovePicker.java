@@ -1,5 +1,10 @@
 package org.mattlang.jc.engine.sorting;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.mattlang.jc.moves.MoveListImpl;
 
 /**
@@ -7,15 +12,29 @@ import org.mattlang.jc.moves.MoveListImpl;
  */
 public final class MovePicker {
 
+    public static final Logger LOGGER = Logger.getLogger(MovePicker.class.getSimpleName());
+
     private MoveListImpl moveList;
 
+    /**
+     * the remaining size of the picker. Note: this can be different from the size of the used move list in cases when
+     * only a partial of the list should be iterated in staged usage.
+     */
     private int size = 0;
 
+    /**
+     * the start of the picker.
+     */
     private int start = 0;
 
+    /**
+     * current position of the picker.
+     */
     private int current = -1;
-
     private int swapCounter = 0;
+    /**
+     * marker if everything is sorted during previous lazy sorting searches.
+     */
     private boolean alreadyFullySorted = false;
 
     public MovePicker() {
@@ -26,24 +45,99 @@ public final class MovePicker {
     }
 
     public void init(MoveListImpl moveList, int start) {
+        init(moveList, start, moveList.size() - start);
+    }
+
+    public void init(MoveListImpl moveList, int start, int size) {
         this.moveList = moveList;
-        this.size = moveList.size();
+        this.size = size;
         this.start = start;
         current = start - 1;
         swapCounter = 0;
         alreadyFullySorted = false;
+
+//        validate();
     }
 
-    private void sortData() {
-        while (!alreadyFullySorted) {
-            sortRound();
+    /**
+     * debug validation consistency checks.
+     */
+    private void validate() {
+        if (start + size > moveList.size()) {
+            throw new IllegalStateException("picker too long!");
         }
+        if (start > 0) {
+            // staged usage, where alredy moves have been chosen. this means all moves before start must be already properly ordered:
+            int currOrder = Integer.MIN_VALUE;
+
+            for (int i = 0; i < start; i++) {
+                if (moveList.getOrder(i) < currOrder) {
+                    throw new IllegalStateException("inconsistent order of previous chosen moves!");
+                }
+                currOrder = moveList.getOrder(i);
+            }
+            // it means also that all moves beyond start should have a lower prio order (higher value) than the last used one:
+
+            for (int i = start; i < moveList.size(); i++) {
+
+                if (moveList.getOrder(i) <= currOrder) {
+                    throw new IllegalStateException(
+                            "inconsistent order of following moves. They should have been chosen earlier!");
+                }
+            }
+        }
+
+        ArrayList<Integer> moveOrders = new ArrayList<>();
+        for (int i = 0; i < start+size; i++) {
+            moveOrders.add(moveList.getOrder(i));
+        }
+        List<String> moveDebugOrders = createMoveDebugOrders(moveOrders);
+        LOGGER.info("picker prepared " + size + " moves, starting at " + start);
+        LOGGER.info("move list order: " + moveDebugOrders);
+    }
+
+    private List<String> createMoveDebugOrders(ArrayList<Integer> moveOrders) {
+        return moveOrders.stream()
+                .map(o -> mapDebugOrderStr(o))
+                .collect(Collectors.toList());
+    }
+
+    private String mapDebugOrderStr(Integer o) {
+        int oi = o.intValue();
+        if (oi == OrderCalculator.HASHMOVE_SCORE) {
+            return "1.HASH";
+        }
+        if (OrderCalculator.isGoodCapture(oi)) {
+            return "2.GOOD CAP";
+        }
+        if (OrderCalculator.isGoodPromotion(oi)) {
+            return "3.GOOD PROM";
+        }
+        if (OrderCalculator.isKillerMove(oi)) {
+            return "4.KILLER";
+        }
+        if (OrderCalculator.isCounterMove(oi)) {
+            return "5.COUNTER";
+        }
+        if (OrderCalculator.isHistory(oi)) {
+            return "6.HISTORY";
+        }
+        if (OrderCalculator.isBadCapture(oi)) {
+            return "8.BAD CAP";
+        }
+        return "7.QUIET";
     }
 
     public boolean hasNext() {
         return size > 0;
     }
 
+    /**
+     * Does a lazy sorting of the rest of the list, searching the element with the lowest order and
+     * putting the element with the lowest to the current position.
+     *
+     * @return the next move with the lowest order of all remaining moves.
+     */
     public int next() {
         if (!alreadyFullySorted) {
             sortRound();
@@ -68,13 +162,14 @@ public final class MovePicker {
     }
 
     private void sortRound() {
-        if (start >= size - 1) {
+        if (start >= moveList.size() - 1) {
+            alreadyFullySorted = true;
             return;
         }
         swapCounter = 0;
         int currLowest = -1;
         int currLowestIndex = -1;
-        for (int i = start; i < size - 1; i++) {
+        for (int i = start; i < moveList.size() - 1; i++) {
             if (moveList.getOrder(i) > moveList.getOrder(i + 1)) {
                 swap(i, i + 1);
 

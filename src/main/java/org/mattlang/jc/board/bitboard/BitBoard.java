@@ -565,10 +565,15 @@ public final class BitBoard implements BoardRepresentation {
     private MoveImpl move = new MoveImpl("a1a2");
 
     @Override
-    public boolean isvalidmove(int aMove) {
+    public boolean isvalidmove(Color color, int aMove) {
         move.fromLongEncoded(aMove);
         int from = move.getFromIndex();
         int to = move.getToIndex();
+
+        Color colorOfPos = board.getColorOfPos(from);
+        if (color != colorOfPos) {
+            return false;
+        }
 
         if (!board.isFigureType(from, move.getFigureType())) {
             return false;
@@ -583,6 +588,7 @@ public final class BitBoard implements BoardRepresentation {
                 return false;
             }
         } else {
+            // regular moves:
 
             if (move.isCapture()) {
                 if (board.get(to) != move.getCapturedFigure()) {
@@ -603,6 +609,24 @@ public final class BitBoard implements BoardRepresentation {
                     || move.getFigureType() == FigureType.Queen.figureCode) {
                 if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
                     return false;
+                }
+            } else if (move.getFigureType() == FigureType.Pawn.figureCode) {
+                if (color == WHITE) {
+                    if (from > to) {
+                        return false;
+                    }
+                    // 2-move
+                    if (to - from == 16 && (allPieces & (1L << (from + 8))) != 0) {
+                        return false;
+                    }
+                } else {
+                    if (from < to) {
+                        return false;
+                    }
+                    // 2-move
+                    if (from - to == 16 && (allPieces & (1L << (from - 8))) != 0) {
+                        return false;
+                    }
                 }
             }
         }

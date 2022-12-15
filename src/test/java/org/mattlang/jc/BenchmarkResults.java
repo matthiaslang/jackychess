@@ -64,7 +64,7 @@ public class BenchmarkResults<T> {
         this.razoring = config.razoring.getValue();
         this.useLateMoveReductions = config.useLateMoveReductions.getValue();
         this.deltaCutoff = config.deltaCutoff.getValue();
-        this.moveListImpl = Factory.getDefaults().moveList.instance().getClass().getSimpleName();
+        this.moveListImpl = Factory.getDefaults().moveiterationPreparer.instance().getClass().getSimpleName();
 
     }
 

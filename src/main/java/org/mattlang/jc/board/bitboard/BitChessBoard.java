@@ -12,6 +12,7 @@ import java.util.List;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.IndexConversion;
 
 /**
  * The chess board as bit board implementation.
@@ -238,7 +239,7 @@ public class BitChessBoard {
                 return (byte) (colorOffset + figType);
             }
         }
-        throw new IllegalStateException("no valid bit mask code existing!");
+        throw new IllegalStateException("no valid bit mask code existing on pos " + IndexConversion.convert(i));
     }
 
     public byte getFigType(int i) {
@@ -335,6 +336,16 @@ public class BitChessBoard {
         long posMask2 = 1L << p2;
         return ((colorBB[nWhite] & posMask1) != 0 && (colorBB[nBlack] & posMask2) != 0
                 || (colorBB[nWhite] & posMask2) != 0 && (colorBB[nBlack] & posMask1) != 0);
+    }
+
+    public boolean isWhite(int p1) {
+        long posMask1 = 1L << p1;
+        return (colorBB[nWhite] & posMask1) != 0;
+    }
+
+    public Color getColorOfPos(int p1) {
+        long posMask1 = 1L << p1;
+        return (colorBB[nWhite] & posMask1) != 0 ? WHITE : BLACK;
     }
 
     /**

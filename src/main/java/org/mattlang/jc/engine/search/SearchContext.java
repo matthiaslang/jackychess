@@ -11,13 +11,10 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
-import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -34,7 +31,6 @@ import lombok.Getter;
 public final class SearchContext {
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
-    private MoveGenerator generator = Factory.getDefaults().legalMoveGenerator.create();
 
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 
@@ -83,8 +79,6 @@ public final class SearchContext {
 
     private final EvaluateFunction evaluate;
 
-    private OrderCalculator orderCalculator;
-
     // null move stuff
     @Getter
     private int nullMoveCounter;
@@ -105,8 +99,6 @@ public final class SearchContext {
 
         this.stc = stc;
         this.board = gameState.getBoard();
-
-        this.orderCalculator = stc.getOrderCalculator();
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
         weAre = gameState.getWho2Move();
@@ -222,18 +214,6 @@ public final class SearchContext {
             int parentMove) {
         MoveIterationPreparer preparer = prepareMoves(mode, ply, color, parentMove);
         return preparer.iterateMoves();
-    }
-
-    /**
-     * Sorts the move list by calculating the move order first.
-     *
-     * @param color
-     * @param moves
-     */
-    private void sortMoves(int ply, Color color, int parentMove, MoveList moves) {
-        int hashMove = probeTTHashMove();
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
-        moves.sort(orderCalculator);
     }
 
     public int eval(Color color) {

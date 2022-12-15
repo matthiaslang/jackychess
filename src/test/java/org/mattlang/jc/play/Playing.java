@@ -57,7 +57,7 @@ public class Playing {
                     engine.goIterative(new GameState(engine.getBoard()), gameContext);
             Move move = result.getSavedMove();
 
-            if (!engine.getBoard().isvalidmove(move.getMoveInt())) {
+            if (!engine.getBoard().isvalidmove(engine.getBoard().getSiteToMove(), move.getMoveInt())) {
                 System.out.println("no valid Move!!!");
             }
             playedMoves.add(new MoveImpl(move.getMoveInt()));

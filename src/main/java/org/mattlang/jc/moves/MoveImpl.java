@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 
 import lombok.Getter;
@@ -210,38 +211,37 @@ public final class MoveImpl implements Move {
      *
      * @return
      */
-//    public String toLongAlgebraic() {
-//        if (isCastling()) {
-//            if (getCastlingMove() == CastlingMove.CASTLING_BLACK_LONG
-//                    || getCastlingMove() == CastlingMove.CASTLING_WHITE_LONG) {
-//                return "O-O-O";
-//            } else {
-//                return "O-O";
-//            }
-//        }
-//        String coords;
-//        if (isCapture()) {
-//            coords = convert(fromIndex) + "x" + convert(toIndex);
-//        } else {
-//            coords = convert(fromIndex) + "-" + convert(toIndex);
-//        }
-//        for (FigureType value : FigureType.values()) {
-//            if (getFigureType() == value.figureCode && getFigureType() != FigureType.Pawn.figureCode) {
-//                coords = Character.toUpperCase(value.figureChar) + coords;
-//
-//            }
-//        }
-//        if (isPromotion()) {
-//            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
-//            coords += figureChar;
-//        }
-//        if (isEnPassant()) {
-//            coords += " e.p";
-//        }
-//
-//        return coords;
-//
-//    }
+    public String toLongAlgebraic() {
+        if (isCastling()) {
+            if (type == CASTLING_WHITE_LONG || type == CASTLING_BLACK_LONG) {
+                return "O-O-O";
+            } else {
+                return "O-O";
+            }
+        }
+        String coords;
+        if (isCapture()) {
+            coords = convert(fromIndex) + "x" + convert(toIndex);
+        } else {
+            coords = convert(fromIndex) + "-" + convert(toIndex);
+        }
+        for (FigureType value : FigureType.values()) {
+            if (getFigureType() == value.figureCode && getFigureType() != FigureType.Pawn.figureCode) {
+                coords = Character.toUpperCase(value.figureChar) + coords;
+
+            }
+        }
+        if (isPromotion()) {
+            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
+            coords += figureChar;
+        }
+        if (isEnPassant()) {
+            coords += " e.p";
+        }
+
+        return coords;
+
+    }
 
     @Override
     public boolean isEnPassant() {

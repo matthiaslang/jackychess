@@ -10,8 +10,7 @@ import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
-import org.mattlang.jc.movegenerator.StagedLegalMoveGenerator;
+
 
 /**
  * Factory to switch between different implementations (mainly for tests).
@@ -38,8 +37,7 @@ public class Factory {
     public static SearchParameter createStagedMoveGen() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .moveList.set(MoveListImpls.STAGED.createSupplier())
-                .legalMoveGenerator.set(StagedLegalMoveGenerator::new)
+                .moveiterationPreparer.set(MoveIterationImpls.STAGED.createSupplier())
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
@@ -57,7 +55,6 @@ public class Factory {
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
@@ -75,7 +72,6 @@ public class Factory {
     public static SearchParameter createMultiThread() {
         return new SearchParameter()
                 .evaluateFunction.set(MinimalPstEvaluation::new)
-                .legalMoveGenerator.set(PseudoLegalMoveGenerator::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new MultiThreadedIterativeDeepening())

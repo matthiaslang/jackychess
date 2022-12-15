@@ -1,11 +1,11 @@
 package org.mattlang.jc.perftests;
 
 import org.junit.Test;
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.StagedLegalMoveGenerator;
+import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
  * PerfTests to validate the boards.isValid method.
@@ -34,8 +34,8 @@ public class PerftStagedMoveGenTests {
     @Test
     public void initialPositionPerformanceLegalMoves() {
 
-        MoveGenerator generator = new StagedLegalMoveGenerator();
-
+        Factory.setDefaults(Factory.createStagedMoveGen());
+        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.perftInitialPosition(generator);
 
@@ -44,8 +44,8 @@ public class PerftStagedMoveGenTests {
     @Test
     public void position2() {
 
-        MoveGenerator generator = new StagedLegalMoveGenerator();
-
+        Factory.setDefaults(Factory.createStagedMoveGen());
+        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
 
         perft.position2(generator);
@@ -54,8 +54,8 @@ public class PerftStagedMoveGenTests {
     @Test
     public void position3() {
 
-        MoveGenerator generator = new StagedLegalMoveGenerator();
-
+        Factory.setDefaults(Factory.createStagedMoveGen());
+        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.position3(generator);
     }
@@ -63,7 +63,8 @@ public class PerftStagedMoveGenTests {
     @Test
     public void position4() {
 
-        MoveGenerator generator = new StagedLegalMoveGenerator();
+        Factory.setDefaults(Factory.createStagedMoveGen());
+        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.position4(generator);
     }

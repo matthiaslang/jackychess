@@ -8,7 +8,6 @@ import static org.mattlang.jc.board.bitboard.BB.getKnightAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -39,7 +38,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
      * @param side  the side to move
      */
     public MoveList generate(BoardRepresentation board, Color side) {
-        MoveList moves = Factory.getDefaults().moveList.create();
+        MoveList moves = new MoveListImpl();
         generate(board, side, moves);
         return moves;
     }

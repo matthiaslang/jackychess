@@ -23,7 +23,7 @@ public class PerfIsValidTests {
             // undo the currently done move to have the position before the legal move has been executed:
             cursor.undoMove(board);
             // now we can test the validity of the move:
-            Assertions.assertThat(board.isvalidmove(cursor.getMoveInt()))
+            Assertions.assertThat(board.isvalidmove(color, cursor.getMoveInt()))
 //                    .withFailMessage("on Board %s: Move %s is not valid!",
 //                            board.toUniCodeStr(),
 //                            new MoveImpl(cursor.getMoveInt()).toStr())

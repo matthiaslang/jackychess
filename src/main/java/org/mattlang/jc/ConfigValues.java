@@ -77,10 +77,10 @@ public class ConfigValues {
                     "the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing",
                     EvalParameterSet.class, EvalParameterSet.CURRENT);
 
-    public final UCIComboOption<MoveListImpls> moveListImpls =
-            common.createComboOpt("moveListImpl",
+    public final UCIComboOption<MoveIterationImpls> moveIterationImpls =
+            common.createComboOpt("moveIterationImpl",
                     "internally. Only for development testing",
-                    MoveListImpls.class, MoveListImpls.OPTIMIZED);
+                    MoveIterationImpls.class, MoveIterationImpls.NORMAL);
 
     public final UCIComboOption<CacheImpls> cacheImpls =
             caching.createComboOpt("TTCacheImpl",

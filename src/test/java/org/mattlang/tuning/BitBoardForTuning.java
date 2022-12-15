@@ -474,7 +474,7 @@ public class BitBoardForTuning implements BoardRepresentation {
     private MoveImpl move = new MoveImpl("a1a2");
 
     @Override
-    public boolean isvalidmove(int aMove) {
+    public boolean isvalidmove(Color color, int aMove) {
         move.fromLongEncoded(aMove);
         int from = move.getFromIndex();
         int to = move.getToIndex();

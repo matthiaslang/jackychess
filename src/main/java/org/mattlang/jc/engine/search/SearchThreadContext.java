@@ -50,7 +50,7 @@ public class SearchThreadContext {
 
     public void resetMoveLists() {
         for (int i = 0; i < moveIterationPreparers.length; i++) {
-            moveIterationPreparers[i] = new MoveIterationPreparer();
+            moveIterationPreparers[i] = Factory.getDefaults().moveiterationPreparer.create();
         }
     }
 

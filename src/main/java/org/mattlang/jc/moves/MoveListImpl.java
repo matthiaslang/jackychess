@@ -7,6 +7,8 @@ import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
+import java.util.Arrays;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
@@ -25,6 +27,12 @@ public final class MoveListImpl implements MoveList {
     private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+
+    /**
+     * Moves which should be filtered during collecting of moves (used in staged move generation).
+     * 4 Places are needed: a hash move, two killers, and a counter move at most.
+     */
+    private int[] filterMoves = new int[4];
 
     public MoveListImpl() {
     }
@@ -88,11 +96,6 @@ public final class MoveListImpl implements MoveList {
         return moveCursor;
     }
 
-    public MoveCursor iterate(int startPos) {
-        moveCursor.init(this, startPos);
-        return moveCursor;
-    }
-
     @Override
     public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
         MoveCursor moveCursor = iterate();
@@ -110,22 +113,37 @@ public final class MoveListImpl implements MoveList {
 
     public void reset() {
         size = 0;
-    }
-
-    @Override
-    public void close() {
-
+        Arrays.fill(filterMoves, 0);
     }
 
     public void addMove(int aMove) {
-        moves[size] = aMove;
-        size++;
+        if (!isFiltered(aMove)) {
+            moves[size] = aMove;
+            size++;
+        }
     }
 
     public void addMoveWithOrder(int aMove, int orderVal) {
-        moves[size] = aMove;
-        order[size] = orderVal;
-        size++;
+        if (!isFiltered(aMove)) {
+            moves[size] = aMove;
+            order[size] = orderVal;
+            size++;
+        }
+    }
+
+    private boolean isFiltered(int aMove) {
+        for (int i = 0; i < filterMoves.length; i++) {
+            int filterMove = filterMoves[i];
+            // no more filtered moves set, so we kan skip
+            if (filterMove == 0) {
+                return false;
+            }
+            if (filterMove == aMove) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     public void swap(int i, int j) {
@@ -137,5 +155,15 @@ public final class MoveListImpl implements MoveList {
         int ttmp = moves[i];
         moves[i] = moves[j];
         moves[j] = ttmp;
+    }
+
+    public void addFilter(int filterMove) {
+        for (int i = 0; i < filterMoves.length; i++) {
+            if (filterMoves[i] == 0) {
+                filterMoves[i] = filterMove;
+                return;
+            }
+        }
+        throw new IllegalStateException("no free filter move!");
     }
 }
