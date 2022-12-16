@@ -1,5 +1,9 @@
 # Versions
 
+#### 0.13.6-012
+
+- slightly changed criterias for lmr. seems to bring again ~30 compared to 0.13.6-010
+
 #### 0.13.6-010
 
 - reworked late move reduction using reduction table with higher reductions. seem to bring ~30 Elos
