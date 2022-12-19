@@ -1,5 +1,9 @@
 # Versions
 
+#### 0.13.7
+
+- RC01: ~180 ELO stronger than 0.13.1
+
 #### 0.13.6-012
 
 - slightly changed criterias for lmr. seems to bring again ~30 compared to 0.13.6-010
