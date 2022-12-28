@@ -1,8 +1,8 @@
 # Versions
 
-#### 0.13.7
+### 0.13.7
 
-- RC01: ~180 ELO stronger than 0.13.1
+- RC01: ~2540 Elo, ~180 ELO stronger than 0.13.1 
 
 #### 0.13.6-012
 
@@ -51,7 +51,7 @@
 
 - reworked statistics logging
 
-### Version 0.13.4
+## Version 0.13.4
                   
 Official release which supports Fischer Random Chess (Chess960) as variant
 
@@ -68,12 +68,12 @@ Official release which supports Fischer Random Chess (Chess960) as variant
 
 - supports Fischer Random Chess (Chess960) as variant
 
-### Version 0.13.1
+## Version 0.13.1
 
 - fixed promotion to knight bug 
                                                           
 
-### Version 0.13.0
+## Version 0.13.0
 
 Official Release after 0.12.0
                              
@@ -112,7 +112,7 @@ Elo: +16-32
 - tuning of evaluation pst values. Brings ~70 elos.
 
 
-### Version 0.12.0
+## Version 0.12.0
 
 Official Release, same as 0.11.11.
 
@@ -210,7 +210,7 @@ Elo difference: 107.5 4 Threads vs 1 Thread
 - using smaller aspiration windows and more increments. Seem to bring some small benefits (~7 Elos).
 
 
-### Version 0.10.0
+## Version 0.10.0
 
 Official release. It plays ~2000 elos. 
 
@@ -291,7 +291,7 @@ Official release. It plays ~2000 elos.
 - mate distance pruning
 
 
-### Version 0.9.18
+## Version 0.9.18
 
 The last versions have been mainly refactorings using now Bitboard and the respective move generation using magic
 bitboards. Not everything in the code is optimized for bitboards, yet, but its an ongoing task.
@@ -334,7 +334,7 @@ move generation and search should therefore a bit faster, overall search should 
 
 - cleaned up and fixed mvvLva code. Seems to give slightly better pruning.
 
-### Version 0.9.14  first official stable release
+## Version 0.9.14  first official stable release
 
 - fixed issue when running engine within a batch file: uci quit has not exit process (because of other threads still running)
 - log files are by default not written, but only if java property jacky.logging.activate is set to true.
