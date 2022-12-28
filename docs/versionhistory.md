@@ -1,5 +1,9 @@
 # Versions
 
+### 0.13.8
+
+- rewritten optional staged move generation. Does currently not bring any benefit
+
 ### 0.13.7
 
 - RC01: ~2540 Elo, ~180 ELO stronger than 0.13.1 
