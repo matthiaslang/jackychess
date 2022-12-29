@@ -237,7 +237,16 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 statistics.nullMoveTryCount++;
                 if (eval >= beta) {
                     statistics.nullMovePruningCount++;
-                    return eval;
+                    if (depth >= 10) {
+                        // do verification at high depths:
+                        int verifyScore = negaMaximize(ply + 1, depth - R, color.invert(), beta + 1, beta);
+                        searchContext.resetNullMoveCounter();
+                        if (verifyScore >= beta)
+                            return verifyScore;
+                    } else {
+                        searchContext.resetNullMoveCounter();
+                        return eval;
+                    }
                 }
             }
 

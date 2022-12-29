@@ -1,9 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -21,7 +18,9 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Holds Information during a negamax Search.
@@ -152,8 +151,11 @@ public final class SearchContext {
     }
 
     public void undoNullMove() {
-        nullMoveCounter--;
         board.undoNullMove();
+    }
+
+    public void resetNullMoveCounter(){
+        nullMoveCounter=0;
     }
 
     public void doPrepareNullMove() {
