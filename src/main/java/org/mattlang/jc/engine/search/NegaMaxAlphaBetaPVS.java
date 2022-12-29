@@ -250,6 +250,33 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 }
             }
 
+            // ProbCut
+            // If a winning capture scores much higher than beta on a shallow search,
+            // then we can assume a beta cutoff would happen on the full search as
+            // well, and return early.
+            // Idea from Stockfish
+            if (depth >= 6 && staticEval >= beta - 100 - 20 * depth
+                    && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
+                int probCutMargin = beta + 90;
+                int probCutCount = 0;
+                // todo use margin of  probCutMargin - staticEval in iteration?
+
+                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0)) {
+                    while (moveCursor.nextMove() && probCutCount<3) {
+                        if (moveCursor.doValidMove()){
+                            probCutCount++;
+                            if (moveCursor.getMoveInt() != hashMove) {
+                                int score = -negaMaximize(ply + 1, depth - depth/4 - 4, color.invert(), -probCutMargin, -probCutMargin+1);
+                                if (score >= probCutMargin)
+                                    return score;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
             /**************************************************************************
              *  RAZORING - if a node is close to the leaf and its static score is low, *
              *  we drop directly to the quiescence search.                             *
