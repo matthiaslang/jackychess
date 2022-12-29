@@ -1,19 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
-
-import java.util.List;
-import java.util.logging.Logger;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
@@ -30,7 +17,19 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import lombok.Getter;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -85,7 +84,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private final boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
     private final boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
-    private final int[] parentMoves = new int[MAX_PLY];
+    /** parent moves. needs one more place than max ply to save the "following" move. */
+    private final int[] parentMoves = new int[MAX_PLY + 1];
 
     private SearchContext searchContext;
 
