@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.sorting;
 
-import static java.util.Objects.requireNonNull;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -13,7 +12,7 @@ import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
 
 @Getter
 public final class OrderCalculator {
@@ -59,6 +58,7 @@ public final class OrderCalculator {
     private BoardRepresentation board;
 
     private static SEE see = new SEE();
+    private int captureMargin = 0;
 
     public OrderCalculator(SearchThreadContext stc) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
@@ -68,7 +68,7 @@ public final class OrderCalculator {
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
-            BoardRepresentation board) {
+            BoardRepresentation board, int captureMargin) {
 
         this.hashMove = hashMove;
         this.parentMove = parentMove;
@@ -76,6 +76,7 @@ public final class OrderCalculator {
         this.ply = ply;
         this.color = color;
         this.board = board;
+        this.captureMargin=captureMargin;
     }
 
     /**

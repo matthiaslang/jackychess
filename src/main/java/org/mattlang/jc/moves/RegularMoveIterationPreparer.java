@@ -29,8 +29,20 @@ public class RegularMoveIterationPreparer implements MoveIterationPreparer {
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
         generator.generate(mode, orderCalculator, board, color, moveList);
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
-        moveList.sort(orderCalculator);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, 0);
+        moveList.scoreMoves(orderCalculator);
+
+    }
+
+    public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+                        int ply, int hashMove, int parentMove, int captureMargin) {
+        moveList.reset();
+        this.board = board;
+        orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
+
+        generator.generate(mode, orderCalculator, board, color, moveList);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        moveList.scoreMoves(orderCalculator);
 
     }
 

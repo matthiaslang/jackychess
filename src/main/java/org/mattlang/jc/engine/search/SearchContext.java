@@ -204,17 +204,17 @@ public final class SearchContext {
     }
 
     public MoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color,
-            int parentMove) {
+            int parentMove, int captureMargin) {
         int hashMove = probeTTHashMove();
 
         MoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
-        preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove);
+        preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove, captureMargin);
         return preparer;
     }
 
     public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color,
-            int parentMove) {
-        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, parentMove);
+            int parentMove, int captureMargin) {
+        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, parentMove, captureMargin);
         return preparer.iterateMoves();
     }
 

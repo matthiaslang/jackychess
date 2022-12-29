@@ -1,11 +1,5 @@
 package org.mattlang.jc.moves;
 
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
-
-import java.util.logging.Logger;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -18,6 +12,12 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+
+import java.util.logging.Logger;
+
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
 
 /**
  * Encapsulates all relevant objects to prepare iteration over moves on the board.
@@ -57,11 +57,18 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     private int ply;
     private int parentMove;
 
+    private int captureMargin;
     private MovePicker movePicker = new MovePicker();
     private SearchThreadContext stc;
 
+
     public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove) {
+        prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
+    }
+
+    public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+                        int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset();
         movePicker.init(moveList, 0);
         stage = NO_STAGE;
@@ -71,6 +78,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
         this.color = color;
         this.ply = ply;
         this.parentMove = parentMove;
+        this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
 
         if (mode == MoveGenerator.GenMode.NORMAL) {
@@ -165,8 +173,8 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     }
 
     private void createSortOrders(int currStartPos) {
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board);
-        moveList.sort(orderCalculator, currStartPos);
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        moveList.scoreMoves(orderCalculator, currStartPos);
     }
 
     /**

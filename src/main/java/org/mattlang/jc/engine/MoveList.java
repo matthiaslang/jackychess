@@ -1,26 +1,25 @@
 package org.mattlang.jc.engine;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public interface MoveList extends MoveCollector {
 
     /**
-     * sort the list with usage of a order calculator.
+     * scores all moves in the movelist  with usage of a order calculator.
      * The ordercalculator can produce a order number for each move which is then used as search criteria.
      * with the lowest order for the best moves.
-     * The sort algorithm is implementation detail. the move list can e.g. use lazy sorting
      *
      * @param orderCalculator
      */
-    void sort(OrderCalculator orderCalculator);
+    void scoreMoves(OrderCalculator orderCalculator);
 
     /**
      * the no of moves in this list.
