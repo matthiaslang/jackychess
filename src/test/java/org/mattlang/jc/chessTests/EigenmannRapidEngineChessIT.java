@@ -169,12 +169,7 @@ public class EigenmannRapidEngineChessIT {
         // create engine
         Factory.setDefaults(Factory.createStable()
                         .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                        .config(c->c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL))
-                        .config(c->c.useNullMoves.setValue(true))
-                        .config(c->c.staticNullMove.setValue(true))
-                        .config(c->c.deltaCutoff.setValue(true))
-                        .config(c->c.razoring.setValue(true))
-                        .config(c->c.useLateMoveReductions.setValue(true))
+                        .config(c->c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.timeout.setValue(25000)));
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);

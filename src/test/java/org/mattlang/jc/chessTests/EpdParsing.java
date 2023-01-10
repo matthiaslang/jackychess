@@ -11,6 +11,9 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.GameContext;
+import org.mattlang.tuning.data.pgnparser.AlgebraicNotation;
+import org.mattlang.tuning.data.pgnparser.MoveText;
+import org.mattlang.tuning.data.pgnparser.TextPosition;
 
 /**
  * Simple epd parsing (only relevant parts for our tests...)
@@ -54,6 +57,8 @@ public class EpdParsing {
     public static void testPosition(Engine engine, String position, String expectedBestMove) {
         System.out.println(position + " " + expectedBestMove);
 
+
+
         // set fen position out of the epd description:
         // todo we are not able to parse epd correctly right now, but with that workaround we get it to work
         // as FEN:
@@ -62,9 +67,26 @@ public class EpdParsing {
         Move move = engine.go(gameState, new GameContext());
 
         System.out.println(move.toStr());
-        // we have no short algebraic notation, therefore do some weak comparison...
-        String targetSquare = move.toStr().substring(2);
-        assertThat(expectedBestMove).contains(targetSquare);
 
+        MoveText moveText=new MoveText(expectedBestMove, emptyPos());
+        Move algExpectedMove=AlgebraicNotation.moveFromAN(gameState.getBoard(), gameState.getWho2Move(), moveText);
+
+        assertThat(move).isEqualTo(algExpectedMove);
+
+    }
+
+    private static TextPosition emptyPos() {
+        return new TextPosition() {
+
+            @Override
+            public int getLineNo() {
+                return 0;
+            }
+
+            @Override
+            public int getColNo() {
+                return 0;
+            }
+        };
     }
 }
