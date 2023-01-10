@@ -102,7 +102,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
         try {
             int currdepth = startDepth;
 
-            while (currdepth <= maxDepth) {
+            while (currdepth < maxDepth) {
                 currdepth++;
                 if (isWorker) {
                     currdepth = adjustDepthForWorker(currdepth);
