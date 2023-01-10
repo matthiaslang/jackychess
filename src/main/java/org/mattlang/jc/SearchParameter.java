@@ -28,7 +28,7 @@ public class SearchParameter {
 
     private ConfigValues config = new ConfigValues();
 
-    public final Impl<MoveIterationPreparer> moveiterationPreparer = new Impl<>(this, MoveIterationImpls.NORMAL.createSupplier());
+    public final Impl<MoveIterationPreparer> moveiterationPreparer = new Impl<>(this, MoveIterationImpls.STAGED.createSupplier());
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 

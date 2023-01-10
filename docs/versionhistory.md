@@ -1,5 +1,14 @@
 # Versions
 
+### 0.13.9
+
+- null move uses verification (brings ~20 elos)
+- probeCut (brings ~10-15 elos)
+- staged move generation (brings ~20 Elos)
+- reduced eval cache to save mem (and the bigger cache doesnt seem to bring anything)
+
+- RC02: ~2577 Elo, ~217 ELO stronger than 0.13.1
+
 ### 0.13.8
 
 - rewritten optional staged move generation. Does currently not bring any benefit
