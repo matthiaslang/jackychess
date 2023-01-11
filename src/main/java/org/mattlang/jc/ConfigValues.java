@@ -80,7 +80,7 @@ public class ConfigValues {
     public final UCIComboOption<MoveIterationImpls> moveIterationImpls =
             common.createComboOpt("moveIterationImpl",
                     "internally. Only for development testing",
-                    MoveIterationImpls.class, MoveIterationImpls.NORMAL);
+                    MoveIterationImpls.class, MoveIterationImpls.STAGED);
 
     public final UCIComboOption<CacheImpls> cacheImpls =
             caching.createComboOpt("TTCacheImpl",
