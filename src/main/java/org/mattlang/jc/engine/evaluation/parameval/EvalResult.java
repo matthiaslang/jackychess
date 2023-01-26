@@ -42,8 +42,6 @@ public final class EvalResult {
     private final long[][] attacks = new long[2][7];
     private final long[] doubleAttacks = new long[2];
 
-    private DetailedEvalResult details = new DetailedEvalResult();
-
     public void clear() {
         midGame = 0;
         endGame = 0;
