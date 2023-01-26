@@ -282,19 +282,6 @@ public class BitChessBoard {
         return BB.toStr(bb);
     }
 
-    public void move(int from, int to, byte figureCode, int color) {
-
-        byte figType = (byte) (figureCode & MASK_OUT_COLOR);
-        long fromBB = 1L << from;
-        long toBB = 1L << to;
-        long fromToBB = fromBB ^ toBB; // |+
-        pieceBB[figType] ^= fromToBB;   // update piece bitboard
-        colorBB[color] ^= fromToBB;   // update white or black color bitboard
-        //occupiedBB            ^=  fromToBB;   // update occupied ...
-        //emptyBB               ^=  fromToBB;   // ... and empty bitboard
-
-    }
-
     public void move(int from, int to, byte figType, int color, byte capturedPiece) {
 
         long fromBB = 1L << from;
@@ -336,11 +323,6 @@ public class BitChessBoard {
         long posMask2 = 1L << p2;
         return ((colorBB[nWhite] & posMask1) != 0 && (colorBB[nBlack] & posMask2) != 0
                 || (colorBB[nWhite] & posMask2) != 0 && (colorBB[nBlack] & posMask1) != 0);
-    }
-
-    public boolean isWhite(int p1) {
-        long posMask1 = 1L << p1;
-        return (colorBB[nWhite] & posMask1) != 0;
     }
 
     public Color getColorOfPos(int p1) {

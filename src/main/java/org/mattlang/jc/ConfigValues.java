@@ -14,8 +14,6 @@ public class ConfigValues {
 
     public final UCIGroup common = allOptions.createGroup("Common", "Common parameter");
     public final UCIGroup variants = allOptions.createGroup("Variants", "Game Variant parameter");
-    public final UCIGroup experimental =
-            allOptions.createInternalGroup("Experimental", "Experimental parameter used during development");
 
     public final UCIGroup internal =
             allOptions.createInternalGroup("Internal", "Internal Test Parameter for Development");

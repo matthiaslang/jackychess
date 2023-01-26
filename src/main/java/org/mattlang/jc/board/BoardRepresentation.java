@@ -16,8 +16,6 @@ public interface BoardRepresentation {
 
     void setPos(int index, Figure figure);
 
-    void setPos(int index, byte figure);
-
     char getPos(int row, int col);
 
     Figure getPos(int i);

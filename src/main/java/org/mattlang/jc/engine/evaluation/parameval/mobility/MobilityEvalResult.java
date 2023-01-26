@@ -186,7 +186,6 @@ public class MobilityEvalResult {
 
         long ownFigsMask = bb.getColorMask(side);
         long opponentFigsMask = bb.getColorMask(oppo);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
         long occupancy = ownFigsMask | opponentFigsMask;
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);

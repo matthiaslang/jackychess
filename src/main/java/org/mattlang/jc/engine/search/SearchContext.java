@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import java.util.ArrayList;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -14,13 +15,10 @@ import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
-import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.Getter;
 
 /**
  * Holds Information during a negamax Search.
@@ -188,18 +186,6 @@ public final class SearchContext {
             }
         }
         return 0;
-
-    }
-
-    public void collectStatistics(Map stats) {
-
-        Map rslts = new LinkedHashMap();
-        stats.put("negamax alpha/beta", rslts);
-        rslts.put("savedMove", new MoveImpl(getSavedMove()));
-        rslts.put("savedMoveScore", getSavedMoveScore());
-        Map ttcacheMap = new LinkedHashMap();
-        //        ttCache.collectStatistics(ttcacheMap);
-        rslts.put("ttcache", ttcacheMap);
 
     }
 

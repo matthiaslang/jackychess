@@ -92,8 +92,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 //        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
 //        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
 
-        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+//        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
+//        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 
 //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
 //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
@@ -108,7 +108,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isPasser = (BB.wFrontFill(pawnMask) & ~BB.bFrontFill(blackPawns) & pawnMask) != 0;
                 boolean isWeak = (BB.wFrontFill(pawnMask) & blackPawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
-                boolean isBlocked = (BB.soutOne(blackPawns) & pawnMask) != 0;
+//                boolean isBlocked = (BB.soutOne(blackPawns) & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(BB.wFrontFill(pawnMask) & whitePawns) > 1;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
 
@@ -141,7 +141,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isPasser = (BB.bFrontFill(pawnMask) & ~BB.wFrontFill(whitePawns) & pawnMask) != 0;
                 boolean isWeak = (BB.bFrontFill(pawnMask) & whitePawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
-                boolean isBlocked = (BB.nortOne(whitePawns) & pawnMask) != 0;
+//                boolean isBlocked = (BB.nortOne(whitePawns) & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(BB.bFrontFill(pawnMask) & blackPawns) > 1;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
 

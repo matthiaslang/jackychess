@@ -133,11 +133,6 @@ public class BitBoardForTuning implements BoardRepresentation {
         set(index, figure.figureCode);
     }
 
-    @Override
-    public void setPos(int index, byte figure) {
-        set(index, figure);
-    }
-
     /**
      * Gets position based on coordinate system (0,0 is the left lower corner, the white left corner)
      *

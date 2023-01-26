@@ -29,7 +29,6 @@ public class HistoryHeuristic {
 
     public void update(Color color, MoveCursor move, int depth) {
         int colorIdx = color == Color.WHITE ? 0 : 1;
-        int fig = move.getFigureType();
         posHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth;
     }
 

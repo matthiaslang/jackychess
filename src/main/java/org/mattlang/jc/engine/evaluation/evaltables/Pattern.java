@@ -105,21 +105,6 @@ public final class Pattern {
         return accu;
     }
 
-    public int dotProductOld(long bb, Color color) {
-
-        int[] weights = color == WHITE ? flippedPattern : boardPattern;
-
-        long bit = 1;
-        int accu = 0;
-        for (int sq = 0; sq < 64; sq++, bit += bit) {
-            if ((bb & bit) != 0)
-                accu += weights[sq];
-            // accu += weights[sq] & -((  bb & bit) == bit); // branchless 1
-            // accu += weights[sq] & -(( ~bb & bit) == 0);   // branchless 2
-        }
-        return accu;
-    }
-
     /**
      * Loads a pattern from a csv file.
      *
