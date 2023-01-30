@@ -5,6 +5,7 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
@@ -152,7 +153,10 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-
+    @Override
+    public int calcPstDelta(Color color, Move m) {
+        return pstEvaluation.calcPstDelta(color, m);
+    }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
         long figs = board.getBoard().getColorMask(nWhite) | board.getBoard()

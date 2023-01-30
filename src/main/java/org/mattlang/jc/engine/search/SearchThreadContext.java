@@ -41,7 +41,7 @@ public class SearchThreadContext {
 
     public SearchThreadContext() {
         resetMoveLists();
-        orderCalculator = new OrderCalculator(this);
+        orderCalculator = new OrderCalculator(this, getEvaluate());
     }
 
     public MoveIterationPreparer getMoveIterationPreparer(int ply) {

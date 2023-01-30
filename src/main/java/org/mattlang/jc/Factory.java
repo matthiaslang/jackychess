@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -36,7 +36,7 @@ public class Factory {
 
     public static SearchParameter createStagedMoveGen() {
         return new SearchParameter()
-                .evaluateFunction.set(MinimalPstEvaluation::new)
+                .evaluateFunction.set(ParameterizedEvaluation::new)
                 .moveiterationPreparer.set(MoveIterationImpls.STAGED.createSupplier())
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
@@ -51,7 +51,7 @@ public class Factory {
 
     public static SearchParameter createStable() {
         return new SearchParameter()
-                .evaluateFunction.set(MinimalPstEvaluation::new)
+                .evaluateFunction.set(ParameterizedEvaluation::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
@@ -65,7 +65,7 @@ public class Factory {
 
     public static SearchParameter createMultiThread() {
         return new SearchParameter()
-                .evaluateFunction.set(MinimalPstEvaluation::new)
+                .evaluateFunction.set(ParameterizedEvaluation::new)
                 .boards.set(BitBoard::new)
                 .checkChecker.set(BBCheckCheckerImpl::new)
                 .searchMethod.set(()->new MultiThreadedIterativeDeepening())

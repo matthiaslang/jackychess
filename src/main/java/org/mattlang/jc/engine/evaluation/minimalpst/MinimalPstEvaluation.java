@@ -1,10 +1,12 @@
 package org.mattlang.jc.engine.evaluation.minimalpst;
 
+import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
@@ -172,6 +174,30 @@ public class MinimalPstEvaluation implements EvaluateFunction {
 
         double score = PhaseCalculator.scaleByPhase(bb, midGame, endGame);
         return (int) score;
+    }
+
+    @Override
+    public int calcPstDelta(Color color, Move m) {
+        Pattern pattern = getPstForFigure(m.getFigureType());
+        return pattern.getVal(m.getToIndex(), color) - pattern.getVal(m.getFromIndex(), color);
+    }
+
+    public Pattern getPstForFigure(byte figureType) {
+        switch (figureType) {
+        case FT_PAWN:
+            return PAWN_MG;
+        case FT_KNIGHT:
+            return KNIGHT_MG;
+        case FT_BISHOP:
+            return BISHOP_MG;
+        case FT_ROOK:
+            return ROOK_MG;
+        case FT_QUEEN:
+            return QUEEN_MG;
+        case FT_KING:
+            return KING_MG;
+        }
+        throw new IllegalArgumentException("illegal figure type " + figureType);
     }
 
 }

@@ -1,18 +1,20 @@
 package org.mattlang.jc.engine.sorting;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
 
-import static java.util.Objects.requireNonNull;
+import lombok.Getter;
 
 @Getter
 public final class OrderCalculator {
@@ -28,7 +30,7 @@ public final class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
-    public static final int HISTORY_DIFF = 100000;
+    public static final int HISTORY_DIFF = 100_000;
     public static final int QUIET = -HISTORY_DIFF;
 
     public static final int BAD_CAPTURES_SCORE = -500_000;
@@ -44,13 +46,15 @@ public final class OrderCalculator {
     private static final int HISTORY_LOWER = OrderCalculator.HISTORY_SCORE - HISTORY_DIFF;
     private static final int HISTORY_UPPER = OrderCalculator.HISTORY_SCORE + HISTORY_DIFF;
 
-    private HistoryHeuristic historyHeuristic;
-    private KillerMoves killerMoves;
-    private CounterMoveHeuristic counterMoveHeuristic;
+    final private HistoryHeuristic historyHeuristic;
+    final private KillerMoves killerMoves;
+    final private CounterMoveHeuristic counterMoveHeuristic;
+
+    final private EvaluateFunction evaluateFunction;
     private Color color;
 
     private int ply;
-    private boolean useMvvLva;
+    private final boolean useMvvLva;
 
     private int hashMove;
     private int parentMove;
@@ -60,11 +64,12 @@ public final class OrderCalculator {
     private static SEE see = new SEE();
     private int captureMargin = 0;
 
-    public OrderCalculator(SearchThreadContext stc) {
+    public OrderCalculator(SearchThreadContext stc, EvaluateFunction evaluateFunction) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
         this.useMvvLva = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
+        this.evaluateFunction = evaluateFunction;
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
@@ -124,9 +129,14 @@ public final class OrderCalculator {
                     return -heuristic + HISTORY_SCORE;
                 }
             }
-            return -mvvLva + QUIET;
+            int pstDelta = calcPstDelta(m);
+            return -mvvLva * 1000 + pstDelta + QUIET;
         }
 
+    }
+
+    private int calcPstDelta(Move m) {
+        return evaluateFunction.calcPstDelta(color, m);
     }
 
     /**

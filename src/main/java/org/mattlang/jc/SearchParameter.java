@@ -13,7 +13,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.moves.MoveIterationPreparer;
@@ -32,7 +32,7 @@ public class SearchParameter {
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 
-    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new MinimalPstEvaluation());
+    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new ParameterizedEvaluation());
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 

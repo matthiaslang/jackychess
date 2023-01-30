@@ -1,4 +1,20 @@
 # Versions
+                   
+## 0.14.0
+
+Official Release since 0.13.4. 
+Estimated Elo strength: ~2597, ~237 Elo stronger than 0.13.1.
+
+Summary of changes compared to 0.13.1:
+
+- Fischer Random Chess (Chess960) Support
+- null move verification (~20 Elos)
+- probeCut (~10-15 Elos)
+- staged move generation (~20 Elos)
+- order quiets by PST (~10-20 Elos)
+- several optimizations on lmr criterias
+- evaluation of threats
+- retuned all evaluation parameters together with threats
 
 ### 0.13.9
 

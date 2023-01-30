@@ -17,6 +17,7 @@ import java.util.Set;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.evaluation.parameval.*;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
@@ -421,12 +422,16 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     @Override
+    public int calcPstDelta(Color color, Move m) {
+        return parameterizedEvaluation.calcPstDelta(color, m);
+    }
+
+    @Override
     public void saveValues(List<TuningParameter> params) {
         for (TuningParameter param : params) {
             param.saveValue(parameterizedEvaluation);
         }
     }
-
 
     @Override
     public List<TuningParameter> getParams() {
