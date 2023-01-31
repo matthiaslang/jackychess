@@ -167,9 +167,13 @@ public class UciProcessor {
     }
 
     private GameState setPosition(String positionStr) {
-        FenParser fenParser = new FenParser();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
-        return fenParser.setPosition(positionStr, board);
+        try {
+            FenParser fenParser = new FenParser();
+            BoardRepresentation board = Factory.getDefaults().boards.create();
+            return fenParser.setPosition(positionStr, board);
+        } catch (RuntimeException re){
+            throw new RuntimeException("Error parsing UCI postion: " + positionStr, re);
+        }
     }
 
     private void identifyYourself() {
