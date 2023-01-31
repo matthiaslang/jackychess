@@ -300,6 +300,49 @@ public class EngineTest {
 
     }
 
+
+    @Test
+    public void testFRCIssue() throws IOException {
+        UCI.instance.attachStreams(System.in, System.out);
+
+        BoardRepresentation board = Factory.getDefaults().boards.create();
+        FenParser parser = new FenParser();
+        GameState gameState =
+                parser.setPosition("position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5 c1c1 a5a2 ", board);
+
+        System.out.println(board.toUniCodeStr());
+
+        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
+        Move move = negaMax.search(gameState, new GameContext(), 2);
+
+//        // block with other figure:
+//        assertThat(move.toStr()).isEqualTo("d8d7");
+//
+//        System.out.println(move);
+
+    }
+
+    @Test
+    public void testFRCIssue2() throws IOException {
+        UCI.instance.attachStreams(System.in, System.out);
+
+        BoardRepresentation board = Factory.getDefaults().boards.create();
+        FenParser parser = new FenParser();
+        GameState gameState =
+                parser.setPosition("position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5   ", board);
+
+        System.out.println(board.toUniCodeStr());
+
+        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
+        Move move = negaMax.search(gameState, new GameContext(), 2);
+
+        //        // block with other figure:
+        //        assertThat(move.toStr()).isEqualTo("d8d7");
+        //
+        //        System.out.println(move);
+
+    }
+
     @Test
     public void testCheckSituation2() {
 

@@ -85,6 +85,8 @@ public class FenParser {
             }
         } else if (isCastlingByKingCapturesRook(board, movePos)) {
             return castlingByKingCapturesRook(board, movePos);
+        } else if (istCastlingByKingToKingMove(board, movePos)) {
+            return castlingByKingToKingMove(board, movePos);
         }
 
         // check target pos & capturing:
@@ -111,6 +113,33 @@ public class FenParser {
 
         // normal move:
         return new MoveImpl(fig.figureType.figureCode, movePos.getFrom(), movePos.getTo(), captureFig);
+    }
+
+    private Move castlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+        for (CastlingType castlingType : CastlingType.values()) {
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(castlingType);
+            if (castlingMove.getKingFrom() == movePos.getFrom() && castlingMove.getKingTo() == movePos.getTo()) {
+                return MoveImpl.createCastling(castlingMove);
+            }
+        }
+        throw new IllegalArgumentException(
+                "internal error creating castling move from king captures king description!");
+    }
+
+    /**
+     * frc castling encoded variant, where from ==to == king move for special castlings where the position of the king doesn´t
+     * change on castling.
+     * cutechess seem to use this encoding on frc (sometimes, not always...).
+     *
+     * @param board
+     * @param movePos
+     * @return
+     */
+    private boolean istCastlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+        Figure figFrom = board.getFigure(movePos.getFrom());
+        return figFrom.figureType == FigureType.King
+                && movePos.getFrom() == movePos.getTo()
+                && figFrom.color == board.getSiteToMove();
     }
 
     private Move castlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
