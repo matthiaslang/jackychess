@@ -125,23 +125,23 @@ the search algorithm to use.
 #### Declaration
 
 ```
-option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD var STAGED_MOVE_GEN
+option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD
 ```
 
 ## Common
 
 Common parameter
 
-### Option moveListImpl
+### Option moveIterationImpl
 
 internally. Only for development testing
 
-- default value: OPTIMIZED
+- default value: STAGED
 
 
 #### Declaration
 
 ```
-option name moveListImpl type combo default OPTIMIZED var OPTIMIZED var STAGED
+option name moveIterationImpl type combo default STAGED var NORMAL var STAGED
 ```
 

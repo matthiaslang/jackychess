@@ -85,12 +85,13 @@ The chess engine uses following technics/algorithms
 - a configurable Evaluation function considering material, mobility and several other simple evaluations
   - evaluation cache
   - parameter partially tuned via texel like tuning method
+  - special end game evaluations
 - Negamax with PVS in an iterative deepening algorithm using Alpha Beta Pruning.
 - Aspiration windowing
 - null move pruning and static null move pruning
 - razoring
 - late move reduction
-- separate move generation for quiescence
+- staged move generation and separate move generation for quiescence
 - Move sorting by Hash Moves, killer moves, history heuristic, counter moves, captures sorted by SEE
 - Transposition Table using zobrist hashing to cache Scores
 - basic quiescence search with delta cut off
@@ -124,6 +125,5 @@ see [Version History](docs/versionhistory.md)
 - more tuning of evaluation parameter
 - pruning optimization
 - tt cache optimization
-- lazy staged move generation
 
 

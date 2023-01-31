@@ -3,7 +3,7 @@
 ## 0.14.0
 
 Official Release since 0.13.4. 
-Estimated Elo strength: ~2597, ~237 Elo stronger than 0.13.1.
+Estimated Elo strength: ~2580, ~220 Elo stronger than 0.13.1.
 
 Summary of changes compared to 0.13.1:
 
@@ -15,6 +15,8 @@ Summary of changes compared to 0.13.1:
 - several optimizations on lmr criterias
 - evaluation of threats
 - retuned all evaluation parameters together with threats
+- fixed overflow bugs
+- 
 
 ### 0.13.9
 
