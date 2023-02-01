@@ -93,4 +93,9 @@ public interface BoardRepresentation {
     BoardCastlings getBoardCastlings();
 
     void clearCastlingRights();
+
+    boolean isChess960();
+
+    void setChess960(boolean chess960);
+
 }

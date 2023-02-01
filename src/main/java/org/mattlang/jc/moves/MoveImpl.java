@@ -6,7 +6,6 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.util.Objects;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 
 import lombok.Getter;
@@ -213,8 +212,7 @@ public final class MoveImpl implements Move {
         }
         // in chess960 we code a castling move as king captures rook to make it distinct.
         // otherwise in some chess960 postitions it could not be distinguished between a normal king move.
-        boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
-        if (isChess960 && isCastling()) {
+        if (board.isChess960() && isCastling()) {
             CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(getCastlingType());
             coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
         }

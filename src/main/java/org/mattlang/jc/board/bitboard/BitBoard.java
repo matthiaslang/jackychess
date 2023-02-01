@@ -61,6 +61,7 @@ public final class BitBoard implements BoardRepresentation {
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
     private final BoardCastlings boardCastlings = new BoardCastlings(this);
+    private boolean chess960 = false;
 
     public BitBoard() {
         board = new BitChessBoard();
@@ -69,6 +70,7 @@ public final class BitBoard implements BoardRepresentation {
             board.set(i, FT_EMPTY);
         }
         siteToMove = WHITE;
+        chess960 = false;
     }
 
     public BitBoard(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos, Color siteToMove) {
@@ -346,7 +348,8 @@ public final class BitBoard implements BoardRepresentation {
         copied.historyZobrist=historyZobrist.clone();
         copied.historyEp=historyEp.clone();
         copied.boardCastlings.initFrom(boardCastlings);
-        copied.moveCounter=moveCounter;
+        copied.moveCounter = moveCounter;
+        copied.chess960 = chess960;
         return copied;
     }
 
@@ -660,6 +663,16 @@ public final class BitBoard implements BoardRepresentation {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         castlingRights.clearCastlingRights();
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+    }
+
+    @Override
+    public boolean isChess960() {
+        return chess960;
+    }
+
+    @Override
+    public void setChess960(boolean chess960) {
+        this.chess960 = chess960;
     }
 
     private CastlingMove getCastlingMove(Move move) {

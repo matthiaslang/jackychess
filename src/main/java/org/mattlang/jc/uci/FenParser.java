@@ -11,6 +11,7 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
+import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.moves.CastlingMove;
@@ -184,6 +185,7 @@ public class FenParser {
             board.setEnPassantOption(enpassantOpt);
         }
         board.clearCastlingRights();
+        board.setChess960(Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue());
 
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {

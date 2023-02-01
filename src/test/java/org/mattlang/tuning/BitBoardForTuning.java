@@ -59,12 +59,14 @@ public class BitBoardForTuning implements BoardRepresentation {
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
     private BoardCastlings boardCastlings = new BoardCastlings(this);
+    private boolean chess960 = false;
 
     public BitBoardForTuning() {
         for (int i = 0; i < 64; i++) {
             board.set(i, FT_EMPTY);
         }
         siteToMove = WHITE;
+        chess960 = false;
     }
 
     public BitBoardForTuning(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos,
@@ -298,6 +300,7 @@ public class BitBoardForTuning implements BoardRepresentation {
                 copied = new BitBoardForTuning(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
+        copied.chess960=chess960;
         return copied;
     }
 
@@ -306,6 +309,7 @@ public class BitBoardForTuning implements BoardRepresentation {
                 copied = new BitBoardForTuning(bitBoard.getBoard().copy(), new CastlingRights(bitBoard.getCastlingRights()), bitBoard.getEnPassantMoveTargetPos(), bitBoard.getSiteToMove());
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
+        copied.chess960=bitBoard.isChess960();
 //        copied.moveCounter = bitBoarmoveCounter;
         return copied;
     }
@@ -546,5 +550,15 @@ public class BitBoardForTuning implements BoardRepresentation {
     @Override
     public void clearCastlingRights() {
         castlingRights.clearCastlingRights();
+    }
+
+    @Override
+    public boolean isChess960() {
+        return chess960;
+    }
+
+    @Override
+    public void setChess960(boolean chess960) {
+        this.chess960 = chess960;
     }
 }
