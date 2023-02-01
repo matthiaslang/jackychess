@@ -1,5 +1,12 @@
 package org.mattlang.jc.util;
 
+import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -12,13 +19,6 @@ import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.moves.MoveListImpl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 /**
  * Helper class for debugging.
@@ -50,7 +50,7 @@ public class MoveValidator {
             if (legal) {
                 board.domove(move);
             } else {
-                LOGGER.warning("depth: "+ rslt.targetDepth+ " Illegal PV Move " + move.toStr() + " in " + rslt.toLogString());
+                LOGGER.warning("depth: "+ rslt.targetDepth+ " Illegal PV Move " + move.toUCIString(board) + " in " + rslt.toLogString());
                 break;
 
             }
@@ -61,7 +61,7 @@ public class MoveValidator {
         board = gameState.getBoard().copy();
         boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
         if (!legal) {
-            LOGGER.log(SEVERE, fmtSevere(gameState,"Illegal Best Move " + rslt.savedMove.toStr()));
+            LOGGER.log(SEVERE, fmtSevere(gameState,"Illegal Best Move " + rslt.savedMove.toUCIString(board)));
         }
     }
 
@@ -109,7 +109,7 @@ public class MoveValidator {
                 board.domove(move);
                 validatedPvs.add(moveI);
             } else {
-                LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toStr());
+                LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toUCIString(board));
                 break;
             }
             who2Move = who2Move.invert();

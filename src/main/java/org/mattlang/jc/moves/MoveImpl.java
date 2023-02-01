@@ -6,10 +6,8 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.util.Objects;
 
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.*;
 
 import lombok.Getter;
 
@@ -196,12 +194,31 @@ public final class MoveImpl implements Move {
         return toIndex;
     }
 
+    @Override
     public String toStr() {
         String coords = convert(fromIndex) + convert(toIndex);
         if (isPromotion()) {
             char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
             coords += figureChar;
         }
+        return coords;
+    }
+
+    @Override
+    public String toUCIString(BoardRepresentation board) {
+        String coords = convert(fromIndex) + convert(toIndex);
+        if (isPromotion()) {
+            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
+            coords += figureChar;
+        }
+        // in chess960 we code a castling move as king captures rook to make it distinct.
+        // otherwise in some chess960 postitions it could not be distinguished between a normal king move.
+        boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
+        if (isChess960 && isCastling()) {
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(getCastlingType());
+            coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
+        }
+
         return coords;
     }
 

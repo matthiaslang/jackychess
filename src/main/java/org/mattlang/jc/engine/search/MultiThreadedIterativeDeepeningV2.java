@@ -137,7 +137,7 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
         }
 
         if (rslt.savedMove != null) {
-            printRoundInfo(gameContext, rslt, watch);
+            printRoundInfo(gameContext, gameState, rslt, watch);
             moveValidator.validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...
@@ -267,6 +267,7 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
 
     private void printRoundInfo(
             GameContext gameContext,
+            GameState gameState,
             NegaMaxResult rslt,
             StopWatch watch) {
         long nodes = rslt.nodesVisited;
@@ -281,8 +282,8 @@ public class MultiThreadedIterativeDeepeningV2 implements IterativeDeepeningSear
                 + " hashfull " + hashfull
                 + " nps " + nps
                 + " time " + duration
-                + " pv " + rslt.pvList.toPvStr());
-        UCI.instance.putCommand("info currmove " + rslt.savedMove.toStr());
+                + " pv " + rslt.pvList.toPvStr(gameState.getBoard()));
+        UCI.instance.putCommand("info currmove " + rslt.savedMove.toUCIString(gameState.getBoard()));
     }
 
     private Map stats = new LinkedHashMap();

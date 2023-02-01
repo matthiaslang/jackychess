@@ -1,5 +1,11 @@
 package org.mattlang.jc.moves;
 
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
+
+import java.util.logging.Logger;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -12,12 +18,6 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
-
-import java.util.logging.Logger;
-
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
 
 /**
  * Encapsulates all relevant objects to prepare iteration over moves on the board.
@@ -267,6 +267,11 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     @Override
     public String toStr() {
         return currMoveObj.toStr();
+    }
+
+    @Override
+    public String toUCIString(BoardRepresentation board) {
+        return currMoveObj.toUCIString(board);
     }
 
     @Override

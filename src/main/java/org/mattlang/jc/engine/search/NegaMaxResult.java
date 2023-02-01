@@ -71,7 +71,7 @@ public class NegaMaxResult {
                 "directScore=" + directScore +
                 ", max=" + max +
                 ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", pvList=" + pvList.toPvStr() +
+                ", pvList=" + pvList.toPvLogStr() +
                 ", targetDepth=" + targetDepth +
                 ", selDepth=" + selDepth +
                 ", moveScores=" + moveScores +
@@ -83,7 +83,7 @@ public class NegaMaxResult {
                 "directScore=" + directScore +
                 ", max=" + max +
                 ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", pv=" + pvList.toPvStr() +
+                ", pv=" + pvList.toPvLogStr() +
                 ", depth=" + targetDepth + "/" + selDepth +
                 ", nodes=" + nodesVisited + "/" + quiescenceNodesVisited +
                 ']';

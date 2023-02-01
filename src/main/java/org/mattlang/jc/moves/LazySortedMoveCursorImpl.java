@@ -102,6 +102,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
         return currMoveObj.toStr();
     }
 
+    @Override
+    public String toUCIString(BoardRepresentation board) {
+        return currMoveObj.toUCIString(board);
+    }
+
     public void init(MoveListImpl moveList) {
         init(moveList, 0);
     }

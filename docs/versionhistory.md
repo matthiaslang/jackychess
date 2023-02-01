@@ -1,6 +1,6 @@
 # Versions
                    
-## 0.14.0
+## 0.14.1
 
 Official Release since 0.13.4. 
 Estimated Elo strength: ~2580, ~220 Elo stronger than 0.13.1.
@@ -16,7 +16,7 @@ Summary of changes compared to 0.13.1:
 - evaluation of threats
 - retuned all evaluation parameters together with threats
 - fixed overflow bugs
-- 
+- fixed FRC castling issues with parsing fen castlings and converting castling moves
 
 ### 0.13.9
 

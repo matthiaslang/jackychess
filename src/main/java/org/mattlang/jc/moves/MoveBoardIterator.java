@@ -195,6 +195,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
+    public String toUCIString(BoardRepresentation board) {
+        return moveCursor.toUCIString(board);
+    }
+
+    @Override
     public void next() {
         throw new IllegalStateException("use doNextMove!");
     }
