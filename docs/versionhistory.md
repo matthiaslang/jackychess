@@ -1,6 +1,6 @@
 # Versions
                    
-## 0.14.2
+## 0.14.3
 
 Official Release since 0.13.4. 
 Estimated Elo strength: ~2580, ~220 Elo stronger than 0.13.1.
