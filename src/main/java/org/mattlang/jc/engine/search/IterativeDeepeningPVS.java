@@ -15,6 +15,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.evaluation.Weights;
+import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.MoveValidator;
@@ -22,7 +23,7 @@ import org.mattlang.jc.util.MoveValidator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
+public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchListener {
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
 
@@ -60,6 +61,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
 
     private MoveValidator moveValidator = new MoveValidator();
 
+    /**
+     * copy of the game state when starting search.
+     */
+    private GameState gameState;
+
+    private StopWatch watch;
+
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
         //        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
@@ -67,6 +75,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
     }
 
     public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
+        this(0);
         this.negaMaxAlphaBeta = negaMaxAlphaBeta;
     }
 
@@ -82,12 +91,17 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
+        negaMaxAlphaBeta.setIsWorker(isWorker);
+        this.gameState = gameState.copy();
+        lastCurrMove = 0;
+
         SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(workerNumber);
 
         LOGGER.info("iterative search on " + gameState.getFenStr());
 
-        StopWatch watch = new StopWatch();
+        watch = new StopWatch();
         watch.start();
+        negaMaxAlphaBeta.setSearchListener(this);
 
         long stopTime = System.currentTimeMillis() + timeout;
 
@@ -168,6 +182,30 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
         }
     }
 
+    private MoveImpl moveWrapper = new MoveImpl("a1a1");
+    private int lastCurrMove = 0;
+
+    @Override
+    public void updateCurrMove(int currMove, int currMoveScore, int targetDepth, int selDepth, long nodesVisited) {
+
+        long duration = watch.getCurrDuration();
+        long nps = duration == 0 ? nodesVisited : nodesVisited * 1000 / duration;
+
+        UCI.instance.putCommand("info depth " + targetDepth +
+                " seldepth " + selDepth +
+                " score cp " + currMoveScore + " nodes " + nodesVisited
+                + " nps " + nps
+                + " time " + duration);
+        if (currMove != 0) {
+            moveWrapper.fromLongEncoded(currMove);
+            UCI.instance.putCommand("info currmove " + moveWrapper.toUCIString(gameState.getBoard()));
+            lastCurrMove = currMove;
+        } else if (lastCurrMove != 0) {
+            moveWrapper.fromLongEncoded(lastCurrMove);
+            UCI.instance.putCommand("info currmove " + moveWrapper.toUCIString(gameState.getBoard()));
+        }
+    }
+
     @AllArgsConstructor
     @Getter
     static class IterativeRoundResult {
@@ -212,6 +250,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch {
         }
 
         if (rslt.savedMove != null) {
+            lastCurrMove = rslt.savedMove.getMoveInt();
             printRoundInfo(gameContext, gameState, rslt, watch, negaMaxAlphaBeta);
             moveValidator.validate(gameState, rslt);
         } else {

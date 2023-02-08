@@ -1,6 +1,19 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
+
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
@@ -17,19 +30,7 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
+import lombok.Getter;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -51,8 +52,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
-    /** predefined LMR reductions per depth and performed moves.*/
+    /**
+     * predefined LMR reductions per depth and performed moves.
+     */
     private static final int[][] LMR_TABLE = new int[64][64];
+    public static final int UPDATE_INTERVAL = 1000 * 3;
 
     static {
         // Ethereal LMR formula with depth and number of performed moves
@@ -67,11 +71,15 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private final boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
     private final boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
-    private final  boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
+    private final boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
 
     private final PVTriangularArray pvArray = new PVTriangularArray();
 
     private long stopTime = 0;
+
+    private long nextUpdateTime = 0;
+
+    private SearchListener searchListener;
 
     private int extensionCounter = 0;
 
@@ -95,6 +103,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     @Getter
     private final SearchStatistics statistics = new SearchStatistics();
+
+    private boolean isWorker = false;
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -561,7 +571,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return sc;
     }
 
-
     private void checkTimeout() {
         if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
             throw new TimeoutException();
@@ -570,7 +579,21 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             if (Thread.interrupted()) {
                 throw new TimeoutException();
             }
+
         }
+        if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
+            updateListener();
+            nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
+        }
+    }
+
+    private void updateListener() {
+        searchListener.updateCurrMove(searchContext.getSavedMove(),
+                searchContext.getSavedMoveScore(),
+                searchContext.getTargetDepth(),
+                searchContext.getSelDepth(),
+                getNodesVisited()
+        );
     }
 
     private int quiesce(int ply, int depth, Color color, int alpha, int beta) {
@@ -717,6 +740,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         searchContext = new SearchContext(stc, gameState, context, depth, alpha);
 
         this.stopTime = stopTime;
+        this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
 
         extensionCounter = 0;
 
@@ -749,11 +773,21 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     /**
      * Returns true if the site to move does not have any pawn promotion moves (probably).
+     *
      * @param board
      * @return
      */
-    private static boolean noPawnPromotions(BoardRepresentation board){
-        return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(BitChessBoard.nWhite) & BB.rank7)==0
-                || board.getSiteToMove() == Color.BLACK && (board.getBoard().getPawns(BitChessBoard.nBlack) & BB.rank2)==0;
+    private static boolean noPawnPromotions(BoardRepresentation board) {
+        return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(BitChessBoard.nWhite) & BB.rank7) == 0
+                || board.getSiteToMove() == Color.BLACK
+                && (board.getBoard().getPawns(BitChessBoard.nBlack) & BB.rank2) == 0;
+    }
+
+    public void setIsWorker(boolean isWorker) {
+        this.isWorker = isWorker;
+    }
+
+    public void setSearchListener(SearchListener searchListener) {
+        this.searchListener = searchListener;
     }
 }
