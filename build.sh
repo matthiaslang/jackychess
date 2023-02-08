@@ -15,8 +15,8 @@ ENGINESFILE=${LOCALTESTPROJFOLDER}/scripts/engines.json
 
 # copy to our folders where the test programs have access:
 echo "copy to test folders"
-cp -v target/jackychess*   $LOCALARENAFOLDER
-cp -v target/jackychess*   ${LOCALTESTPROJFOLDER}/jackychess
+cp -v target/$JARFILE   $LOCALARENAFOLDER
+cp -v target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 
 # copy a windows bat file for the arena test folder with some log settings
 BATFILE=jc-${MVNVERSION}.bat
