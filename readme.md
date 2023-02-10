@@ -32,12 +32,12 @@ However, it should run under any newer Java version. It is mainly tested with Ja
 ## Usage
 
 
- - You need a Java JRE Environment greater than Java 11 to run the engine.
+ - You need a Java JRE Environment, at least Java 11 to run the engine.
  - You need an UCI Gui Client to register the engine for usage. The chess engine should work with any UCI chess client.
 It was mainly tested with [Arena](http://www.playwitharena.de/) and with [cutechess](https://github.com/cutechess/cutechess)
-and works fine with these clients. However - any UCI complient UI should work.
+and works fine with these clients. However - any UCI compliant UI should work.
 
-Simply add the engine to your prefered UCI Gui Client and then you should be ready to use it. Most clients should be fine
+Simply add the engine to your preferred UCI Gui Client, and then you should be ready to use it. Most clients should be fine
 to select the jar file directly.
 You should have a few UCI options able to set in the UI then.
 
@@ -46,22 +46,18 @@ You should have a few UCI options able to set in the UI then.
 Many thanks to the CCRL team for rating my engine. You can find the details 
 on http://ccrl.chessdom.com/ccrl/404/:          
 
-Here is a quick overview of the ratings of the tested versions and their results (maybe outdated):
+Here is a quick overview of my estimated rating and the results from the CCRL team (maybe outdated):
 
-| Version | CCRL Blitz | 40/15 |
-|---------|------------|-------|
-| 0.13.1  | --         | 2403  |
-| 0.13.0  | 2361       | --    |
-| 0.12.0  | 2251       | --    |
-| 0.10.0  | 2082       | --    |
-| 0.9.14  | 1440       | --    |
-
- 
-
-## License
-
-    Jacky Chess 
-    Copyright (C) 2022  Matthias Lang
+| Version | Estimated Rating | CCRL Blitz | 40/15 |
+|---------|------------------|----------|-------|
+| 0.14.3  | 2580             |          |   |
+| 0.13.1  | 2330             | --       | 2403  |
+| 0.13.0  | 2330             | 2361     | --    |
+| 0.12.0  | 2180             | 2251     | --    |
+| 0.10.0  | 2000             | 2082     | --    |
+| 0.9.14  | --               | 1440     | --    |
+                Jacky Chess 
+    Copyright (C) 2023  Matthias Lang
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
