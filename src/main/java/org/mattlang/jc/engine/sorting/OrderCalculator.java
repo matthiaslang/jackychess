@@ -100,8 +100,7 @@ public final class OrderCalculator {
      * @param m
      * @return
      */
-    public int calcOrder(Move m) {
-        int moveInt = m.getMoveInt();
+    public int calcOrder(Move m, int moveInt) {
         if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
         } else {

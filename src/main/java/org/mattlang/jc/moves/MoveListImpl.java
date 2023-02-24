@@ -1,5 +1,14 @@
 package org.mattlang.jc.moves;
 
+import static org.mattlang.jc.Constants.MAX_MOVES;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Figure.*;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.moves.MoveImpl.*;
+
+import java.util.Arrays;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
@@ -7,15 +16,6 @@ import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-
-import java.util.Arrays;
-
-import static org.mattlang.jc.Constants.MAX_MOVES;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
-import static org.mattlang.jc.moves.MoveImpl.*;
 
 public final class MoveListImpl implements MoveList {
 
@@ -80,8 +80,9 @@ public final class MoveListImpl implements MoveList {
 
     public void scoreMoves(OrderCalculator orderCalculator, int start) {
         for (int i = start; i < size; i++) {
-            moveWrapper.fromLongEncoded(moves[i]);
-            order[i] = orderCalculator.calcOrder(moveWrapper);
+            int moveInt = moves[i];
+            moveWrapper.fromLongEncoded(moveInt);
+            order[i] = orderCalculator.calcOrder(moveWrapper, moveInt);
         }
     }
 

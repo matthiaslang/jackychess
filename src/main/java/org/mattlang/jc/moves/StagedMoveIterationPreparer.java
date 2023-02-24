@@ -296,7 +296,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
 
     @Override
     public int getMoveInt() {
-        return currMoveObj.getMoveInt();
+        return currMove;
     }
 
     @Override

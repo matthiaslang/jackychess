@@ -1,44 +1,22 @@
 package org.mattlang.tuning;
 
-import static java.lang.Character.isDigit;
-import static java.lang.Integer.parseInt;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
-import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
 import lombok.Getter;
 
 /**
  * Special board impl for tuning which uses less memory by not holding history (since this is not needed during tuning).
+ * Changing methods are not implemented, so its effective an immutable board holding a position.
  */
 public class BitBoardForTuning implements BoardRepresentation {
 
-    public static final String[] FEN_START_POSITION = {
-            "rnbqkbnr",
-            "pppppppp",
-            "8",
-            "8",
-            "8",
-            "8",
-            "PPPPPPPP",
-            "RNBQKBNR"
-    };
     public static final int NO_EN_PASSANT_OPTION = -1;
 
     @Getter
@@ -61,14 +39,6 @@ public class BitBoardForTuning implements BoardRepresentation {
     private BoardCastlings boardCastlings = new BoardCastlings(this);
     private boolean chess960 = false;
 
-    public BitBoardForTuning() {
-        for (int i = 0; i < 64; i++) {
-            board.set(i, FT_EMPTY);
-        }
-        siteToMove = WHITE;
-        chess960 = false;
-    }
-
     public BitBoardForTuning(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos,
             Color siteToMove) {
         this.board = board;
@@ -80,42 +50,17 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void setStartPosition() {
-        setPosition(FEN_START_POSITION);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public void setPosition(String[] fenPosition) {
-        for (int i = 0; i < 8; i++) {
-            String row = expandRow(fenPosition[i]);
-            for (int j = 0; j < 8; j++) {
-                setPos(i, j, row.charAt(j));
-            }
-        }
-        siteToMove = WHITE;
-        castlingRights = new CastlingRights();
-        zobristHash = Zobrist.hash(this);
-        material.init(this);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public GameState setFenPosition(String fen) {
-        FenParser parser = new FenParser();
-        return parser.setPosition(fen, this);
-    }
-
-    private void set(int pos, byte figureCode) {
-        byte oldFigure = board.get(pos);
-        board.set(pos, figureCode);
-        // remove from piece list, if this is a "override/capture" of this field:
-        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
-            zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
-            material.subtract(oldFigure);
-        }
-        // add this piece to piece list:
-        if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
-            zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
-            material.add(figureCode);
-        }
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     /**
@@ -127,12 +72,12 @@ public class BitBoardForTuning implements BoardRepresentation {
      */
     @Override
     public void setPos(int row, int col, char figureChar) {
-        set((7 - row) * 8 + col, Figure.convertFigureChar(figureChar));
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public void setPos(int index, Figure figure) {
-        set(index, figure.figureCode);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     /**
@@ -159,25 +104,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void clearPosition() {
-        for (int i = 0; i < 64; i++) {
-            board.set(i, Figure.EMPTY.figureCode);
-        }
-    }
-
-    private String expandRow(String row) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < row.length(); i++) {
-            char ch = row.charAt(i);
-            if (isDigit(ch)) {
-                int empties = parseInt(String.valueOf(ch));
-                for (int e = 1; e <= empties; e++) {
-                    b.append(" ");
-                }
-            } else {
-                b.append(ch);
-            }
-        }
-        return b.toString();
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -190,82 +117,9 @@ public class BitBoardForTuning implements BoardRepresentation {
         System.out.println(toUniCodeStr());
     }
 
-    /**
-     * Simple move of one figure from one field to another.
-     *
-     * @param from
-     * @param to
-     */
-    private void move(byte figType, int from, int to, byte capturedFigure) {
-
-        long fromMask = 1L << from;
-        boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
-
-        // remove castling rights when rooks or kings are moved:
-        if (figType == FT_KING) {
-            if (isWhiteFigure) {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(WHITE, SHORT);
-                castlingRights.retain(WHITE, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            } else {
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                castlingRights.retain(BLACK, SHORT);
-                castlingRights.retain(BLACK, LONG);
-                zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-            }
-        } else if (figType == FT_ROOK) {
-            if (isWhiteFigure) {
-                if (from == 0) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                } else if (from == 7) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(WHITE, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                }
-            } else {
-                if (from == 56) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, LONG);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                } else if (from == 63) {
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    castlingRights.retain(BLACK, SHORT);
-                    zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                }
-            }
-        }
-
-        board.move(from, to, figType, isWhiteFigure ? nWhite : nBlack, capturedFigure);
-
-        byte figCode = (byte) (figType | (isWhiteFigure ? WHITE.code : BLACK.code));
-
-        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
-        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
-        if (capturedFigure != 0) {
-            zobristHash = Zobrist.removeFig(zobristHash, to, capturedFigure);
-            material.subtract(capturedFigure);
-        }
-
-        resetEnPassant();
-
-        // check double pawn move. here we need to mark an possible en passant follow up move:
-        // be careful: we must not set the en passant option by undoing a double pawn move:
-        if (figType == FT_PAWN) {
-            if (isWhiteFigure && to - from == 16) {
-                setEnPassantOption((from + to) / 2);
-            } else if (!isWhiteFigure && from - to == 16) {
-                setEnPassantOption((from + to) / 2);
-            }
-        }
-    }
-
     @Override
     public void switchSiteToMove() {
-        siteToMove = siteToMove.invert();
-        zobristHash = Zobrist.colorFlip(zobristHash);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -316,10 +170,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public int findPosOfFigure(byte figureCode) {
-        // todo that method should be renamed to something like getKingPos()
-        long kingBB = board.getPieceSet(FT_KING, (figureCode & BLACK.code) == BLACK.code ? BLACK : WHITE);
-        final int king = Long.numberOfTrailingZeros(kingBB);
-        return king;
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -339,10 +190,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-        this.enPassantMoveTargetPos = enPassantOption;
-
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     private int calcEnPassantCaptureFromEnPassantOption() {
@@ -353,12 +201,6 @@ public class BitBoardForTuning implements BoardRepresentation {
         }
     }
 
-    private void resetEnPassant() {
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-        enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
-        zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-    }
-
     @Override
     public boolean isCastlingAllowed(Color color, RochadeType type) {
         return castlingRights.isAllowed(color, type);
@@ -366,11 +208,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void setCastlingAllowed(CastlingType castlingType, CastlingMove castlingMove) {
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.setAllowed(castlingType);
-        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-
-        boardCastlings.setCastlingMove(castlingType, castlingMove);
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -385,84 +223,23 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void domove(Move move) {
-        pushHistory();
-
-        move(move.getFigureType(), move.getFromIndex(), move.getToIndex(),
-                move.isEnPassant() ? 0 : move.getCapturedFigure());
-
-        if (move.isEnPassant()) {
-            set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
-        } else if (move.isPromotion()) {
-            set(move.getToIndex(), move.getPromotedFigureByte());
-        } else if (move.isCastling()) {
-            CastlingMove castlingMove = getCastlingMove(move);
-            move(FT_ROOK, castlingMove.getRookFrom(), castlingMove.getRookTo(),
-                    (byte) 0);
-        }
-
-        switchSiteToMove();
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public void undo(Move move) {
-
-        long fromMask = 1L << move.getToIndex();
-        boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
-
-        byte figureType = move.getFigureType();
-        if (move.isPromotion()) {
-            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
-        }
-        board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
-
-        if (move.getCapturedFigure() != 0) {
-            board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
-        }
-        if (move.isEnPassant()) {
-            // override the "default" overrider field with empty..
-            board.set(move.getToIndex(), FigureConstants.FT_EMPTY);
-            // because we have the special en passant capture pos which we need to reset with the captured figure
-            board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
-        } else if (move.isPromotion()) {
-            Figure promotedFigure = getFigure(move.getFromIndex());
-            byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
-            board.set(move.getFromIndex(), pawn);
-        } else if (move.isCastling()) {
-            CastlingMove castlingMove = getCastlingMove(move);
-            board.move(castlingMove.getRookTo(), castlingMove.getRookFrom(), FT_ROOK,
-                    isWhiteFigure ? nWhite : nBlack, (byte) 0);
-        }
-
-        siteToMove = siteToMove.invert();
-
-        popHistory();
-
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
-    private void popHistory() {
-        throw new IllegalStateException("pop history not implemented!");
-    }
 
     @Override
     public void undoNullMove() {
-        siteToMove = siteToMove.invert();
-        popHistory();
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public void doNullMove() {
-        pushHistory();
-        switchSiteToMove();
-
-        // reset ep option, otherwise the same side would use its own ep option for an ep move..
-        int enPassantBeforeNullMove = getEnPassantMoveTargetPos();
-        if (enPassantBeforeNullMove != BitBoardForTuning.NO_EN_PASSANT_OPTION) {
-            setEnPassantOption(BitBoardForTuning.NO_EN_PASSANT_OPTION);
-        }
-    }
-
-    private void pushHistory() {
-        throw new IllegalStateException("push history not implemented!");
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -470,54 +247,9 @@ public class BitBoardForTuning implements BoardRepresentation {
         throw new IllegalStateException("isRepetition not implemented!");
     }
 
-    private MoveImpl move = new MoveImpl("a1a2");
-
     @Override
     public boolean isvalidmove(Color color, int aMove) {
-        move.fromLongEncoded(aMove);
-        int from = move.getFromIndex();
-        int to = move.getToIndex();
-
-        if (!board.isFigureType(from, move.getFigureType())) {
-            return false;
-        }
-
-        if (move.isEnPassant()) {
-            if (to != enPassantMoveTargetPos) {
-                return false;
-            }
-        } else if (move.isCastling()) {
-            if (!getCastlingMove(move).getDef().check(this)) {
-                return false;
-            }
-        } else {
-
-            if (move.isCapture()) {
-                if (board.get(to) != move.getCapturedFigure()) {
-                    return false;
-                }
-                if (!board.isDifferentColor(from, to)) {
-                    return false;
-                }
-
-            } else {
-                if (!board.isEmpty(to)) {
-                    return false;
-                }
-            }
-            long allPieces = board.getColorMask(nWhite) | board.getColorMask(nBlack);
-            if (move.getFigureType() == FigureType.Bishop.figureCode
-                    || move.getFigureType() == FigureType.Rook.figureCode
-                    || move.getFigureType() == FigureType.Queen.figureCode) {
-                if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
-                    return false;
-                }
-            }
-        }
-
-        // todo validate promotions...eps further?
-
-        return true;
+        throw new IllegalStateException("not implemented! this is only a immutable read only Board!");
     }
 
     @Override
@@ -549,7 +281,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void clearCastlingRights() {
-        castlingRights.clearCastlingRights();
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
@@ -559,6 +291,6 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public void setChess960(boolean chess960) {
-        this.chess960 = chess960;
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 }
