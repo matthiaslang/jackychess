@@ -3,6 +3,7 @@ package org.mattlang.jc.moves;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.mattlang.jc.board.Color;
 
 public class MoveListImplTest {
 
@@ -24,7 +25,7 @@ public class MoveListImplTest {
         moveList.addMove(500);
         assertThat(moveList.size()).isEqualTo(2);
 
-        moveList.reset();
+        moveList.reset(Color.WHITE);
         moveList.addMove(50);
         assertThat(moveList.size()).isEqualTo(1);
 

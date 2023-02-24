@@ -71,7 +71,7 @@ public class MoveValidator {
 
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
-        moveList.reset();
+        moveList.reset(who2Move);
         movegen.generate(board, who2Move, moveList);
 
         try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
@@ -125,7 +125,7 @@ public class MoveValidator {
      */
     public boolean hasLegalMoves(BoardRepresentation board) {
 
-        moveList.reset();
+        moveList.reset(board.getSiteToMove());
         movegen.generate(board, board.getSiteToMove(), moveList);
 
         boolean hasLegalMoves = false;

@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
@@ -13,6 +12,7 @@ import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
+import org.mattlang.jc.moves.MoveImpl;
 
 import lombok.Getter;
 
@@ -100,38 +100,52 @@ public final class OrderCalculator {
      * @param m
      * @return
      */
-    public int calcOrder(Move m, int moveInt) {
+    public int calcOrder(MoveImpl m, int moveInt) {
         if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
+        } else if (m.isCapture()) {
+            return calcOrderForCaptures(m);
+        } else if (killerMoves.isKiller(color, moveInt, ply)) {
+            return KILLER_SCORE;
+        } else if (m.isQueenPromotion()) {
+            return QUEEN_PROMOTION_SCORE;
+        } else if (getCounterMove() == moveInt) {
+            return COUNTER_MOVE_SCORE;
         } else {
-            int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
-
-            if (m.isCapture()) {
-                // find out good moves (via see)
-                if (see.see_ge(board, m, 0)) {
-                    return -mvvLva + GOOD_CAPTURES_SCORE;
-                } else {
-                    return -mvvLva + BAD_CAPTURES_SCORE;
-                }
-
-            } else if (killerMoves.isKiller(color, moveInt, ply)) {
-                return KILLER_SCORE;
-            } else if (m.isPromotion() && m.getPromotedFigure().figureType == FigureType.Queen) {
-                return QUEEN_PROMOTION_SCORE;
-            } else if (getCounterMove() == moveInt) {
-                return COUNTER_MOVE_SCORE;
-            } else {
-                // history heuristic
-                int heuristic = historyHeuristic.calcValue(m, color);
-                if (heuristic != 0) {
-                    // heuristic move: range: depth*depth*2*iterative-deep*moves ~ from 1 to 40000
-                    return -heuristic + HISTORY_SCORE;
-                }
-            }
-            int pstDelta = calcPstDelta(m);
-            return -mvvLva * 1000 + pstDelta + QUIET;
+            return calcOrderForQuiets(m);
         }
+    }
 
+    public int calcOrderForQuiets(MoveImpl m) {
+        if (m.isQueenPromotion()) {
+            return QUEEN_PROMOTION_SCORE;
+        } else {
+            // history heuristic
+            int heuristic = historyHeuristic.calcValue(m, color);
+            if (heuristic != 0) {
+                // heuristic move: range: depth*depth*2*iterative-deep*moves ~ from 1 to 40000
+                return -heuristic + HISTORY_SCORE;
+            }
+        }
+        int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
+        int pstDelta = calcPstDelta(m);
+        return -mvvLva * 1000 + pstDelta + QUIET;
+    }
+
+    public int calcOrderForCaptures(MoveImpl m) {
+        if (m.isQueenPromotion()) {
+            return QUEEN_PROMOTION_SCORE;
+        } else if (m.isCapture()) {
+            int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
+            // find out good moves (via see)
+            if (see.see_ge(board, m, 0)) {
+                return -mvvLva + GOOD_CAPTURES_SCORE;
+            } else {
+                return -mvvLva + BAD_CAPTURES_SCORE;
+            }
+        } else {
+            throw new IllegalStateException("no capture!");
+        }
     }
 
     private int calcPstDelta(Move m) {

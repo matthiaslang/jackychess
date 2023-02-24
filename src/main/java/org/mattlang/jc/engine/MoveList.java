@@ -1,14 +1,15 @@
 package org.mattlang.jc.engine;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.MoveCollector;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 public interface MoveList extends MoveCollector {
 
@@ -46,7 +47,11 @@ public interface MoveList extends MoveCollector {
         return l1;
     }
 
-    void reset();
+    /**
+     * Reset move list.
+     * @param side the side to generate moves for.
+     */
+    void reset(Color side);
 
     /**
      * Returns a cursor initialized for iteration.

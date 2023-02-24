@@ -273,6 +273,10 @@ public final class MoveImpl implements Move {
         return type >= PAWN_PROMOTION_W_KNIGHT && type <= PAWN_PROMOTION_B_QUEEN;
     }
 
+    public boolean isQueenPromotion() {
+        return type == PAWN_PROMOTION_W_QUEEN || type == PAWN_PROMOTION_B_QUEEN;
+    }
+
     public Figure getPromotedFigure() {
         return Figure.getFigureByCode(typeToPromotedFigure[type]);
     }

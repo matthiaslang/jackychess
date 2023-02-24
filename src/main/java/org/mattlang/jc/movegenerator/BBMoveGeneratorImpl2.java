@@ -214,7 +214,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
             while (capturesEast != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex + 9, side, bb.get(fromIndex + 9));
+                collector.genPawnMove(fromIndex, fromIndex + 9, bb.get(fromIndex + 9));
                 capturesEast &= capturesEast - 1;
             }
 
@@ -222,7 +222,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
             while (capturesWest != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex + 7, side, bb.get(fromIndex + 7));
+                collector.genPawnMove(fromIndex, fromIndex + 7, bb.get(fromIndex + 7));
                 capturesWest &= capturesWest - 1;
             }
 
@@ -234,7 +234,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
                 while (capturesEast != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex + 9, side, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex + 9, bitBoard.getEnPassantCapturePos());
                     capturesEast &= capturesEast - 1;
                 }
 
@@ -242,7 +242,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
                 while (capturesWest != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex + 7, side, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex + 7, bitBoard.getEnPassantCapturePos());
                     capturesWest &= capturesWest - 1;
                 }
 
@@ -253,14 +253,14 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
             while (capturesEast != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex - 7, side, bb.get(fromIndex - 7));
+                collector.genPawnMove(fromIndex, fromIndex - 7, bb.get(fromIndex - 7));
                 capturesEast &= capturesEast - 1;
             }
 
             long capturesWest = pawns & BB.wPawnEastAttacks(otherPieces);
             while (capturesWest != 0) {
                 final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex - 9, side, bb.get(fromIndex - 9));
+                collector.genPawnMove(fromIndex, fromIndex - 9, bb.get(fromIndex - 9));
                 capturesWest &= capturesWest - 1;
             }
 
@@ -272,7 +272,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
                 while (capturesEast != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex - 7, side, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex - 7, bitBoard.getEnPassantCapturePos());
                     capturesEast &= capturesEast - 1;
                 }
 
@@ -280,7 +280,7 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
 
                 while (capturesWest != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex - 9, side, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex - 9, bitBoard.getEnPassantCapturePos());
                     capturesWest &= capturesWest - 1;
                 }
             }
@@ -297,22 +297,22 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             if (onlyPromotions) {
                 while (singlePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                    if (MoveListImpl.isOnLastLine(side, toIndex)) {
-                        collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
+                    if (MoveListImpl.isOnLastLine(toIndex)) {
+                        collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
                     }
                     singlePushTargets &= singlePushTargets - 1;
                 }
             } else {
                 while (singlePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                    collector.genPawnMove(toIndex - 8, toIndex, side, (byte) 0);
+                    collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
                     singlePushTargets &= singlePushTargets - 1;
                 }
 
                 long doublePushTargets = BB.wDblPushTargets(pawns, empty);
                 while (doublePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                    collector.genPawnMove(toIndex - 16, toIndex, side, (byte) 0);
+                    collector.genPawnMove(toIndex - 16, toIndex, (byte) 0);
                     doublePushTargets &= doublePushTargets - 1;
                 }
             }
@@ -323,22 +323,22 @@ public class BBMoveGeneratorImpl2 implements MoveGenerator {
             if (onlyPromotions) {
                 while (singlePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                    if (MoveListImpl.isOnLastLine(side, toIndex)) {
-                        collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
+                    if (MoveListImpl.isOnLastLine(toIndex)) {
+                        collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
                     }
                     singlePushTargets &= singlePushTargets - 1;
                 }
             } else {
                 while (singlePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                    collector.genPawnMove(toIndex + 8, toIndex, side, (byte) 0);
+                    collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
                     singlePushTargets &= singlePushTargets - 1;
                 }
 
                 long doublePushTargets = BB.bDoublePushTargets(pawns, empty);
                 while (doublePushTargets != 0) {
                     final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                    collector.genPawnMove(toIndex + 16, toIndex, side, (byte) 0);
+                    collector.genPawnMove(toIndex + 16, toIndex, (byte) 0);
                     doublePushTargets &= doublePushTargets - 1;
                 }
             }

@@ -24,7 +24,7 @@ public class RegularMoveIterationPreparer implements MoveIterationPreparer {
 
     public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove) {
-        moveList.reset();
+        moveList.reset(color);
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
@@ -36,7 +36,7 @@ public class RegularMoveIterationPreparer implements MoveIterationPreparer {
 
     public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
                         int ply, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset();
+        moveList.reset(color);
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 

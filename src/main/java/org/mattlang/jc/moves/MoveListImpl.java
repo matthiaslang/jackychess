@@ -34,28 +34,40 @@ public final class MoveListImpl implements MoveList {
      */
     private int[] filterMoves = new int[4];
 
+    /**
+     * The side to move of the moves in this move list.
+     */
+    private Color sideToMove;
+
     public MoveListImpl() {
     }
 
+    @Override
     public void genMove(byte figureType, int from, int to, byte capturedFigure) {
         addMove(createNormalMove(figureType, from, to, capturedFigure));
     }
 
-    public static boolean isOnLastLine(Color side, int to) {
-        if (side == WHITE) {
-            return to >= 56 && to <= 63;
-        } else {
-            return to >= 0 && to <= 7;
+    @Override
+    public void genQuietMoves(byte figType, int from, long quietTargets) {
+        while (quietTargets != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(quietTargets);
+            genMove(figType, from, toIndex, (byte) 0);
+            quietTargets &= quietTargets - 1;
         }
     }
 
-    public void genPawnMove(int from, int to, Color side, byte capturedFigure) {
+    public static boolean isOnLastLine(int to) {
+        return to >= 56 && to <= 63 || to >= 0 && to <= 7;
+    }
 
-        if (isOnLastLine(side, to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Queen : B_Queen));
-            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Rook : B_Rook));
-            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Bishop : B_Bishop));
-            addMove(createPromotionMove(from, to, capturedFigure, side == WHITE ? W_Knight : B_Knight));
+    @Override
+    public void genPawnMove(int from, int to, byte capturedFigure) {
+
+        if (isOnLastLine(to)) {
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Queen : B_Queen));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Rook : B_Rook));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Bishop : B_Bishop));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Knight : B_Knight));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
@@ -63,8 +75,17 @@ public final class MoveListImpl implements MoveList {
     }
 
     @Override
-    public void genEnPassant(int from, int to, Color side, int enPassantCapturePos) {
-        addMove(createEnPassantMove(from, to, side == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
+    public void genPawnQuiets(long targets, int fromOffset) {
+        while (targets != 0) {
+            final int toIndex = Long.numberOfTrailingZeros(targets);
+            genPawnMove(toIndex + fromOffset, toIndex, (byte) 0);
+            targets &= targets - 1;
+        }
+    }
+
+    @Override
+    public void genEnPassant(int from, int to, int enPassantCapturePos) {
+        addMove(createEnPassantMove(from, to, sideToMove == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
     }
 
     @Override
@@ -83,6 +104,22 @@ public final class MoveListImpl implements MoveList {
             int moveInt = moves[i];
             moveWrapper.fromLongEncoded(moveInt);
             order[i] = orderCalculator.calcOrder(moveWrapper, moveInt);
+        }
+    }
+
+    public void scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
+        for (int i = start; i < size; i++) {
+            int moveInt = moves[i];
+            moveWrapper.fromLongEncoded(moveInt);
+            order[i] = orderCalculator.calcOrderForCaptures(moveWrapper);
+        }
+    }
+
+    public void scoreQuietMoves(OrderCalculator orderCalculator, int start) {
+        for (int i = start; i < size; i++) {
+            int moveInt = moves[i];
+            moveWrapper.fromLongEncoded(moveInt);
+            order[i] = orderCalculator.calcOrderForQuiets(moveWrapper);
         }
     }
 
@@ -112,7 +149,9 @@ public final class MoveListImpl implements MoveList {
         return order[i];
     }
 
-    public void reset() {
+    @Override
+    public void reset(Color sideToMove) {
+        this.sideToMove = sideToMove;
         size = 0;
         Arrays.fill(filterMoves, 0);
     }

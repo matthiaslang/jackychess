@@ -8,12 +8,22 @@ import org.mattlang.jc.moves.CastlingMove;
  */
 public interface MoveCollector {
 
+    /**
+     * Reset move list.
+     * @param side the side to generate moves for.
+     */
+    void reset(Color side);
+
     void genMove(byte figureType, int from, int to, byte capturedFigureCode);
 
-    void genPawnMove(int from, int to, Color color, byte capturedFigureCode);
+    void genQuietMoves(byte figType, int from, long quietTargets);
+
+    void genPawnMove(int from, int to, byte capturedFigureCode);
+
+    void genPawnQuiets(long targets, int fromOffset);
 
     void addCastlingMove(CastlingMove castlingMove);
 
-    void genEnPassant(int i, int n, Color side, int enPassantCapturePos);
+    void genEnPassant(int i, int n, int enPassantCapturePos);
 
 }

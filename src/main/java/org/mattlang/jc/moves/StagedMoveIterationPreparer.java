@@ -15,7 +15,7 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneration;
 import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
@@ -38,7 +38,6 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
     private MoveGenerator generator = new PseudoLegalMoveGenerator();
-    private BBMoveGeneratorImpl2 gen = new BBMoveGeneratorImpl2();
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
@@ -69,7 +68,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
 
     public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
                         int ply, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset();
+        moveList.reset(color);
         movePicker.init(moveList, 0);
         stage = NO_STAGE;
         this.stc = stc;
@@ -166,8 +165,8 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
         //        LOGGER.info("preparing rest stage");
         int currIndex = movePicker.getCurrentIndex();
         int currStartPos = moveList.size();
-        gen.generate(board, color, moveList, BBMoveGeneratorImpl2.GenTypes.QUIET);
-        createSortOrders(currStartPos);
+        MoveGeneration.generateQuiets(board, color, moveList);
+        createQuietSortOrders(currStartPos);
         stage = STAGE_REST;
         movePicker.init(moveList, currIndex + 1);
     }
@@ -175,6 +174,16 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     private void createSortOrders(int currStartPos) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
         moveList.scoreMoves(orderCalculator, currStartPos);
+    }
+
+    private void createQuietSortOrders(int currStartPos) {
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        moveList.scoreQuietMoves(orderCalculator, currStartPos);
+    }
+
+    private void createCaptureSortOrders(int currStartPos) {
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        moveList.scoreCaptureMoves(orderCalculator, currStartPos);
     }
 
     /**
@@ -186,13 +195,12 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
 //        LOGGER.info("preparing good capture stage");
         int currIndex = movePicker.getCurrentIndex();
         int currStartPos = moveList.size();
-        //        gen.genPawnMoves(board.getBoard(), moveList, color, true);
-        gen.generate(board, color, moveList, BBMoveGeneratorImpl2.GenTypes.CAPTURES);
+        MoveGeneration.generateAttacks(board, color, moveList);
 
         if (moveList.size() == currStartPos) {
             prepareKillerStage();
         } else {
-            createSortOrders(currStartPos);
+            createCaptureSortOrders(currStartPos);
             stage = STAGE_GOOD_CAPTURES;
 
             /* count number of good capture moves in the list. this is the size of the picker for this stage:
