@@ -43,13 +43,6 @@ public class ParameterizedMaterialCorrectionEvaluation {
             }
         }
 
-        // apply end game evaluations if available:
-        // todo need to test if this really brings anything...
-//        EndGameRules rule = EndGameRules.findRule(matStronger, matWeaker);
-//        if (rule != null) {
-//            return  rule.getEndgameFunction().evaluate(board, stronger, weaker);
-//        }
-
         return result;
     }
 }
