@@ -57,6 +57,14 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
         pe = new ParameterizedEvaluation();
         pe.getMobEvaluation();
+
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.V_0_12_0);
+        pe = new ParameterizedEvaluation();
+        pe.getMobEvaluation();
+
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.V_0_13_0);
+        pe = new ParameterizedEvaluation();
+        pe.getMobEvaluation();
     }
 
     @Test

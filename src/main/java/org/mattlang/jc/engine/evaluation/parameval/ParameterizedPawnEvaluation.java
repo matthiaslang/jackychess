@@ -4,6 +4,7 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -32,13 +33,19 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     public static final String PAWN_CONFIG_SUB_DIR = "pawn";
 
     public static final String WEAK_PAWN_FILE = "weakPawn.csv";
+    public static final String BLOCKED_PAWN_FILE = "blockedPawn.csv";
     public static final String PASSED_PAWN_FILE = "passedPawn.csv";
     public static final String PROTECTED_PASSER_CSV = "protectedPasser.csv";
+    public static final String PROTECTED_CSV = "protectedPawn.csv";
+    public static final String NEIGHBOUR_CSV = "neighbourPawn.csv";
     private final Pattern weakPawnPst;
+    private final Pattern blockedPawnPst;
 
     private final Pattern passedPawnPst;
 
     private final Pattern protectedPasserPst;
+    private final Pattern protectedPst;
+    private final Pattern neighbourPst;
 
     private int shield2 = 10;
     private int shield3 = 5;
@@ -52,10 +59,12 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
         attackedPawnPenalty = config.getPosIntProp(ATTACKED_PAWN_PENALTY);
 
-        weakPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
-        passedPawnPst = Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE);
-        protectedPasserPst =
-                Pattern.loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV);
+        weakPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
+        blockedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE);
+        passedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE);
+        protectedPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV);
+        neighbourPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV);
+        protectedPasserPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV);
     }
 
     @Override
@@ -85,6 +94,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         long protectedWhitePawns = whitePawns & whitePawnAttacs;
         long protectedBlackPawns = blackPawns & blackPawnAttacs;
 
+        long whiteNeighbours = getPawnNeighbours(whitePawns);
+        long blackNeighbours = getPawnNeighbours(blackPawns);
+
 //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
 //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
 
@@ -108,8 +120,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isPasser = (BB.wFrontFill(pawnMask) & ~BB.bFrontFill(blackPawns) & pawnMask) != 0;
                 boolean isWeak = (BB.wFrontFill(pawnMask) & blackPawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
-//                boolean isBlocked = (BB.soutOne(blackPawns) & pawnMask) != 0;
+                boolean isBlocked = (BB.soutOne(blackPawns) & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(BB.wFrontFill(pawnMask) & whitePawns) > 1;
+                boolean hasNeighbour = (whiteNeighbours & pawnMask) !=0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
 
                 if (isDoubled) {
@@ -117,6 +130,16 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 }
                 if (isAttacked) {
                     result -= attackedPawnPenalty;
+                }
+
+                if (isBlocked){
+                    result += blockedPawnPst.getVal(pawn, color);
+                }
+                if (isProtected){
+                    result += protectedPst.getVal(pawn, color);
+                }
+                if (hasNeighbour){
+                    result += neighbourPst.getVal(pawn, color);
                 }
 
                 if (isWeak) {
@@ -141,8 +164,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isPasser = (BB.bFrontFill(pawnMask) & ~BB.wFrontFill(whitePawns) & pawnMask) != 0;
                 boolean isWeak = (BB.bFrontFill(pawnMask) & whitePawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
-//                boolean isBlocked = (BB.nortOne(whitePawns) & pawnMask) != 0;
+                boolean isBlocked = (BB.nortOne(whitePawns) & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(BB.bFrontFill(pawnMask) & blackPawns) > 1;
+                boolean hasNeighbour = (blackNeighbours & pawnMask) !=0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
 
                 if (isDoubled) {
@@ -150,6 +174,16 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 }
                 if (isAttacked) {
                     result -= attackedPawnPenalty;
+                }
+
+                if (isBlocked){
+                    result += blockedPawnPst.getVal(pawn, color);
+                }
+                if (isProtected){
+                    result += protectedPst.getVal(pawn, color);
+                }
+                if (hasNeighbour){
+                    result += neighbourPst.getVal(pawn, color);
                 }
 
                 if (isWeak) {
@@ -214,5 +248,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         }
 
         return result;
+    }
+
+    public static long getPawnNeighbours(final long pawns) {
+        return pawns << 1 & BB.notHFile | pawns >>> 1 & BB.notAFile;
     }
 }
