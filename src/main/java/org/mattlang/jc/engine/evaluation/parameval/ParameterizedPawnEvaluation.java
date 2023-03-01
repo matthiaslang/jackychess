@@ -31,6 +31,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     public static final String DOUBLE_PAWN_PENALTY = "doublePawnPenalty";
     public static final String ATTACKED_PAWN_PENALTY = "attackedPawnPenalty";
     public static final String ISOLATED_PAWN_PENALTY = "isolatedPawnPenalty";
+    public static final String BACKWARDED_PAWN_PENALTY = "backwardedPawnPenalty";
 
     public static final String PAWN_CONFIG_SUB_DIR = "pawn";
 
@@ -55,6 +56,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private int doublePawnPenalty = 20;
     private int attackedPawnPenalty = 4;
     private int isolatedPawnPenalty = 10;
+    private int backwardedPawnPenalty = 10;
 
     public ParameterizedPawnEvaluation(EvalConfig config) {
         shield2 = config.getPosIntProp(PAWN_SHIELD_2);
@@ -62,6 +64,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
         attackedPawnPenalty = config.getPosIntProp(ATTACKED_PAWN_PENALTY);
         isolatedPawnPenalty = config.getPosIntProp(ISOLATED_PAWN_PENALTY);
+        backwardedPawnPenalty = config.getPosIntProp(BACKWARDED_PAWN_PENALTY);
 
         weakPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
         blockedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE);
@@ -101,18 +104,21 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         long whiteNeighbours = getPawnNeighbours(whitePawns);
         long blackNeighbours = getPawnNeighbours(blackPawns);
 
-//        long attackedWhitePawns = whitePawns & blackPawnAttacs;
-//        long attackedBlackPawns = blackPawns & whitePawnAttacs;
+        long whiteAdvanceAttackedPawns = BB.nortOne(whitePawns) & blackPawnAttacs;
+        long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
+
+        //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
+        //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
 
         // blocked rammed pawns:
-//        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
-//        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
+        //        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
+        //        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
 
-//        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-//        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+        //        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
+        //        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 
-//        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
-//        long blackProtectedPassers = protectedBlackPawns & blackPassers;
+        //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
+        //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
 
         if (color == WHITE) {
             long pawns = whitePawns;
@@ -126,9 +132,18 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
                 boolean isBlocked = (BB.soutOne(blackPawns) & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(BB.wFrontFill(pawnMask) & whitePawns) > 1;
-                boolean hasNeighbour = (whiteNeighbours & pawnMask) !=0;
+                boolean hasNeighbour = (whiteNeighbours & pawnMask) != 0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
-                boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
+                boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
+                boolean isBehindNeighbours = hasNeighbour && (BB.wFrontFill(whiteNeighbours) & pawnMask) == 0;
+
+                // backward pawn: behind its neighbours and cannot be safely advanced:
+                boolean isBackward =
+                        !isBlocked && isBehindNeighbours && ((BB.nortOne(pawnMask) & whiteAdvanceAttackedPawns) != 0);
+
+                if (isBackward) {
+                    result -= backwardedPawnPenalty;
+                }
 
                 if (isIsolated) {
                     result -= isolatedPawnPenalty;
@@ -178,6 +193,15 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean hasNeighbour = (blackNeighbours & pawnMask) !=0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
                 boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
+                boolean isBehindNeighbours = hasNeighbour && (BB.bFrontFill(blackNeighbours) & pawnMask) == 0;
+
+                // backward pawn: behind its neighbours and cannot be safely advanced:
+                boolean isBackward =
+                        !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
+
+                if (isBackward) {
+                    result -= backwardedPawnPenalty;
+                }
 
                 if (isIsolated) {
                     result -= isolatedPawnPenalty;

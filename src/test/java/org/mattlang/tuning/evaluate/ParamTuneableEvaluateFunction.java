@@ -218,6 +218,11 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                 (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setDoublePawnPenalty(val),
                 PAWN_PARAMS_INTERVALl));
 
+        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getBackwardedPawnPenalty(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setBackwardedPawnPenalty(val),
+                PAWN_PARAMS_INTERVALl));
+
         boolean mirrored = true;
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE, mirrored,
                 parameterizedEvaluation,
