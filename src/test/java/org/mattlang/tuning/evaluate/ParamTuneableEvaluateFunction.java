@@ -225,6 +225,17 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getPassedPawnPst()));
 
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getBlockedPawnPst()));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getProtectedPst()));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getNeighbourPst()));
     }
 
     private void addKingAttackParameters(ParameterizedMobilityEvaluation mobEval) {
