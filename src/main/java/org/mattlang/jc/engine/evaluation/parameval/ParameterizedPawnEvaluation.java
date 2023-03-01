@@ -4,6 +4,7 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -29,6 +30,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     public static final String PAWN_SHIELD_3 = "pawnShield3";
     public static final String DOUBLE_PAWN_PENALTY = "doublePawnPenalty";
     public static final String ATTACKED_PAWN_PENALTY = "attackedPawnPenalty";
+    public static final String ISOLATED_PAWN_PENALTY = "isolatedPawnPenalty";
 
     public static final String PAWN_CONFIG_SUB_DIR = "pawn";
 
@@ -52,12 +54,14 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
     private int doublePawnPenalty = 20;
     private int attackedPawnPenalty = 4;
+    private int isolatedPawnPenalty = 10;
 
     public ParameterizedPawnEvaluation(EvalConfig config) {
         shield2 = config.getPosIntProp(PAWN_SHIELD_2);
         shield3 = config.getPosIntProp(PAWN_SHIELD_3);
         doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
         attackedPawnPenalty = config.getPosIntProp(ATTACKED_PAWN_PENALTY);
+        isolatedPawnPenalty = config.getPosIntProp(ISOLATED_PAWN_PENALTY);
 
         weakPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
         blockedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE);
@@ -124,6 +128,11 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isDoubled = Long.bitCount(BB.wFrontFill(pawnMask) & whitePawns) > 1;
                 boolean hasNeighbour = (whiteNeighbours & pawnMask) !=0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
+                boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
+
+                if (isIsolated) {
+                    result -= isolatedPawnPenalty;
+                }
 
                 if (isDoubled) {
                     result -= doublePawnPenalty;
@@ -168,6 +177,11 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isDoubled = Long.bitCount(BB.bFrontFill(pawnMask) & blackPawns) > 1;
                 boolean hasNeighbour = (blackNeighbours & pawnMask) !=0;
                 boolean isSupported = false; // todo left, right on same rank another pawn or protected?
+                boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
+
+                if (isIsolated) {
+                    result -= isolatedPawnPenalty;
+                }
 
                 if (isDoubled) {
                     result -= doublePawnPenalty;

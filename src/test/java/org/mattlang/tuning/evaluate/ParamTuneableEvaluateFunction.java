@@ -191,23 +191,29 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     private void addPawnParameters() {
-        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.PAWN_SHIELD_2, parameterizedEvaluation,
+        groups.add(new IntegerValueParam(PAWN_SHIELD_2, parameterizedEvaluation,
                 parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getShield2(),
                 (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setShield2(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.PAWN_SHIELD_3, parameterizedEvaluation,
+        groups.add(new IntegerValueParam(PAWN_SHIELD_3, parameterizedEvaluation,
                 parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getShield3(),
                 (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setShield3(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.ATTACKED_PAWN_PENALTY, parameterizedEvaluation,
+        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY, parameterizedEvaluation,
                 parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getAttackedPawnPenalty(),
                 (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation()
                         .setAttackedPawnPenalty(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedPawnEvaluation.DOUBLE_PAWN_PENALTY, parameterizedEvaluation,
+        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY, parameterizedEvaluation,
+                parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getIsolatedPawnPenalty(),
+                (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation()
+                        .setIsolatedPawnPenalty(val),
+                PAWN_PARAMS_INTERVALl));
+
+        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY, parameterizedEvaluation,
                 parameterizedEvaluation -> parameterizedEvaluation.getPawnEvaluation().getDoublePawnPenalty(),
                 (parameterizedEvaluation, val) -> parameterizedEvaluation.getPawnEvaluation().setDoublePawnPenalty(val),
                 PAWN_PARAMS_INTERVALl));

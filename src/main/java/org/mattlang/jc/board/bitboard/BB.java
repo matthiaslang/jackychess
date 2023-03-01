@@ -210,6 +210,16 @@ public class BB {
 
     public static final long[][] IN_BETWEEN = new long[64][64];
 
+
+    public static final long ADJACENT_FILES[] = { //
+            G,
+            H | F,
+            G | E,
+            F | D,
+            E | C,
+            D | B,
+            C | A,
+            B };
     static {
         // precalculate attacks:
         long sqBB = 1;

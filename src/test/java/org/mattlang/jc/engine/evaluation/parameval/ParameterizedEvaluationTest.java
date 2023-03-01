@@ -51,20 +51,11 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         pe = new ParameterizedEvaluation();
 
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL);
-        pe = new ParameterizedEvaluation();
-
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
-        pe = new ParameterizedEvaluation();
-        pe.getMobEvaluation();
-
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.V_0_12_0);
-        pe = new ParameterizedEvaluation();
-        pe.getMobEvaluation();
-
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.V_0_13_0);
-        pe = new ParameterizedEvaluation();
-        pe.getMobEvaluation();
+        // try load all existing parametersets:
+        for (EvalParameterSet paramSet : EvalParameterSet.values()) {
+            Factory.getDefaults().getConfig().evaluateParamSet.setValue(paramSet);
+            pe = new ParameterizedEvaluation();
+        }
     }
 
     @Test
