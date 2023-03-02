@@ -81,6 +81,12 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
+        pe.getPawnEvaluation().setBackwardedPawnPenalty(10000);
+        pe.getPawnEvaluation().setIsolatedPawnPenalty(1);
+        pe.getPawnEvaluation().setAttackedPawnPenalty(10);
+        pe.getPawnEvaluation().setDoublePawnPenalty(100);
+
+
         BoardRepresentation board = new BitBoard();
 
 

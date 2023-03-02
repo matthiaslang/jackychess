@@ -12,11 +12,11 @@ public class LocalOptExperiment02 {
          */
         OptParameters params = OptParameters.builder()
                 .evalParamSet("TUNED01")
-                .adjustK(false)
+                .adjustK(true)
                 .multiThreading(true)
                 .threadCount(5)
                 .delta(0.00000001)
-                .stepGranularity( asList( /*20, 15, 10, 5, */3, 1 ))
+                .stepGranularity( asList(  15, 10, 5, 3, 1 ))
                 .removeDuplicateFens(true)
                 .tunePst(false)
                 .tuneMaterial(false)

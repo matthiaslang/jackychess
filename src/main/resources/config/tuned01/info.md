@@ -204,3 +204,91 @@ Error at start: 0.057479644532113724
 
 Error at start: 0.057479630506346316
 
+# Tuning Options
+
+| Parameter              | Value                        |
+|------------------------|------------------------------|
+| adjustK                | true                         |
+| delta                  | 1.0E-8                       |
+| evalParamSet           | TUNED01                      |
+| inputFiles             | [C:\cygwin64\home\mla\jackyChessDockerTesting\tuningdata\quiet-labeled.epd]|
+| multiThreading         | true                         |
+| removeDuplicateFens    | true                         |
+| shuffleTuningParameter | false                        |
+| stepGranularity        | [15, 10, 5, 3, 1]            |
+| threadCount            | 5                            |
+| tuneAdjustments        | false                        |
+| tuneKingAttack         | false                        |
+| tuneMaterial           | false                        |
+| tuneMobility           | false                        |
+| tunePawnEval           | true                         |
+| tunePositional         | false                        |
+| tunePst                | false                        |
+| tuneThreats            | false                        |
+
+
+# Dataset Information
+
+|                |        |
+|----------------|--------|
+| Num Fens       | 717184 |
+| MATE White     | 269147 |
+| MATE Black     | 250348 |
+| Draws          | 197689 |
+| Duplicate Fens | 0      |
+
+
+K adjusted to: 1.6300000000000003
+
+## new optimization round
+
+### Optimizing with step 15
+
+Error at start: 0.060807027554790824
+
+0:05:41,950: round 600, step 15, curr Error= 0.058270946570485614
+
+0:11:21,327: round 1200, step 15, curr Error= 0.05785217475822571
+
+0:17:10,020: round 1800, step 15, curr Error= 0.057827534008488536
+
+0:22:53,342: round 2300, step 15, curr Error= 0.05782698426556674
+
+0:27:55,408: round 2900, step 15, curr Error= 0.05782644964794845
+
+0:33:33,761: round 3600, step 15, curr Error= 0.057825898147651954
+
+0:39:00,444: round 4100, step 15, curr Error= 0.05782575517088206
+
+0:44:41,673: round 4700, step 15, curr Error= 0.05782561056533562
+
+0:50:31,890: round 5300, step 15, curr Error= 0.05782553403539536
+
+### Optimizing with step 10
+
+Error at start: 0.05782552061644721
+
+0:05:03,389: round 600, step 10, curr Error= 0.057634489191863515
+
+0:10:31,523: round 1200, step 10, curr Error= 0.057621622671302324
+
+### Optimizing with step 5
+
+Error at start: 0.057621622671302324
+
+0:05:10,124: round 600, step 5, curr Error= 0.057496060357762155
+
+0:10:56,741: round 1300, step 5, curr Error= 0.057481134097635354
+
+### Optimizing with step 3
+
+Error at start: 0.057481134097635354
+
+0:05:33,970: round 700, step 3, curr Error= 0.057453966848475244
+
+### Optimizing with step 1
+
+Error at start: 0.05745165041244898
+
+0:05:25,203: round 800, step 1, curr Error= 0.057436454039649434
+
