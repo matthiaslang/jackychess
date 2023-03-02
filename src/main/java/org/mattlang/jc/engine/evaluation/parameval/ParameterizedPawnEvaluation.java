@@ -140,7 +140,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isBlocked = (blockedWhitePawns & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(pawnFrontFilled & whitePawns) > 1;
                 boolean hasDirectNeighbour = (whiteDirectNeighbours & pawnMask) != 0;
-                boolean isSupported = false; // todo left, right on same rank another pawn or protected?
+                boolean isSupported = hasDirectNeighbour;
                 boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
                 boolean hasNeighbour = !isIsolated;
                 boolean isBehindNeighbours = hasNeighbour && (whiteNeighboursFrontFilled & pawnMask) == 0;
@@ -200,7 +200,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 boolean isBlocked = (blockedBlackPawns & pawnMask) != 0;
                 boolean isDoubled = Long.bitCount(pawnFrontFilled & blackPawns) > 1;
                 boolean hasDirectNeighbour = (blackDirectNeighbours & pawnMask) !=0;
-                boolean isSupported = false; // todo left, right on same rank another pawn or protected?
+                boolean isSupported = hasDirectNeighbour;
                 boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
                 boolean hasNeighbour = !isIsolated;
                 boolean isBehindNeighbours = hasNeighbour && (blackNeighboursFrontFilled & pawnMask) == 0;
