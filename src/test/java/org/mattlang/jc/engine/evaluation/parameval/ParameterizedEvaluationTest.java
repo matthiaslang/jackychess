@@ -75,6 +75,22 @@ public class ParameterizedEvaluationTest {
         assertThat(pe.eval(board, Color.WHITE)).isEqualTo(322);
     }
 
+
+    @Test
+    public void testBackwardPawn() {
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
+        ParameterizedEvaluation pe = new ParameterizedEvaluation();
+
+        BoardRepresentation board = new BitBoard();
+
+
+        // test a backward pawn:
+
+        board.setFenPosition("position fen k7/8/2p5/3p4/3P4/8/8/K7 w - - 0 1");
+        System.out.println(board.toUniCodeStr());
+        System.out.println(pe.eval(board, Color.BLACK));
+    }
+
 //    @Test
     public void testPerformance() {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
