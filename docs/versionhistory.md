@@ -1,5 +1,10 @@
 # Versions
-                   
+
+### 0.14.5
+
+more pawn evaluation with retuned parameters: +20-40 Elo
+
+      
 ## 0.14.3
 
 Official Release since 0.13.4. 
