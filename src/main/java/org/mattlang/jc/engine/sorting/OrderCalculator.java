@@ -81,7 +81,7 @@ public final class OrderCalculator {
         this.ply = ply;
         this.color = color;
         this.board = board;
-        this.captureMargin=captureMargin;
+        this.captureMargin = captureMargin;
     }
 
     /**
@@ -138,7 +138,7 @@ public final class OrderCalculator {
         } else if (m.isCapture()) {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
             // find out good moves (via see)
-            if (see.see_ge(board, m, 0)) {
+            if (see.see_ge(board, m, captureMargin)) {
                 return -mvvLva + GOOD_CAPTURES_SCORE;
             } else {
                 return -mvvLva + BAD_CAPTURES_SCORE;
