@@ -1,5 +1,10 @@
 # Versions
 
+
+### 0.14.6
+
+- removed most of the positional blockage evaluations, since the have not brought anything in retests: gives ~10 Elos
+
 ### 0.14.5
 
 more pawn evaluation with retuned parameters: +20-40 Elo

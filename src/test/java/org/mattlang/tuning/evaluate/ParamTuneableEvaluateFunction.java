@@ -307,61 +307,61 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                     e.getMobEvaluation().getBResult().setEarlyQueenPenalty(val);
                 }, individualParamsInterval));
 
-        groups.add(new IntegerValueParam(MobilityEvalResult.BISHOP_TRAPPED_A_6_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getBishopTrappedA6Penalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setBishopTrappedA6Penalty(val);
-                    e.getMobEvaluation().getBResult().setBishopTrappedA6Penalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.BISHOP_TRAPPED_A_7_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getBishopTrappedA7Penalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setBishopTrappedA7Penalty(val);
-                    e.getMobEvaluation().getBResult().setBishopTrappedA7Penalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.KING_BLOCKS_ROOK_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getKingBlocksRookPenalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setKingBlocksRookPenalty(val);
-                    e.getMobEvaluation().getBResult().setKingBlocksRookPenalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.BLOCK_CENTRAL_PAWN_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getBlockCentralPawnPenalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setBlockCentralPawnPenalty(val);
-                    e.getMobEvaluation().getBResult().setBlockCentralPawnPenalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.RETURNING_BISHOP, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getReturningBishop(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setReturningBishop(val);
-                    e.getMobEvaluation().getBResult().setReturningBishop(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.C_3_KNIGHT_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getC3KnightPenalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setC3KnightPenalty(val);
-                    e.getMobEvaluation().getBResult().setC3KnightPenalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.KNIGHT_TRAPPED_A_7_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getKnightTrappedA7Penalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setKnightTrappedA7Penalty(val);
-                    e.getMobEvaluation().getBResult().setKnightTrappedA7Penalty(val);
-                }, individualParamsInterval));
-
-        groups.add(new IntegerValueParam(MobilityEvalResult.KNIGHT_TRAPPED_A_8_PENALTY, parameterizedEvaluation,
-                e -> e.getMobEvaluation().getWResult().getKnightTrappedA8Penalty(),
-                (e, val) -> {
-                    e.getMobEvaluation().getWResult().setKnightTrappedA8Penalty(val);
-                    e.getMobEvaluation().getBResult().setKnightTrappedA8Penalty(val);
-                }, individualParamsInterval));
+//        groups.add(new IntegerValueParam(MobilityEvalResult.BISHOP_TRAPPED_A_6_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getBishopTrappedA6Penalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setBishopTrappedA6Penalty(val);
+//                    e.getMobEvaluation().getBResult().setBishopTrappedA6Penalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.BISHOP_TRAPPED_A_7_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getBishopTrappedA7Penalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setBishopTrappedA7Penalty(val);
+//                    e.getMobEvaluation().getBResult().setBishopTrappedA7Penalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.KING_BLOCKS_ROOK_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getKingBlocksRookPenalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setKingBlocksRookPenalty(val);
+//                    e.getMobEvaluation().getBResult().setKingBlocksRookPenalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.BLOCK_CENTRAL_PAWN_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getBlockCentralPawnPenalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setBlockCentralPawnPenalty(val);
+//                    e.getMobEvaluation().getBResult().setBlockCentralPawnPenalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.RETURNING_BISHOP, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getReturningBishop(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setReturningBishop(val);
+//                    e.getMobEvaluation().getBResult().setReturningBishop(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.C_3_KNIGHT_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getC3KnightPenalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setC3KnightPenalty(val);
+//                    e.getMobEvaluation().getBResult().setC3KnightPenalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.KNIGHT_TRAPPED_A_7_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getKnightTrappedA7Penalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setKnightTrappedA7Penalty(val);
+//                    e.getMobEvaluation().getBResult().setKnightTrappedA7Penalty(val);
+//                }, individualParamsInterval));
+//
+//        groups.add(new IntegerValueParam(MobilityEvalResult.KNIGHT_TRAPPED_A_8_PENALTY, parameterizedEvaluation,
+//                e -> e.getMobEvaluation().getWResult().getKnightTrappedA8Penalty(),
+//                (e, val) -> {
+//                    e.getMobEvaluation().getWResult().setKnightTrappedA8Penalty(val);
+//                    e.getMobEvaluation().getBResult().setKnightTrappedA8Penalty(val);
+//                }, individualParamsInterval));
 
     }
 

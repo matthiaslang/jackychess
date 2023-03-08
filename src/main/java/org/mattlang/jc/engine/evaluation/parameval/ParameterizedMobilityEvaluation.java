@@ -192,7 +192,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
         result.countFigureVals(paramsKing, mobility, captures, kingZoneAttacs, tropism);
 
-        result.blockedPieces(bb, side);
+//        result.blockedPieces(bb, side);
     }
 
     /**
