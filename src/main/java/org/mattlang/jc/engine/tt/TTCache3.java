@@ -92,6 +92,8 @@ public final class TTCache3 implements TTCacheInterface {
 	@Override
 	public void reset() {
 		Arrays.fill(keys, 0);
+		halfMoveCounter=0;
+		aging.reset();
 		checkUpdateCacheSize();
 	}
 

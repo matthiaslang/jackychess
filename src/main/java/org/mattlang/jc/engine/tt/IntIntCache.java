@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.tt;
 
+import java.util.Arrays;
+
 /**
  * A thread safe tt cache with an int as payload and an int storing the zobrist key (partial).
  */
@@ -48,5 +50,10 @@ public final class IntIntCache {
         zobrists[index] = partialZ ^ score;
         scores[index] = score;
 
+    }
+
+    public void reset() {
+        Arrays.fill(zobrists, 0);
+        Arrays.fill(scores, 0);
     }
 }

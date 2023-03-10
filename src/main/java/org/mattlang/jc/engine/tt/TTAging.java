@@ -60,4 +60,9 @@ public class TTAging {
                 bb.getQueensCount();
 
     }
+
+    public void reset() {
+        currAging = 1;
+        lastBoard = null;
+    }
 }
