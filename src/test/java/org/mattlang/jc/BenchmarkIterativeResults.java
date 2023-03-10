@@ -45,7 +45,7 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
             { "name", "fenposition", "testName", "testExpectedBestMove", "depth", "maxQuiescence", "duration",
                     "formattedDuration", "searchAlgorithm",
                     "evaluateFunction",
-                    "useMvvLvaSorting", "usePvSorting", "useTTCache", "useKillerMoves", "useHistoryHeuristic",
+                    "useMvvLvaSorting",  "useTTCache", "useKillerMoves", "useHistoryHeuristic",
                     "pvSearch", "aspiration", "useNullMoves", "staticNullMove", "useLateMoveReductions",
                     "deltaCutoff", "razoring",
                     "moveListImpl", "move", "nodesVisited",

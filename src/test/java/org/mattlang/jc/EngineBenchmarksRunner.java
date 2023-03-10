@@ -11,7 +11,9 @@ import java.util.Map;
 
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
+import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCICheckOption;
 import org.mattlang.jc.uci.UCIOption;
@@ -57,9 +59,21 @@ public class EngineBenchmarksRunner {
     public void benchmarkSingleExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
         Factory.setDefaults(searchParameter);
+        SearchThreadContexts.CONTEXTS.reset();
 
         for (TestPosition position : testPositions) {
             results.add(benchmarkRun(position, 1));
+        }
+    }
+
+    public void benchmarkSingleExecute(String name, SearchParameter searchParameter) {
+        gameContext = new GameContext();
+        Factory.setDefaults(searchParameter);
+        SearchThreadContexts.CONTEXTS.reset();
+        EvalCache.instance.reset();
+
+        for (TestPosition position : testPositions) {
+            results.add(benchmarkRun(name, position, 1));
         }
     }
 
@@ -73,6 +87,20 @@ public class EngineBenchmarksRunner {
         GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
         System.out.println(engine.getBoard().toUniCodeStr());
         String name = generateNameFromOptions();
+
+        ExecResults<IterativeSearchResult> execResults = benchmark(
+                name,
+                () -> engine.goIterative(state, gameContext), count);
+        Map stats = Factory.getDefaults().collectStatistics();
+
+        return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
+    }
+
+    private BenchmarkIterativeResults benchmarkRun(String name, TestPosition testPosition, int count) {
+
+        Engine engine = new Engine();
+        GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
+//        System.out.println(engine.getBoard().toUniCodeStr());
 
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
