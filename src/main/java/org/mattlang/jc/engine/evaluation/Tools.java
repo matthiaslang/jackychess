@@ -32,6 +32,7 @@ public class Tools {
         return Math.min(r, RANK_8.ordinal() - r);
     }
 
+    // todo precalc distances...
     public static final int distance(int sq1, int sq2) {
         return Math.max(rankDistance(sq1, sq2), fileDistance(sq1, sq2));
     }
@@ -50,6 +51,7 @@ public class Tools {
         return Math.abs(file2 - file1);
     }
 
+    // todo precalc distances...
     public static final int manhattanDistance(int sq1, int sq2) {
         int file1, file2, rank1, rank2;
         int rankDistance, fileDistance;

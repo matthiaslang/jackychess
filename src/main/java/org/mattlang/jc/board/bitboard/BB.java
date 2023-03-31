@@ -187,6 +187,9 @@ public class BB {
     public static final long rank7 = 0x00FF000000000000L;
     public static final long rank8 = 0xFF00000000000000L;
 
+    public static final long rank12 = rank1 | rank2;
+    public static final long rank78 = rank7 | rank8;
+
     public static final long notAFile = ALL & ~A;
     public static final long notHFile = ALL & ~H;
 
@@ -204,6 +207,9 @@ public class BB {
     public static final long FGH_on_rank6 = FGH_File & rank6;
 
     public static final long CenterFiles = C | D | E | F;
+
+    public static final long WHITE_SQUARES = 0xaa55aa55aa55aa55L;
+    public static final long BLACK_SQUARES = ~WHITE_SQUARES;
 
     private static final long[] kingAttacks = new long[64];
     private static final long[] knightAttacks = new long[64];
@@ -419,25 +425,6 @@ public class BB {
     private static boolean isBitSet(long bb, int pos) {
         long posMask = 1L << pos;
         return (bb & posMask) != 0;
-    }
-
-    /**
-     * Calc weighted population count; useful in evaluations.
-     *
-     * @param bb
-     * @param weights
-     * @return
-     */
-    public static int dotProduct(long bb, byte weights[]) {
-        long bit = 1;
-        int accu = 0;
-        for (int sq = 0; sq < 64; sq++, bit += bit) {
-            if ((bb & bit) != 0)
-                accu += weights[sq];
-            // accu += weights[sq] & -((  bb & bit) == bit); // branchless 1
-            // accu += weights[sq] & -(( ~bb & bit) == 0);   // branchless 2
-        }
-        return accu;
     }
 
     // pawn file fills, see: https://www.chessprogramming.org/Pawn_Fills#FileFill

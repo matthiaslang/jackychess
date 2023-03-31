@@ -3,6 +3,7 @@ package org.mattlang.jc.material;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import java.util.Arrays;
 
@@ -204,6 +205,11 @@ public class Material {
 
     public boolean hasNonPawnMat(Color color) {
         int nonPawnMatOfColor = material & MASK_OUT_PAWNS & (color == WHITE ? MASK_WHITE_PART : MASK_BLACK_PART);
+        return nonPawnMatOfColor > 0;
+    }
+
+    public boolean hasNonPawnMat(int color) {
+        int nonPawnMatOfColor = material & MASK_OUT_PAWNS & (color == nWhite ? MASK_WHITE_PART : MASK_BLACK_PART);
         return nonPawnMatOfColor > 0;
     }
 }

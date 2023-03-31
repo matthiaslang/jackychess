@@ -110,18 +110,16 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         long whiteAdvanceAttackedPawns = BB.nortOne(whitePawns) & blackPawnAttacs;
         long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
 
-        long blockedWhitePawns =  whitePawns & BB.soutOne(blackPawns);
-        long blockedBlackPawns =  blackPawns & BB.nortOne(whitePawns);
+        long blockedWhitePawns = whitePawns & BB.soutOne(blackPawns);
+        long blockedBlackPawns = blackPawns & BB.nortOne(whitePawns);
 
         //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
         //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
 
         // blocked rammed pawns:
-        //        long blockedWhitePawns = BB.soutOne(blackPawns) & whitePawns;
-        //        long blockedBlackPawns = BB.nortOne(whitePawns) & blackPawns;
 
-        //        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-        //        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
+        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 
         //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
         //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
@@ -134,7 +132,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 long pawnFrontFilled = BB.wFrontFill(pawnMask);
 
                 boolean isAttacked = (pawnMask & blackPawnAttacs) != 0;
-                boolean isPasser = (pawnFrontFilled & ~BB.bFrontFill(blackPawns) & pawnMask) != 0;
+                boolean isPasser = (whitePassers & pawnMask) != 0;
                 boolean isWeak = (pawnFrontFilled & blackPawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
                 boolean isBlocked = (blockedWhitePawns & pawnMask) != 0;
@@ -194,7 +192,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 long pawnFrontFilled = BB.bFrontFill(pawnMask);
 
                 boolean isAttacked = (pawnMask & whitePawnAttacs) != 0;
-                boolean isPasser = (pawnFrontFilled & ~BB.wFrontFill(whitePawns) & pawnMask) != 0;
+                boolean isPasser = (blackPassers & pawnMask) != 0;
                 boolean isWeak = (pawnFrontFilled & whitePawnAttacs) != 0;
                 boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
                 boolean isBlocked = (blockedBlackPawns & pawnMask) != 0;

@@ -1,6 +1,5 @@
 package org.mattlang.jc.engine.evaluation.evaltables;
 
-import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.BufferedReader;
@@ -19,9 +18,9 @@ import org.mattlang.jc.board.Color;
  */
 public final class Pattern {
 
-    private final int[] boardPattern;
+    private final int[] patternBlack;
 
-    private final int[] flippedPattern;
+    private final int[] patternWhite;
 
     /* The FLIP array is used to calculate the piece/square values for the oppiste pieces.
      The piece/square value of a LIGHT pawn is PAWN_PCSQ[FLIP[sq]] and the value of a
@@ -40,33 +39,33 @@ public final class Pattern {
     };
 
     public Pattern(int[] boardPattern) {
-        this.boardPattern = Objects.requireNonNull(boardPattern);
+        this.patternBlack = Objects.requireNonNull(boardPattern);
         if (boardPattern.length != 64) {
             throw new IllegalArgumentException("Pattern has not 64 values!");
         }
-        this.flippedPattern = new int[64];
+        this.patternWhite = new int[64];
         for (int i = 0; i < 64; i++) {
-            flippedPattern[i] = boardPattern[FLIP[i]];
+            patternWhite[i] = boardPattern[FLIP[i]];
         }
     }
 
     public final int calcScore(long whiteFigures, long blackFigures, int who2mov) {
-        int w = dotProduct(whiteFigures, WHITE);
-        int b = dotProduct(blackFigures, BLACK);
+        int w = dotProduct(whiteFigures, patternWhite);
+        int b = dotProduct(blackFigures, patternBlack);
         return (w - b) * who2mov;
     }
 
     public final int calcScore(long whiteFigures, long blackFigures) {
-        int w = dotProduct(whiteFigures, WHITE);
-        int b = dotProduct(blackFigures, BLACK);
+        int w = dotProduct(whiteFigures, patternWhite);
+        int b = dotProduct(blackFigures, patternBlack);
         return w - b;
     }
 
     public final int getVal(int pos, Color color) {
         if (color == WHITE) {
-            return flippedPattern[pos];
+            return patternWhite[pos];
         } else {
-            return boardPattern[pos];
+            return patternBlack[pos];
         }
     }
 
@@ -76,12 +75,12 @@ public final class Pattern {
      * @return
      */
     public int getRawVal(int pos){
-        return boardPattern[pos];
+        return patternBlack[pos];
     }
 
     public void setVal(int pos, int value) {
-        boardPattern[pos] = value;
-        flippedPattern[FLIP[pos]] = value;
+        patternBlack[pos] = value;
+        patternWhite[FLIP[pos]] = value;
     }
 
     /**
@@ -92,8 +91,11 @@ public final class Pattern {
      * @return
      */
     public int dotProduct(long bb, Color color) {
+        int[] weights = color == WHITE ? patternWhite : patternBlack;
+        return dotProduct(bb, weights);
+    }
 
-        int[] weights = color == WHITE ? flippedPattern : boardPattern;
+    public int dotProduct(long bb, int[] weights) {
         int accu = 0;
         while (bb != 0) {
             final int pos = Long.numberOfTrailingZeros(bb);
@@ -150,18 +152,18 @@ public final class Pattern {
         if (o == null || getClass() != o.getClass())
             return false;
         Pattern pattern = (Pattern) o;
-        return Arrays.equals(boardPattern, pattern.boardPattern);
+        return Arrays.equals(patternBlack, pattern.patternBlack);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(boardPattern);
+        return Arrays.hashCode(patternBlack);
     }
 
     public String toPatternStr() {
         StringBuilder b = new StringBuilder();
-        for (int i = 0; i < boardPattern.length; i++) {
-            int val = boardPattern[i];
+        for (int i = 0; i < patternBlack.length; i++) {
+            int val = patternBlack[i];
             String formattedVal=String.format("%1$4s", val);
             b.append(formattedVal).append(";");
             if ((i + 1) % 8 == 0) {
@@ -172,6 +174,6 @@ public final class Pattern {
     }
 
     public Pattern copy() {
-        return new Pattern(boardPattern.clone());
+        return new Pattern(patternBlack.clone());
     }
 }
