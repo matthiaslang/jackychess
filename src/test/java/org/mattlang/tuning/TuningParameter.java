@@ -14,14 +14,6 @@ public interface TuningParameter {
     void change(int i);
 
     /**
-     * Defines a  interval for the parameter. The tuning should not change the value out of its min/max bounds of this
-     * intervall.
-     *
-     * @return
-     */
-    Intervall getIntervall();
-
-    /**
      * Writes the tuning parameter value to the evaluation function.
      *
      * @param parameterizedEvaluation

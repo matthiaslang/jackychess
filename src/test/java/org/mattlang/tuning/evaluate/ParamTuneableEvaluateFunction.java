@@ -30,7 +30,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     private static final Intervall MOBILITY_VALUE_INTERVAL = new Intervall(-500, +500);
     private static final Intervall KINGATTACK_VALUE_INTERVAL = new Intervall(0, +50);
     public static final Intervall PAWN_PARAMS_INTERVALl = new Intervall(0, 100);
-    public static final FloatIntervall PASSEDPAWN_FLOAT_INTERVALl = new FloatIntervall(0f, 3f);
+    public static final FloatIntervall PASSEDPAWN_FLOAT_INTERVALl = new FloatIntervall(0.1f, 3f);
 
     public static final Intervall THREATS_PARAMS_INTERVALl = new Intervall(0, 200);
     public static final Intervall PASSEDPAWN_SCORE_INTERVALl = new Intervall(0, 400);

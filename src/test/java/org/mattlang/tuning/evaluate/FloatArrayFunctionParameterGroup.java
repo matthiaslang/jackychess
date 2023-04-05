@@ -52,7 +52,7 @@ public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
     public String createParamStr() {
         // update the pattern with current param values:
         for (TuningParameter parameter : parameters) {
-            ArrayFunctionParam param = (ArrayFunctionParam) parameter;
+            FloatArrayFunctionParam param = (FloatArrayFunctionParam) parameter;
             function.setVal(param.getIndex(), param.getVal());
 
         }
