@@ -43,6 +43,7 @@ public class OptParameters {
     private boolean tuneThreats = true;
     private boolean tunePositional = true;
     private boolean tunePawnEval = true;
+    private boolean tunePassedPawnEval = true;
     private boolean tuneKingAttack = true;
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;

@@ -22,10 +22,7 @@ import org.mattlang.jc.engine.evaluation.parameval.*;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
-import org.mattlang.tuning.Intervall;
-import org.mattlang.tuning.TuneableEvaluateFunction;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
+import org.mattlang.tuning.*;
 import org.mattlang.tuning.tuner.OptParameters;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
@@ -33,8 +30,10 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     private static final Intervall MOBILITY_VALUE_INTERVAL = new Intervall(-500, +500);
     private static final Intervall KINGATTACK_VALUE_INTERVAL = new Intervall(0, +50);
     public static final Intervall PAWN_PARAMS_INTERVALl = new Intervall(0, 100);
+    public static final FloatIntervall PASSEDPAWN_FLOAT_INTERVALl = new FloatIntervall(0f, 3f);
 
     public static final Intervall THREATS_PARAMS_INTERVALl = new Intervall(0, 200);
+    public static final Intervall PASSEDPAWN_SCORE_INTERVALl = new Intervall(0, 400);
     private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
 
     ArrayList<TuningParameterGroup> groups = new ArrayList<>();
@@ -48,6 +47,10 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
         if (optParams.isTunePawnEval()) {
             addPawnParameters();
+        }
+
+        if (optParams.isTunePassedPawnEval()) {
+            addPassedPawnParameters();
         }
 
         if (optParams.isTuneAdjustments()) {
@@ -185,9 +188,55 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
                 (e, val) -> e.getThreatsEvaluation().setKnightOnQueenEg(val),
                 THREATS_PARAMS_INTERVALl));
 
+    }
 
+    private void addPassedPawnParameters() {
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_BLOCKED, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierBlocked(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierBlocked(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_NO_ENEMY_ATTACKS_IN_FRONT, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierNoEnemyAttacksInFront(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierNoEnemyAttacksInFront(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_NEXT_SQUARE_ATTACKED, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierNextSquareAttacked(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierNextSquareAttacked(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
 
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_NEXT_SQARE_DEFENDED, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierNextSquareDefended(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierNextSquareDefended(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
 
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_ENEMY_KING_IN_FRONT, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierEnemyKingInFront(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierEnemyKingInFront(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_ATTACKED, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierAttacked(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierAttacked(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_DEFENDED_BY_ROOK_FROM_BEHIND, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierDefendedByRookFromBehind(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierDefendedByRookFromBehind(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+        groups.add(new FloatValueParam(PassedPawnEval.MULTIPLIER_ATTACKED_BY_ROOK_FROM_BEHIND, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getMultiplierAttackedByRookFromBehind(),
+                (e, val) -> e.getPawnEvaluation().getPassedPawnEval().setMultiplierAttackedByRookFromBehind(val),
+                PASSEDPAWN_FLOAT_INTERVALl));
+
+        groups.add(new ArrayFunctionParameterGroup(
+                PassedPawnEval.PASSED_SCORE_EG,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getPassedScoreEg(),
+                PASSEDPAWN_SCORE_INTERVALl));
+
+        groups.add(new FloatArrayFunctionParameterGroup(
+                PassedPawnEval.PASSED_KING_MULTI,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnEval().getPassedKingMulti(),
+                PASSEDPAWN_FLOAT_INTERVALl));
     }
 
     private void addPawnParameters() {

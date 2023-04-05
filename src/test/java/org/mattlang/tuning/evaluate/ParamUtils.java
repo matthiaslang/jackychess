@@ -11,7 +11,10 @@ public class ParamUtils {
 
     public static void exchangeParam(File file, String name, int value) {
         exchangeParam(file, name, Integer.toString(value));
+    }
 
+    public static void exchangeParam(File file, String name, float value) {
+        exchangeParam(file, name, Float.toString(value));
     }
 
     public static void exchangeParam(File file, String name, String value) {

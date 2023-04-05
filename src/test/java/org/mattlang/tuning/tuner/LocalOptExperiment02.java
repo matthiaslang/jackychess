@@ -24,6 +24,7 @@ public class LocalOptExperiment02 {
                 .tuneMobility(false)
                 .tunePositional(false)
                 .tunePawnEval(true)
+                .tunePassedPawnEval(true)
                 .tuneKingAttack(false)
                 .tuneThreats(false)
                 .inputFiles(asList(

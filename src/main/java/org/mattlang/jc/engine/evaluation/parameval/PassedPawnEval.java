@@ -39,15 +39,15 @@ public final class PassedPawnEval {
 	 * 
 	 */
 
-	private static final String MULTIPLIER_BLOCKED = "passedPawn.multiplier.blocked";
-	private static final String MULTIPLIER_NO_ENEMY_ATTACKS_IN_FRONT = "passedPawn.multiplier.noEnemyAttacksInFront";
-	private static final String MULTIPLIER_NEXT_SQUARE_ATTACKED = "passedPawn.multiplier.nextSquareAttacked";
-	private static final String MULTIPLIER_NEXT_SQARE_DEFENDED = "passedPawn.multiplier.nextSquareDefended";
-	private static final String MULTIPLIER_ENEMY_KING_IN_FRONT = "passedPawn.multiplier.enemyKingInFront";
-	private static final String MULTIPLIER_ATTACKED = "passedPawn.multiplier.attacked";
-	private static final String MULTIPLIER_DEFENDED_BY_ROOK_FROM_BEHIND =
+	public static final String MULTIPLIER_BLOCKED = "passedPawn.multiplier.blocked";
+	public static final String MULTIPLIER_NO_ENEMY_ATTACKS_IN_FRONT = "passedPawn.multiplier.noEnemyAttacksInFront";
+	public static final String MULTIPLIER_NEXT_SQUARE_ATTACKED = "passedPawn.multiplier.nextSquareAttacked";
+	public static final String MULTIPLIER_NEXT_SQARE_DEFENDED = "passedPawn.multiplier.nextSquareDefended";
+	public static final String MULTIPLIER_ENEMY_KING_IN_FRONT = "passedPawn.multiplier.enemyKingInFront";
+	public static final String MULTIPLIER_ATTACKED = "passedPawn.multiplier.attacked";
+	public static final String MULTIPLIER_DEFENDED_BY_ROOK_FROM_BEHIND =
 			"passedPawn.multiplier.defendedByRookFromBehind";
-	private static final String MULTIPLIER_ATTACKED_BY_ROOK_FROM_BEHIND =
+	public static final String MULTIPLIER_ATTACKED_BY_ROOK_FROM_BEHIND =
 			"passedPawn.multiplier.attackedByRookFromBehind";
 
 	public static final String PASSED_KING_MULTI = "passedPawn.kingMultiplicators";
