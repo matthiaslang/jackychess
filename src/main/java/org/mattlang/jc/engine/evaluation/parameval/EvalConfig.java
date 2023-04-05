@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.Function;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FunctionParser;
 import org.mattlang.jc.util.PropertyConfig;
@@ -49,6 +50,10 @@ public class EvalConfig {
         return properties.getIntProp(propName);
     }
 
+    public float getFloatProp(String propName) {
+        return properties.getFloatProp(propName);
+    }
+
     public Function parseFunction(String propName) {
         try {
             return FunctionParser.parseFunction(getProp(propName));
@@ -60,6 +65,14 @@ public class EvalConfig {
     public ArrayFunction parseArray(String propName) {
         try {
             return FunctionParser.parseArray(getProp(propName));
+        } catch (RuntimeException r) {
+            throw new ConfigParseException("Error parsing Property " + propName, r);
+        }
+    }
+
+    public FloatArrayFunction parseFloatArray(String propName) {
+        try {
+            return FunctionParser.parseFloatArray(getProp(propName));
         } catch (RuntimeException r) {
             throw new ConfigParseException("Error parsing Property " + propName, r);
         }

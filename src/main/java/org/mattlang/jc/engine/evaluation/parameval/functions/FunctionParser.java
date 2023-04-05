@@ -36,4 +36,11 @@ public class FunctionParser {
         }
     }
 
+    public static FloatArrayFunction parseFloatArray(String funStr) {
+        try {
+            return FloatArrayFunction.parse(funStr);
+        } catch (ConfigParseException cpe) {
+            throw new ConfigParseException("Function not parseable!", cpe);
+        }
+    }
 }

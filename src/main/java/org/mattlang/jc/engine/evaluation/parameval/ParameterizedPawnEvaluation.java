@@ -58,6 +58,18 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private int isolatedPawnPenalty = 10;
     private int backwardedPawnPenalty = 10;
 
+    private PassedPawnEval passedPawnEval = new PassedPawnEval();
+
+    /**
+     * transient calculated passers field during evaluation.
+     */
+    private long whitePassers;
+
+    /**
+     * transient calculated passers field during evaluation.
+     */
+    private long blackPassers;
+
     public ParameterizedPawnEvaluation(EvalConfig config) {
         shield2 = config.getPosIntProp(PAWN_SHIELD_2);
         shield3 = config.getPosIntProp(PAWN_SHIELD_3);
@@ -72,6 +84,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         protectedPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV);
         neighbourPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV);
         protectedPasserPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV);
+
+        passedPawnEval.configure(config);
     }
 
     @Override
@@ -86,6 +100,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         result.midGame += (wKingShield - bKingShield);
 
         result.result += (pawnResultWhite - pawnResultBlack);
+
+        result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
     }
 
     private int evalPawns(BoardRepresentation bitBoard, Color color) {
@@ -118,8 +134,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         // blocked rammed pawns:
 
-        long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-        long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+        whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
+        blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 
         //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
         //        long blackProtectedPassers = protectedBlackPawns & blackPassers;

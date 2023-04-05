@@ -79,6 +79,18 @@ public class PropertyConfig {
         }
     }
 
+    public static float parseFloat(String str, String name) {
+        try {
+            return Float.parseFloat(str);
+        } catch (NumberFormatException nfe) {
+            throw new ConfigParseException("Cant parse " + name + ": " + str, nfe);
+        }
+    }
+
+    public float getFloatProp(String propName) {
+        return parseFloat(getProperty(propName), propName);
+    }
+
     /**
      * Returns the property, or an empty value if not defined.
      *
