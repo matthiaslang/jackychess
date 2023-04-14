@@ -43,7 +43,7 @@ public class FloatValueParam implements TuningParameter, TuningParameterGroup {
     }
 
     public static float calcChange(int i) {
-        return ((float) i) / 10f;
+        return i * 0.1f;
     }
 
     @Override

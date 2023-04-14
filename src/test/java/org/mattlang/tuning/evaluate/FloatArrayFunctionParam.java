@@ -25,7 +25,7 @@ public class FloatArrayFunctionParam implements TuningParameter {
 
     @Override
     public void change(int offset) {
-        val +=  FloatValueParam.calcChange(offset);
+        val += FloatValueParam.calcChange(offset);
     }
 
     @Override
