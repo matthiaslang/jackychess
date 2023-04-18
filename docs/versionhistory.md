@@ -3,6 +3,7 @@
 ### 0.14.7
 
 - passed pawns evaluation + tuned values: brings ~25 Elos
+- quiescence code cleanup: brings ~10 Elos
 
 ### 0.14.6
 
