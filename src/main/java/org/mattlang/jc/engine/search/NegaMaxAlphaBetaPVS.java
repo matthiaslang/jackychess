@@ -24,7 +24,6 @@ import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -57,6 +56,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      */
     private static final int[][] LMR_TABLE = new int[64][64];
     public static final int UPDATE_INTERVAL = 1000 * 3;
+    private static final int MAX_QUIESCENCE_TT_PLY = 64;
 
     static {
         // Ethereal LMR formula with depth and number of performed moves
@@ -607,26 +607,21 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             return searchContext.evaluateRepetition(color);
         }
 
-        int hashMove = 0;
-
         TTResult tte = searchContext.getTTEntry();
         if (tte != null) {
-            hashMove = tte.getMove();
-
-            if (tte.getDepth() >= depth) {
-                if (tte.isExact()) {// stored value is exact
-                    statistics.ttPruningCount++;
-                    return adjustScore(tte.getScore(), ply);
-                }
-                if (tte.isLowerBound() && tte.getScore() > alpha)
-                    alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
-                else if (tte.isUpperBound() && tte.getScore() < beta)
-                    beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
-                if (alpha >= beta) {
-                    statistics.ttPruningCount++;
-                    return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
-                }
+            if (tte.isExact()) {// stored value is exact
+                statistics.ttPruningCount++;
+                return adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY);
             }
+            if (tte.isLowerBound() && tte.getScore() > alpha)
+                alpha = adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // update lowerbound alpha if needed
+            else if (tte.isUpperBound() && tte.getScore() < beta)
+                beta = adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // update upperbound beta if needed
+            if (alpha >= beta) {
+                statistics.ttPruningCount++;
+                return adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // if lowerbound surpasses upperbound
+            }
+
         }
 
         int eval = searchContext.eval(color);
@@ -647,15 +642,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         //        int alphaStart = alpha;
 
-        //        boolean areWeInCheck = searchContext.isInCheck(color);
-
-        //        Color opponent = color.invert();
-
-        // todo: we have no "evations" mode in move generation for now. therefore we must distinquish
-        // if we are in check and then use the normal mode instead of only capture generation:
-        GenMode moveGenMode = /*areWeInCheck? NORMAL:*/ QUIESCENCE;
-
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(moveGenMode, ply, color, 0, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0, 0)) {
             statistics.quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
