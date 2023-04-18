@@ -54,10 +54,10 @@ public final class PassedPawnEval {
 
 	public static final String PASSED_SCORE_EG = "passedPawn.passedScoreEg";
 
-	private static long PROMOTION_HOT_RANKS_WHITE = BB.rank78;
-	private static long PROMOTION_RANK_WHITE = BB.rank8;
-	private static long PROMOTION_HOT_RANKS_BLACK = BB.rank12;
-	private static long PROMOTION_RANK_BLACK = BB.rank1;
+	private static final long PROMOTION_HOT_RANKS_WHITE = BB.rank78;
+	private static final long PROMOTION_RANK_WHITE = BB.rank8;
+	private static final long PROMOTION_HOT_RANKS_BLACK = BB.rank12;
+	private static final long PROMOTION_RANK_BLACK = BB.rank1;
 
 	private float multiplierBlocked = 0.5f;
 	private float multiplierNoEnemyAttacksInFront = 1.8f;

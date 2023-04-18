@@ -12,6 +12,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
+import org.mattlang.jc.engine.tt.IntIntCache;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -70,7 +71,13 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
      */
     private long blackPassers;
 
-    public ParameterizedPawnEvaluation(EvalConfig config) {
+    private final boolean forTuning;
+    private boolean caching;
+
+    public ParameterizedPawnEvaluation(boolean forTuning, boolean caching, EvalConfig config) {
+        this.forTuning = forTuning;
+        this.caching = caching;
+
         shield2 = config.getPosIntProp(PAWN_SHIELD_2);
         shield3 = config.getPosIntProp(PAWN_SHIELD_3);
         doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
@@ -94,14 +101,32 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         int wKingShield = calcWhiteKingShield(bitBoard.getBoard());
         int bKingShield = calcBlackKingShield(bitBoard.getBoard());
 
-        int pawnResultWhite = evalPawns(bitBoard, WHITE);
-        int pawnResultBlack = evalPawns(bitBoard, BLACK);
         // king shield is only relevant for middle game:
         result.midGame += (wKingShield - bKingShield);
 
-        result.result += (pawnResultWhite - pawnResultBlack);
+        if (caching && !forTuning) {
+            long pawnHashKey = bitBoard.getPawnZobristHash();
+            int cachedPawnEval = EvalCache.pawnCache.find(pawnHashKey);
+            if (cachedPawnEval == IntIntCache.NORESULT) {
+
+                int pawnEval = calcPawnEval(bitBoard);
+                result.result += pawnEval;
+                EvalCache.pawnCache.save(pawnHashKey, pawnEval);
+            } else {
+                result.result += cachedPawnEval;
+            }
+        } else {
+            result.result += calcPawnEval(bitBoard);
+        }
 
         result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
+    }
+
+    private int calcPawnEval(BoardRepresentation bitBoard){
+        int pawnResultWhite = evalPawns(bitBoard, WHITE);
+        int pawnResultBlack = evalPawns(bitBoard, BLACK);
+
+        return pawnResultWhite - pawnResultBlack;
     }
 
     private int evalPawns(BoardRepresentation bitBoard, Color color) {

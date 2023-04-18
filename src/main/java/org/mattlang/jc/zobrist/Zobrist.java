@@ -1,7 +1,7 @@
 package org.mattlang.jc.zobrist;
 
 import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 import java.util.Random;
 
@@ -56,6 +56,21 @@ public class Zobrist {
             h = Zobrist.colorFlip(h);
         }
 
+        return h;
+    }
+
+    public static long hashPawns(BoardRepresentation board) {
+        long h = 0;
+        for (int i = 0; i < 64; i++) {
+            byte fig = board.getFigureCode(i);
+            if (fig == W_PAWN || fig == B_PAWN) {
+                h = addFig(h, i, fig);
+            }
+        }
+        h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
+        if (board.getSiteToMove() == BLACK) {
+            h = Zobrist.colorFlip(h);
+        }
         return h;
     }
 

@@ -125,6 +125,15 @@ public class ZobristPerfTests {
         Perft perft = new Perft();
         perft.setVisitor((visitedBoard, c, d, cursor) -> {
 
+            // check pawn zobrist hash : incremental must be equal to calculated one:
+            long zobristPawnHash = visitedBoard.getPawnZobristHash();
+            long zobristPawnFromScratch = Zobrist.hashPawns(visitedBoard);
+            if (zobristPawnHash!=zobristPawnFromScratch){
+                System.out.println(visitedBoard.toUniCodeStr());
+            }
+            assertThat(zobristPawnHash).isEqualTo(zobristPawnFromScratch);
+
+            // check zobrist hash: incremental must be equal to calculated one:
             long zobristHash = visitedBoard.getZobristHash();
             long zobristFromScratch = Zobrist.hash(visitedBoard);
             assertThat(zobristHash).isEqualTo(zobristFromScratch);

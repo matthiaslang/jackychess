@@ -222,6 +222,11 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
+    public long getPawnZobristHash() {
+        throw new IllegalStateException("not implemented!");
+    }
+
+    @Override
     public void domove(Move move) {
         throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
