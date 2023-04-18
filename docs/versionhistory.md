@@ -1,5 +1,8 @@
 # Versions
 
+### 0.14.7
+
+- passed pawns evaluation + tuned values: brings ~25 Elos
 
 ### 0.14.6
 
