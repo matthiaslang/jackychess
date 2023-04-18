@@ -16,6 +16,32 @@ public class Tools {
 
     public static final long DarkSquares = 0xAA55AA55AA55AA55L;
 
+    /**
+     * precalc distance.
+     */
+    private static int[][] dist = new int[64][64];
+
+    static {
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
+                dist[i][j] = calcDistance(i, j);
+            }
+        }
+    }
+
+    /**
+     * precalc manhattan distance.
+     */
+    private static int[][] manDist = new int[64][64];
+
+    static {
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
+                manDist[i][j] = calcManhattanDistance(i, j);
+            }
+        }
+    }
+
     public static final int rankOf(int sq) {
         return sq >> 3;
     }
@@ -32,8 +58,11 @@ public class Tools {
         return Math.min(r, RANK_8.ordinal() - r);
     }
 
-    // todo precalc distances...
     public static final int distance(int sq1, int sq2) {
+        return dist[sq1][sq2];
+    }
+
+    public static final int calcDistance(int sq1, int sq2) {
         return Math.max(rankDistance(sq1, sq2), fileDistance(sq1, sq2));
     }
 
@@ -51,8 +80,11 @@ public class Tools {
         return Math.abs(file2 - file1);
     }
 
-    // todo precalc distances...
     public static final int manhattanDistance(int sq1, int sq2) {
+        return manDist[sq1][sq2];
+    }
+
+    public static final int calcManhattanDistance(int sq1, int sq2) {
         int file1, file2, rank1, rank2;
         int rankDistance, fileDistance;
         file1 = sq1 & 7;
@@ -101,7 +133,7 @@ public class Tools {
 
     // Drive a piece close to or away from another piece
     public static int push_close(int s1, int s2) {
-        return 140 - 20 * distance(s1, s2);
+        return 140 - 20 * calcDistance(s1, s2);
     }
 
     public static int push_away(int s1, int s2) {
