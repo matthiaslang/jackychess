@@ -67,10 +67,9 @@ public class Zobrist {
                 h = addFig(h, i, fig);
             }
         }
-        h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
-        if (board.getSiteToMove() == BLACK) {
-            h = Zobrist.colorFlip(h);
-        }
+//        if (board.getSiteToMove() == BLACK) {
+//            h = Zobrist.colorFlip(h);
+//        }
         return h;
     }
 

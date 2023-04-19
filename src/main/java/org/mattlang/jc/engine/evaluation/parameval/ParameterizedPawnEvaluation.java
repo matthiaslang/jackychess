@@ -114,6 +114,14 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 EvalCache.pawnCache.save(pawnHashKey, pawnEval);
             } else {
                 result.result += cachedPawnEval;
+
+                // calc passed pawns which are normally calculated as part of the pawn eval:
+                // todo save them also as value with the cached pawn eval?
+                BitChessBoard bb = bitBoard.getBoard();
+                long whitePawns = bb.getPawns(BitChessBoard.nWhite);
+                long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+                whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
+                blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
             }
         } else {
             result.result += calcPawnEval(bitBoard);
