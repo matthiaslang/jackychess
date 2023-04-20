@@ -127,7 +127,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             result.result += calcPawnEval(bitBoard);
         }
 
-        result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
+        // test: commented out passed pawn eval to check its benefit
+//        result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
     }
 
     private int calcPawnEval(BoardRepresentation bitBoard){
