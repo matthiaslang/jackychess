@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.FigureConstants.FT_ROOK;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.material.Material.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BB;
@@ -75,6 +76,46 @@ public final class PassedPawnEval {
 	public static final int MAX_PROMOTION_DISTANCE = 32000;
 	public static final int PROMOTION_BONUS = 350;
 
+	/**
+	 * precalced pawn fronts.
+	 */
+	private static long[][] pawnFronts = new long[64][2];
+
+	static {
+		for (int square = 0; square < 64; square++) {
+			long squareMask = 1L << square;
+			for (int color = 0; color < 2; color++) {
+				pawnFronts[square][color] = pawnFront(squareMask, color);
+			}
+		}
+	}
+
+	/**
+	 * precalc knight distance:
+	 */
+	private static int[][] knightDistance = new int[64][64];
+
+	static {
+		for (int sq1 = 0; sq1 < 64; sq1++) {
+			for (int sq2 = 0; sq2 < 64; sq2++) {
+				knightDistance[sq1][sq2] = Tools.knightDistance(sq1, sq2);
+			}
+		}
+	}
+
+	private int enemyColor;
+	private long allPieces;
+	private long allEnemyAttacks;
+	private long allOwnAttacks;
+	private long enemyKings;
+	private int kingPos;
+	private int enemyKingPos;
+	private long kingAttacks;
+	private long rooks;
+	private long enemyRooks;
+	private long enemyRookAttacks;
+	private long rookAttacks;
+
 	public int calculateScores(final BoardRepresentation board, EvalResult e, long whitePassedPawns,
 			long blackPassedPawns) {
 
@@ -84,6 +125,7 @@ public final class PassedPawnEval {
 		int blackPromotionDistance = MAX_PROMOTION_DISTANCE;
 
 		// white passed pawns
+		initTempVars(board, e, nWhite);
 		long passedPawns = whitePassedPawns;
 		while (passedPawns != 0) {
 			final int index = 63 - Long.numberOfLeadingZeros(passedPawns);
@@ -99,6 +141,7 @@ public final class PassedPawnEval {
 		}
 
 		// black passed pawns
+		initTempVars(board, e, nBlack);
 		passedPawns = blackPassedPawns;
 		while (passedPawns != 0) {
 			final int index = Long.numberOfTrailingZeros(passedPawns);
@@ -122,6 +165,29 @@ public final class PassedPawnEval {
 		return score;
 	}
 
+	private void initTempVars(final BoardRepresentation board, EvalResult e, int color) {
+		BitChessBoard bb = board.getBoard();
+
+		enemyColor = 1 - color;
+
+		allPieces = bb.getPieces();
+		allEnemyAttacks = e.getAttacks(enemyColor, FT_ALL);
+		allOwnAttacks = e.getAttacks(color, FT_ALL);
+
+		enemyKings = bb.getKings(enemyColor);
+		kingPos = Long.numberOfTrailingZeros(bb.getKings(color));
+		enemyKingPos = Long.numberOfTrailingZeros(enemyKings);
+
+		kingAttacks = BB.getKingAttacs(kingPos);
+
+		rooks = bb.getRooks(color);
+		rookAttacks = e.getAttacks(color, FT_ROOK);
+
+		enemyRooks = bb.getRooks(enemyColor);
+		enemyRookAttacks = e.getAttacks(enemyColor, FT_ROOK);
+
+	}
+
 	public int getPassedPawnScore(final BoardRepresentation board, EvalResult e, final int index,
 			final int color) {
 
@@ -133,22 +199,18 @@ public final class PassedPawnEval {
 		final long maskNextSquare = 1L << nextIndex;
 		final long maskPreviousSquare = 1L << (index - offsetNextSquare);
 		final long maskFile = file_bb_ofSquare(index);
-		final long pawnFrontFilled = pawnFront(square, color);
+		final long pawnFrontFilled = pawnFronts[index][color];
 
 		//		System.out.println("Square to check" + BB.toStrBoard(square));
 
-		final int enemyColor = 1 - color;
 		float multiplier = 1;
 
 		// is piece blocked?
-		if ((bb.getPieces() & maskNextSquare) != 0) {
+		if ((allPieces & maskNextSquare) != 0) {
 			multiplier *= multiplierBlocked;
 		}
 
 		// is next squared attacked?
-		long allEnemyAttacks = e.getAttacks(enemyColor, FT_ALL);
-		//		System.out.println("Enemy Attacks" + BB.toStrBoard(allEnemyAttacks));
-
 		if ((allEnemyAttacks & maskNextSquare) == 0) {
 
 			// complete path free of enemy attacks?
@@ -160,12 +222,12 @@ public final class PassedPawnEval {
 		}
 
 		// is next squared defended?
-		if ((e.getAttacks(color, FT_ALL) & maskNextSquare) != 0) {
+		if ((allOwnAttacks & maskNextSquare) != 0) {
 			multiplier *= multiplierNextSquareDefended;
 		}
 
 		// is enemy king in front?
-		if ((pawnFrontFilled & bb.getKings(enemyColor)) != 0) {
+		if ((pawnFrontFilled & enemyKings) != 0) {
 			multiplier *= multiplierEnemyKingInFront;
 		}
 
@@ -175,19 +237,17 @@ public final class PassedPawnEval {
 		}
 
 		// defended by rook from behind?
-		if ((maskFile & bb.getRooks(color)) != 0 && (e.getAttacks(color, FT_ROOK) & square) != 0
-				&& (e.getAttacks(color, FT_ROOK) & maskPreviousSquare) != 0) {
+		if ((maskFile & rooks) != 0 && (rookAttacks & square) != 0
+				&& (rookAttacks & maskPreviousSquare) != 0) {
 			multiplier *= multiplierDefendedByRookFromBehind;
 		}
 
 		// attacked by rook from behind?
-		else if ((maskFile & bb.getRooks(enemyColor)) != 0 && (e.getAttacks(enemyColor, FT_ROOK) & square) != 0
-				&& (e.getAttacks(enemyColor, FT_ROOK) & maskPreviousSquare) != 0) {
+		else if ((maskFile & enemyRooks) != 0 && (enemyRookAttacks & square) != 0
+				&& (enemyRookAttacks & maskPreviousSquare) != 0) {
 			multiplier *= multiplierAttackedByRookFromBehind;
 		}
 
-		int kingPos = Long.numberOfTrailingZeros(bb.getKings(color));
-		int enemyKingPos = Long.numberOfTrailingZeros(bb.getKings(enemyColor));
 		// king tropism
 		multiplier *= passedKingMulti.calc(Tools.distance(kingPos, index));
 		multiplier *= passedKingMulti.calc(8 - Tools.distance(enemyKingPos, index));
@@ -203,7 +263,7 @@ public final class PassedPawnEval {
 		return rankDistancePromotion;
 	}
 
-	public static int calcPromotionDistance(final BoardRepresentation cb, EvalResult e, final int index,
+	public int calcPromotionDistance(final BoardRepresentation cb, EvalResult e, final int index,
 			final int color) {
 		BitChessBoard bb = cb.getBoard();
 
@@ -216,16 +276,17 @@ public final class PassedPawnEval {
 		int nextSquare = index + offSet;
 		long nextSquareMask = 1L << nextSquare;
 
-		final long pawnFrontFilled = pawnFront(squareMask, color);
-
 		// check if it cannot be stopped
 		if (promotionDistance == 1 && cb.getSiteToMove().ordinal() == color) {
-			if ((nextSquareMask & (e.getAttacks(enemyColor, FT_ALL) | bb.getAllPieces())) == 0) {
-				if ((squareMask & e.getAttacks(enemyColor, FT_ALL)) == 0) {
-					return 1;
-				}
+			if ((nextSquareMask & (allEnemyAttacks | allPieces)) == 0) {
+				return 1;
+//				if ((squareMask & allEnemyAttacks) == 0) {
+//					return 1;
+//				}
 			}
-		} else if (onlyPawnsOrOneNightOrBishop(bb, cb.getMaterial(), enemyColor)) {
+		} else if (onlyPawnsOrOneNightOrBishop(cb.getMaterial(), enemyColor)) {
+
+			final long pawnFrontFilled = pawnFronts[index][color];
 
 			// check if it is my turn
 			if (cb.getSiteToMove().ordinal() == enemyColor) {
@@ -240,12 +301,9 @@ public final class PassedPawnEval {
 			long hotRanks = color == nWhite ? PROMOTION_HOT_RANKS_WHITE : PROMOTION_HOT_RANKS_BLACK;
 			long promoRank = color == nWhite ? PROMOTION_RANK_WHITE : PROMOTION_RANK_BLACK;
 
-			int kingPos = Long.numberOfTrailingZeros(bb.getKings(color));
-			int enemyKingPos = Long.numberOfTrailingZeros(bb.getKings(enemyColor));
-
 			long kingAreaPawn = BB.getKingAttacs(index);
 			// check if own king is defending the promotion square (including square just below)
-			if ((BB.getKingAttacs(kingPos) & kingAreaPawn & hotRanks) != 0) {
+			if ((kingAttacks & kingAreaPawn & hotRanks) != 0) {
 				promotionDistance--;
 			}
 
@@ -253,17 +311,17 @@ public final class PassedPawnEval {
 			int promoPos = Long.numberOfTrailingZeros(promotionSquareMask);
 
 			// check distance of enemy king to promotion square
-			if (promotionDistance < Math.max(distance(promoPos, enemyKingPos),
-					distance(index, enemyKingPos))) {
+			if (promotionDistance < Math.max(distance(promoPos, enemyKingPos), distance(index, enemyKingPos))) {
 
 				if (!cb.getMaterial().hasNonPawnMat(enemyColor)) {
 					return promotionDistance;
 				}
 				long enemyKnights = bb.getKnights(enemyColor);
 				if (enemyKnights != 0) {
+					int enemyKnight = Long.numberOfTrailingZeros(enemyKnights);
 					// check distance of enemy night
-					if (promotionDistance < min(calcKnightDistance(enemyKnights, squareMask),
-							calcKnightDistance(enemyKnights, promotionSquareMask))) {
+					if (promotionDistance < min(knightDistance[enemyKnight][index],
+							knightDistance[enemyKnight][promoPos])) {
 						return promotionDistance;
 					}
 				} else {
@@ -275,7 +333,7 @@ public final class PassedPawnEval {
 						if (((squareMask & BB.WHITE_SQUARES) == 0) == (
 								(bb.getBishops(enemyColor) & BB.WHITE_SQUARES) == 0)) {
 							// and we are not attacked:
-							if ((e.getAttacks(enemyColor, FT_ALL) & squareMask) == 0) {
+							if ((allEnemyAttacks & squareMask) == 0) {
 								// then we cant be stopped:
 								return promotionDistance;
 							}
@@ -287,14 +345,14 @@ public final class PassedPawnEval {
 		return MAX_PROMOTION_DISTANCE;
 	}
 
-	private static boolean onlyPawnsOrOneNightOrBishop(BitChessBoard bb, Material material, int enemyColor) {
-
-		// check to get this from the Material key instead... should be faster...
-		return bb.getRooks(enemyColor) == 0 &&
-				bb.getQueens(enemyColor) == 0 &&
-				bb.getBishops(enemyColor) <= 1 &&
-				bb.getKnights(enemyColor) <= 1 &&
-				bb.getBishops(enemyColor) + bb.getKnights(enemyColor) <= 1;
+	public static boolean onlyPawnsOrOneNightOrBishop(Material material, int enemyColor) {
+		if (enemyColor == nWhite) {
+			int pieceMat = material.getWhitePieceMat();
+			return pieceMat == 0 || pieceMat == W_KNIGHT_VAL || pieceMat == W_BISHOP_VAL;
+		} else {
+			int pieceMat = material.getBlackPieceMat();
+			return pieceMat == 0 || pieceMat == B_KNIGHT_VAL || pieceMat == B_BISHOP_VAL;
+		}
 	}
 
 	/**

@@ -160,9 +160,18 @@ public class Material {
         return material & MASK_WHITE_PART;
     }
 
+    public int getWhitePieceMat() {
+        return material & MASK_WHITE_PART & MASK_OUT_PAWNS;
+    }
+
     public int getBlackMat() {
         return material & MASK_BLACK_PART;
     }
+
+    public int getBlackPieceMat() {
+        return material & MASK_BLACK_PART & MASK_OUT_PAWNS;
+    }
+
 
     public boolean hasMoreWhiteMat(int thanThisWhiteMat) {
         int meWhite = getWhiteMat();
