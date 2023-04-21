@@ -632,7 +632,7 @@ public final class BitBoard implements BoardRepresentation {
                     return false;
                 }
             }
-            long allPieces = board.getAllPieces();
+            long allPieces = board.getPieces();
             if (move.getFigureType() == FigureType.Bishop.figureCode
                     || move.getFigureType() == FigureType.Rook.figureCode
                     || move.getFigureType() == FigureType.Queen.figureCode) {

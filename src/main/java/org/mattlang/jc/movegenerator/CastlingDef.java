@@ -63,7 +63,7 @@ public final class CastlingDef {
         BitChessBoard bb = board.getBoard();
         return kingFromMask == bb.getKings(side)
                 && (rookFromMask & bb.getRooks(side)) != 0
-                && (~bb.getAllPieces() & emptyMask) == emptyMask;
+                && (~bb.getPieces() & emptyMask) == emptyMask;
     }
 
     @Override
