@@ -130,10 +130,10 @@ public final class PassedPawnEval {
 		while (passedPawns != 0) {
 			final int index = 63 - Long.numberOfLeadingZeros(passedPawns);
 
-			score += getPassedPawnScore(board, e, index, nWhite);
+			score += getPassedPawnScore(board, index, nWhite);
 
 			if (whitePromotionDistance == MAX_PROMOTION_DISTANCE) {
-				whitePromotionDistance = calcPromotionDistance(board, e, index, nWhite);
+				whitePromotionDistance = calcPromotionDistance(board, index, nWhite);
 			}
 
 			// skip all passed pawns at same file
@@ -146,10 +146,10 @@ public final class PassedPawnEval {
 		while (passedPawns != 0) {
 			final int index = Long.numberOfTrailingZeros(passedPawns);
 
-			score -= getPassedPawnScore(board, e, index, nBlack);
+			score -= getPassedPawnScore(board, index, nBlack);
 
 			if (blackPromotionDistance == MAX_PROMOTION_DISTANCE) {
-				blackPromotionDistance = calcPromotionDistance(board, e, index, nBlack);
+				blackPromotionDistance = calcPromotionDistance(board, index, nBlack);
 			}
 
 			// skip all passed pawns at same file
@@ -188,10 +188,7 @@ public final class PassedPawnEval {
 
 	}
 
-	public int getPassedPawnScore(final BoardRepresentation board, EvalResult e, final int index,
-			final int color) {
-
-		BitChessBoard bb = board.getBoard();
+	public int getPassedPawnScore(final BoardRepresentation board, final int index, final int color) {
 
 		int offsetNextSquare = pawn_push(color).getOffset();
 		final int nextIndex = index + offsetNextSquare;
@@ -263,7 +260,7 @@ public final class PassedPawnEval {
 		return rankDistancePromotion;
 	}
 
-	public int calcPromotionDistance(final BoardRepresentation cb, EvalResult e, final int index,
+	public int calcPromotionDistance(final BoardRepresentation cb, final int index,
 			final int color) {
 		BitChessBoard bb = cb.getBoard();
 
