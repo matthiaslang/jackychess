@@ -1,8 +1,9 @@
 # Versions
 
-### 0.14.7
-
-- passed pawns evaluation + tuned values: brings ~25 Elos
+### 0.14.8
+             
+- comparision to 0.14.3: ~60 Elos
+- pawns cache: brings ~25 Elos
 - quiescence code cleanup: brings ~10 Elos
 
 ### 0.14.6
