@@ -1,12 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static java.lang.Long.bitCount;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.FT_KING;
-import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
-import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -14,8 +9,12 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.tt.IntIntCache;
 
-import lombok.Getter;
-import lombok.Setter;
+import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
+import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 /**
  * Paremeterized Pawn Evaluation.
@@ -120,8 +119,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 BitChessBoard bb = bitBoard.getBoard();
                 long whitePawns = bb.getPawns(BitChessBoard.nWhite);
                 long blackPawns = bb.getPawns(BitChessBoard.nBlack);
-                whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-                blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+                whitePassers = wPassedPawns(whitePawns, blackPawns);
+                blackPassers = bPassedPawns(blackPawns, whitePawns);
             }
         } else {
             result.result += calcPawnEval(bitBoard);
@@ -167,8 +166,8 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         // blocked rammed pawns:
 
-        whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
-        blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
+        whitePassers = wPassedPawns(whitePawns, blackPawns);
+        blackPassers = bPassedPawns(blackPawns, whitePawns);
 
         //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
         //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
@@ -347,5 +346,19 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
     public static long getPawnNeighbours(final long pawns) {
         return pawns << 1 & BB.notHFile | pawns >>> 1 & BB.notAFile;
+    }
+
+    public static long wPassedPawns(long wpawns, long bpawns) {
+        long allFrontSpans = BB.bFrontSpans(bpawns);
+        allFrontSpans |= BB.eastOne(allFrontSpans)
+                |  BB.westOne(allFrontSpans);
+        return wpawns & ~allFrontSpans;
+    }
+
+    public static long bPassedPawns(long bpawns, long wpawns) {
+        long allFrontSpans = BB.wFrontSpans(wpawns);
+        allFrontSpans |= BB.eastOne(allFrontSpans)
+                |  BB.westOne(allFrontSpans);
+        return bpawns & ~allFrontSpans;
     }
 }
