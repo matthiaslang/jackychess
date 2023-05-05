@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import lombok.Getter;
 import lombok.Setter;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
@@ -18,8 +17,8 @@ import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullP
 
 /**
  * Paremeterized Pawn Evaluation.
- *
- *
+ * <p>
+ * <p>
  * see also https://www.chessprogramming.org/Pawns_and_Files_(Bitboards)  for bitboard actions.
  */
 @Getter
@@ -116,27 +115,35 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
                 // calc passed pawns which are normally calculated as part of the pawn eval:
                 // todo save them also as value with the cached pawn eval?
-                BitChessBoard bb = bitBoard.getBoard();
-                long whitePawns = bb.getPawns(BitChessBoard.nWhite);
-                long blackPawns = bb.getPawns(BitChessBoard.nBlack);
-                whitePassers = wPassedPawns(whitePawns, blackPawns);
-                blackPassers = bPassedPawns(blackPawns, whitePawns);
+                calcPassers(bitBoard.getBoard());
             }
         } else {
             result.result += calcPawnEval(bitBoard);
         }
-        
+
         result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
     }
 
-    private int calcPawnEval(BoardRepresentation bitBoard){
-        int pawnResultWhite = evalPawns(bitBoard, WHITE);
-        int pawnResultBlack = evalPawns(bitBoard, BLACK);
+    private int calcPawnEval(BoardRepresentation bitBoard) {
+
+        // calc passers first, since they are needed by the following evals:
+        calcPassers(bitBoard.getBoard());
+
+        int pawnResultWhite = evalWhitePawns(bitBoard);
+        int pawnResultBlack = evalBlackPawns(bitBoard);
 
         return pawnResultWhite - pawnResultBlack;
     }
 
-    private int evalPawns(BoardRepresentation bitBoard, Color color) {
+
+    private void calcPassers(BitChessBoard bb) {
+        long whitePawns = bb.getPawns(BitChessBoard.nWhite);
+        long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+        whitePassers = wPassedPawns(whitePawns, blackPawns);
+        blackPassers = bPassedPawns(blackPawns, whitePawns);
+    }
+
+    private int evalWhitePawns(BoardRepresentation bitBoard) {
         int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
@@ -147,153 +154,173 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
 
         long protectedWhitePawns = whitePawns & whitePawnAttacs;
-        long protectedBlackPawns = blackPawns & blackPawnAttacs;
 
         long whiteDirectNeighbours = getPawnNeighbours(whitePawns);
-        long blackDirectNeighbours = getPawnNeighbours(blackPawns);
 
         long whiteNeighboursFrontFilled = BB.wFrontFill(whiteDirectNeighbours);
-        long blackNeighboursFrontFilled = BB.bFrontFill(blackDirectNeighbours);
 
         long whiteAdvanceAttackedPawns = BB.nortOne(whitePawns) & blackPawnAttacs;
-        long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
 
         long blockedWhitePawns = whitePawns & BB.soutOne(blackPawns);
+
+        //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
+        //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
+
+        //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
+        //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
+
+
+        long pawns = whitePawns;
+        while (pawns != 0) {
+            final int pawn = Long.numberOfTrailingZeros(pawns);
+            long pawnMask = 1L << pawn;
+            long pawnFrontFilled = BB.wFrontFill(pawnMask);
+
+            boolean isAttacked = (pawnMask & blackPawnAttacs) != 0;
+            boolean isPasser = (whitePassers & pawnMask) != 0;
+            boolean isWeak = (pawnFrontFilled & blackPawnAttacs) != 0;
+            boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
+            boolean isBlocked = (blockedWhitePawns & pawnMask) != 0;
+            boolean isDoubled = Long.bitCount(pawnFrontFilled & whitePawns) > 1;
+            boolean hasDirectNeighbour = (whiteDirectNeighbours & pawnMask) != 0;
+            boolean isSupported = hasDirectNeighbour;
+            boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
+            boolean hasNeighbour = !isIsolated;
+            boolean isBehindNeighbours = hasNeighbour && (whiteNeighboursFrontFilled & pawnMask) == 0;
+
+            // backward pawn: behind its neighbours and cannot be safely advanced:
+            boolean isBackward =
+                    !isBlocked && isBehindNeighbours && ((BB.nortOne(pawnMask) & whiteAdvanceAttackedPawns) != 0);
+
+            if (isBackward) {
+                result -= backwardedPawnPenalty;
+            }
+
+            if (isIsolated) {
+                result -= isolatedPawnPenalty;
+            }
+
+            if (isDoubled) {
+                result -= doublePawnPenalty;
+            }
+            if (isAttacked) {
+                result -= attackedPawnPenalty;
+            }
+
+            if (isBlocked) {
+                result += blockedPawnPst.getVal(pawn, WHITE);
+            }
+            if (isProtected) {
+                result += protectedPst.getVal(pawn, WHITE);
+            }
+            if (hasDirectNeighbour) {
+                result += neighbourPst.getVal(pawn, WHITE);
+            }
+
+            if (isWeak) {
+                result += weakPawnPst.getVal(pawn, WHITE);
+            } else if (isPasser) {
+                if ((isProtected || isSupported)) {
+                    result += protectedPasserPst.getVal(pawn, WHITE);
+                } else {
+                    result += passedPawnPst.getVal(pawn, WHITE);
+                }
+            }
+
+            pawns &= pawns - 1;
+        }
+
+        return result;
+    }
+
+
+    private int evalBlackPawns(BoardRepresentation bitBoard) {
+        int result = 0;
+
+        BitChessBoard bb = bitBoard.getBoard();
+        long whitePawns = bb.getPawns(BitChessBoard.nWhite);
+        long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+
+        long blackPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, WHITE);
+        long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
+
+        long protectedBlackPawns = blackPawns & blackPawnAttacs;
+
+        long blackDirectNeighbours = getPawnNeighbours(blackPawns);
+
+        long blackNeighboursFrontFilled = BB.bFrontFill(blackDirectNeighbours);
+
+        long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
+
         long blockedBlackPawns = blackPawns & BB.nortOne(whitePawns);
 
         //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
         //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
 
-        // blocked rammed pawns:
-
-        whitePassers = wPassedPawns(whitePawns, blackPawns);
-        blackPassers = bPassedPawns(blackPawns, whitePawns);
-
         //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
         //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
 
-        if (color == WHITE) {
-            long pawns = whitePawns;
-            while (pawns != 0) {
-                final int pawn = Long.numberOfTrailingZeros(pawns);
-                long pawnMask = 1L << pawn;
-                long pawnFrontFilled = BB.wFrontFill(pawnMask);
+        long pawns = blackPawns;
+        while (pawns != 0) {
+            final int pawn = Long.numberOfTrailingZeros(pawns);
+            long pawnMask = 1L << pawn;
+            long pawnFrontFilled = BB.bFrontFill(pawnMask);
 
-                boolean isAttacked = (pawnMask & blackPawnAttacs) != 0;
-                boolean isPasser = (whitePassers & pawnMask) != 0;
-                boolean isWeak = (pawnFrontFilled & blackPawnAttacs) != 0;
-                boolean isProtected = (pawnMask & protectedWhitePawns) != 0;
-                boolean isBlocked = (blockedWhitePawns & pawnMask) != 0;
-                boolean isDoubled = Long.bitCount(pawnFrontFilled & whitePawns) > 1;
-                boolean hasDirectNeighbour = (whiteDirectNeighbours & pawnMask) != 0;
-                boolean isSupported = hasDirectNeighbour;
-                boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & whitePawns) == 0);
-                boolean hasNeighbour = !isIsolated;
-                boolean isBehindNeighbours = hasNeighbour && (whiteNeighboursFrontFilled & pawnMask) == 0;
+            boolean isAttacked = (pawnMask & whitePawnAttacs) != 0;
+            boolean isPasser = (blackPassers & pawnMask) != 0;
+            boolean isWeak = (pawnFrontFilled & whitePawnAttacs) != 0;
+            boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
+            boolean isBlocked = (blockedBlackPawns & pawnMask) != 0;
+            boolean isDoubled = Long.bitCount(pawnFrontFilled & blackPawns) > 1;
+            boolean hasDirectNeighbour = (blackDirectNeighbours & pawnMask) != 0;
+            boolean isSupported = hasDirectNeighbour;
+            boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
+            boolean hasNeighbour = !isIsolated;
+            boolean isBehindNeighbours = hasNeighbour && (blackNeighboursFrontFilled & pawnMask) == 0;
 
-                // backward pawn: behind its neighbours and cannot be safely advanced:
-                boolean isBackward =
-                        !isBlocked && isBehindNeighbours && ((BB.nortOne(pawnMask) & whiteAdvanceAttackedPawns) != 0);
+            // backward pawn: behind its neighbours and cannot be safely advanced:
+            boolean isBackward =
+                    !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
 
-                if (isBackward) {
-                    result -= backwardedPawnPenalty;
-                }
-
-                if (isIsolated) {
-                    result -= isolatedPawnPenalty;
-                }
-
-                if (isDoubled) {
-                    result -= doublePawnPenalty;
-                }
-                if (isAttacked) {
-                    result -= attackedPawnPenalty;
-                }
-
-                if (isBlocked){
-                    result += blockedPawnPst.getVal(pawn, color);
-                }
-                if (isProtected){
-                    result += protectedPst.getVal(pawn, color);
-                }
-                if (hasDirectNeighbour){
-                    result += neighbourPst.getVal(pawn, color);
-                }
-
-                if (isWeak) {
-                    result += weakPawnPst.getVal(pawn, color);
-                } else if (isPasser) {
-                    if ((isProtected || isSupported)) {
-                        result += protectedPasserPst.getVal(pawn, color);
-                    } else {
-                        result += passedPawnPst.getVal(pawn, color);
-                    }
-                }
-
-                pawns &= pawns - 1;
+            if (isBackward) {
+                result -= backwardedPawnPenalty;
             }
-        } else {
-            long pawns = blackPawns;
-            while (pawns != 0) {
-                final int pawn = Long.numberOfTrailingZeros(pawns);
-                long pawnMask = 1L << pawn;
-                long pawnFrontFilled = BB.bFrontFill(pawnMask);
 
-                boolean isAttacked = (pawnMask & whitePawnAttacs) != 0;
-                boolean isPasser = (blackPassers & pawnMask) != 0;
-                boolean isWeak = (pawnFrontFilled & whitePawnAttacs) != 0;
-                boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
-                boolean isBlocked = (blockedBlackPawns & pawnMask) != 0;
-                boolean isDoubled = Long.bitCount(pawnFrontFilled & blackPawns) > 1;
-                boolean hasDirectNeighbour = (blackDirectNeighbours & pawnMask) !=0;
-                boolean isSupported = hasDirectNeighbour;
-                boolean isIsolated= ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
-                boolean hasNeighbour = !isIsolated;
-                boolean isBehindNeighbours = hasNeighbour && (blackNeighboursFrontFilled & pawnMask) == 0;
-
-                // backward pawn: behind its neighbours and cannot be safely advanced:
-                boolean isBackward =
-                        !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
-
-                if (isBackward) {
-                    result -= backwardedPawnPenalty;
-                }
-
-                if (isIsolated) {
-                    result -= isolatedPawnPenalty;
-                }
-
-                if (isDoubled) {
-                    result -= doublePawnPenalty;
-                }
-                if (isAttacked) {
-                    result -= attackedPawnPenalty;
-                }
-
-                if (isBlocked){
-                    result += blockedPawnPst.getVal(pawn, color);
-                }
-                if (isProtected){
-                    result += protectedPst.getVal(pawn, color);
-                }
-                if (hasDirectNeighbour){
-                    result += neighbourPst.getVal(pawn, color);
-                }
-
-                if (isWeak) {
-                    result += weakPawnPst.getVal(pawn, color);
-                } else if (isPasser) {
-                    if ((isProtected || isSupported)) {
-                        result += protectedPasserPst.getVal(pawn, color);
-                    } else {
-                        result += passedPawnPst.getVal(pawn, color);
-                    }
-                }
-
-                pawns &= pawns - 1;
-
+            if (isIsolated) {
+                result -= isolatedPawnPenalty;
             }
+
+            if (isDoubled) {
+                result -= doublePawnPenalty;
+            }
+            if (isAttacked) {
+                result -= attackedPawnPenalty;
+            }
+
+            if (isBlocked) {
+                result += blockedPawnPst.getVal(pawn, BLACK);
+            }
+            if (isProtected) {
+                result += protectedPst.getVal(pawn, BLACK);
+            }
+            if (hasDirectNeighbour) {
+                result += neighbourPst.getVal(pawn, BLACK);
+            }
+
+            if (isWeak) {
+                result += weakPawnPst.getVal(pawn, BLACK);
+            } else if (isPasser) {
+                if ((isProtected || isSupported)) {
+                    result += protectedPasserPst.getVal(pawn, BLACK);
+                } else {
+                    result += passedPawnPst.getVal(pawn, BLACK);
+                }
+            }
+
+            pawns &= pawns - 1;
+
         }
+
         return result;
     }
 
@@ -351,14 +378,14 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     public static long wPassedPawns(long wpawns, long bpawns) {
         long allFrontSpans = BB.bFrontSpans(bpawns);
         allFrontSpans |= BB.eastOne(allFrontSpans)
-                |  BB.westOne(allFrontSpans);
+                | BB.westOne(allFrontSpans);
         return wpawns & ~allFrontSpans;
     }
 
     public static long bPassedPawns(long bpawns, long wpawns) {
         long allFrontSpans = BB.wFrontSpans(wpawns);
         allFrontSpans |= BB.eastOne(allFrontSpans)
-                |  BB.westOne(allFrontSpans);
+                | BB.westOne(allFrontSpans);
         return bpawns & ~allFrontSpans;
     }
 }
