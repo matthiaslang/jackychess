@@ -1,13 +1,12 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.Color.WHITE;
-
-import java.util.Arrays;
-
+import lombok.Getter;
 import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.Color;
 
-import lombok.Getter;
+import java.util.Arrays;
+
+import static org.mattlang.jc.board.Color.WHITE;
 
 /**
  * Static bitboard stuff.
@@ -446,6 +445,14 @@ public class BB {
 
     public static long wFrontFill(long wpawns) {
         return nortFill(wpawns);
+    }
+
+    public static long wFrontSpans(long wpawns) {
+        return nortOne(nortFill(wpawns));
+    }
+
+    public static long bFrontSpans(long bpawns) {
+        return soutOne(southFill(bpawns));
     }
 
     public static long wRearFill(long wpawns) {

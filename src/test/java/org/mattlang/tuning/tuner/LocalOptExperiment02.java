@@ -1,8 +1,8 @@
 package org.mattlang.tuning.tuner;
 
-import static java.util.Arrays.asList;
-
 import java.io.IOException;
+
+import static java.util.Arrays.asList;
 
 public class LocalOptExperiment02 {
 
@@ -23,12 +23,12 @@ public class LocalOptExperiment02 {
                 .tuneAdjustments(false)
                 .tuneMobility(false)
                 .tunePositional(false)
-                .tunePawnEval(false)
+                .tunePawnEval(true)
                 .tunePassedPawnEval(true)
                 .tuneKingAttack(false)
                 .tuneThreats(false)
                 .inputFiles(asList(
-                        "C:\\cygwin64\\home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
+                        "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd"))
                 .build();
 
         LocalOptimizationTuner.run(params);
