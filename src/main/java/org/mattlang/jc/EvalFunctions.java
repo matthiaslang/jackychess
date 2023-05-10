@@ -1,16 +1,12 @@
 package org.mattlang.jc;
 
-import java.util.function.Supplier;
-
+import lombok.Getter;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.evaluation.minimalpst.MinimalPstEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 
-import lombok.Getter;
+import java.util.function.Supplier;
 
 public enum EvalFunctions {
-
-    MINIMAL_PST(MinimalPstEvaluation::new),
 
     PARAMETERIZED(ParameterizedEvaluation::new);
 

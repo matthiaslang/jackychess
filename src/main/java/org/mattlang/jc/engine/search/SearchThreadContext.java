@@ -1,21 +1,20 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.MoveIterationPreparer;
 
-import lombok.Getter;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 /**
  * Holds variables used during a search for one thread which is used for all nested iterative deepening and negamax
  * search.
  * This includes movelist and all heuristical data like killer heuristic, history heuristic, pv cache, etc.
- *
+ * <p>
  * All structures which are needed by one search thread should be refactored in this class finally.
- *
  */
 public class SearchThreadContext {
 
@@ -34,6 +33,8 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
+    private PawnCache pawnCache = new PawnCache(13);
+
     @Getter
     private OrderCalculator orderCalculator;
 
@@ -41,6 +42,15 @@ public class SearchThreadContext {
 
     public SearchThreadContext() {
         resetMoveLists();
+        orderCalculator = new OrderCalculator(this, getEvaluate());
+    }
+
+    public void reset() {
+        resetMoveLists();
+        historyHeuristic.reset();
+        counterMoveHeuristic.reset();
+        killerMoves.reset();
+        pawnCache.reset();
         orderCalculator = new OrderCalculator(this, getEvaluate());
     }
 
@@ -62,7 +72,10 @@ public class SearchThreadContext {
     public EvaluateFunction getEvaluate() {
         if (evaluate == null) {
             evaluate = Factory.getDefaults().evaluateFunction.create();
+            evaluate.setPawnCache(pawnCache);
         }
         return evaluate;
     }
+
+
 }

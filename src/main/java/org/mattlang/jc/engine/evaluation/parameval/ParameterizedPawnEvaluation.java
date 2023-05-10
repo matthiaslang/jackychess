@@ -6,7 +6,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
-import org.mattlang.jc.engine.tt.IntIntCache;
 
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
@@ -72,6 +71,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private final boolean forTuning;
     private boolean caching;
 
+    @Setter
+    private PawnCache pawnCache = PawnCache.EMPTY_CACHE;
+
     public ParameterizedPawnEvaluation(boolean forTuning, boolean caching, EvalConfig config) {
         this.forTuning = forTuning;
         this.caching = caching;
@@ -104,18 +106,20 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         if (caching && !forTuning) {
             long pawnHashKey = bitBoard.getPawnZobristHash();
-            int cachedPawnEval = EvalCache.pawnCache.find(pawnHashKey);
-            if (cachedPawnEval == IntIntCache.NORESULT) {
+            PawnCacheEntry entry = pawnCache.find(pawnHashKey);
+            if (entry == null) {
 
                 int pawnEval = calcPawnEval(bitBoard);
                 result.result += pawnEval;
-                EvalCache.pawnCache.save(pawnHashKey, pawnEval);
+                pawnCache.save(pawnHashKey, pawnEval, whitePassers, blackPassers);
             } else {
-                result.result += cachedPawnEval;
+                // use cached score:
+                result.result += entry.score;
 
-                // calc passed pawns which are normally calculated as part of the pawn eval:
-                // todo save them also as value with the cached pawn eval?
-                calcPassers(bitBoard.getBoard());
+                // use cached passers:
+                whitePassers = entry.whitePassers;
+                blackPassers = entry.blackPassers;
+
             }
         } else {
             result.result += calcPawnEval(bitBoard);

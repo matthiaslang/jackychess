@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine.search;
 
 
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
-
 import org.mattlang.jc.board.Color;
+
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 /**
  * Holds the found killer moves used for move sorting.
@@ -41,5 +41,14 @@ public class KillerMoves {
     public int[] getOrCreateKillerList(Color color, int ply) {
         int[][] killerMoves = color == Color.WHITE ? killerMovesWhite : killerMovesBlack;
         return killerMoves[ply];
+    }
+
+    public void reset() {
+        for (int i = 0; i < MAX_PLY_INDEX; i++) {
+            for (int j = 0; j < MAX_KILLERS; j++) {
+                killerMovesWhite[i][j] = 0;
+                killerMovesBlack[i][j] = 0;
+            }
+        }
     }
 }

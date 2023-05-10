@@ -1,19 +1,5 @@
 package org.mattlang.tuning.evaluate;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
-import static org.mattlang.jc.board.FigureType.*;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.*;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
@@ -24,6 +10,20 @@ import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 import org.mattlang.tuning.*;
 import org.mattlang.tuning.tuner.OptParameters;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
+import static org.mattlang.jc.board.FigureType.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
@@ -495,6 +495,11 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     @Override
     public int calcPstDelta(Color color, Move m) {
         return parameterizedEvaluation.calcPstDelta(color, m);
+    }
+
+    @Override
+    public void setPawnCache(PawnCache pawnCache) {
+
     }
 
     @Override

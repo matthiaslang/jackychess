@@ -1,11 +1,6 @@
 package org.mattlang.jc.problemanalyzing;
 
-import static org.mattlang.jc.Main.initLogging;
-
-import java.io.IOException;
-
 import org.junit.Test;
-import org.mattlang.jc.EvalFunctions;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -18,6 +13,10 @@ import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.MoveValidator;
+
+import java.io.IOException;
+
+import static org.mattlang.jc.Main.initLogging;
 
 /**
  * PV Moves returned seem to be invalid. looks like the last pv ist invalid (sometimes)...
@@ -38,7 +37,6 @@ public class PVMovesAreWrongTest {
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.timeout.setValue(600)));
         // now starting engine:
         Engine engine = new Engine();
@@ -96,7 +94,6 @@ public class PVMovesAreWrongTest {
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.timeout.setValue(60000000)));
         // now starting engine:
         Engine engine = new Engine();

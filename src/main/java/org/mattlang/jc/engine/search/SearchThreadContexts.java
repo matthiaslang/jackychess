@@ -9,7 +9,9 @@ public class SearchThreadContexts {
     public static SearchThreadContexts CONTEXTS = new SearchThreadContexts();
 
     private SearchThreadContexts() {
-        reset();
+        for (int i = 0; i < contexts.length; i++) {
+            contexts[i] = new SearchThreadContext();
+        }
     }
 
     public void reset() {

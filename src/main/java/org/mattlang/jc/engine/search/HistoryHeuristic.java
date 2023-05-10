@@ -13,6 +13,10 @@ public class HistoryHeuristic {
 
     public HistoryHeuristic() {
         // init with 1 to save divide operation
+        reset();
+    }
+
+    public void reset() {
         init(posHistory);
         init(badHistory);
     }
@@ -43,4 +47,6 @@ public class HistoryHeuristic {
         int colorIdx = color == Color.WHITE ? 0 : 1;
         badHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth;
     }
+
+
 }

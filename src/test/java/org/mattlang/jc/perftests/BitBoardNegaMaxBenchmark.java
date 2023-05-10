@@ -1,13 +1,13 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
-import java.io.IOException;
-
 import org.junit.Test;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
+
+import java.io.IOException;
+
+import static org.mattlang.jc.Main.initLogging;
 
 /**
  * benchmarks to measure speed of move generation with bitboard and with old mailbox generation.
@@ -60,7 +60,6 @@ public class BitBoardNegaMaxBenchmark {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))
@@ -75,7 +74,6 @@ public class BitBoardNegaMaxBenchmark {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(true))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.useKillerMoves.setValue(true))

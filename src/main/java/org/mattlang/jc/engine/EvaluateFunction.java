@@ -3,6 +3,7 @@ package org.mattlang.jc.engine;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
 
 public interface EvaluateFunction {
 
@@ -18,4 +19,6 @@ public interface EvaluateFunction {
      * @param m
      */
     int calcPstDelta(Color color, Move m);
+
+    void setPawnCache(PawnCache pawnCache);
 }

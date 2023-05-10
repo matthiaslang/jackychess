@@ -1,13 +1,16 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
+import org.junit.Test;
+import org.mattlang.jc.BenchmarkResults;
+import org.mattlang.jc.EngineBenchmarksRunner;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
+import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.uci.UCI;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.mattlang.jc.*;
-import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.uci.UCI;
+import static org.mattlang.jc.Main.initLogging;
 
 /**
  * benchmarks different move ordering options to measure their performance.
@@ -107,7 +110,6 @@ public class MoveOrderingBenchmark {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

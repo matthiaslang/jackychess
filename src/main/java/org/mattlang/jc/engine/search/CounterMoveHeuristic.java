@@ -17,4 +17,13 @@ public class CounterMoveHeuristic {
         return counterMoves[color][MoveImpl.getFigureType(parentMove)][MoveImpl.getToIndex(parentMove)];
     }
 
+    public void reset() {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 7; j++) {
+                for (int k = 0; k < 64; k++) {
+                    counterMoves[i][j][k] = 0;
+                }
+            }
+        }
+    }
 }

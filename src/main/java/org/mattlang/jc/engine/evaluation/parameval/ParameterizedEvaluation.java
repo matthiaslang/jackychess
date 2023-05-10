@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-
+import lombok.Getter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -11,7 +9,8 @@ import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
-import lombok.Getter;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 /**
  * Another experimental evaluation.
@@ -156,6 +155,11 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Override
     public int calcPstDelta(Color color, Move m) {
         return pstEvaluation.calcPstDelta(color, m);
+    }
+
+    @Override
+    public void setPawnCache(PawnCache pawnCache) {
+        pawnEvaluation.setPawnCache(pawnCache);
     }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
