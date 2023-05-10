@@ -1,5 +1,9 @@
 # Versions
 
+### 0.14.10
+
+- pawn cache stores passed pawns; brings a few elos...
+
 ### 0.14.9
              
 - comparision to 0.14.3: ~70 Elos
