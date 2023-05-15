@@ -13,6 +13,22 @@ public interface TuningParameter {
      */
     void change(int i);
 
+    /***
+     * Returns the current set parameter value.
+     * @return
+     */
+    int getValue();
+
+    /**
+     * sets the parameter value.
+     */
+    void setValue(int val);
+
+    /**
+     * returns the parameter interval.
+     */
+    Intervall getIntervall();
+
     /**
      * Writes the tuning parameter value to the evaluation function.
      *
@@ -28,4 +44,12 @@ public interface TuningParameter {
      * @return
      */
     boolean isChangePossible(int step);
+
+    void addDependingFen(FenEntry fen);
+
+    boolean hasDependingFens();
+
+    String getDescr();
+
+    int getDependingFenCount();
 }

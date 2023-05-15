@@ -1,5 +1,10 @@
 package org.mattlang.tuning.tuner;
 
+import lombok.Builder;
+import lombok.Getter;
+import org.mattlang.jc.tools.MarkdownTable;
+import org.mattlang.jc.tools.MarkdownWriter;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -7,12 +12,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
-
-import org.mattlang.jc.tools.MarkdownTable;
-import org.mattlang.jc.tools.MarkdownWriter;
-
-import lombok.Builder;
-import lombok.Getter;
 
 @Builder
 @Getter
@@ -23,6 +22,9 @@ public class OptParameters {
      */
     private String evalParamSet = "TUNED01";
     private final List<String> inputFiles;
+
+    /** optimization to recalc only the fens which depend on that particular parameter. */
+    private boolean optimizeRecalcOnlyDependendFens =false;
 
     private boolean multiThreading = true;
 

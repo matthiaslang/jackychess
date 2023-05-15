@@ -1,5 +1,13 @@
 package org.mattlang.tuning.evaluate;
 
+import lombok.Getter;
+import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,20 +17,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.Tools;
-import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.tuning.Intervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
-
 /**
  * Tuning parameter group of a 64 field pattern.
  * It contains therefore 64 individual parameters for each field.
  */
 public class PatternParameterGroup implements TuningParameterGroup {
 
-    private final static Intervall PST_VALUE_INTERVAL = new Intervall(-500, +500);
+    private final static IntIntervall PST_VALUE_INTERVAL = new IntIntervall(-500, +500);
+
+    @Getter
     private final String tableCsvName;
 
     private final Function<ParameterizedEvaluation, Pattern> getter;

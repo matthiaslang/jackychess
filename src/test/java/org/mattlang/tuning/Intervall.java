@@ -1,19 +1,9 @@
 package org.mattlang.tuning;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public interface Intervall {
 
-/**
- * Integer Interval from min to max, boundaries inclusive.
- */
-@AllArgsConstructor
-@Getter
-public class Intervall {
 
-    private int min;
-    private int max;
+    int getMinIntVal();
 
-    public boolean isInIntervall(int val) {
-        return val >= min && val <= max;
-    }
+    int getMaxIntVal();
 }

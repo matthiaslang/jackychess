@@ -1,19 +1,19 @@
 package org.mattlang.tuning.evaluate;
 
+import lombok.Getter;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.AbstractTuningParameter;
+import org.mattlang.tuning.FloatIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.tuning.FloatIntervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
-
-import lombok.Getter;
-
-public class FloatValueParam implements TuningParameter, TuningParameterGroup {
+public class FloatValueParam extends AbstractTuningParameter implements TuningParameterGroup {
 
     private final BiConsumer<ParameterizedEvaluation, Float> saver;
 
@@ -25,10 +25,10 @@ public class FloatValueParam implements TuningParameter, TuningParameterGroup {
     private float value;
 
     public FloatValueParam(String name,
-            ParameterizedEvaluation evaluation,
-            Function<ParameterizedEvaluation, Float> getter,
-            BiConsumer<ParameterizedEvaluation, Float> saver,
-            FloatIntervall intervall) {
+                           ParameterizedEvaluation evaluation,
+                           Function<ParameterizedEvaluation, Float> getter,
+                           BiConsumer<ParameterizedEvaluation, Float> saver,
+                           FloatIntervall intervall) {
         this.name = name;
         this.saver = saver;
         this.getter = getter;
@@ -40,6 +40,16 @@ public class FloatValueParam implements TuningParameter, TuningParameterGroup {
     @Override
     public void change(int i) {
         value += calcChange(i);
+    }
+
+    @Override
+    public int getValue() {
+        return (int) (value * 10);
+    }
+
+    @Override
+    public void setValue(int val) {
+        value = calcChange(val);
     }
 
     public static float calcChange(int i) {
@@ -68,5 +78,10 @@ public class FloatValueParam implements TuningParameter, TuningParameterGroup {
     @Override
     public boolean isChangePossible(int step) {
         return intervall.isInIntervall(value + calcChange(step));
+    }
+
+    @Override
+    public String getDescr() {
+        return name;
     }
 }

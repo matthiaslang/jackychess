@@ -1,20 +1,21 @@
 package org.mattlang.tuning.evaluate;
 
-import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
+import lombok.Getter;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.tuning.FloatIntervall;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
 
-public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
+import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
+
+public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
+    @Getter
     private final String propertyName;
 
     private final Function<ParameterizedEvaluation, FloatArrayFunction> getter;
@@ -27,8 +28,8 @@ public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
     private List<TuningParameter> parameters = new ArrayList<>();
 
     public FloatArrayFunctionParameterGroup(String propertyName,
-            ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedEvaluation, FloatArrayFunction> getter, FloatIntervall intervall) {
+                                            ParameterizedEvaluation parameterizedEvaluation,
+                                            Function<ParameterizedEvaluation, FloatArrayFunction> getter, FloatIntervall intervall) {
         this.propertyName = propertyName;
         this.getter = getter;
         this.function = getter.apply(parameterizedEvaluation).copy();

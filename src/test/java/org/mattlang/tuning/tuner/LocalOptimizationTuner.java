@@ -1,8 +1,11 @@
 package org.mattlang.tuning.tuner;
 
-import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
-import static org.mattlang.jc.AppConfiguration.LOGGING_DIR;
-import static org.mattlang.jc.Main.initLogging;
+import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.tuning.DataSet;
+import org.mattlang.tuning.LocalOptimizer;
+import org.mattlang.tuning.LocalOptimizerK;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +15,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.tools.MarkdownAppender;
-import org.mattlang.tuning.*;
-import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
+import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
+import static org.mattlang.jc.AppConfiguration.LOGGING_DIR;
+import static org.mattlang.jc.Main.initLogging;
 
 public class LocalOptimizationTuner {
 
@@ -86,7 +89,7 @@ public class LocalOptimizationTuner {
             dataset.writeLogInfos(w);
         });
 
-        TuneableEvaluateFunction evaluate =
+        ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
 
         if (params.isAdjustK()) {

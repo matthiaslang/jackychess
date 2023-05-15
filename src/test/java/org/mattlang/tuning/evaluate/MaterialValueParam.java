@@ -1,15 +1,15 @@
 package org.mattlang.tuning.evaluate;
 
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
+import org.mattlang.tuning.IntIntervall;
+
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
-import org.mattlang.tuning.Intervall;
-
 public class MaterialValueParam extends IntegerValueParam {
 
-    private static final Intervall MATERIAL_VALUE_INTERVAL = new Intervall(0, 2000);
+    private static final IntIntervall MATERIAL_VALUE_INTERVAL = new IntIntervall(0, 2000);
 
     private final BiConsumer<ParameterizedMaterialEvaluation, Integer> saver;
 

@@ -1,11 +1,12 @@
 package org.mattlang.tuning;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.tuning.data.pgnparser.Ending;
 
-import lombok.Value;
-
-@Value
+@Getter
+@Setter
 public class FenEntry {
 
 //    private String fen;
@@ -15,6 +16,12 @@ public class FenEntry {
     private Ending ending;
 
     private double result;
+
+    /**
+     * the last calculated error value for that fen. Used in optimization mode where we only recalculate
+     * fens which depend on the current parameter.
+     */
+    private double errorValue;
 
     public FenEntry(String fen, BoardRepresentation board, Ending ending) {
 //        this.fen = fen;
@@ -29,4 +36,5 @@ public class FenEntry {
             result = 0.5;
         }
     }
+
 }

@@ -1,34 +1,35 @@
 package org.mattlang.tuning.evaluate;
 
+import lombok.Getter;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.AbstractTuningParameter;
+import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.tuning.Intervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
-
-import lombok.Getter;
-
-public class IntegerValueParam implements TuningParameter, TuningParameterGroup {
+public class IntegerValueParam extends AbstractTuningParameter implements TuningParameterGroup {
 
     private final BiConsumer<ParameterizedEvaluation, Integer> saver;
 
     private final Function<ParameterizedEvaluation, Integer> getter;
+
     @Getter
-    private final Intervall intervall;
+    private final IntIntervall intervall;
 
     private String name;
     private int value;
 
     public IntegerValueParam(String name,
-            ParameterizedEvaluation evaluation,
-            Function<ParameterizedEvaluation, Integer> getter,
-            BiConsumer<ParameterizedEvaluation, Integer> saver,
-            Intervall intervall) {
+                             ParameterizedEvaluation evaluation,
+                             Function<ParameterizedEvaluation, Integer> getter,
+                             BiConsumer<ParameterizedEvaluation, Integer> saver,
+                             IntIntervall intervall) {
         this.name = name;
         this.saver = saver;
         this.getter = getter;
@@ -40,6 +41,16 @@ public class IntegerValueParam implements TuningParameter, TuningParameterGroup 
     @Override
     public void change(int i) {
         value += i;
+    }
+
+    @Override
+    public int getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(int val) {
+        value = val;
     }
 
     @Override
@@ -64,5 +75,10 @@ public class IntegerValueParam implements TuningParameter, TuningParameterGroup 
     @Override
     public boolean isChangePossible(int step) {
         return intervall.isInIntervall(value + step);
+    }
+
+    @Override
+    public String getDescr() {
+        return name;
     }
 }

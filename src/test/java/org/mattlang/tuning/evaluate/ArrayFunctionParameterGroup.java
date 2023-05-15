@@ -1,20 +1,22 @@
 package org.mattlang.tuning.evaluate;
 
-import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
+import lombok.Getter;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
-import org.mattlang.tuning.Intervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
+import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
 
 public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
+    @Getter
     private final String propertyName;
 
     private final Function<ParameterizedEvaluation, ArrayFunction> getter;
@@ -28,7 +30,7 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
     public ArrayFunctionParameterGroup(String propertyName,
             ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedEvaluation, ArrayFunction> getter, Intervall intervall) {
+            Function<ParameterizedEvaluation, ArrayFunction> getter, IntIntervall intervall) {
         this.propertyName = propertyName;
         this.getter = getter;
         this.function = getter.apply(parameterizedEvaluation).copy();

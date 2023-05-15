@@ -1,22 +1,21 @@
 package org.mattlang.tuning.evaluate;
 
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.tuning.Intervall;
-import org.mattlang.tuning.TuningParameter;
-
 import lombok.Getter;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.AbstractTuningParameter;
+import org.mattlang.tuning.IntIntervall;
 
 @Getter
-public class ArrayFunctionParam implements TuningParameter {
+public class ArrayFunctionParam extends AbstractTuningParameter {
 
     private final int index;
     private final ArrayFunctionParameterGroup group;
     @Getter
-    private final Intervall intervall;
+    private final IntIntervall intervall;
 
     private int val;
 
-    public ArrayFunctionParam(ArrayFunctionParameterGroup group, int index, int val, Intervall intervall) {
+    public ArrayFunctionParam(ArrayFunctionParameterGroup group, int index, int val, IntIntervall intervall) {
         this.group = group;
         this.index = index;
         this.val = val;
@@ -29,6 +28,16 @@ public class ArrayFunctionParam implements TuningParameter {
     }
 
     @Override
+    public int getValue() {
+        return val;
+    }
+
+    @Override
+    public void setValue(int val) {
+        this.val = val;
+    }
+
+    @Override
     public void saveValue(ParameterizedEvaluation parameterizedEvaluation) {
         group.setVal(parameterizedEvaluation, index, val);
     }
@@ -36,5 +45,10 @@ public class ArrayFunctionParam implements TuningParameter {
     @Override
     public boolean isChangePossible(int step) {
         return intervall.isInIntervall(val + step);
+    }
+
+    @Override
+    public String getDescr() {
+        return getGroup().getPropertyName() + ": " + index;
     }
 }

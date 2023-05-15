@@ -12,6 +12,7 @@ public class LocalOptExperiment02 {
          */
         OptParameters params = OptParameters.builder()
                 .evalParamSet("TUNED01")
+                .optimizeRecalcOnlyDependendFens(true)
                 .adjustK(true)
                 .multiThreading(true)
                 .threadCount(5)
@@ -23,7 +24,7 @@ public class LocalOptExperiment02 {
                 .tuneAdjustments(false)
                 .tuneMobility(false)
                 .tunePositional(false)
-                .tunePawnEval(true)
+                .tunePawnEval(false)
                 .tunePassedPawnEval(true)
                 .tuneKingAttack(false)
                 .tuneThreats(false)

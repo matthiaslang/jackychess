@@ -1,11 +1,12 @@
 package org.mattlang.tuning;
 
-import static java.lang.Math.pow;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
+import lombok.Getter;
+import lombok.Setter;
+import org.mattlang.jc.tools.MarkdownTable;
+import org.mattlang.jc.tools.MarkdownWriter;
+import org.mattlang.tuning.data.pgnparser.Ending;
+import org.mattlang.tuning.tuner.DatasetPreparer;
+import org.mattlang.tuning.tuner.OptParameters;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,18 +14,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.tools.MarkdownTable;
-import org.mattlang.jc.tools.MarkdownWriter;
-import org.mattlang.tuning.data.pgnparser.Ending;
-import org.mattlang.tuning.tuner.DatasetPreparer;
-import org.mattlang.tuning.tuner.OptParameters;
-
-import lombok.Data;
+import static java.lang.Math.pow;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 /**
  * Contains all FEN Positions used as datas set for tuning.
  */
-@Data
+@Getter
+@Setter
 public class DataSet {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
@@ -107,7 +108,9 @@ public class DataSet {
         // build sum:
         double sum = 0;
         for (FenEntry fen : fens) {
-            sum += pow(fen.getResult() - sigmoid(evaluate.eval(fen.getBoard(), WHITE)), 2);
+            double errorValue = pow(fen.getResult() - sigmoid(evaluate.eval(fen.getBoard(), WHITE)), 2);
+            fen.setErrorValue(errorValue);
+            sum += errorValue;
         }
         return sum;
 

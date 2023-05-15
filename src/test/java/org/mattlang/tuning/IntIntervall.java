@@ -8,22 +8,22 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class FloatIntervall implements Intervall {
+public class IntIntervall implements Intervall {
 
-    private float min;
-    private float max;
+    private int min;
+    private int max;
 
-    public boolean isInIntervall(float val) {
+    public boolean isInIntervall(int val) {
         return val >= min && val <= max;
     }
 
     @Override
     public int getMinIntVal() {
-        return (int) (min * 10);
+        return min;
     }
 
     @Override
     public int getMaxIntVal() {
-        return (int) (max * 10);
+        return max;
     }
 }

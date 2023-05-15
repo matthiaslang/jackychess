@@ -1,5 +1,6 @@
 package org.mattlang.tuning.evaluate;
 
+import lombok.Getter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
@@ -27,13 +28,14 @@ import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvalua
 
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
-    private static final Intervall MOBILITY_VALUE_INTERVAL = new Intervall(-500, +500);
-    private static final Intervall KINGATTACK_VALUE_INTERVAL = new Intervall(0, +50);
-    public static final Intervall PAWN_PARAMS_INTERVALl = new Intervall(0, 100);
+    private static final IntIntervall MOBILITY_VALUE_INTERVAL = new IntIntervall(-500, +500);
+    private static final IntIntervall KINGATTACK_VALUE_INTERVAL = new IntIntervall(0, +50);
+    public static final IntIntervall PAWN_PARAMS_INTERVALl = new IntIntervall(0, 100);
     public static final FloatIntervall PASSEDPAWN_FLOAT_INTERVALl = new FloatIntervall(0.1f, 3f);
 
-    public static final Intervall THREATS_PARAMS_INTERVALl = new Intervall(0, 200);
-    public static final Intervall PASSEDPAWN_SCORE_INTERVALl = new Intervall(0, 400);
+    public static final IntIntervall THREATS_PARAMS_INTERVALl = new IntIntervall(0, 200);
+    public static final IntIntervall PASSEDPAWN_SCORE_INTERVALl = new IntIntervall(0, 400);
+    @Getter
     private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
 
     ArrayList<TuningParameterGroup> groups = new ArrayList<>();
@@ -333,7 +335,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     private void addPositionalParameters(ParameterizedEvaluation parameterizedEvaluation) {
 
         // additional positional parameters:
-        Intervall individualParamsInterval = new Intervall(0, 100);
+        IntIntervall individualParamsInterval = new IntIntervall(0, 100);
 
         groups.add(new IntegerValueParam(MobilityEvalResult.ROOK_HALF, parameterizedEvaluation,
                 e -> e.getMobEvaluation().getWResult().getRookHalf(),
