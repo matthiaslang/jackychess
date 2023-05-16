@@ -68,4 +68,9 @@ public class PatternValueParam extends AbstractTuningParameter {
     public String getDescr() {
         return getGroup().getTableCsvName() + ": " + pos;
     }
+
+    @Override
+    public void resetValue() {
+        val = 0;
+    }
 }

@@ -51,4 +51,9 @@ public class FloatArrayFunctionParam extends AbstractTuningParameter {
     public String getDescr() {
         return getGroup().getPropertyName() + ": " + index;
     }
+
+    @Override
+    public void resetValue() {
+        val = 1;
+    }
 }
