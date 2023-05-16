@@ -63,7 +63,7 @@ public class DatasetPreparer {
                 try {
                     parseFen(dataSet, line);
                 } catch (RuntimeException re) {
-                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line, re);
+                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line);
 //                    throw re;
                 }
             });
