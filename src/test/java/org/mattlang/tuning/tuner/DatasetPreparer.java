@@ -1,16 +1,5 @@
 package org.mattlang.tuning.tuner;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -24,6 +13,18 @@ import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.data.pgnparser.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
+
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 
 public class DatasetPreparer {
 
@@ -53,47 +54,62 @@ public class DatasetPreparer {
 
     private DataSet prepareFromEpd(File file) {
         DataSet dataSet = new DataSet(params);
+
         try (Stream<String> stream = Files.lines(file.toPath())) {
 
             LOGGER.info("preparing Data now...");
 
             stream.forEach(line -> {
-
-                if (dataSet.getFens().size() % 5000 == 0) {
-                    LOGGER.info(" prepared " + dataSet.getFens().size() + " fens...");
+                try {
+                    parseFen(dataSet, line);
+                } catch (RuntimeException re) {
+                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line, re);
+//                    throw re;
                 }
-
-                BoardRepresentation board = new BitBoard();
-
-                Ending ending;
-                if (line.contains("\"1/2-1/2\"")) {
-                    ending = Ending.DRAW;
-                    line = line.replace("\"1/2-1/2\"", "");
-                } else if (line.contains("\"0-1\"")) {
-                    ending = Ending.MATE_BLACK;
-                    line = line.replace("\"0-1\"", "");
-                } else if (line.contains("\"1-0\"")) {
-                    ending = Ending.MATE_WHITE;
-                    line = line.replace("\"1-0\"", "");
-                } else {
-                    throw new RuntimeException("Error Parsing pgn file: no ending could be found in " + line);
-                }
-
-                // replace noise in the zurich test set:
-                line = line.replace(";", "").replace("c9", "") + " 0 0";
-
-                board.setFenPosition("position fen " + line);
-
-                if (!isEvalUsingEndGameFunction(board)){
-                    FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
-                    dataSet.addFen(entry);
-                }
-
             });
             return dataSet;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void parseFen(DataSet dataSet, String line) {
+        if (dataSet.getFens().size() % 5000 == 0) {
+            LOGGER.info(" prepared " + dataSet.getFens().size() + " fens...");
+        }
+
+        BoardRepresentation board = new BitBoard();
+
+        Ending ending;
+        if (line.contains("\"1/2-1/2\"") || line.contains("pgn=0.5")) {
+            ending = Ending.DRAW;
+            line = line.replace("\"1/2-1/2\"", "");
+            line = line.replace("pgn=0.5", "");
+        } else if (line.contains("\"0-1\"")) {
+            ending = Ending.MATE_BLACK;
+            line = line.replace("\"0-1\"", "");
+        } else if (line.contains("\"1-0\"")) {
+            ending = Ending.MATE_WHITE;
+            line = line.replace("\"1-0\"", "");
+        } else if (line.contains("pgn=0.0")) {
+            ending = board.getSiteToMove() == WHITE ? Ending.MATE_WHITE : Ending.MATE_BLACK;
+            line = line.replace("pgn=0.0", "");
+        } else if (line.contains("pgn=1.0")) {
+            ending = board.getSiteToMove() == BLACK ? Ending.MATE_WHITE : Ending.MATE_BLACK;
+            line = line.replace("pgn=1.0", "");
+        } else {
+            throw new RuntimeException("Error Parsing pgn file: no ending could be found in " + line);
+        }
+
+        // replace noise in the zurich test set:
+        line = line.replace(";", "").replace("c9", "") + " 0 0";
+
+        board.setFenPosition("position fen " + line);
+
+        if (!isEvalUsingEndGameFunction(board)) {
+            FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
+            dataSet.addFen(entry);
         }
     }
 
