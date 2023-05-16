@@ -74,6 +74,17 @@ public class LocalOptimizationTuner {
         System.setProperty(LOGGING_DIR, ".");
         initLogging("/tuningLogging.properties");
 
+        ParamTuneableEvaluateFunction evaluate =
+                new ParamTuneableEvaluateFunction(params);
+
+        if (params.isResetParametersBeforeTuning()) {
+            LOGGER.info("Resetting Parameter values");
+            for (TuningParameter param : evaluate.getParams()) {
+                param.resetValue();
+            }
+            evaluate.writeParamDescr(outputDir);
+        }
+
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(params.getInputFiles());
         dataset.setMultithreaded(params.isMultiThreading());
@@ -89,8 +100,7 @@ public class LocalOptimizationTuner {
             dataset.writeLogInfos(w);
         });
 
-        ParamTuneableEvaluateFunction evaluate =
-                new ParamTuneableEvaluateFunction(params);
+
 
         if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");

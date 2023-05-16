@@ -52,4 +52,9 @@ public interface TuningParameter {
     String getDescr();
 
     int getDependingFenCount();
+
+    /**
+     * reset its value to a neutral value. (usually 0 or 1 depending if its additive or multiplicative).
+     */
+    void resetValue();
 }

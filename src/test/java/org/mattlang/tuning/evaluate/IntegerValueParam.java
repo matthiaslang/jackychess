@@ -81,4 +81,9 @@ public class IntegerValueParam extends AbstractTuningParameter implements Tuning
     public String getDescr() {
         return name;
     }
+
+    @Override
+    public void resetValue() {
+        value = 0;
+    }
 }

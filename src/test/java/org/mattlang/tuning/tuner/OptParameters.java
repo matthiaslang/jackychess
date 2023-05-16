@@ -57,6 +57,9 @@ public class OptParameters {
     /** shuffle parameters before each optimization round to randomize local optimization. */
     private boolean shuffleTuningParameter=false;
 
+    /** reset all parameter values before starting tuning? */
+    private boolean resetParametersBeforeTuning = false;
+
     public void writeMarkdownInfos(MarkdownWriter mdWriter)
             throws IOException {
         mdWriter.h1("Tuning Options");
@@ -76,4 +79,5 @@ public class OptParameters {
             throw new RuntimeException(e);
         }
     }
+
 }
