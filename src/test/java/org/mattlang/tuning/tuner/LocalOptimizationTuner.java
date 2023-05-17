@@ -67,7 +67,9 @@ public class LocalOptimizationTuner {
 
         // set output dir to pst config dir:
         outputDir = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase());
-        File mdFile = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase() + "/info.md");
+        File mdFile = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase() + "/" + params.getName() + ".md");
+        boolean continuingTuningRun = mdFile.exists();
+
         MarkdownAppender markdownAppender = new MarkdownAppender(mdFile);
 
         System.setProperty(LOGGING_ACTIVATE, "true");
@@ -77,7 +79,7 @@ public class LocalOptimizationTuner {
         ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
 
-        if (params.isResetParametersBeforeTuning()) {
+        if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {
             LOGGER.info("Resetting Parameter values");
             for (TuningParameter param : evaluate.getParams()) {
                 param.resetValue();
@@ -99,7 +101,6 @@ public class LocalOptimizationTuner {
             params.writeMarkdownInfos(w);
             dataset.writeLogInfos(w);
         });
-
 
 
         if (params.isAdjustK()) {

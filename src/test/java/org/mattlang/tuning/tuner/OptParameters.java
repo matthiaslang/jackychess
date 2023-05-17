@@ -17,6 +17,9 @@ import java.util.List;
 @Getter
 public class OptParameters {
 
+    /** Tuning name to have a unique name to reference to when continuing tuning, etc. */
+    private String name;
+
     /**
      * the paramset name to tune.
      */

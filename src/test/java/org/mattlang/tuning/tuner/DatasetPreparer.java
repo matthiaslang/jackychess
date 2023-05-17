@@ -81,6 +81,8 @@ public class DatasetPreparer {
 
         BoardRepresentation board = new BitBoard();
 
+        boolean isCcrlPgenEncoding = line.contains("pgn=");
+
         Ending ending;
         if (line.contains("\"1/2-1/2\"") || line.contains("pgn=0.5")) {
             ending = Ending.DRAW;
@@ -93,19 +95,31 @@ public class DatasetPreparer {
             ending = Ending.MATE_WHITE;
             line = line.replace("\"1-0\"", "");
         } else if (line.contains("pgn=0.0")) {
-            ending = board.getSiteToMove() == WHITE ? Ending.MATE_WHITE : Ending.MATE_BLACK;
+            ending = Ending.MATE_WHITE;
             line = line.replace("pgn=0.0", "");
         } else if (line.contains("pgn=1.0")) {
-            ending = board.getSiteToMove() == BLACK ? Ending.MATE_WHITE : Ending.MATE_BLACK;
+            ending = Ending.MATE_BLACK;
             line = line.replace("pgn=1.0", "");
         } else {
             throw new RuntimeException("Error Parsing pgn file: no ending could be found in " + line);
         }
 
         // replace noise in the zurich test set:
+        // replace everything after ";":
+        if (line.contains(";")) {
+            line = line.split(";")[0];
+        }
         line = line.replace(";", "").replace("c9", "") + " 0 0";
 
         board.setFenPosition("position fen " + line);
+
+        // by ccrl encoding mate is on perspective of site to move:
+        if (isCcrlPgenEncoding && ending != Ending.DRAW) {
+            // means for black invert the ending result:
+            if (board.getSiteToMove() == BLACK) {
+                ending = ending == Ending.MATE_WHITE ? Ending.MATE_BLACK : Ending.MATE_WHITE;
+            }
+        }
 
         if (!isEvalUsingEndGameFunction(board)) {
             FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
