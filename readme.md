@@ -49,13 +49,17 @@ on http://ccrl.chessdom.com/ccrl/404/:
 Here is a quick overview of my estimated rating and the results from the CCRL team (maybe outdated):
 
 | Version | Estimated Rating | CCRL Blitz | 40/15 |
-|---------|------------------|----------|-------|
-| 0.14.3  | 2580             |          |   |
-| 0.13.1  | 2330             | --       | 2403  |
-| 0.13.0  | 2330             | 2361     | --    |
-| 0.12.0  | 2180             | 2251     | --    |
-| 0.10.0  | 2000             | 2082     | --    |
-| 0.9.14  | --               | 1440     | --    |
+|---------|------------------|------------|-------|
+| 0.14.3  | 2580             | 2595       | 2601  |
+| 0.13.1  | 2330             | --         | 2403  |
+| 0.13.0  | 2330             | 2361       | --    |
+| 0.12.0  | 2180             | 2251       | --    |
+| 0.10.0  | 2000             | 2082       | --    |
+| 0.9.14  | --               | 1440       | --    |
+
+## Copyright
+
+
                 Jacky Chess 
     Copyright (C) 2023  Matthias Lang
 
