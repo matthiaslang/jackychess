@@ -4,6 +4,7 @@
 
 - retuned all evaluation parameters
 - comparison to 0.14.3: ~87 Elos
+- comparison to 0.14.10: ~37 Elos
 
 ### 0.14.10
 
