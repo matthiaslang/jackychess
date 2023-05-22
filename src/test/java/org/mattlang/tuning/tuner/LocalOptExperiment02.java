@@ -1,8 +1,8 @@
 package org.mattlang.tuning.tuner;
 
-import java.io.IOException;
-
 import static java.util.Arrays.asList;
+
+import java.io.IOException;
 
 public class LocalOptExperiment02 {
 
@@ -18,10 +18,11 @@ public class LocalOptExperiment02 {
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
+                .name("ccrl test")
                 .evalParamSet("TUNED01")
                 .optimizeRecalcOnlyDependendFens(false)
-                .resetParametersBeforeTuning(true)
-                .adjustK(true)
+                .resetParametersBeforeTuning(false)
+                .adjustK(false)
                 .multiThreading(true)
                 .threadCount(5)
                 .delta(0.00000001)
