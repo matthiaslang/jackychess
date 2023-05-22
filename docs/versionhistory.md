@@ -1,5 +1,11 @@
 # Versions
 
+### 0.14.11
+
+- retuned all evaluation parameters
+- comparison to 0.14.3: ~87 Elos
+- comparison to 0.14.10: ~37 Elos
+
 ### 0.14.10
 
 - pawn cache stores passed pawns; brings a few elos...

@@ -25,7 +25,7 @@ public class LocalOptExperiment02 {
                 .multiThreading(true)
                 .threadCount(5)
                 .delta(0.00000001)
-                .stepGranularity( asList(   /*10,*/ 5,  3, 1 ))
+                .stepGranularity( asList(   10, 5,  3, 1 ))
                 .removeDuplicateFens(true)
                 .tunePst(true)
                 .tuneMaterial(false)
@@ -37,7 +37,7 @@ public class LocalOptExperiment02 {
                 .tuneKingAttack(true)
                 .tuneThreats(true)
 //                .inputFiles(asList(QUIET_LABELED_EPD))
-                .inputFiles(asList(CCRL3100))
+                .inputFiles(asList(QUIET_LABELED_EPD))
                 .build();
 
         LocalOptimizationTuner.run(params);
