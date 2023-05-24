@@ -1,5 +1,9 @@
 # Versions
 
+### 0.14.12
+
+- retuned again with training data (ccrl3100): brings ~20 Elos.
+
 ### 0.14.11
 
 - retuned all evaluation parameters
