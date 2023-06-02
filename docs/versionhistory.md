@@ -1,5 +1,19 @@
 # Versions
 
+## 23.06
+
+Official Release since 0.13.4.
+Estimated Elo strength: ~2680, ~100 Elo stronger than 0.13.4.
+
+Summary of changes compared to 0.13.4:
+
+- more pawn evaluation
+- pawn cache
+- retuned evaluation parameter using different training data
+- small improvements and cleanups
+
+The version number switched now to uses Year/Month (YY.MM) to represent roughly the release time.  
+
 ### 0.14.12
 
 - retuned again with training data (ccrl3100): brings ~20 Elos.
