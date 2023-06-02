@@ -1,44 +1,50 @@
 package org.mattlang.tuning.genetic;
 
-import lombok.Data;
+import org.mattlang.tuning.DataSet;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
+import org.mattlang.tuning.evaluate.ParameterSet;
 
-@Data
+import lombok.Getter;
+
 public class Individual {
 
-    protected int defaultGeneLength = 64;
-    private byte[] genes = new byte[defaultGeneLength];
-    private int fitness = 0;
+    @Getter
+    private final ParameterSet parameterSet;
+    @Getter
+    protected int defaultGeneLength = 0;
 
-    public Individual() {
-        for (int i = 0; i < genes.length; i++) {
-            byte gene = (byte) Math.round(Math.random());
-            genes[i] = gene;
-        }
+    private double fitness = 0;
+    private boolean fitnessCalculated;
+
+    public Individual(ParameterSet parameterSet) {
+        this.parameterSet = parameterSet;
+        defaultGeneLength = parameterSet.getParams().size();
     }
 
-    protected byte getSingleGene(int index) {
-        return genes[index];
+    protected int getSingleGene(int index) {
+        return parameterSet.getParams().get(index).getValue();
     }
 
-    protected void setSingleGene(int index, byte value) {
-        genes[index] = value;
+    protected void setSingleGene(int index, int value) {
+        parameterSet.getParams().get(index).setValue(value);
         fitness = 0;
+        fitnessCalculated = false;
     }
 
-    public int getFitness() {
-        if (fitness == 0) {
-            fitness = SimpleGeneticAlgorithm.getFitness(this);
+    public double getFitness() {
+        if (!fitnessCalculated) {
+            throw new IllegalStateException("calculate fitness first!");
         }
         return fitness;
     }
 
-    @Override
-    public String toString() {
-        String geneString = "";
-        for (int i = 0; i < genes.length; i++) {
-            geneString += getSingleGene(i);
-        }
-        return geneString;
+    public void calcFitness(DataSet dataset, ParamTuneableEvaluateFunction evaluate) {
+        fitness = dataset.calcError(evaluate, parameterSet);
+        fitnessCalculated = true;
     }
 
+    public TuningParameter getGene(int i) {
+        return parameterSet.getParams().get(i);
+    }
 }

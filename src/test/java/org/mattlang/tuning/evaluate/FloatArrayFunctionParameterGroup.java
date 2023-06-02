@@ -1,20 +1,22 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
-import org.mattlang.tuning.FloatIntervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
+import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
+import org.mattlang.tuning.FloatIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
+import lombok.Getter;
 
 public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
+
     @Getter
     private final String propertyName;
 
@@ -28,8 +30,8 @@ public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
     private List<TuningParameter> parameters = new ArrayList<>();
 
     public FloatArrayFunctionParameterGroup(String propertyName,
-                                            ParameterizedEvaluation parameterizedEvaluation,
-                                            Function<ParameterizedEvaluation, FloatArrayFunction> getter, FloatIntervall intervall) {
+            ParameterizedEvaluation parameterizedEvaluation,
+            Function<ParameterizedEvaluation, FloatArrayFunction> getter, FloatIntervall intervall) {
         this.propertyName = propertyName;
         this.getter = getter;
         this.function = getter.apply(parameterizedEvaluation).copy();
@@ -38,6 +40,15 @@ public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
             parameters.add(new FloatArrayFunctionParam(this, index, function.calc(index), intervall));
         }
 
+    }
+
+    private FloatArrayFunctionParameterGroup(FloatArrayFunctionParameterGroup orig) {
+        this.propertyName = orig.propertyName;
+        this.getter = orig.getter;
+        this.function = orig.function.copy();
+        for (TuningParameter parameter : orig.parameters) {
+            this.parameters.add(((FloatArrayFunctionParam) parameter).copyParam(this));
+        }
     }
 
     @Override
@@ -63,6 +74,11 @@ public class FloatArrayFunctionParameterGroup implements TuningParameterGroup {
     @Override
     public void writeParamDef(File outputDir) {
         exchangeParam(new File(outputDir, "config.properties"), propertyName, createParamStr());
+    }
+
+    @Override
+    public TuningParameterGroup copy() {
+        return new FloatArrayFunctionParameterGroup(this);
     }
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, float val) {

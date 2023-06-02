@@ -1,9 +1,11 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.AbstractTuningParameter;
 import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+
+import lombok.Getter;
 
 /**
  * Tuning parameter of a single value of a 64 field pattern.
@@ -11,13 +13,22 @@ import org.mattlang.tuning.IntIntervall;
 @Getter
 public class PatternValueParam extends AbstractTuningParameter {
 
-    private final int pos;
     private final PatternParameterGroup group;
+    private final int pos;
     private final boolean mirrored;
     private final IntIntervall intervall;
 
     private int mirroredPos;
     private int val;
+
+    private PatternValueParam(PatternParameterGroup group, PatternValueParam orig) {
+        this.group = group;
+        this.pos = orig.pos;
+        this.mirrored = orig.mirrored;
+        this.intervall = orig.intervall;
+        this.mirroredPos = orig.mirroredPos;
+        this.val = orig.val;
+    }
 
     public PatternValueParam(PatternParameterGroup group, int pos, int val, IntIntervall intervall) {
         this.group = group;
@@ -72,5 +83,9 @@ public class PatternValueParam extends AbstractTuningParameter {
     @Override
     public void resetValue() {
         val = 0;
+    }
+
+    public TuningParameter copyParam(PatternParameterGroup group) {
+        return new PatternValueParam(group, this);
     }
 }

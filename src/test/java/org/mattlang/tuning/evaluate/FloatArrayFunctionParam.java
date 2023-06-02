@@ -1,9 +1,11 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.AbstractTuningParameter;
 import org.mattlang.tuning.FloatIntervall;
+import org.mattlang.tuning.TuningParameter;
+
+import lombok.Getter;
 
 @Getter
 public class FloatArrayFunctionParam extends AbstractTuningParameter {
@@ -15,7 +17,8 @@ public class FloatArrayFunctionParam extends AbstractTuningParameter {
 
     private float val;
 
-    public FloatArrayFunctionParam(FloatArrayFunctionParameterGroup group, int index, float val, FloatIntervall intervall) {
+    public FloatArrayFunctionParam(FloatArrayFunctionParameterGroup group, int index, float val,
+            FloatIntervall intervall) {
         this.group = group;
         this.index = index;
         this.val = val;
@@ -55,5 +58,9 @@ public class FloatArrayFunctionParam extends AbstractTuningParameter {
     @Override
     public void resetValue() {
         val = 1;
+    }
+
+    public TuningParameter copyParam(FloatArrayFunctionParameterGroup group) {
+        return new FloatArrayFunctionParam(group, index, val, intervall);
     }
 }

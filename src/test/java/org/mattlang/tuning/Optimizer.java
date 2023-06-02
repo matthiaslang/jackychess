@@ -1,10 +1,9 @@
 package org.mattlang.tuning;
 
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
-
-import java.util.List;
+import org.mattlang.tuning.evaluate.ParameterSet;
 
 public interface Optimizer {
 
-    List<TuningParameter> optimize(ParamTuneableEvaluateFunction evaluate, DataSet dataSet);
+    ParameterSet optimize(ParameterSet parameterSet, ParamTuneableEvaluateFunction evaluate, DataSet dataSet);
 }

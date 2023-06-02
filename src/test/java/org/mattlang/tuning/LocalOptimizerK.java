@@ -1,9 +1,9 @@
 package org.mattlang.tuning;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
+import org.mattlang.tuning.evaluate.ParameterSet;
 import org.mattlang.tuning.tuner.OptParameters;
 
 /**
@@ -27,18 +27,17 @@ public class LocalOptimizerK  {
         this.delta = params.getDelta();
     }
 
-    public double optimize(TuneableEvaluateFunction evaluate, DataSet dataSet) {
+    public double optimize(ParameterSet parameterSet, TuneableEvaluateFunction evaluate, DataSet dataSet) {
         this.dataSet = dataSet;
         this.evaluate = evaluate;
-        List<TuningParameter> initialGuess = evaluate.getParams();
-        return optimize(initialGuess);
+        return optimize(parameterSet);
     }
 
-    public double optimize(List<TuningParameter> initialGuess) {
+    public double optimize(ParameterSet initialGuess) {
         double bestE = e(initialGuess);
         LOGGER.info("Error at start: " + bestE + " K=" + dataSet.getK());
 
-        List<TuningParameter> bestParValues = initialGuess;
+        ParameterSet bestParValues = initialGuess;
         int round = 0;
         StopWatch stopWatch = new StopWatch();
 
@@ -52,7 +51,7 @@ public class LocalOptimizerK  {
             if (round % 100 == 0 && stopWatch.timeElapsed(60000)) {
                 LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE + " K="
                         + dataSet.getK());
-                LOGGER.info(evaluate.collectParamDescr());
+                LOGGER.info(bestParValues.collectParamDescr());
             }
             dataSet.setK(dataSet.getK() + KDELTA);
             double newE = e(bestParValues);
@@ -77,8 +76,7 @@ public class LocalOptimizerK  {
         return dataSet.getK();
     }
 
-    private double e(List<TuningParameter> params) {
-
+    private double e(ParameterSet params) {
         return dataSet.calcError(evaluate, params);
     }
 }

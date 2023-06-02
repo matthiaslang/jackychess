@@ -1,17 +1,18 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.AbstractTuningParameter;
 import org.mattlang.tuning.FloatIntervall;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import lombok.Getter;
 
 public class FloatValueParam extends AbstractTuningParameter implements TuningParameterGroup {
 
@@ -24,11 +25,19 @@ public class FloatValueParam extends AbstractTuningParameter implements TuningPa
     private String name;
     private float value;
 
+    private FloatValueParam(FloatValueParam orig) {
+        this.saver = orig.saver;
+        this.getter = orig.getter;
+        this.intervall = orig.intervall;
+        this.name = orig.name;
+        this.value = orig.value;
+    }
+
     public FloatValueParam(String name,
-                           ParameterizedEvaluation evaluation,
-                           Function<ParameterizedEvaluation, Float> getter,
-                           BiConsumer<ParameterizedEvaluation, Float> saver,
-                           FloatIntervall intervall) {
+            ParameterizedEvaluation evaluation,
+            Function<ParameterizedEvaluation, Float> getter,
+            BiConsumer<ParameterizedEvaluation, Float> saver,
+            FloatIntervall intervall) {
         this.name = name;
         this.saver = saver;
         this.getter = getter;
@@ -76,6 +85,11 @@ public class FloatValueParam extends AbstractTuningParameter implements TuningPa
     }
 
     @Override
+    public TuningParameterGroup copy() {
+        return new FloatValueParam(this);
+    }
+
+    @Override
     public boolean isChangePossible(int step) {
         return intervall.isInIntervall(value + calcChange(step));
     }
@@ -87,6 +101,6 @@ public class FloatValueParam extends AbstractTuningParameter implements TuningPa
 
     @Override
     public void resetValue() {
-        value=1;
+        value = 1;
     }
 }

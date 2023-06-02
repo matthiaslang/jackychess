@@ -1,9 +1,6 @@
 package org.mattlang.tuning;
 
-import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.tools.MarkdownAppender;
-import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
-import org.mattlang.tuning.tuner.OptParameters;
+import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.File;
 import java.util.Collections;
@@ -11,7 +8,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import static org.mattlang.jc.board.Color.WHITE;
+import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
+import org.mattlang.tuning.evaluate.ParameterSet;
+import org.mattlang.tuning.tuner.OptParameters;
 
 public class LocalOptimizer implements Optimizer {
 
@@ -41,36 +42,36 @@ public class LocalOptimizer implements Optimizer {
     }
 
     @Override
-    public List<TuningParameter> optimize(ParamTuneableEvaluateFunction evaluate, DataSet dataSet) {
+    public ParameterSet optimize(ParameterSet parameterSet, ParamTuneableEvaluateFunction evaluate, DataSet dataSet) {
         this.dataSet = dataSet;
         this.evaluate = evaluate;
-        List<TuningParameter> params = evaluate.getParams();
+
 
         markdownAppender.append(w -> w.h2("new optimization round"));
 
         // init optimization:
         if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
             LOGGER.info("Init depending Fen Information... ");
-            initDependendFensInformation(params, dataSet);
+            initDependendFensInformation(parameterSet, dataSet);
             LOGGER.info("Init depending Fen Information finished");
 
             // analyze dependant fens and log:
-            analyzeDependantFens(params);
+            analyzeDependantFens(parameterSet);
         }
 
         for (int step : stepGranularity) {
             LOGGER.info("Optimizing with step " + step);
             markdownAppender.append(w -> w.h3("Optimizing with step " + step));
-            optimize(params, step);
+            optimize(parameterSet, step);
         }
-        return params;
+        return parameterSet;
     }
 
-    private void optimize(List<TuningParameter> params, int step) {
+    private void optimize(ParameterSet parameterSet, int step) {
 
         // init bestE value: also important for dependend fen optimization that we have a precalculated error value
         // for each fen:
-        double bestE = e(params);
+        double bestE = e(parameterSet);
         LOGGER.info("Error at start: " + bestE);
 
 
@@ -84,27 +85,27 @@ public class LocalOptimizer implements Optimizer {
         while (improved) {
             improved = false;
             if (shuffle) {
-                Collections.shuffle(params, random);
+                Collections.shuffle(parameterSet.getParams(), random);
             }
 
-            for (TuningParameter param : params) {
+            for (TuningParameter param : parameterSet.getParams()) {
                 round++;
                 if (round % 100 == 0 && stopWatch.timeElapsed(5 * 60000)) {
-                    progressInfo(step, bestE, round, stopWatch);
+                    progressInfo(parameterSet, step, bestE, round, stopWatch);
                 }
 
                 // if we are within bounds do a step change
                 if (param.isChangePossible(step)) {
 
                     param.change(step);
-                    double newE = e(params);
+                    double newE = e(parameterSet);
                     if (newE < bestE - delta) {
                         bestE = newE;
                         improved = true;
                     } else if (param.isChangePossible(-2 * step)) {
                         // otherwise try the step in the different direction (if allowed):
                         param.change(-2 * step);
-                        newE = e(params);
+                        newE = e(parameterSet);
                         if (newE < bestE - delta) {
                             bestE = newE;
                             improved = true;
@@ -121,26 +122,26 @@ public class LocalOptimizer implements Optimizer {
         }
     }
 
-    private void analyzeDependantFens(List<TuningParameter> params) {
+    private void analyzeDependantFens(ParameterSet parameterSet) {
         // if there are params where NO fen depends on, than thats a problem, because it means
         // there is no way to optimize these parameter.
         // so we should at least logout this:
 
-        for (TuningParameter param : params) {
+        for (TuningParameter param : parameterSet.getParams()) {
             if (!param.hasDependingFens()) {
                 LOGGER.info("No depending Fens in Dataset for " + param.getDescr());
             }
         }
-        for (TuningParameter param : params) {
+        for (TuningParameter param : parameterSet.getParams()) {
             if (param.hasDependingFens()) {
                 LOGGER.info(param.getDescr() + " depending on " + param.getDependingFenCount() + " fens");
             }
         }
     }
 
-    private void initDependendFensInformation(List<TuningParameter> params, DataSet dataSet) {
+    private void initDependendFensInformation(ParameterSet parameterSet, DataSet dataSet) {
         for (FenEntry fen : dataSet.getFens()) {
-            for (TuningParameter param : params) {
+            for (TuningParameter param : parameterSet.getParams()) {
                 if (checkFenDependsOnParam(fen, param)) {
                     param.addDependingFen(fen);
                 }
@@ -200,11 +201,11 @@ public class LocalOptimizer implements Optimizer {
         return cmpValue;
     }
 
-    private void progressInfo(int step, double bestE, int round, StopWatch stopWatch) {
+    private void progressInfo(ParameterSet parameterSet, int step, double bestE, int round, StopWatch stopWatch) {
         LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
                 + ", curr Error= " + bestE);
-        LOGGER.info(evaluate.collectParamDescr());
-        evaluate.writeParamDescr(outputDir);
+        LOGGER.info(parameterSet.collectParamDescr());
+        parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {
             w.paragraph(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
@@ -212,8 +213,7 @@ public class LocalOptimizer implements Optimizer {
         });
     }
 
-    private double e(List<TuningParameter> params) {
-
+    private double e(ParameterSet params) {
         return dataSet.calcError(evaluate, params);
     }
 }

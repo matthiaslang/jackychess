@@ -1,6 +1,14 @@
 package org.mattlang.tuning.genetic;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import org.mattlang.tuning.DataSet;
+import org.mattlang.tuning.Intervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
+import org.mattlang.tuning.evaluate.ParameterSet;
 
 import lombok.Data;
 
@@ -9,10 +17,16 @@ public class Population {
 
     private List<Individual> individuals;
 
-    public Population(int size, boolean createNew) {
+    private static Random random = new Random(4711L);
+
+    public Population(int size) {
+        individuals = new ArrayList<>(size);
+    }
+
+    public Population(int size, ParameterSet parameterSet, boolean createNew) {
         individuals = new ArrayList<>();
         if (createNew) {
-            createNewPopulation(size);
+            createNewRandomizedPopulation(size, parameterSet);
         }
     }
 
@@ -23,17 +37,45 @@ public class Population {
     protected Individual getFittest() {
         Individual fittest = individuals.get(0);
         for (int i = 0; i < individuals.size(); i++) {
-            if (fittest.getFitness() <= getIndividual(i).getFitness()) {
+            if (fittest.getFitness() >= getIndividual(i).getFitness()) {
                 fittest = getIndividual(i);
             }
         }
         return fittest;
     }
 
-    private void createNewPopulation(int size) {
-        for (int i = 0; i < size; i++) {
-            Individual newIndividual = new Individual();
-            individuals.add(i, newIndividual);
+    private void createNewRandomizedPopulation(int size, ParameterSet params) {
+        // add the original set:
+        individuals.add(new Individual(params.copy()));
+
+        for (int i = 1; i < size; i++) {
+            Individual newIndividual = new Individual(randomize(params.copy()));
+            individuals.add(newIndividual);
+        }
+    }
+
+    /**
+     * randomize a parameter set.
+     *
+     * @param parameterSet
+     * @return
+     */
+    private ParameterSet randomize(ParameterSet parameterSet) {
+        for (TuningParameter param : parameterSet.getParams()) {
+            randomizeParamVal(param);
+        }
+        return parameterSet;
+    }
+
+    public static void randomizeParamVal(TuningParameter parameter) {
+        Intervall intervall = parameter.getIntervall();
+        parameter.setValue(
+                random.nextInt(intervall.getMaxIntVal() - intervall.getMinIntVal()) + intervall.getMinIntVal());
+    }
+
+    public void calcFitness(DataSet dataset, ParamTuneableEvaluateFunction evaluate) {
+        for (Individual individual : individuals) {
+            individual.calcFitness(dataset, evaluate);
         }
     }
 }

@@ -1,13 +1,5 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
-import org.mattlang.jc.engine.evaluation.Tools;
-import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.tuning.IntIntervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+
+import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
+import lombok.Getter;
 
 /**
  * Tuning parameter group of a 64 field pattern.
@@ -66,6 +67,18 @@ public class PatternParameterGroup implements TuningParameterGroup {
         }
     }
 
+    public PatternParameterGroup(PatternParameterGroup orig) {
+        this.tableCsvName = orig.getTableCsvName();
+        this.getter = orig.getter;
+        this.mirrored = orig.mirrored;
+        this.subdir = orig.subdir;
+        this.pattern = orig.pattern.copy();
+
+        for (TuningParameter parameter : orig.parameters) {
+            this.parameters.add(((PatternValueParam)parameter).copyParam(this));
+        }
+    }
+
     @Override
     public List<TuningParameter> getParameters() {
         return parameters;
@@ -98,6 +111,11 @@ public class PatternParameterGroup implements TuningParameterGroup {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public TuningParameterGroup copy() {
+        return new PatternParameterGroup(this);
     }
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {
