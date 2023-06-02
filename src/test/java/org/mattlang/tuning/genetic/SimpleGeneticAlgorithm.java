@@ -68,11 +68,11 @@ public class SimpleGeneticAlgorithm {
         ) {
 
             if (stopWatch.timeElapsed(5 * 60000)) {
-                progressInfo(parameterSet, myPop.getFittest().getFitness(), generationCount, stopWatch);
+                progressInfo(myPop.getFittest().getParameterSet(), myPop.getFittest().getFitness(), generationCount, stopWatch);
             }
 
-            String generationInfoMsg =
-                    "Generation: " + generationCount + " Correct genes found: " + myPop.getFittest().getFitness();
+            String generationInfoMsg =stopWatch.getFormattedCurrDuration() +
+                    ": Generation: " + generationCount + " best genes found: " + myPop.getFittest().getFitness();
             System.out.println(generationInfoMsg);
             markdownAppender.append(w -> w.paragraph(generationInfoMsg));
 
@@ -85,6 +85,8 @@ public class SimpleGeneticAlgorithm {
         System.out.println("Generation: " + generationCount);
         System.out.println("Genes: ");
         System.out.println(myPop.getFittest());
+        myPop.getFittest().getParameterSet().writeParamDescr(outputDir);
+
         return myPop.getFittest().getParameterSet();
     }
 

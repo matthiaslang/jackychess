@@ -130,7 +130,7 @@ public class GeneticTuner {
         parameterSet.writeParamDescr(outputDir);
 
         LOGGER.info("Opimizing...");
-        ParameterSet optimizedParams = optimizer.runAlgorithm(50, parameterSet);
+        ParameterSet optimizedParams = optimizer.runAlgorithm(25, parameterSet);
 
         LOGGER.info("Optimized Parameter values:\n" + optimizedParams.collectParamDescr());
         optimizedParams.writeParamDescr(outputDir);

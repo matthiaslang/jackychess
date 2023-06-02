@@ -46,7 +46,7 @@ public class Population {
 
     private void createNewRandomizedPopulation(int size, ParameterSet params) {
         // add the original set:
-        individuals.add(new Individual(params.copy()));
+        individuals.add(new Individual(randomize(params.copy())));
 
         for (int i = 1; i < size; i++) {
             Individual newIndividual = new Individual(randomize(params.copy()));
