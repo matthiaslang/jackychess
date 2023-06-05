@@ -147,7 +147,7 @@ public class SearchOptsBenchmark2 {
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
                 .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL))
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

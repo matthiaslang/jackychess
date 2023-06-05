@@ -32,7 +32,7 @@ public class SimpleNegaMaxEvalTest {
                 Factory.getDefaults().config(c-> c.maxQuiescence.setValue(0));
                 Factory.getDefaults().config(c-> c.aspiration.setValue(false));
                 Factory.getDefaults().config(c-> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED));
-                Factory.getDefaults().config(c-> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL));
+                Factory.getDefaults().config(c-> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT));
 
 
         BoardRepresentation board = Factory.getDefaults().boards.create();

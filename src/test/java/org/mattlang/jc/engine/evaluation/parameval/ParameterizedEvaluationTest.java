@@ -60,7 +60,7 @@ public class ParameterizedEvaluationTest {
 
     @Test
     public void testBlockages() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL);
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
         BoardRepresentation board = new BitBoard();

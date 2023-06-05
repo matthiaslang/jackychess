@@ -16,11 +16,6 @@ public enum EvalParameterSet {
     CURRENT,
 
     /**
-     * Experimental evaluation set to try out different parameters and compare with other sets.
-     */
-    EXPERIMENTAL,
-
-    /**
      * Parameterset of the version 0.12.0.
      * */
     V_0_12_0,

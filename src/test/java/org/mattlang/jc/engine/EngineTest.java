@@ -72,7 +72,7 @@ public class EngineTest {
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.maxDepth.setValue(11))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -101,7 +101,7 @@ public class EngineTest {
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.maxDepth.setValue(11))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard()
@@ -139,7 +139,7 @@ public class EngineTest {
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c -> c.maxThreads.setValue(4))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -199,7 +199,7 @@ public class EngineTest {
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(21))
                 //                .config(c->c.aspiration.setValue(false))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
@@ -230,7 +230,7 @@ public class EngineTest {
                 .config(c -> c.futilityPruning.setValue(true))
                 .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
                 //                .config(c->c.aspiration.setValue(false))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard()

@@ -30,7 +30,7 @@ public class StagedMoveGenTest {
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(9))
 //                .config(c -> c.maxQuiescence.setValue(0))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -57,7 +57,7 @@ public class StagedMoveGenTest {
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(9))
                 //                .config(c -> c.maxQuiescence.setValue(0))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL)));
+                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();

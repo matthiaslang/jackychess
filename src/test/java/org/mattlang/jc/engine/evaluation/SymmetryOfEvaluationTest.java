@@ -38,7 +38,7 @@ public class SymmetryOfEvaluationTest {
      */
     @Test
     public void testSymmetry() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.EXPERIMENTAL);
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
 
         ParameterizedEvaluation evaluation = new ParameterizedEvaluation();
 
