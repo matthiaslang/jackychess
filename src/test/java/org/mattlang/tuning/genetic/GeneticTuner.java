@@ -1,4 +1,4 @@
-package org.mattlang.tuning.tuner;
+package org.mattlang.tuning.genetic;
 
 import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
 import static org.mattlang.jc.AppConfiguration.LOGGING_DIR;
@@ -14,15 +14,16 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.tools.MarkdownAppender;
 import org.mattlang.tuning.DataSet;
-import org.mattlang.tuning.LocalOptimizer;
 import org.mattlang.tuning.LocalOptimizerK;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
+import org.mattlang.tuning.tuner.DatasetPreparer;
+import org.mattlang.tuning.tuner.OptParameters;
 
-public class LocalOptimizationTuner {
+public class GeneticTuner {
 
-    private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(GeneticTuner.class.getSimpleName());
 
     /**
      * Params, set to some standard params:
@@ -40,24 +41,24 @@ public class LocalOptimizationTuner {
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(7);
 
-    public LocalOptimizationTuner(String[] args) {
+    public GeneticTuner(String[] args) {
         this.params = OptParameters.builder().inputFiles(Arrays.asList(args)).build();
     }
 
-    public LocalOptimizationTuner(OptParameters params) {
+    public GeneticTuner(OptParameters params) {
         this.params = params;
 
     }
 
     public static void main(String[] args) throws IOException {
 
-        LocalOptimizationTuner tuner = new LocalOptimizationTuner(args);
+        GeneticTuner tuner = new GeneticTuner(args);
         tuner.run();
 
     }
 
     public static void run(OptParameters params) throws IOException {
-        LocalOptimizationTuner tuner = new LocalOptimizationTuner(params);
+        GeneticTuner tuner = new GeneticTuner(params);
         executorService = Executors.newFixedThreadPool(params.getThreadCount());
         tuner.run();
     }
@@ -122,16 +123,17 @@ public class LocalOptimizationTuner {
             });
         }
 
-        LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);
+        SimpleGeneticAlgorithm optimizer =
+                new SimpleGeneticAlgorithm(outputDir, params, evaluate, dataset, markdownAppender);
 
         LOGGER.info("Initial Parameter values:\n" + parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
 
         LOGGER.info("Opimizing...");
-        ParameterSet optimizedParams = optimizer.optimize(parameterSet, evaluate, dataset);
+        ParameterSet optimizedParams = optimizer.runAlgorithm(25, parameterSet);
 
-        LOGGER.info("Optimized Parameter values:\n" + parameterSet.collectParamDescr());
-        parameterSet.writeParamDescr(outputDir);
+        LOGGER.info("Optimized Parameter values:\n" + optimizedParams.collectParamDescr());
+        optimizedParams.writeParamDescr(outputDir);
 
         executorService.shutdown();
 

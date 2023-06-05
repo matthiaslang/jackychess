@@ -1,9 +1,11 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.AbstractTuningParameter;
 import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+
+import lombok.Getter;
 
 @Getter
 public class ArrayFunctionParam extends AbstractTuningParameter {
@@ -55,5 +57,9 @@ public class ArrayFunctionParam extends AbstractTuningParameter {
     @Override
     public void resetValue() {
         val = 0;
+    }
+
+    public TuningParameter copyParam(ArrayFunctionParameterGroup group) {
+        return new ArrayFunctionParam(group, index, val, intervall);
     }
 }

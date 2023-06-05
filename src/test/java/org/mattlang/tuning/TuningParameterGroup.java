@@ -19,4 +19,6 @@ public interface TuningParameterGroup {
     String getParamDef();
 
     void writeParamDef(File outputDir);
+
+    TuningParameterGroup copy();
 }

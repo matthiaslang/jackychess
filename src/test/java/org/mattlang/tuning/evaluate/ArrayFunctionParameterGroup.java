@@ -1,18 +1,19 @@
 package org.mattlang.tuning.evaluate;
 
-import lombok.Getter;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
-import org.mattlang.tuning.IntIntervall;
-import org.mattlang.tuning.TuningParameter;
-import org.mattlang.tuning.TuningParameterGroup;
+import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.tuning.IntIntervall;
+import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.TuningParameterGroup;
+
+import lombok.Getter;
 
 public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
@@ -41,6 +42,15 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
     }
 
+    private ArrayFunctionParameterGroup(ArrayFunctionParameterGroup orig) {
+        this.propertyName = orig.propertyName;
+        this.getter = orig.getter;
+        this.function = orig.function.copy();
+        for (TuningParameter parameter : orig.parameters) {
+            this.parameters.add(((ArrayFunctionParam) parameter).copyParam(this));
+        }
+    }
+
     @Override
     public List<TuningParameter> getParameters() {
         return parameters;
@@ -64,6 +74,11 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
     @Override
     public void writeParamDef(File outputDir) {
         exchangeParam(new File(outputDir, "config.properties"), propertyName, createParamStr());
+    }
+
+    @Override
+    public TuningParameterGroup copy() {
+        return new ArrayFunctionParameterGroup(this);
     }
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {

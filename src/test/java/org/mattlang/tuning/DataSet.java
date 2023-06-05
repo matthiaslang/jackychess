@@ -1,12 +1,11 @@
 package org.mattlang.tuning;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.mattlang.jc.tools.MarkdownTable;
-import org.mattlang.jc.tools.MarkdownWriter;
-import org.mattlang.tuning.data.pgnparser.Ending;
-import org.mattlang.tuning.tuner.DatasetPreparer;
-import org.mattlang.tuning.tuner.OptParameters;
+import static java.lang.Math.pow;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,12 +13,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import static java.lang.Math.pow;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
+import org.mattlang.jc.tools.MarkdownTable;
+import org.mattlang.jc.tools.MarkdownWriter;
+import org.mattlang.tuning.data.pgnparser.Ending;
+import org.mattlang.tuning.evaluate.ParameterSet;
+import org.mattlang.tuning.tuner.DatasetPreparer;
+import org.mattlang.tuning.tuner.OptParameters;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Contains all FEN Positions used as datas set for tuning.
@@ -45,7 +47,6 @@ public class DataSet {
     private List<FenEntry> fens = new ArrayList<>();
 
     private TuneableEvaluateFunction evaluate;
-    private List<TuningParameter> params;
 
     private boolean multithreaded = false;
 
@@ -57,7 +58,7 @@ public class DataSet {
         this.optParameters = optParameters;
     }
 
-    public double calcError(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
+    public double calcError(TuneableEvaluateFunction evaluate, ParameterSet params) {
         this.evaluate = evaluate;
         if (multithreaded) {
             return calcMultiThreaded(evaluate, params);
@@ -66,8 +67,8 @@ public class DataSet {
         }
     }
 
-    private double calcSingleThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
-        evaluate.saveValues(params);
+    private double calcSingleThreaded(TuneableEvaluateFunction evaluate, ParameterSet params) {
+        evaluate.saveValues(params.getParams());
         // build sum:
         double sum = calcSum();
         return sum / fens.size();
@@ -80,11 +81,11 @@ public class DataSet {
      * @param params
      * @return
      */
-    private double calcMultiThreaded(TuneableEvaluateFunction evaluate, List<TuningParameter> params) {
-        evaluate.saveValues(params);
+    private double calcMultiThreaded(TuneableEvaluateFunction evaluate, ParameterSet params) {
+        evaluate.saveValues(params.getParams());
         this.evaluate = evaluate;
-        this.params = params;
-        updateWorker();
+
+        updateWorker(params);
 
         List<Future<Double>> futures = new ArrayList<>();
         for (DataSet worker : workers) {
@@ -116,7 +117,7 @@ public class DataSet {
 
     }
 
-    private void updateWorker() {
+    private void updateWorker(ParameterSet parameterSet) {
         // create if not alreay done:
         if (workers.size() == 0) {
 
@@ -135,7 +136,7 @@ public class DataSet {
 
         // update the evaluation functions of the workers with the current parameter settings:
         for (DataSet worker : workers) {
-            worker.getEvaluate().saveValues(params);
+            worker.getEvaluate().saveValues(parameterSet.getParams());
             worker.setK(k);
         }
     }
