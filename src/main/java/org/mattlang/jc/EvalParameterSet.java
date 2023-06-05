@@ -6,31 +6,28 @@ package org.mattlang.jc;
 public enum EvalParameterSet {
 
     /**
-     * only Material Evaluation.  Used as Reference for the "simplest" evaluation.
-     */
-    DEFAULT,
-
-    /**
      * Current best evaluation with several evaluation terms.
      */
     CURRENT,
 
     /**
      * Parameterset of the version 0.12.0.
-     * */
+     */
     V_0_12_0,
 
     /**
      * Parameterset of the version 0.13.0.
-     * */
+     */
     V_0_13_0,
 
     /**
      * Parameterset of the version 0.14.3.
-     * */
+     */
     V_0_14_3,
 
-    /** experiments with tuned parameter configs. */
+    /**
+     * experiments with tuned parameter configs.
+     */
     TUNED01,
 
 }

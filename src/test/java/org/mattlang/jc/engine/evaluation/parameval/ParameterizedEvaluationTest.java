@@ -44,12 +44,8 @@ public class ParameterizedEvaluationTest {
     @Test
     public void configParseTest() {
 
-        // try load/parse the default config:
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.DEFAULT);
-        ParameterizedEvaluation pe = new ParameterizedEvaluation();
-
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
-        pe = new ParameterizedEvaluation();
+        ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
         // try load all existing parametersets:
         for (EvalParameterSet paramSet : EvalParameterSet.values()) {
@@ -75,7 +71,6 @@ public class ParameterizedEvaluationTest {
         assertThat(pe.eval(board, Color.WHITE)).isEqualTo(322);
     }
 
-
     @Test
     public void testBackwardPawn() {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
@@ -86,9 +81,7 @@ public class ParameterizedEvaluationTest {
         pe.getPawnEvaluation().setAttackedPawnPenalty(10);
         pe.getPawnEvaluation().setDoublePawnPenalty(100);
 
-
         BoardRepresentation board = new BitBoard();
-
 
         // test a backward pawn:
 
@@ -97,7 +90,7 @@ public class ParameterizedEvaluationTest {
         System.out.println(pe.eval(board, Color.BLACK));
     }
 
-//    @Test
+    //    @Test
     public void testPerformance() {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
 
