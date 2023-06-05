@@ -33,8 +33,4 @@ public enum EvalParameterSet {
     /** experiments with tuned parameter configs. */
     TUNED01,
 
-    
-    TUNED02,
-
-    TUNED03
 }
