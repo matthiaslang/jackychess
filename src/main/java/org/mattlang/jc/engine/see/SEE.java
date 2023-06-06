@@ -7,11 +7,9 @@ import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.movegenerator.BBMoveGeneratorImpl2;
+import org.mattlang.jc.movegenerator.MoveGeneration;
 
 public class SEE {
-
-    BBMoveGeneratorImpl2 moveGen = new BBMoveGeneratorImpl2();
 
     private static int[] pieceValue = new int[128];
 
@@ -86,7 +84,7 @@ public class SEE {
         BitChessBoard b = bitBoard.getBoard();
         long occupied = b.getPieces() ^ from ^ to;
         Color stm = bitBoard.getSiteToMove();
-        long attackers = moveGen.attackersTo(posto, occupied, bitBoard);
+        long attackers = MoveGeneration.attackersTo(posto, occupied, bitBoard);
         long stmAttackers, bb;
         int res = 1;
 

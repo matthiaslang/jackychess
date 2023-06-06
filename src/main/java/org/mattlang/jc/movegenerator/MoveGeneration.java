@@ -13,6 +13,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.moves.MoveListImpl;
 
 /**
  * Bitboard move generation used in staged move generation.
@@ -245,5 +246,80 @@ public final class MoveGeneration {
             collector.genMove(figType, figPos, toIndex, bb.get(toIndex));
             captures &= captures - 1;
         }
+    }
+
+
+
+    public static void genPawnQuietPromotions(BitChessBoard bb, MoveCollector collector, Color side) {
+        long pawns = bb.getPieceSet(FT_PAWN, side);
+        long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
+
+        if (side == WHITE) {
+            long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
+            while (singlePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                if (MoveListImpl.isOnLastLine(toIndex)) {
+                    collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
+                }
+                singlePushTargets &= singlePushTargets - 1;
+            }
+        } else {
+            long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
+            while (singlePushTargets != 0) {
+                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
+                if (MoveListImpl.isOnLastLine(toIndex)) {
+                    collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
+                }
+                singlePushTargets &= singlePushTargets - 1;
+            }
+        }
+    }
+
+    /**
+     * Generates pawn attacs used in see algorithm for a specific square. We need only to take care about regular pawn
+     * attacks,
+     * not en passant, as en passant can only happen on a pawn-non-capture-move before.
+     *
+     * @param bitBoard
+     * @param s
+     * @param side
+     * @return
+     */
+    private static long genPawnAttacs(BoardRepresentation bitBoard, int s, Color side) {
+
+        long sMask = 1L << s;
+        BitChessBoard bb = bitBoard.getBoard();
+        long pawns = bb.getPieceSet(FT_PAWN, side);
+
+        long otherPieces = sMask;
+
+        long allAttacks = 0L;
+
+        if (side == WHITE) {
+            long capturesEast = pawns & BB.bPawnWestAttacks(otherPieces);
+            long capturesWest = pawns & BB.bPawnEastAttacks(otherPieces);
+            allAttacks = capturesEast | capturesWest;
+
+        } else {
+            long capturesEast = pawns & BB.wPawnWestAttacks(otherPieces);
+            long capturesWest = pawns & BB.wPawnEastAttacks(otherPieces);
+            allAttacks = capturesEast | capturesWest;
+        }
+
+        return allAttacks;
+    }
+
+    /// Position::attackers_to() computes a bitboard of all pieces which attack a
+    /// given square. Slider attacks use the occupied bitboard to indicate occupancy.
+
+    public static long attackersTo(int s, long occupied, BoardRepresentation bitBoard) {
+
+        BitChessBoard bb = bitBoard.getBoard();
+        return (genPawnAttacs(bitBoard, s, WHITE))
+                | (genPawnAttacs(bitBoard, s, BLACK))
+                | (getKnightAttacs(s) & bb.getPieceSet(FT_KNIGHT))
+                | (genRookAttacs(s, occupied) & (bb.getPieceSet(FT_ROOK) | bb.getPieceSet(FT_QUEEN)))
+                | (genBishopAttacs(s, occupied) & (bb.getPieceSet(FT_BISHOP) | bb.getPieceSet(FT_QUEEN)))
+                | (getKingAttacs(s) & bb.getPieceSet(FT_KING));
     }
 }

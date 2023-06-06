@@ -20,7 +20,7 @@ import org.mattlang.jc.engine.MoveList;
  * Mixture of mailbox & bitboard move generation to slighlty refactor using bitboards.
  * Works only with the BitBoard implementation.
  */
-public class BBMoveGeneratorImpl implements MoveGenerator {
+public class BBMoveGeneratorImpl  {
 
 
     /**

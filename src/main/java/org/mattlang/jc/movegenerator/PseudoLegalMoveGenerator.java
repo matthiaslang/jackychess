@@ -13,7 +13,6 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 public class PseudoLegalMoveGenerator implements MoveGenerator {
 
     BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
-    BBMoveGeneratorImpl2 generator2 = new BBMoveGeneratorImpl2();
 
     @Override
     public void generate(BoardRepresentation board, Color side, MoveList moveList) {
@@ -25,17 +24,13 @@ public class PseudoLegalMoveGenerator implements MoveGenerator {
             BoardRepresentation board,
             Color side, MoveList moveList) {
 
-//        generator.generate(board, side, moveList);
-
         switch (mode) {
         case NORMAL:
             generator.generate(board, side, moveList);
             break;
         case QUIESCENCE:
-//            generator2.generate(board, side, moveList);
-
-            generator2.generate(board, side, moveList, BBMoveGeneratorImpl2.GenTypes.CAPTURES);
-            generator2.genPawnMoves(board.getBoard(), moveList, side, true);
+            MoveGeneration.generateAttacks(board, side, moveList);
+            MoveGeneration.genPawnQuietPromotions(board.getBoard(), moveList, side);
             break;
         }
 
