@@ -6,6 +6,7 @@ import static org.mattlang.jc.Main.initLogging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -84,6 +85,15 @@ public class GeneticTuner {
                 new ParamTuneableEvaluateFunction(params);
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
+        // start evals for initial population:
+        List<ParameterSet> startConfigs = new ArrayList<>();
+        for (String startEvalConfig : params.getStartEvalConfigs()) {
+            ParamTuneableEvaluateFunction startEval =
+                    new ParamTuneableEvaluateFunction(startEvalConfig, params);
+            startConfigs.add(new ParameterSet(params, startEval.getParameterizedEvaluation()));
+        }
+
+        // todo doesnt make sense in genetic tuning...
         if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {
             LOGGER.info("Resetting Parameter values");
             for (TuningParameter param : parameterSet.getParams()) {
@@ -130,7 +140,7 @@ public class GeneticTuner {
         parameterSet.writeParamDescr(outputDir);
 
         LOGGER.info("Opimizing...");
-        ParameterSet optimizedParams = optimizer.runAlgorithm(25, parameterSet);
+        ParameterSet optimizedParams = optimizer.runAlgorithm(parameterSet, startConfigs);
 
         LOGGER.info("Optimized Parameter values:\n" + optimizedParams.collectParamDescr());
         optimizedParams.writeParamDescr(outputDir);

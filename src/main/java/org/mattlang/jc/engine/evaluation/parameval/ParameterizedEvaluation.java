@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import lombok.Getter;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
@@ -9,8 +11,7 @@ import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import lombok.Getter;
 
 /**
  * Another experimental evaluation.
@@ -64,8 +65,15 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     }
 
     public ParameterizedEvaluation(boolean forTuning) {
+        this(new EvalConfig(), forTuning);
+    }
+
+    public ParameterizedEvaluation(String configName, boolean forTuning) {
+        this(new EvalConfig(configName), forTuning);
+    }
+
+    public ParameterizedEvaluation(EvalConfig config, boolean forTuning) {
         this.forTuning = forTuning;
-        EvalConfig config = new EvalConfig();
 
         caching = config.getBoolProp("caching.active");
         endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
@@ -92,6 +100,16 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     public static ParameterizedEvaluation createForTuning() {
         //
         ParameterizedEvaluation eval = new ParameterizedEvaluation(true);
+        // disable caching for tuning since the parameters change during tuning:
+        eval.caching = false;
+        // disable special end game functions, as they get not tuned (because they do not have any parameters)
+        eval.endgameEvaluations = false;
+        return eval;
+    }
+
+    public static ParameterizedEvaluation createForTuning(String startEvalConfig) {
+        //
+        ParameterizedEvaluation eval = new ParameterizedEvaluation(startEvalConfig, true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)
@@ -136,7 +154,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
 
         threatsEvaluation.eval(result, currBoard);
-//        spaceEvaluation.eval(result, currBoard);
+        //        spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
 
@@ -190,6 +208,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     /**
      * Used in tuning: Returns true if the evaluation would use a special end game function for that position.
+     *
      * @param currBoard
      * @return
      */

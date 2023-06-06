@@ -9,6 +9,7 @@ import org.mattlang.tuning.Intervall;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
+import org.mattlang.tuning.tuner.OptParameters;
 
 import lombok.Data;
 
@@ -23,10 +24,10 @@ public class Population {
         individuals = new ArrayList<>(size);
     }
 
-    public Population(int size, ParameterSet parameterSet, boolean createNew) {
+    public Population(OptParameters params, ParameterSet exampleConfig, List<ParameterSet> startConfigs, boolean createNew) {
         individuals = new ArrayList<>();
         if (createNew) {
-            createNewRandomizedPopulation(size, parameterSet);
+            createNewRandomizedPopulation(params, exampleConfig, startConfigs);
         }
     }
 
@@ -44,13 +45,30 @@ public class Population {
         return fittest;
     }
 
-    private void createNewRandomizedPopulation(int size, ParameterSet params) {
-        // add the original set:
-        individuals.add(new Individual(randomize(params.copy())));
+    private void createNewRandomizedPopulation(OptParameters params, ParameterSet exampleConfig, List<ParameterSet> startConfigs) {
+        // add start configs:
+        for (ParameterSet startConfig : startConfigs) {
+            individuals.add(new Individual(startConfig.copy()));
+            for (int i = 0; i < params.getMutateStartConfigs(); i++) {
+                Individual mutatedIndividual = new Individual(startConfig.copy());
+                mutate(params, mutatedIndividual);
+                individuals.add(mutatedIndividual);
+            }
+        }
+        int currPopulationCount=individuals.size();
 
-        for (int i = 1; i < size; i++) {
-            Individual newIndividual = new Individual(randomize(params.copy()));
+        // fill rest of population with random configs:
+        for (int i = currPopulationCount; i < params.getPopulationSize(); i++) {
+            Individual newIndividual = new Individual(randomize(exampleConfig.copy()));
             individuals.add(newIndividual);
+        }
+    }
+
+    public void mutate(OptParameters params, Individual indiv) {
+        for (int i = 0; i < indiv.getDefaultGeneLength(); i++) {
+            if (Math.random() <= params.getMutationRate()) {
+                randomizeParamVal(indiv.getGene(i));
+            }
         }
     }
 

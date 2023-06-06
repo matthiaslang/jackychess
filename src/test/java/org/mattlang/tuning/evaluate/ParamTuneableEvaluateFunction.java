@@ -16,12 +16,18 @@ import lombok.Getter;
 public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     @Getter
-    private ParameterizedEvaluation parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
+    private final ParameterizedEvaluation parameterizedEvaluation;
 
     private final OptParameters optParams;
 
     public ParamTuneableEvaluateFunction(OptParameters optParams) {
         this.optParams = optParams;
+        parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
+    }
+
+    public ParamTuneableEvaluateFunction(String startEvalConfig, OptParameters optParams) {
+        this.optParams = optParams;
+        parameterizedEvaluation = ParameterizedEvaluation.createForTuning(startEvalConfig);
     }
 
     @Override

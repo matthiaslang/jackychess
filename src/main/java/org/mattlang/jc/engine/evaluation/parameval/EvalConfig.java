@@ -25,13 +25,17 @@ public class EvalConfig {
     @Getter
     private final String configDir;
 
-    public EvalConfig() {
-        configName = Factory.getDefaults().getConfig().evaluateParamSet.getValue().name().toLowerCase();
+    public EvalConfig(String configName) {
+        this.configName = configName;
 
         // read in all configuration for all the evaluation components:
         configDir = "/config/" + configName + "/";
 
         properties = PropertyConfig.loadFromResourceFile(configDir + "config.properties");
+    }
+
+    public EvalConfig() {
+        this(Factory.getDefaults().getConfig().evaluateParamSet.getValue().name().toLowerCase());
     }
 
     public int getPosIntProp(String propName) {

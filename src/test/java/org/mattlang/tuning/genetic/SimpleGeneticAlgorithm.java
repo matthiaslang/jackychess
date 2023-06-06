@@ -1,6 +1,7 @@
 package org.mattlang.tuning.genetic;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
@@ -22,19 +23,13 @@ public class SimpleGeneticAlgorithm {
 
     private static final Logger LOGGER = Logger.getLogger(SimpleGeneticAlgorithm.class.getSimpleName());
 
-    private static final double uniformRate = 0.5;
-    private static final double mutationRate = 0.025;
-    private static final int tournamentSize = 5;
-    private static final boolean elitism = true;
-
     private final File outputDir;
     private final OptParameters params;
     private final DataSet dataset;
     private final MarkdownAppender markdownAppender;
     private final ParamTuneableEvaluateFunction evaluate;
     private final double delta;
-    private int maxGenCount = 100000;
-    private ParameterSet bestSolutionSoFar;
+
 
     public SimpleGeneticAlgorithm(File outputDir, OptParameters params, ParamTuneableEvaluateFunction evaluate,
             DataSet dataset,
@@ -46,32 +41,30 @@ public class SimpleGeneticAlgorithm {
         this.delta = params.getDelta();
         this.markdownAppender = markdownAppender;
     }
-    //    private static byte[] solution = new byte[64];
 
-    public ParameterSet runAlgorithm(int populationSize, ParameterSet parameterSet) {
+    public ParameterSet runAlgorithm(ParameterSet exampleConfig, List<ParameterSet> startConfigs) {
 
-        bestSolutionSoFar = parameterSet.copy();
-        //        setSolution(solution);
-        Population myPop = new Population(populationSize, bestSolutionSoFar, true);
+        Population myPop = new Population(params, exampleConfig, startConfigs, true);
         myPop.calcFitness(dataset, evaluate);
+        double currError = myPop.getFittest().getFitness();
 
-        double currError = e(bestSolutionSoFar);
         System.out.println("Starting gene: : " + currError);
         markdownAppender.append(w -> w.paragraph("Genetic Error at start: " + currError));
 
         int generationCount = 1;
         StopWatch stopWatch = new StopWatch();
 
-        while (generationCount < maxGenCount
+        while (generationCount < params.getMaxGenCount()
                 && myPop.getFittest().getFitness() > delta
             //                && myPop.getFittest(dataset, evaluate).getFitness(dataset, evaluate) < currError - delta
         ) {
 
             if (stopWatch.timeElapsed(5 * 60000)) {
-                progressInfo(myPop.getFittest().getParameterSet(), myPop.getFittest().getFitness(), generationCount, stopWatch);
+                progressInfo(myPop.getFittest().getParameterSet(), myPop.getFittest().getFitness(), generationCount,
+                        stopWatch);
             }
 
-            String generationInfoMsg =stopWatch.getFormattedCurrDuration() +
+            String generationInfoMsg = stopWatch.getFormattedCurrDuration() +
                     ": Generation: " + generationCount + " best genes found: " + myPop.getFittest().getFitness();
             System.out.println(generationInfoMsg);
             markdownAppender.append(w -> w.paragraph(generationInfoMsg));
@@ -106,7 +99,7 @@ public class SimpleGeneticAlgorithm {
         int elitismOffset;
         Population newPopulation = new Population(pop.getIndividuals().size());
 
-        if (elitism) {
+        if (params.isElitism()) {
             newPopulation.getIndividuals().add(pop.getFittest());
             elitismOffset = 1;
         } else {
@@ -121,7 +114,7 @@ public class SimpleGeneticAlgorithm {
         }
 
         for (int i = elitismOffset; i < newPopulation.getIndividuals().size(); i++) {
-            mutate(newPopulation.getIndividual(i));
+            newPopulation.mutate(params, newPopulation.getIndividual(i));
         }
 
         return newPopulation;
@@ -130,7 +123,7 @@ public class SimpleGeneticAlgorithm {
     private Individual crossover(Individual indiv1, Individual indiv2) {
         Individual newSol = new Individual(indiv1.getParameterSet().copy());
         for (int i = 0; i < newSol.getDefaultGeneLength(); i++) {
-            if (Math.random() <= uniformRate) {
+            if (Math.random() <= params.getUniformRate()) {
                 newSol.setSingleGene(i, indiv1.getSingleGene(i));
             } else {
                 newSol.setSingleGene(i, indiv2.getSingleGene(i));
@@ -139,18 +132,9 @@ public class SimpleGeneticAlgorithm {
         return newSol;
     }
 
-    private void mutate(Individual indiv) {
-        for (int i = 0; i < indiv.getDefaultGeneLength(); i++) {
-            if (Math.random() <= mutationRate) {
-
-                Population.randomizeParamVal(indiv.getGene(i));
-            }
-        }
-    }
-
     private Individual tournamentSelection(Population pop) {
-        Population tournament = new Population(tournamentSize);
-        for (int i = 0; i < tournamentSize; i++) {
+        Population tournament = new Population(params.getTournamentSize());
+        for (int i = 0; i < params.getTournamentSize(); i++) {
             int randomId = (int) (Math.random() * pop.getIndividuals().size());
             tournament.getIndividuals().add(i, pop.getIndividual(randomId));
         }
@@ -158,7 +142,4 @@ public class SimpleGeneticAlgorithm {
         return fittest;
     }
 
-    private double e(ParameterSet parameterSet) {
-        return dataset.calcError(evaluate, parameterSet);
-    }
 }

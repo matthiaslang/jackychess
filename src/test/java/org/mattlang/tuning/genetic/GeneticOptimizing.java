@@ -3,6 +3,7 @@ package org.mattlang.tuning.genetic;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.mattlang.tuning.tuner.OptParameters;
 
@@ -22,14 +23,21 @@ public class GeneticOptimizing {
          */
         OptParameters params = OptParameters.builder()
                 .name("genetic tuning test")
+                .populationSize(50)
+                .startEvalConfigs(List.of("TUNED01" , /*"v_0_12_0", "v_0_13_0",*/ "v_0_14_3"))
+                .mutateStartConfigs(10)
+                .mutationRate(0.025)
+                .uniformRate(0.5)
+                .tournamentSize(5)
+                .elitism(true)
+                .maxGenCount(100000)
+
                 .evalParamSet("TUNED01")
-                .optimizeRecalcOnlyDependendFens(false)
-                .resetParametersBeforeTuning(false)
                 .adjustK(false)
                 .multiThreading(true)
                 .threadCount(5)
                 .delta(0.00000001)
-                .stepGranularity( asList(   10, 5,  3, 1 ))
+
                 .removeDuplicateFens(true)
                 .tunePst(true)
                 .tuneMaterial(false)
