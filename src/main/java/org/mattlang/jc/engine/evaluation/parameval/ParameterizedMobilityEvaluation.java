@@ -192,7 +192,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
         result.countFigureVals(paramsKing, mobility, captures, kingZoneAttacs, tropism);
 
-//        result.blockedPieces(bb, side);
+        //        result.blockedPieces(bb, side);
     }
 
     /**
@@ -232,8 +232,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         evalMobility(result, bitBoard);
 
-        result.getMgEgScore().addMg(wResult.mobilityMG - bResult.mobilityMG);
-        result.getMgEgScore().addEg(wResult.mobilityEG - bResult.mobilityEG);
+        result.getMgEgScore().add(wResult.mobilityMGEG - bResult.mobilityMGEG);
 
         result.getMgEgScore().addMg(wResult.tropismMG - bResult.tropismMG);
         result.getMgEgScore().addEg(wResult.tropismEG - bResult.tropismEG);
@@ -262,16 +261,22 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     /**
      * Getter for MobFigParams by figure type.
      * Makes tuning code easier.
+     *
      * @param type
      * @return
      */
-    public MobFigParams getMobFigParams(FigureType type){
-        switch (type){
-        case Knight: return paramsKnight;
-        case Bishop: return paramsBishop;
-        case Rook: return paramsRook;
-        case Queen:return paramsQueen;
-        case King: return paramsKing;
+    public MobFigParams getMobFigParams(FigureType type) {
+        switch (type) {
+        case Knight:
+            return paramsKnight;
+        case Bishop:
+            return paramsBishop;
+        case Rook:
+            return paramsRook;
+        case Queen:
+            return paramsQueen;
+        case King:
+            return paramsKing;
         default:
             throw new IllegalArgumentException("no MobFigParams for " + type);
         }

@@ -3,6 +3,8 @@ package org.mattlang.jc.engine.evaluation.parameval.functions;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
+
 /**
  * A function which is backed by an array to lookup the values.
  */
@@ -46,5 +48,17 @@ public final class ArrayFunction implements Function {
 
     public void setVal(int index, int val) {
         funVals[index] = val;
+    }
+
+    public static ArrayFunction combine(ArrayFunction funEG, ArrayFunction funMG) {
+        int combinedSize = Math.max(funEG.getSize(), funMG.getSize());
+        int[] vals = new int[combinedSize];
+        for (int i = 0; i < combinedSize; i++) {
+            int valMg = i < funMG.getSize() ? funMG.calc(i) : 0;
+            int valEg = i < funEG.getSize() ? funEG.calc(i) : 0;
+            vals[i] = MgEgScore.createMgEgScore(valMg, valEg);
+        }
+        ArrayFunction combined = new ArrayFunction(vals);
+        return combined;
     }
 }
