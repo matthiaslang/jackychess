@@ -25,14 +25,9 @@ public final class EvalResult {
     public int nonPawnMat;
 
     /**
-     * summed up mid game score.
+     * summed up mid game/ end game score.
      */
-    public int midGame;
-
-    /**
-     * summed up end game score.
-     */
-    public int endGame;
+    private MgEgScore mgEgScore = new MgEgScore();
 
     /**
      * summed up score which is not tapered.
@@ -43,8 +38,7 @@ public final class EvalResult {
     private final long[] doubleAttacks = new long[2];
 
     public void clear() {
-        midGame = 0;
-        endGame = 0;
+        mgEgScore.clear();
         result = 0;
 
         for (int i = 0; i < 2; i++) {
@@ -62,7 +56,7 @@ public final class EvalResult {
      * @return
      */
     public int calcCompleteScore(BoardRepresentation bitBoard) {
-        int score = (int) scaleByPhase(bitBoard.getBoard(), midGame, endGame) + result;
+        int score = (int) scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore()) + result;
         return score;
     }
 
@@ -104,14 +98,14 @@ public final class EvalResult {
     }
 
     public EvalResult plus(EvalScore evalTuple) {
-        this.midGame += evalTuple.getMidScore();
-        this.endGame += evalTuple.getEndScore();
+        mgEgScore.addMg(evalTuple.getMidScore());
+        mgEgScore.addEg(evalTuple.getEndScore());
         return this;
     }
 
     public EvalResult minus(EvalScore evalTuple) {
-        this.midGame -= evalTuple.getMidScore();
-        this.endGame -= evalTuple.getEndScore();
+        mgEgScore.addMg(-evalTuple.getMidScore());
+        mgEgScore.addEg(-evalTuple.getEndScore());
         return this;
     }
 }

@@ -232,11 +232,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         evalMobility(result, bitBoard);
 
-        result.midGame += (wResult.mobilityMG - bResult.mobilityMG);
-        result.endGame += (wResult.mobilityEG - bResult.mobilityEG);
+        result.getMgEgScore().addMg(wResult.mobilityMG - bResult.mobilityMG);
+        result.getMgEgScore().addEg(wResult.mobilityEG - bResult.mobilityEG);
 
-        result.midGame += (wResult.tropismMG - bResult.tropismMG);
-        result.endGame += (wResult.tropismEG - bResult.tropismEG);
+        result.getMgEgScore().addMg(wResult.tropismMG - bResult.tropismMG);
+        result.getMgEgScore().addEg(wResult.tropismEG - bResult.tropismEG);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *

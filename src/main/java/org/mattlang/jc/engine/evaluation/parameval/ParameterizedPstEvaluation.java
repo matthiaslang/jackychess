@@ -31,18 +31,27 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     public static final String ROOK_EG_CSV = "rookEG.csv";
     public static final String QUEEN_EG_CSV = "queenEG.csv";
     public static final String KING_EG_CSV = "kingEG.csv";
+
     private Pattern pawnMG;
     private Pattern knightMG;
     private Pattern bishopMG;
     private Pattern rookMG;
     private Pattern queenMG;
     private Pattern kingMG;
+
     private Pattern pawnEG;
     private Pattern knightEG;
     private Pattern bishopEG;
     private Pattern rookEG;
     private Pattern queenEG;
     private Pattern kingEG;
+
+    private Pattern pawnMGEG;
+    private Pattern knightMGEG;
+    private Pattern bishopMGEG;
+    private Pattern rookMGEG;
+    private Pattern queenMGEG;
+    private Pattern kingMGEG;
 
     public ParameterizedPstEvaluation(String subPath) {
         pawnMG = loadFromFullPath(subPath + PAWN_MG_CSV);
@@ -51,6 +60,7 @@ public class ParameterizedPstEvaluation implements EvalComponent {
         rookMG = loadFromFullPath(subPath + ROOK_MG_CSV);
         queenMG = loadFromFullPath(subPath + QUEEN_MG_CSV);
         kingMG = loadFromFullPath(subPath + KING_MG_CSV);
+
         pawnEG = loadFromFullPath(subPath + PAWN_EG_CSV);
         knightEG = loadFromFullPath(subPath + KNIGHT_EG_CSV);
         bishopEG = loadFromFullPath(subPath + BISHOP_EG_CSV);
@@ -58,24 +68,19 @@ public class ParameterizedPstEvaluation implements EvalComponent {
         queenEG = loadFromFullPath(subPath + QUEEN_EG_CSV);
         kingEG = loadFromFullPath(subPath + KING_EG_CSV);
 
+        updateCombinedVals();
     }
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         BitChessBoard bb = bitBoard.getBoard();
 
-        result.midGame += pawnMG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
-                knightMG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
-                bishopMG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
-                rookMG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
-                queenMG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
-                kingMG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
-        result.endGame += pawnEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
-                knightEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
-                bishopEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
-                rookEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
-                queenEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
-                kingEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
+        result.getMgEgScore().add(pawnMGEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
+                knightMGEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
+                bishopMGEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
+                rookMGEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +
+                queenMGEG.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack)) +
+                kingMGEG.calcScore(bb.getKings(nWhite), bb.getKings(nBlack)));
     }
 
     public int calcPstDelta(Color color, Move m) {
@@ -99,5 +104,14 @@ public class ParameterizedPstEvaluation implements EvalComponent {
             return kingMG;
         }
         throw new IllegalArgumentException("illegal figure type " + figureType);
+    }
+
+    public void updateCombinedVals() {
+        pawnMGEG = Pattern.combine(pawnMG, pawnEG);
+        knightMGEG = Pattern.combine(knightMG, knightEG);
+        bishopMGEG = Pattern.combine(bishopMG, bishopEG);
+        rookMGEG = Pattern.combine(rookMG, rookEG);
+        queenMGEG = Pattern.combine(queenMG, queenEG);
+        kingMGEG = Pattern.combine(kingMG, kingEG);
     }
 }

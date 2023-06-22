@@ -8,13 +8,11 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
 @Getter
-@Setter
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
     public static final String MAT_PAWN_MG = "matPawnMG";
@@ -39,6 +37,12 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     private int rookEG;
     private int queenEG;
 
+    private int pawnMGEG;
+    private int knightMGEG;
+    private int bishopMGEG;
+    private int rookMGEG;
+    private int queenMGEG;
+
     private boolean deactivated = false;
 
     public ParameterizedMaterialEvaluation(boolean forTuning, EvalConfig config) {
@@ -54,6 +58,12 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         bishopEG = config.getIntProp(MAT_BISHOP_EG);
         rookEG = config.getIntProp(MAT_ROOK_EG);
         queenEG = config.getIntProp(MAT_QUEEN_EG);
+
+        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
+        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
+        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
+        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
+        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
 
         /**
          * some configs might not use material properties, but use only PST for the material evaluation.
@@ -76,17 +86,11 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
         int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
 
-        result.midGame += pawnMG * pawnsDiff +
-                knightMG * knightsDiff +
-                bishopMG * bishopsDiff +
-                rookMG * rooksDiff +
-                queenMG * queensDiff;
-
-        result.endGame += pawnEG * pawnsDiff +
-                knightEG * knightsDiff +
-                bishopEG * bishopsDiff +
-                rookEG * rooksDiff +
-                queenEG * queensDiff;
+        result.getMgEgScore().add(pawnMGEG * pawnsDiff +
+                knightMGEG * knightsDiff +
+                bishopMGEG * bishopsDiff +
+                rookMGEG * rooksDiff +
+                queenMGEG * queensDiff);
     }
 
     public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, Color color) {
@@ -97,5 +101,55 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
                 bishopEG * bb.getBishopsCount(color) +
                 rookEG * bb.getRooksCount(color) +
                 queenEG * bb.getQueensCount(color);
+    }
+
+    public void setPawnMG(int pawnMG) {
+        this.pawnMG = pawnMG;
+        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
+    }
+
+    public void setKnightMG(int knightMG) {
+        this.knightMG = knightMG;
+        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
+    }
+
+    public void setBishopMG(int bishopMG) {
+        this.bishopMG = bishopMG;
+        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
+    }
+
+    public void setRookMG(int rookMG) {
+        this.rookMG = rookMG;
+        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
+    }
+
+    public void setQueenMG(int queenMG) {
+        this.queenMG = queenMG;
+        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
+    }
+
+    public void setPawnEG(int pawnEG) {
+        this.pawnEG = pawnEG;
+        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
+    }
+
+    public void setKnightEG(int knightEG) {
+        this.knightEG = knightEG;
+        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
+    }
+
+    public void setBishopEG(int bishopEG) {
+        this.bishopEG = bishopEG;
+        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
+    }
+
+    public void setRookEG(int rookEG) {
+        this.rookEG = rookEG;
+        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
+    }
+
+    public void setQueenEG(int queenEG) {
+        this.queenEG = queenEG;
+        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
     }
 }

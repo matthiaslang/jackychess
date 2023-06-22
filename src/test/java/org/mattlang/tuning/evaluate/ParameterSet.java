@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.parameval.*;
@@ -442,31 +443,33 @@ public class ParameterSet {
 
     private void addPstParameters(ParameterizedEvaluation parameterizedEvaluation) {
         boolean mirrored = true;
+        Consumer<ParameterizedEvaluation> updateCombinedVals =
+                e -> e.getPstEvaluation().updateCombinedVals();
         groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getPawnMG));
+                ParameterizedPstEvaluation::getPawnMG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getBishopMG));
+                ParameterizedPstEvaluation::getBishopMG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKnightMG));
+                ParameterizedPstEvaluation::getKnightMG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getRookMG));
+                ParameterizedPstEvaluation::getRookMG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getQueenMG));
+                ParameterizedPstEvaluation::getQueenMG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKingMG));
+                ParameterizedPstEvaluation::getKingMG, updateCombinedVals));
 
         groups.add(new PstPatternParameterGroup(PAWN_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getPawnEG));
+                ParameterizedPstEvaluation::getPawnEG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getBishopEG));
+                ParameterizedPstEvaluation::getBishopEG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKnightEG));
+                ParameterizedPstEvaluation::getKnightEG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(ROOK_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getRookEG));
+                ParameterizedPstEvaluation::getRookEG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getQueenEG));
+                ParameterizedPstEvaluation::getQueenEG, updateCombinedVals));
         groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKingEG));
+                ParameterizedPstEvaluation::getKingEG, updateCombinedVals));
     }
 
     private void addMaterialParameters(ParameterizedEvaluation parameterizedEvaluation) {

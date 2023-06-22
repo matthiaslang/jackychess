@@ -1,18 +1,19 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BB;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
-
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
+
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Paremeterized Pawn Evaluation.
@@ -102,7 +103,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         int bKingShield = calcBlackKingShield(bitBoard.getBoard());
 
         // king shield is only relevant for middle game:
-        result.midGame += (wKingShield - bKingShield);
+        result.getMgEgScore().addMg(wKingShield - bKingShield);
 
         if (caching && !forTuning) {
             long pawnHashKey = bitBoard.getPawnZobristHash();
@@ -125,7 +126,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             result.result += calcPawnEval(bitBoard);
         }
 
-        result.endGame += passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers);
+        result.getMgEgScore().addEg(passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers));
     }
 
     private int calcPawnEval(BoardRepresentation bitBoard) {

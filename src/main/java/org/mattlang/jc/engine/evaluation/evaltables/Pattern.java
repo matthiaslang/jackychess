@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 
 /**
  * A board pattern with evaluations per field.
@@ -71,10 +72,11 @@ public final class Pattern {
 
     /**
      * Return "raw" value, used during tuning process.
+     *
      * @param pos
      * @return
      */
-    public int getRawVal(int pos){
+    public int getRawVal(int pos) {
         return patternBlack[pos];
     }
 
@@ -164,7 +166,7 @@ public final class Pattern {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < patternBlack.length; i++) {
             int val = patternBlack[i];
-            String formattedVal=String.format("%1$4s", val);
+            String formattedVal = String.format("%1$4s", val);
             b.append(formattedVal).append(";");
             if ((i + 1) % 8 == 0) {
                 b.append("\n");
@@ -175,5 +177,19 @@ public final class Pattern {
 
     public Pattern copy() {
         return new Pattern(patternBlack.clone());
+    }
+
+    /**
+     * Builds a combined pattern of a mid game and a end game pattern combining their scores into one matrix.
+     *
+     * @param mgPattern
+     * @param egPattern
+     */
+    public static Pattern combine(Pattern mgPattern, Pattern egPattern) {
+        int[] patternBlack = new int[64];
+        for (int i = 0; i < 64; i++) {
+            patternBlack[i] = MgEgScore.createMgEgScore(mgPattern.patternBlack[i], egPattern.patternBlack[i]);
+        }
+        return new Pattern(patternBlack);
     }
 }

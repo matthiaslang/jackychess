@@ -23,7 +23,7 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        result.midGame += space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK);
+        result.getMgEgScore().addMg(space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK));
     }
 
     /**

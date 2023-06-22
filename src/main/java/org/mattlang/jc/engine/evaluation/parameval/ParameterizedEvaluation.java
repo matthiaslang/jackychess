@@ -132,11 +132,13 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
         matEvaluation.eval(result, currBoard);
 
+        int materialScore = result.getMgEgScore().getEgScore();
+
         if (endgameEvaluations) {
-            EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
+            EndGameRules endGameRule = matchesRule(currBoard, materialScore);
             if (endGameRule != null) {
 
-                Color stronger = result.endGame > 0 ? Color.WHITE : Color.BLACK;
+                Color stronger = materialScore > 0 ? Color.WHITE : Color.BLACK;
                 Color weaker = stronger.invert();
 
                 int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
@@ -215,7 +217,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     public boolean isUsingEndgameFunction(BoardRepresentation currBoard) {
         result.clear();
         matEvaluation.eval(result, currBoard);
-        EndGameRules endGameRule = matchesRule(currBoard, result.endGame);
+        EndGameRules endGameRule = matchesRule(currBoard, result.getMgEgScore().getEgScore());
         return endGameRule != null;
     }
 }

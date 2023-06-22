@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.mattlang.jc.engine.evaluation.Tools;
@@ -30,6 +31,12 @@ public class PatternParameterGroup implements TuningParameterGroup {
     private final String tableCsvName;
 
     private final Function<ParameterizedEvaluation, Pattern> getter;
+
+    /**
+     * callback to be called after an value update of a pst value. This can be used to do any arbitrary initialisation
+     * work in the evaluation after a pst value has been changed.
+     */
+    private final Consumer<ParameterizedEvaluation> afterUpdateCallback;
     private final boolean mirrored;
     private final String subdir;
 
@@ -41,9 +48,19 @@ public class PatternParameterGroup implements TuningParameterGroup {
             boolean mirrored,
             ParameterizedEvaluation parameterizedEvaluation,
             Function<ParameterizedEvaluation, Pattern> getter) {
+        this(subdir, tableCsvName, mirrored, parameterizedEvaluation, getter, e -> {
+        });
+    }
+
+    public PatternParameterGroup(String subdir, String tableCsvName,
+            boolean mirrored,
+            ParameterizedEvaluation parameterizedEvaluation,
+            Function<ParameterizedEvaluation, Pattern> getter,
+            Consumer<ParameterizedEvaluation> afterUpdateCallback) {
         this.subdir = subdir;
         this.tableCsvName = tableCsvName;
         this.getter = getter;
+        this.afterUpdateCallback = afterUpdateCallback;
         this.pattern = getter.apply(parameterizedEvaluation).copy();
         this.mirrored = mirrored;
 
@@ -70,12 +87,13 @@ public class PatternParameterGroup implements TuningParameterGroup {
     public PatternParameterGroup(PatternParameterGroup orig) {
         this.tableCsvName = orig.getTableCsvName();
         this.getter = orig.getter;
+        this.afterUpdateCallback = orig.afterUpdateCallback;
         this.mirrored = orig.mirrored;
         this.subdir = orig.subdir;
         this.pattern = orig.pattern.copy();
 
         for (TuningParameter parameter : orig.parameters) {
-            this.parameters.add(((PatternValueParam)parameter).copyParam(this));
+            this.parameters.add(((PatternValueParam) parameter).copyParam(this));
         }
     }
 
@@ -120,6 +138,7 @@ public class PatternParameterGroup implements TuningParameterGroup {
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {
         getter.apply(evaluation).setVal(pos, val);
+        afterUpdateCallback.accept(evaluation);
     }
 
     private int mirroredPos(int pos) {
