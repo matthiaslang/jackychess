@@ -345,14 +345,16 @@ public class ParameterSet {
             if (figParams.mobilityMG instanceof ArrayFunction) {
                 groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityMg,
                         parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).mobilityMG),
-                        MOBILITY_VALUE_INTERVAL));
+                        e -> e.getMobEvaluation().getMobFigParams(type).mobilityMG,
+                        MOBILITY_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
             }
             if (figParams.mobilityEG instanceof ArrayFunction) {
                 groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityEg,
                         parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).mobilityEG),
-                        MOBILITY_VALUE_INTERVAL));
+                        e -> e.getMobEvaluation().getMobFigParams(type).mobilityEG,
+                        MOBILITY_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
             }
         }
     }

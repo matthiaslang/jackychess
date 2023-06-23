@@ -9,7 +9,7 @@ public class MobFigParams {
     public final ArrayFunction mobilityMG;
     public final ArrayFunction mobilityEG;
 
-    public final ArrayFunction mobilityMGEG;
+    public ArrayFunction mobilityMGEG;
 
     public final Function tropismMG;
     public final Function tropismEG;
@@ -27,8 +27,6 @@ public class MobFigParams {
         propertyMobilityEg = propBaseName + "MobEG";
         mobilityEG = config.parseArray(propertyMobilityEg);
 
-        mobilityMGEG = ArrayFunction.combine(mobilityEG, mobilityMG);
-
         propertyTropismMg = propBaseName + "TropismMG";
         tropismMG = config.parseFunction(propertyTropismMg);
         propertyTropismEg = propBaseName + "TropismEG";
@@ -36,5 +34,11 @@ public class MobFigParams {
 
         propertyKingAtt = propBaseName + "KingAttack";
         kingAtt = config.parseFunction(propertyKingAtt);
+
+        updateCombinedVals();
+    }
+
+    public void updateCombinedVals() {
+        mobilityMGEG = ArrayFunction.combine(mobilityEG, mobilityMG);
     }
 }
