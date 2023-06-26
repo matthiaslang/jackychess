@@ -100,6 +100,7 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {
         getter.apply(evaluation).setVal(pos, val);
+        afterUpdateCallback.accept(evaluation);
     }
 
 }

@@ -97,15 +97,13 @@ public final class EvalResult {
         return doubleAttacks[color.ordinal()];
     }
 
-    public EvalResult plus(EvalScore evalTuple) {
-        mgEgScore.addMg(evalTuple.getMidScore());
-        mgEgScore.addEg(evalTuple.getEndScore());
+    public EvalResult add(MgEgScore score) {
+        mgEgScore.add(score);
         return this;
     }
 
-    public EvalResult minus(EvalScore evalTuple) {
-        mgEgScore.addMg(-evalTuple.getMidScore());
-        mgEgScore.addEg(-evalTuple.getEndScore());
+    public EvalResult minus(MgEgScore score) {
+        mgEgScore.subtract(score);
         return this;
     }
 }

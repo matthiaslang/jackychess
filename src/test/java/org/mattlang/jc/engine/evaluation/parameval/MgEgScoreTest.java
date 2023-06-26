@@ -32,6 +32,13 @@ public class MgEgScoreTest {
         assertThat(val1.getMgScore()).isEqualTo(800);
         assertThat(val1.getEgScore()).isEqualTo(-420);
 
+        val1.setMg(234);
+        assertThat(val1.getMgScore()).isEqualTo(234);
+        assertThat(val1.getEgScore()).isEqualTo(-420);
+
+        val1.setEg(789);
+        assertThat(val1.getMgScore()).isEqualTo(234);
+        assertThat(val1.getEgScore()).isEqualTo(789);
     }
 
     @Test

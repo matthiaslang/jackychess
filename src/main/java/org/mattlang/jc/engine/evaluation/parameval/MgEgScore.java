@@ -21,6 +21,20 @@ public final class MgEgScore {
         return (mg << 16) + eg;
     }
 
+    public static int getMgScore(int score) {
+        return (score + 0x8000) >> 16;
+    }
+
+    public static int getEgScore(int score) {
+        return (short) (score & 0xffff);
+    }
+
+    public static MgEgScore of(int score) {
+        MgEgScore mgEg = new MgEgScore();
+        mgEg.add(score);
+        return mgEg;
+    }
+
     public int getMgScore() {
         return (score + 0x8000) >> 16;
     }
@@ -53,7 +67,35 @@ public final class MgEgScore {
         score += eg;
     }
 
+    /**
+     * Set the mg value. Calls the change callback handler.
+     * @param mg
+     */
+    public void setMg(int mg) {
+        score = (mg << 16) + getEgScore();
+    }
+
+    public void setEg(int eg) {
+        score = getMgScore() + eg;
+    }
+
+    public static int setMg(int score, int mg) {
+        return createMgEgScore(mg, getEgScore(score));
+    }
+
+    public static int setEg(int score, int eg) {
+        return createMgEgScore(getMgScore(score), eg);
+    }
+
     public void add(int val) {
         score += val;
+    }
+
+    public void add(MgEgScore mgEgScore) {
+        this.score += mgEgScore.score;
+    }
+
+    public void subtract(MgEgScore mgEgScore) {
+        this.score -= mgEgScore.score;
     }
 }
