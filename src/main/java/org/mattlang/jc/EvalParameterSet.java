@@ -11,16 +11,6 @@ public enum EvalParameterSet {
     CURRENT,
 
     /**
-     * Parameterset of the version 0.12.0.
-     */
-    V_0_12_0,
-
-    /**
-     * Parameterset of the version 0.13.0.
-     */
-    V_0_13_0,
-
-    /**
      * Parameterset of the version 0.14.3.
      */
     V_0_14_3,

@@ -14,10 +14,13 @@ public class MobFigParams {
     public final Function tropismMG;
     public final Function tropismEG;
 
-    public final Function kingAtt;
+    public final ArrayFunction kingAttMg;
+    public final ArrayFunction kingAttEg;
+    public ArrayFunction kingAttMgEg;
     public final String propertyMobilityMg;
     public final String propertyMobilityEg;
-    public final String propertyKingAtt;
+    public final String propertyKingAttMg;
+    public final String propertyKingAttEg;
     public final String propertyTropismMg;
     public final String propertyTropismEg;
 
@@ -32,13 +35,18 @@ public class MobFigParams {
         propertyTropismEg = propBaseName + "TropismEG";
         tropismEG = config.parseFunction(propertyTropismEg);
 
-        propertyKingAtt = propBaseName + "KingAttack";
-        kingAtt = config.parseFunction(propertyKingAtt);
+        // todo mg/eg split
+        propertyKingAttMg = propBaseName + "KingAttackMg";
+        kingAttMg = config.parseArray(propertyKingAttMg);
+
+        propertyKingAttEg = propBaseName + "KingAttackEg";
+        kingAttEg = config.parseArray(propertyKingAttEg);
 
         updateCombinedVals();
     }
 
     public void updateCombinedVals() {
         mobilityMGEG = ArrayFunction.combine(mobilityEG, mobilityMG);
+        kingAttMgEg = ArrayFunction.combine(kingAttEg, kingAttMg);
     }
 }

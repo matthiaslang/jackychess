@@ -4,6 +4,8 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
+import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
+import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -243,11 +245,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
          **************************************************************************/
 
         if (wResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0)
-            wResult.kingAttWeight = 0;
+            wResult.kingAttWeightMgEg = 0;
         if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
-            bResult.kingAttWeight = 0;
+            bResult.kingAttWeightMgEg = 0;
 
-        result.result += (getSafetyValue(wResult.kingAttWeight) - getSafetyValue(bResult.kingAttWeight));
+        result.getMgEgScore().addMg(getSafetyValue(getMgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(getMgScore(bResult.kingAttWeightMgEg)));
+        result.getMgEgScore().addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(getEgScore(bResult.kingAttWeightMgEg)));
 
         result.result += (wResult.positionalThemes - bResult.positionalThemes);
 

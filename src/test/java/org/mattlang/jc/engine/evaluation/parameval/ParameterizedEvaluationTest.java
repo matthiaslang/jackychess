@@ -26,7 +26,7 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
-        System.out.println(convertFunction(12, pe.getMobEvaluation().getParamsKing().kingAtt));
+        System.out.println(convertFunction(12, pe.getMobEvaluation().getParamsKing().kingAttMg));
 
     }
 

@@ -39,12 +39,18 @@ public class MobilityEvalResult {
 
     public int captures;
     public int kingAttCount;
-    public int kingAttWeight;
+    /**
+     * mg/eg combined king attack weight.
+     */
+    public int kingAttWeightMgEg;
     public int tropismMG;
     public int tropismEG;
     public int connectivity;
     public int positionalThemes;
     public int blockages;
+
+    private final int MGEG_ONE = MgEgScore.createMgEgScore(1, 1);
+    private final int MGEG_TWO = MgEgScore.createMgEgScore(2, 2);
 
     // parameters:
 
@@ -105,7 +111,7 @@ public class MobilityEvalResult {
         mobilityMGEG = 0;
         captures = 0;
         kingAttCount = 0;
-        kingAttWeight = 0;
+        kingAttWeightMgEg = 0;
         tropismMG = 0;
         tropismEG = 0;
         connectivity = 0;
@@ -126,7 +132,7 @@ public class MobilityEvalResult {
         mobilityMGEG += params.mobilityMGEG.calc(mobCount);
 
         kingAttCount += currKingAttCount;
-        kingAttWeight += params.kingAtt.calc(currKingAttCount);
+        kingAttWeightMgEg += params.kingAttMgEg.calc(currKingAttCount);
 
         tropismMG += params.tropismMG.calc(tropism);
         tropismEG += params.tropismEG.calc(tropism);
@@ -146,13 +152,13 @@ public class MobilityEvalResult {
             // todo make a field from rookOpen...
             mobilityMGEG += rookOpenMgEg;
             if (Tools.colDistance(rook, otherKing) < 2) {
-                kingAttWeight += 1;
+                kingAttWeightMgEg += MGEG_ONE;
             }
         } else if (!ownPawnOnFile && oppPawnOnFile) {
             // half open:
             mobilityMGEG += rookHalfMgEg;
             if (Tools.colDistance(rook, otherKing) < 2) {
-                kingAttWeight += 2;
+                kingAttWeightMgEg += MGEG_TWO;
             }
         }
 

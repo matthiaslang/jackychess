@@ -331,12 +331,21 @@ public class ParameterSet {
             ParameterizedMobilityEvaluation mobEval) {
         for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
 
-            if (mobEval.getMobFigParams(type).kingAtt instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAtt,
+            if (mobEval.getMobFigParams(type).kingAttMg instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAttMg,
                         parameterizedEvaluation,
-                        e -> ((ArrayFunction) e.getMobEvaluation().getMobFigParams(type).kingAtt),
-                        KINGATTACK_VALUE_INTERVAL));
+                        e -> (e.getMobEvaluation().getMobFigParams(type).kingAttMg),
+                        KINGATTACK_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
             }
+            if (mobEval.getMobFigParams(type).kingAttEg instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAttEg,
+                        parameterizedEvaluation,
+                        e -> (e.getMobEvaluation().getMobFigParams(type).kingAttEg),
+                        KINGATTACK_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
+            }
+
         }
 
     }
