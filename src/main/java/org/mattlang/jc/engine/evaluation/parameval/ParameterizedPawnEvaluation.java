@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedThreatsEvaluation.readCombinedConfigVal;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BB;
@@ -27,35 +28,72 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
     public static final String PAWN_SHIELD_2 = "pawnShield2";
     public static final String PAWN_SHIELD_3 = "pawnShield3";
-    public static final String DOUBLE_PAWN_PENALTY = "doublePawnPenalty";
-    public static final String ATTACKED_PAWN_PENALTY = "attackedPawnPenalty";
-    public static final String ISOLATED_PAWN_PENALTY = "isolatedPawnPenalty";
-    public static final String BACKWARDED_PAWN_PENALTY = "backwardedPawnPenalty";
+
+    public static final String DOUBLE_PAWN_PENALTY_MG = "doublePawnPenaltyMg";
+    public static final String DOUBLE_PAWN_PENALTY_EG = "doublePawnPenaltyEg";
+
+    public static final String ATTACKED_PAWN_PENALTY_MG = "attackedPawnPenaltyMg";
+    public static final String ATTACKED_PAWN_PENALTY_EG = "attackedPawnPenaltyEg";
+
+    public static final String ISOLATED_PAWN_PENALTY_MG = "isolatedPawnPenaltyMg";
+    public static final String ISOLATED_PAWN_PENALTY_EG = "isolatedPawnPenaltyEg";
+
+    public static final String BACKWARDED_PAWN_PENALTY_MG = "backwardedPawnPenaltyMg";
+    public static final String BACKWARDED_PAWN_PENALTY_EG = "backwardedPawnPenaltyEg";
 
     public static final String PAWN_CONFIG_SUB_DIR = "pawn";
 
-    public static final String WEAK_PAWN_FILE = "weakPawn.csv";
-    public static final String BLOCKED_PAWN_FILE = "blockedPawn.csv";
-    public static final String PASSED_PAWN_FILE = "passedPawn.csv";
-    public static final String PROTECTED_PASSER_CSV = "protectedPasser.csv";
-    public static final String PROTECTED_CSV = "protectedPawn.csv";
-    public static final String NEIGHBOUR_CSV = "neighbourPawn.csv";
-    private final Pattern weakPawnPst;
-    private final Pattern blockedPawnPst;
+    public static final String WEAK_PAWN_FILE_MG = "weakPawnMg.csv";
+    public static final String WEAK_PAWN_FILE_EG = "weakPawnEg.csv";
+    public static final String BLOCKED_PAWN_FILE_MG = "blockedPawnMg.csv";
+    public static final String BLOCKED_PAWN_FILE_EG = "blockedPawnEg.csv";
+    public static final String PASSED_PAWN_FILE_MG = "passedPawnMg.csv";
+    public static final String PASSED_PAWN_FILE_EG = "passedPawnEg.csv";
+    public static final String PROTECTED_PASSER_CSV_MG = "protectedPasserMg.csv";
+    public static final String PROTECTED_PASSER_CSV_EG = "protectedPasserEg.csv";
+    public static final String PROTECTED_CSV_MG = "protectedPawnMg.csv";
+    public static final String PROTECTED_CSV_EG = "protectedPawnEg.csv";
+    public static final String NEIGHBOUR_CSV_MG = "neighbourPawnMg.csv";
+    public static final String NEIGHBOUR_CSV_EG = "neighbourPawnEg.csv";
 
-    private final Pattern passedPawnPst;
+    private  Pattern weakPawnPstMgEg;
+    private final Pattern weakPawnPstMg;
+    private final Pattern weakPawnPstEg;
 
-    private final Pattern protectedPasserPst;
-    private final Pattern protectedPst;
-    private final Pattern neighbourPst;
+    private  Pattern blockedPawnPstMgEg;
+    private final Pattern blockedPawnPstMg;
+    private final Pattern blockedPawnPstEg;
+
+    private  Pattern passedPawnPstMgEg;
+    private final Pattern passedPawnPstMg;
+    private final Pattern passedPawnPstEg;
+
+    private  Pattern protectedPasserPstMgEg;
+    private final Pattern protectedPasserPstMg;
+    private final Pattern protectedPasserPstEg;
+
+    private  Pattern protectedPstMgEg;
+    private final Pattern protectedPstMg;
+    private final Pattern protectedPstEg;
+
+    private  Pattern neighbourPstMgEg;
+    private final Pattern neighbourPstMg;
+    private final Pattern neighbourPstEg;
 
     private int shield2 = 10;
     private int shield3 = 5;
 
-    private int doublePawnPenalty = 20;
-    private int attackedPawnPenalty = 4;
-    private int isolatedPawnPenalty = 10;
-    private int backwardedPawnPenalty = 10;
+    private int doublePawnPenaltyMgEg;
+    private ChangeableMgEgScore doublePawnPenaltyScore;
+
+    private int attackedPawnPenaltyMgEg;
+    private ChangeableMgEgScore attackedPawnPenaltyScore;
+
+    private int isolatedPawnPenaltyMgEg;
+    private ChangeableMgEgScore isolatedPawnPenaltyScore;
+
+    private int backwardedPawnPenaltyMgEg;
+    private ChangeableMgEgScore backwardedPawnPenaltyScore;
 
     private PassedPawnEval passedPawnEval = new PassedPawnEval();
 
@@ -81,19 +119,49 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         shield2 = config.getPosIntProp(PAWN_SHIELD_2);
         shield3 = config.getPosIntProp(PAWN_SHIELD_3);
-        doublePawnPenalty = config.getPosIntProp(DOUBLE_PAWN_PENALTY);
-        attackedPawnPenalty = config.getPosIntProp(ATTACKED_PAWN_PENALTY);
-        isolatedPawnPenalty = config.getPosIntProp(ISOLATED_PAWN_PENALTY);
-        backwardedPawnPenalty = config.getPosIntProp(BACKWARDED_PAWN_PENALTY);
+        doublePawnPenaltyScore = readCombinedConfigVal(config, DOUBLE_PAWN_PENALTY_MG, DOUBLE_PAWN_PENALTY_EG,
+                val -> doublePawnPenaltyMgEg = val);
 
-        weakPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE);
-        blockedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE);
-        passedPawnPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE);
-        protectedPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV);
-        neighbourPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV);
-        protectedPasserPst = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV);
+        attackedPawnPenaltyScore = readCombinedConfigVal(config, ATTACKED_PAWN_PENALTY_MG, ATTACKED_PAWN_PENALTY_EG,
+                val -> attackedPawnPenaltyMgEg = val);
+        isolatedPawnPenaltyScore = readCombinedConfigVal(config, ISOLATED_PAWN_PENALTY_MG, ISOLATED_PAWN_PENALTY_EG,
+                val -> isolatedPawnPenaltyMgEg = val);
+        backwardedPawnPenaltyScore =
+                readCombinedConfigVal(config, BACKWARDED_PAWN_PENALTY_MG, BACKWARDED_PAWN_PENALTY_EG,
+                        val -> backwardedPawnPenaltyMgEg = val);
+
+        weakPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE_MG);
+        weakPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE_EG);
+
+        blockedPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE_MG);
+        blockedPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE_EG);
+
+        passedPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE_MG);
+        passedPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE_EG);
+
+        protectedPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV_MG);
+        protectedPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV_EG);
+
+        neighbourPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV_MG);
+        neighbourPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV_EG);
+
+        protectedPasserPstMg =
+                loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV_MG);
+        protectedPasserPstEg =
+                loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV_EG);
+
+        updateCombinedVals();
 
         passedPawnEval.configure(config);
+    }
+
+    public void updateCombinedVals() {
+        weakPawnPstMgEg = Pattern.combine(weakPawnPstMg, weakPawnPstEg);
+        blockedPawnPstMgEg = Pattern.combine(blockedPawnPstMg, blockedPawnPstEg);
+        passedPawnPstMgEg = Pattern.combine(passedPawnPstMg, passedPawnPstEg);
+        protectedPasserPstMgEg = Pattern.combine(protectedPasserPstMg, protectedPasserPstEg);
+        protectedPstMgEg = Pattern.combine(protectedPstMg, protectedPstEg);
+        neighbourPstMgEg = Pattern.combine(neighbourPstMg, neighbourPstEg);
     }
 
     @Override
@@ -111,11 +179,11 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             if (entry == null) {
 
                 int pawnEval = calcPawnEval(bitBoard);
-                result.result += pawnEval;
+                result.getMgEgScore().add(pawnEval);
                 pawnCache.save(pawnHashKey, pawnEval, whitePassers, blackPassers);
             } else {
                 // use cached score:
-                result.result += entry.score;
+                result.getMgEgScore().add(entry.score);
 
                 // use cached passers:
                 whitePassers = entry.whitePassers;
@@ -123,7 +191,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
             }
         } else {
-            result.result += calcPawnEval(bitBoard);
+            result.getMgEgScore().add(calcPawnEval(bitBoard));
         }
 
         result.getMgEgScore().addEg(passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers));
@@ -139,7 +207,6 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         return pawnResultWhite - pawnResultBlack;
     }
-
 
     private void calcPassers(BitChessBoard bb) {
         long whitePawns = bb.getPawns(BitChessBoard.nWhite);
@@ -174,7 +241,6 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
         //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
 
-
         long pawns = whitePawns;
         while (pawns != 0) {
             final int pawn = Long.numberOfTrailingZeros(pawns);
@@ -198,37 +264,37 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                     !isBlocked && isBehindNeighbours && ((BB.nortOne(pawnMask) & whiteAdvanceAttackedPawns) != 0);
 
             if (isBackward) {
-                result -= backwardedPawnPenalty;
+                result -= backwardedPawnPenaltyMgEg;
             }
 
             if (isIsolated) {
-                result -= isolatedPawnPenalty;
+                result -= isolatedPawnPenaltyMgEg;
             }
 
             if (isDoubled) {
-                result -= doublePawnPenalty;
+                result -= doublePawnPenaltyMgEg;
             }
             if (isAttacked) {
-                result -= attackedPawnPenalty;
+                result -= attackedPawnPenaltyMgEg;
             }
 
             if (isBlocked) {
-                result += blockedPawnPst.getVal(pawn, WHITE);
+                result += blockedPawnPstMgEg.getVal(pawn, WHITE);
             }
             if (isProtected) {
-                result += protectedPst.getVal(pawn, WHITE);
+                result += protectedPstMgEg.getVal(pawn, WHITE);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPst.getVal(pawn, WHITE);
+                result += neighbourPstMgEg.getVal(pawn, WHITE);
             }
 
             if (isWeak) {
-                result += weakPawnPst.getVal(pawn, WHITE);
+                result += weakPawnPstMgEg.getVal(pawn, WHITE);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPst.getVal(pawn, WHITE);
+                    result += protectedPasserPstMgEg.getVal(pawn, WHITE);
                 } else {
-                    result += passedPawnPst.getVal(pawn, WHITE);
+                    result += passedPawnPstMgEg.getVal(pawn, WHITE);
                 }
             }
 
@@ -237,7 +303,6 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         return result;
     }
-
 
     private int evalBlackPawns(BoardRepresentation bitBoard) {
         int result = 0;
@@ -288,37 +353,37 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                     !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
 
             if (isBackward) {
-                result -= backwardedPawnPenalty;
+                result -= backwardedPawnPenaltyMgEg;
             }
 
             if (isIsolated) {
-                result -= isolatedPawnPenalty;
+                result -= isolatedPawnPenaltyMgEg;
             }
 
             if (isDoubled) {
-                result -= doublePawnPenalty;
+                result -= doublePawnPenaltyMgEg;
             }
             if (isAttacked) {
-                result -= attackedPawnPenalty;
+                result -= attackedPawnPenaltyMgEg;
             }
 
             if (isBlocked) {
-                result += blockedPawnPst.getVal(pawn, BLACK);
+                result += blockedPawnPstMgEg.getVal(pawn, BLACK);
             }
             if (isProtected) {
-                result += protectedPst.getVal(pawn, BLACK);
+                result += protectedPstMgEg.getVal(pawn, BLACK);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPst.getVal(pawn, BLACK);
+                result += neighbourPstMgEg.getVal(pawn, BLACK);
             }
 
             if (isWeak) {
-                result += weakPawnPst.getVal(pawn, BLACK);
+                result += weakPawnPstMgEg.getVal(pawn, BLACK);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPst.getVal(pawn, BLACK);
+                    result += protectedPasserPstMgEg.getVal(pawn, BLACK);
                 } else {
-                    result += passedPawnPst.getVal(pawn, BLACK);
+                    result += passedPawnPstMgEg.getVal(pawn, BLACK);
                 }
             }
 

@@ -278,53 +278,87 @@ public class ParameterSet {
                 (e, val) -> e.getPawnEvaluation().setShield3(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getAttackedPawnPenalty(),
-                (e, val) -> e.getPawnEvaluation()
-                        .setAttackedPawnPenalty(val),
+        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY_MG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().getMgScore(),
+                (e, val) -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().setMg(val),
+                PAWN_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY_EG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().getEgScore(),
+                (e, val) -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().setEg(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getIsolatedPawnPenalty(),
-                (e, val) -> parameterizedEvaluation.getPawnEvaluation()
-                        .setIsolatedPawnPenalty(val),
+        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_MG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getMgScore(),
+                (e, val) -> e.getPawnEvaluation() .getIsolatedPawnPenaltyScore().setMg(val),
+                PAWN_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_EG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getEgScore(),
+                (e, val) -> e.getPawnEvaluation() .getIsolatedPawnPenaltyScore().setEg(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getDoublePawnPenalty(),
-                (e, val) -> e.getPawnEvaluation().setDoublePawnPenalty(val),
+        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY_MG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getDoublePawnPenaltyScore().getMgScore(),
+                (e, val) -> e.getPawnEvaluation().getDoublePawnPenaltyScore().setMg(val),
+                PAWN_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY_EG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getDoublePawnPenaltyScore().getEgScore(),
+                (e, val) -> e.getPawnEvaluation().getDoublePawnPenaltyScore().setEg(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBackwardedPawnPenalty(),
-                (e, val) -> e.getPawnEvaluation()
-                        .setBackwardedPawnPenalty(val),
+        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY_MG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().getMgScore(),
+                (e, val) -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().setMg(val),
+                PAWN_PARAMS_INTERVALl));
+        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY_EG, parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().getEgScore(),
+                (e, val) -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().setEg(val),
                 PAWN_PARAMS_INTERVALl));
 
         boolean mirrored = true;
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getWeakPawnPst()));
+        Consumer<ParameterizedEvaluation> updateCombinedVals=e->e.getPawnEvaluation().updateCombinedVals();
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_MG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPasserPst()));
+                e -> e.getPawnEvaluation().getWeakPawnPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getWeakPawnPstEg(), updateCombinedVals));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_MG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getPassedPawnPst()));
+                e -> e.getPawnEvaluation().getProtectedPasserPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getProtectedPasserPstEg(), updateCombinedVals));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBlockedPawnPst()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_MG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPst()));
+                e -> e.getPawnEvaluation().getPassedPawnPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getPassedPawnPstEg(), updateCombinedVals));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_MG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getNeighbourPst()));
+                e -> e.getPawnEvaluation().getBlockedPawnPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getBlockedPawnPstEg(), updateCombinedVals));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_MG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getProtectedPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getProtectedPstEg(), updateCombinedVals));
+
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_MG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getNeighbourPstMg(), updateCombinedVals));
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_EG, mirrored,
+                parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getNeighbourPstEg(), updateCombinedVals));
     }
 
     private void addKingAttackParameters(ParameterizedEvaluation parameterizedEvaluation,

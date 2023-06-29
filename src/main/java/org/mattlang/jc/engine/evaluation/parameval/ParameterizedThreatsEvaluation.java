@@ -50,28 +50,28 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     private final boolean active;
 
     private int threatByKingMgEg;
-    private ChangeableMgEgScore threatByKingScore;
+    private final ChangeableMgEgScore threatByKingScore;
 
     private int hangingMgEg;
-    private ChangeableMgEgScore hangingScore;
+    private final ChangeableMgEgScore hangingScore;
 
     private int weakQueenProtectionMgEg;
-    private ChangeableMgEgScore weakQueenProtectionScore;
+    private final ChangeableMgEgScore weakQueenProtectionScore;
 
     private int restrictedPieceMgEg;
-    private ChangeableMgEgScore restrictedPieceScore;
+    private final ChangeableMgEgScore restrictedPieceScore;
 
     private int threatByPawnPushMgEg;
-    private ChangeableMgEgScore threatByPawnPushScore;
+    private final ChangeableMgEgScore threatByPawnPushScore;
 
     private int threatBySafePawnMgEg;
-    private ChangeableMgEgScore threatBySafePawnScore;
+    private final ChangeableMgEgScore threatBySafePawnScore;
 
     private int sliderOnQueenMgEg;
-    private ChangeableMgEgScore sliderOnQueenScore;
+    private final ChangeableMgEgScore sliderOnQueenScore;
 
     private int knightOnQueenMgEg;
-    private ChangeableMgEgScore knightOnQueenScore;
+    private final ChangeableMgEgScore knightOnQueenScore;
 
     private MgEgScore whiteThreats = new MgEgScore();
 
@@ -113,7 +113,7 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
 
     }
 
-    private ChangeableMgEgScore readCombinedConfigVal(EvalConfig config, String mgPropKey, String egPropKey,
+    public static ChangeableMgEgScore readCombinedConfigVal(EvalConfig config, String mgPropKey, String egPropKey,
             Consumer<Integer> changeListener) {
         int mgVal = config.getPosIntProp(mgPropKey);
         int egVal = config.getPosIntProp(egPropKey);
