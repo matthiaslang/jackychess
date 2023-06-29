@@ -188,7 +188,7 @@ public final class PassedPawnEval {
 
 	}
 
-	public int getPassedPawnScore(final BoardRepresentation board, final int index, final int color) {
+	private int getPassedPawnScore(final BoardRepresentation board, final int index, final int color) {
 
 		int offsetNextSquare = pawn_push(color).getOffset();
 		final int nextIndex = index + offsetNextSquare;
