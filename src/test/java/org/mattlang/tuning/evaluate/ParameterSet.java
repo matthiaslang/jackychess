@@ -289,11 +289,11 @@ public class ParameterSet {
 
         groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_MG, parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getMgScore(),
-                (e, val) -> e.getPawnEvaluation() .getIsolatedPawnPenaltyScore().setMg(val),
+                (e, val) -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().setMg(val),
                 PAWN_PARAMS_INTERVALl));
         groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_EG, parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getEgScore(),
-                (e, val) -> e.getPawnEvaluation() .getIsolatedPawnPenaltyScore().setEg(val),
+                (e, val) -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().setEg(val),
                 PAWN_PARAMS_INTERVALl));
 
         groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY_MG, parameterizedEvaluation,
@@ -315,7 +315,7 @@ public class ParameterSet {
                 PAWN_PARAMS_INTERVALl));
 
         boolean mirrored = true;
-        Consumer<ParameterizedEvaluation> updateCombinedVals=e->e.getPawnEvaluation().updateCombinedVals();
+        Consumer<ParameterizedEvaluation> updateCombinedVals = e -> e.getPawnEvaluation().updateCombinedVals();
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_MG, mirrored,
                 parameterizedEvaluation,
@@ -330,7 +330,6 @@ public class ParameterSet {
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_EG, mirrored,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getProtectedPasserPstEg(), updateCombinedVals));
-
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_MG, mirrored,
                 parameterizedEvaluation,
@@ -546,16 +545,32 @@ public class ParameterSet {
     }
 
     private void addAdjustmentParameters(ParameterizedEvaluation parameterizedEvaluation) {
-        groups.add(new AdjustmentValueParam(TEMPO, parameterizedEvaluation,
-                ParameterizedAdjustmentsEvaluation::getTempo, ParameterizedAdjustmentsEvaluation::setTempo));
-        groups.add(new AdjustmentValueParam(BISHOP_PAIR, parameterizedEvaluation,
-                ParameterizedAdjustmentsEvaluation::getBishopPair,
-                ParameterizedAdjustmentsEvaluation::setBishopPair));
-        groups.add(new AdjustmentValueParam(KNIGHT_PAIR, parameterizedEvaluation,
-                ParameterizedAdjustmentsEvaluation::getKnightPair,
-                ParameterizedAdjustmentsEvaluation::setKnightPair));
-        groups.add(new AdjustmentValueParam(ROOK_PAIR, parameterizedEvaluation,
-                ParameterizedAdjustmentsEvaluation::getRookPair, ParameterizedAdjustmentsEvaluation::setRookPair));
+        groups.add(new AdjustmentValueParam(TEMPO_MG, parameterizedEvaluation,
+                a -> a.getTempoScore().getMgScore(), (a, v) -> a.getTempoScore().setMg(v)));
+        groups.add(new AdjustmentValueParam(TEMPO_EG, parameterizedEvaluation,
+                a -> a.getTempoScore().getEgScore(), (a, v) -> a.getTempoScore().setEg(v)));
+
+        groups.add(new AdjustmentValueParam(BISHOP_PAIR_MG, parameterizedEvaluation,
+                a -> a.getBishopPairScore().getMgScore(),
+                (a, v) -> a.getBishopPairScore().setMg(v)));
+        groups.add(new AdjustmentValueParam(BISHOP_PAIR_EG, parameterizedEvaluation,
+                a -> a.getBishopPairScore().getEgScore(),
+                (a, v) -> a.getBishopPairScore().setEg(v)));
+
+        groups.add(new AdjustmentValueParam(KNIGHT_PAIR_MG, parameterizedEvaluation,
+                a -> a.getKnightPairScore().getMgScore(),
+                (a, v) -> a.getKnightPairScore().setMg(v)));
+        groups.add(new AdjustmentValueParam(KNIGHT_PAIR_EG, parameterizedEvaluation,
+                a -> a.getKnightPairScore().getEgScore(),
+                (a, v) -> a.getKnightPairScore().setEg(v)));
+
+        groups.add(new AdjustmentValueParam(ROOK_PAIR_MG, parameterizedEvaluation,
+                a -> a.getRookPairScore().getMgScore(),
+                (a, v) -> a.getRookPairScore().setMg(v)));
+
+        groups.add(new AdjustmentValueParam(ROOK_PAIR_EG, parameterizedEvaluation,
+                a -> a.getRookPairScore().getEgScore(),
+                (a, v) -> a.getRookPairScore().setEg(v)));
     }
 
     public String collectParamDescr() {

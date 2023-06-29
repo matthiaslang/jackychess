@@ -153,7 +153,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
-        result.result += adjustments.adjust(currBoard.getBoard(), who2Move);
+        result.getMgEgScore().add(adjustments.adjust(currBoard.getBoard(), who2Move));
 
         threatsEvaluation.eval(result, currBoard);
         //        spaceEvaluation.eval(result, currBoard);
