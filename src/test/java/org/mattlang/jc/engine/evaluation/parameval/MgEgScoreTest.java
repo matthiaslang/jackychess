@@ -48,4 +48,25 @@ public class MgEgScoreTest {
 
         assertThat(val1.getCombinedScore()).isEqualTo(val2.getCombinedScore() * 5);
     }
+
+    @Test
+    public void testSubtraction() {
+
+        int mgeg=0;
+
+        MgEgScore val1 = new MgEgScore(500, -1500);
+
+        mgeg-=val1.getCombinedScore();
+
+        assertThat(MgEgScore.getMgScore(mgeg)).isEqualTo(-500);
+        assertThat(MgEgScore.getEgScore(mgeg)).isEqualTo(+1500);
+
+        mgeg=0;
+        val1 = new MgEgScore(-500, 1500);
+
+        mgeg-=val1.getCombinedScore();
+
+        assertThat(MgEgScore.getMgScore(mgeg)).isEqualTo(500);
+        assertThat(MgEgScore.getEgScore(mgeg)).isEqualTo(-1500);
+    }
 }
