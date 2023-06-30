@@ -34,7 +34,7 @@ public final class ArrayFunction implements Function {
 
     public String convertDataToString() {
         return Arrays.stream(funVals)
-                .mapToObj(v -> Integer.toString(v))
+                .mapToObj(v -> String.format("%1$4s", v))
                 .collect(Collectors.joining(", "));
     }
 

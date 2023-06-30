@@ -571,6 +571,30 @@ public class ParameterSet {
         groups.add(new AdjustmentValueParam(ROOK_PAIR_EG, parameterizedEvaluation,
                 a -> a.getRookPairScore().getEgScore(),
                 (a, v) -> a.getRookPairScore().setEg(v)));
+
+        groups.add(new ArrayFunctionParameterGroup(KNIGHT_ADJ_MG,
+                parameterizedEvaluation,
+                e -> e.getAdjustments().getKnightAdjustmentMG(),
+                MOBILITY_VALUE_INTERVAL,
+                e -> e.getAdjustments().updateCombinedVals()));
+
+        groups.add(new ArrayFunctionParameterGroup(KNIGHT_ADJ_EG,
+                parameterizedEvaluation,
+                e -> e.getAdjustments().getKnightAdjustmentEG(),
+                MOBILITY_VALUE_INTERVAL,
+                e -> e.getAdjustments().updateCombinedVals()));
+
+        groups.add(new ArrayFunctionParameterGroup(ROOK_ADJ_MG,
+                parameterizedEvaluation,
+                e -> e.getAdjustments().getRookAdjustmentMG(),
+                MOBILITY_VALUE_INTERVAL,
+                e -> e.getAdjustments().updateCombinedVals()));
+
+        groups.add(new ArrayFunctionParameterGroup(ROOK_ADJ_EG,
+                parameterizedEvaluation,
+                e -> e.getAdjustments().getRookAdjustmentEG(),
+                MOBILITY_VALUE_INTERVAL,
+                e -> e.getAdjustments().updateCombinedVals()));
     }
 
     public String collectParamDescr() {
