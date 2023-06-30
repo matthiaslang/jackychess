@@ -170,7 +170,7 @@ public class MobilityEvalResult {
          *  A queen should not be developed too early                              *
          **************************************************************************/
 
-        if (earlyQueenPenalty > 0) {
+        if (earlyQueenPenalty != 0) {
             if ((side == WHITE && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
 
                 positionalThemes -=
