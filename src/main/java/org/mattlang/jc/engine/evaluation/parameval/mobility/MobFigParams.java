@@ -46,7 +46,7 @@ public class MobFigParams {
     }
 
     public void updateCombinedVals() {
-        mobilityMGEG = ArrayFunction.combine(mobilityEG, mobilityMG);
-        kingAttMgEg = ArrayFunction.combine(kingAttEg, kingAttMg);
+        mobilityMGEG = ArrayFunction.combine(mobilityMG, mobilityEG);
+        kingAttMgEg = ArrayFunction.combine(kingAttMg, kingAttEg);
     }
 }

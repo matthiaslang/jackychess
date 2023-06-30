@@ -50,7 +50,7 @@ public final class ArrayFunction implements Function {
         funVals[index] = val;
     }
 
-    public static ArrayFunction combine(ArrayFunction funEG, ArrayFunction funMG) {
+    public static ArrayFunction combine(ArrayFunction funMG, ArrayFunction funEG) {
         int combinedSize = Math.max(funEG.getSize(), funMG.getSize());
         int[] vals = new int[combinedSize];
         for (int i = 0; i < combinedSize; i++) {
