@@ -61,4 +61,33 @@ public final class ArrayFunction implements Function {
         ArrayFunction combined = new ArrayFunction(vals);
         return combined;
     }
+
+    /**
+     * experimental: linear interpolates all values of the function.
+     *
+     * use apache commons math spline interpolation instead...!!!
+     * 
+     */
+    public void linearInterpolate() {
+        for (int i = 0; i < getSize(); i++) {
+            if (i + 2 < getSize()) {
+                int mid = calc(i + 1);
+
+                int x1 = i;
+                int x = i + 1;
+                int x2 = i + 2;
+
+
+                int y = interpolate(x1, x, x2);
+                setVal(x, y);
+
+            }
+        }
+    }
+
+    private int interpolate(int x1, int x, int x2) {
+        int y1 = calc(x1);
+        int y2 = calc(x2);
+        return y1 + (y2 - y1) / (x2 - x1) * (x - x1);
+    }
 }

@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import java.util.function.Consumer;
 
+import lombok.Getter;
+
 /**
  * Like MgEgScore but supports change listener support.
  * This is used during tuning to make the handling of mg eg combined values easier.
@@ -10,10 +12,17 @@ public class ChangeableMgEgScore {
 
     private final Consumer<Integer> changeListener;
     private int score;
+    @Getter
+    private String propNameMg;
 
-    public ChangeableMgEgScore(Consumer<Integer> changeListener, int score) {
+    @Getter
+    private String propNameEg;
+
+    public ChangeableMgEgScore(Consumer<Integer> changeListener, String propNameMg, String propNameEg, int score) {
         this.score = score;
         this.changeListener = changeListener;
+        this.propNameMg = propNameMg;
+        this.propNameEg = propNameEg;
     }
 
     public ChangeableMgEgScore(Consumer<Integer> changeListener, int mg, int eg) {
@@ -47,5 +56,4 @@ public class ChangeableMgEgScore {
         score = MgEgScore.setEg(score, eg);
         changeListener.accept(score);
     }
-
 }

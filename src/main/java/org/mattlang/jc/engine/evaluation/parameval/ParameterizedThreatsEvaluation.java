@@ -118,7 +118,7 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         int mgVal = config.getIntProp(mgPropKey);
         int egVal = config.getIntProp(egPropKey);
         int score = MgEgScore.createMgEgScore(mgVal, egVal);
-        ChangeableMgEgScore changeableMgEgScore = new ChangeableMgEgScore(changeListener, score);
+        ChangeableMgEgScore changeableMgEgScore = new ChangeableMgEgScore(changeListener, mgPropKey, egPropKey, score);
         // call changelistener after initialisation to update value:
         changeListener.accept(score);
         return changeableMgEgScore;

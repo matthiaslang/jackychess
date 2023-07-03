@@ -10,7 +10,7 @@ import org.mattlang.tuning.IntIntervall;
 public class AdjustmentValueParam extends IntegerValueParam {
 
     // interval for adjustment parameter tuning: we leave here very wide ranges (not really relevant)
-    private static final IntIntervall ADJUSTMENT_VALUE_INTERVAL=new IntIntervall(-2000, +2000);
+    public static final IntIntervall ADJUSTMENT_VALUE_INTERVAL=new IntIntervall(-2000, +2000);
 
     public AdjustmentValueParam(String name,
             ParameterizedEvaluation evaluation,
