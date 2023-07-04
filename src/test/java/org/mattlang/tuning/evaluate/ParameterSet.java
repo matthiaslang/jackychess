@@ -147,80 +147,32 @@ public class ParameterSet {
                 e -> e.getThreatsEvaluation().getThreatByKingScore(),
                 THREATS_PARAMS_INTERVALl));
 
-//        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_KING_MG, parameterizedEvaluation,
-//                e -> e.getThreatsEvaluation().getThreatByKingScore().getMgScore(),
-//                (e, val) -> e.getThreatsEvaluation().getThreatByKingScore().setMg(val),
-//                THREATS_PARAMS_INTERVALl));
-//        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_KING_EG, parameterizedEvaluation,
-//                e -> e.getThreatsEvaluation().getThreatByKingScore().getEgScore(),
-//                (e, val) -> e.getThreatsEvaluation().getThreatByKingScore().setEg(val),
-//                THREATS_PARAMS_INTERVALl));
-
-
-
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.HANGING_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getHangingScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getHangingScore().setMg(val),
-                THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.HANGING_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getHangingScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getHangingScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getHangingScore(),
                 THREATS_PARAMS_INTERVALl));
 
-        groups.add(
-                new IntegerValueParam(ParameterizedThreatsEvaluation.WEAK_QUEEN_PROTECTION_MG, parameterizedEvaluation,
-                        e -> e.getThreatsEvaluation().getWeakQueenProtectionScore().getMgScore(),
-                        (e, val) -> e.getThreatsEvaluation().getWeakQueenProtectionScore().setMg(val),
-                        THREATS_PARAMS_INTERVALl));
-        groups.add(
-                new IntegerValueParam(ParameterizedThreatsEvaluation.WEAK_QUEEN_PROTECTION_EG, parameterizedEvaluation,
-                        e -> e.getThreatsEvaluation().getWeakQueenProtectionScore().getEgScore(),
-                        (e, val) -> e.getThreatsEvaluation().getWeakQueenProtectionScore().setEg(val),
-                        THREATS_PARAMS_INTERVALl));
-
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.RESTRICTED_PIECE_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getRestrictedPieceScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getRestrictedPieceScore().setMg(val),
-                THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.RESTRICTED_PIECE_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getRestrictedPieceScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getRestrictedPieceScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getWeakQueenProtectionScore(),
                 THREATS_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_PAWN_PUSH_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getThreatByPawnPushScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getThreatByPawnPushScore().setMg(val),
-                THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_PAWN_PUSH_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getThreatByPawnPushScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getThreatByPawnPushScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getRestrictedPieceScore(),
                 THREATS_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_SAFE_PAWN_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getThreatBySafePawnScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getThreatBySafePawnScore().setMg(val),
-                THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.THREAT_BY_SAFE_PAWN_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getThreatBySafePawnScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getThreatBySafePawnScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatByPawnPushScore(),
                 THREATS_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.SLIDER_ON_QUEEN_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getSliderOnQueenScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getSliderOnQueenScore().setMg(val),
-                THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.SLIDER_ON_QUEEN_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getSliderOnQueenScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getSliderOnQueenScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getThreatBySafePawnScore(),
                 THREATS_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.KNIGHT_ON_QUEEN_MG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getKnightOnQueenScore().getMgScore(),
-                (e, val) -> e.getThreatsEvaluation().getKnightOnQueenScore().setMg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getSliderOnQueenScore(),
                 THREATS_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ParameterizedThreatsEvaluation.KNIGHT_ON_QUEEN_EG, parameterizedEvaluation,
-                e -> e.getThreatsEvaluation().getKnightOnQueenScore().getEgScore(),
-                (e, val) -> e.getThreatsEvaluation().getKnightOnQueenScore().setEg(val),
+
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getThreatsEvaluation().getKnightOnQueenScore(),
                 THREATS_PARAMS_INTERVALl));
 
     }
@@ -285,40 +237,20 @@ public class ParameterSet {
                 (e, val) -> e.getPawnEvaluation().setShield3(val),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY_MG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().getMgScore(),
-                (e, val) -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().setMg(val),
-                PAWN_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ATTACKED_PAWN_PENALTY_EG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().getEgScore(),
-                (e, val) -> e.getPawnEvaluation().getAttackedPawnPenaltyScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getAttackedPawnPenaltyScore(),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_MG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getMgScore(),
-                (e, val) -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().setMg(val),
-                PAWN_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(ISOLATED_PAWN_PENALTY_EG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().getEgScore(),
-                (e, val) -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getIsolatedPawnPenaltyScore(),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY_MG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getDoublePawnPenaltyScore().getMgScore(),
-                (e, val) -> e.getPawnEvaluation().getDoublePawnPenaltyScore().setMg(val),
-                PAWN_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(DOUBLE_PAWN_PENALTY_EG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getDoublePawnPenaltyScore().getEgScore(),
-                (e, val) -> e.getPawnEvaluation().getDoublePawnPenaltyScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getDoublePawnPenaltyScore(),
                 PAWN_PARAMS_INTERVALl));
 
-        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY_MG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().getMgScore(),
-                (e, val) -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().setMg(val),
-                PAWN_PARAMS_INTERVALl));
-        groups.add(new IntegerValueParam(BACKWARDED_PAWN_PENALTY_EG, parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().getEgScore(),
-                (e, val) -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore().setEg(val),
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getPawnEvaluation().getBackwardedPawnPenaltyScore(),
                 PAWN_PARAMS_INTERVALl));
 
         boolean mirrored = true;
