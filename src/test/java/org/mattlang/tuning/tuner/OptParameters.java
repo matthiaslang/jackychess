@@ -57,6 +57,7 @@ public class OptParameters {
     private boolean tuneKingAttack = true;
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;
+    private boolean tuneAdjustmentsFactors = true;
 
     private boolean removeDuplicateFens = true;
 
