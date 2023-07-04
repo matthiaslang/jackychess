@@ -23,7 +23,6 @@ import lombok.Setter;
  * see also https://www.chessprogramming.org/Pawns_and_Files_(Bitboards)  for bitboard actions.
  */
 @Getter
-@Setter
 public class ParameterizedPawnEvaluation implements EvalComponent {
 
     public static final String PAWN_SHIELD_2 = "pawnShield2";
@@ -80,7 +79,9 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private final Pattern neighbourPstMg;
     private final Pattern neighbourPstEg;
 
+    @Setter
     private int shield2 = 10;
+    @Setter
     private int shield3 = 5;
 
     private int doublePawnPenaltyMgEg;
