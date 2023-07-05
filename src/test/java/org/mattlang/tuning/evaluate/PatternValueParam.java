@@ -17,12 +17,14 @@ public class PatternValueParam extends AbstractTuningParameter {
     private final int pos;
     private final boolean mirrored;
     private final IntIntervall intervall;
+    private final ScoreType scoreType;
 
     private int mirroredPos;
     private int val;
 
     private PatternValueParam(PatternParameterGroup group, PatternValueParam orig) {
         this.group = group;
+        this.scoreType = orig.getScoreType();
         this.pos = orig.pos;
         this.mirrored = orig.mirrored;
         this.intervall = orig.intervall;
@@ -30,16 +32,20 @@ public class PatternValueParam extends AbstractTuningParameter {
         this.val = orig.val;
     }
 
-    public PatternValueParam(PatternParameterGroup group, int pos, int val, IntIntervall intervall) {
+    public PatternValueParam(PatternParameterGroup group, ScoreType scoreType, int pos, int val,
+            IntIntervall intervall) {
         this.group = group;
+        this.scoreType = scoreType;
         this.pos = pos;
         this.val = val;
         mirrored = false;
         this.intervall = intervall;
     }
 
-    public PatternValueParam(PatternParameterGroup group, int pos, int mirroredPos, int val, IntIntervall intervall) {
+    public PatternValueParam(PatternParameterGroup group, ScoreType scoreType, int pos, int mirroredPos, int val,
+            IntIntervall intervall) {
         this.group = group;
+        this.scoreType = scoreType;
         this.pos = pos;
         this.mirroredPos = mirroredPos;
         this.mirrored = true;
@@ -64,9 +70,9 @@ public class PatternValueParam extends AbstractTuningParameter {
 
     @Override
     public void saveValue(ParameterizedEvaluation parameterizedEvaluation) {
-        group.setVal(parameterizedEvaluation, pos, val);
+        group.setVal(parameterizedEvaluation, scoreType, pos, val);
         if (mirrored) {
-            group.setVal(parameterizedEvaluation, mirroredPos, val);
+            group.setVal(parameterizedEvaluation, scoreType, mirroredPos, val);
         }
     }
 

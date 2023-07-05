@@ -13,7 +13,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.parameval.*;
@@ -257,49 +256,32 @@ public class ParameterSet {
                 PAWN_PARAMS_INTERVALl));
 
         boolean mirrored = true;
-        Consumer<ParameterizedEvaluation> updateCombinedVals = e -> e.getPawnEvaluation().updateCombinedVals();
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_MG, WEAK_PAWN_FILE_EG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getWeakPawnPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getWeakPawnPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getWeakPawnPstMgEg()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_MG, PROTECTED_PASSER_CSV_EG,
+                mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPasserPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPasserPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getProtectedPasserPstMgEg()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_MG, PASSED_PAWN_FILE_EG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getPassedPawnPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getPassedPawnPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getPassedPawnPstMgEg()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_MG, BLOCKED_PAWN_FILE_EG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBlockedPawnPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getBlockedPawnPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getBlockedPawnPstMgEg()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_MG, PROTECTED_CSV_EG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getProtectedPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getProtectedPstMgEg()));
 
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_MG, mirrored,
+        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_MG, NEIGHBOUR_CSV_EG, mirrored,
                 parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getNeighbourPstMg(), updateCombinedVals));
-        groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_EG, mirrored,
-                parameterizedEvaluation,
-                e -> e.getPawnEvaluation().getNeighbourPstEg(), updateCombinedVals));
+                e -> e.getPawnEvaluation().getNeighbourPstMgEg()));
+
     }
 
     private void addKingAttackParameters(ParameterizedEvaluation parameterizedEvaluation,
@@ -433,33 +415,20 @@ public class ParameterSet {
 
     private void addPstParameters(ParameterizedEvaluation parameterizedEvaluation) {
         boolean mirrored = true;
-        Consumer<ParameterizedEvaluation> updateCombinedVals =
-                e -> e.getPstEvaluation().updateCombinedVals();
-        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getPawnMG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getBishopMG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKnightMG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getRookMG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getQueenMG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(KING_MG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKingMG, updateCombinedVals));
 
-        groups.add(new PstPatternParameterGroup(PAWN_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getPawnEG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getBishopEG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKnightEG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(ROOK_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getRookEG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getQueenEG, updateCombinedVals));
-        groups.add(new PstPatternParameterGroup(KING_EG_CSV, mirrored, parameterizedEvaluation,
-                ParameterizedPstEvaluation::getKingEG, updateCombinedVals));
+        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, PAWN_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getPawnMGEG));
+        groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getBishopMGEG));
+        groups.add(new PstPatternParameterGroup(KNIGHT_MG_CSV, KNIGHT_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKnightMGEG));
+        groups.add(new PstPatternParameterGroup(ROOK_MG_CSV, ROOK_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getRookMGEG));
+        groups.add(new PstPatternParameterGroup(QUEEN_MG_CSV, QUEEN_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getQueenMGEG));
+        groups.add(new PstPatternParameterGroup(KING_MG_CSV, KING_EG_CSV, mirrored, parameterizedEvaluation,
+                ParameterizedPstEvaluation::getKingMGEG));
+
     }
 
     private void addMaterialParameters(ParameterizedEvaluation parameterizedEvaluation) {
@@ -505,7 +474,6 @@ public class ParameterSet {
                 ADJUSTMENT_VALUE_INTERVAL));
 
     }
-
 
     private void addAdjustmentParameterFactors(ParameterizedEvaluation parameterizedEvaluation) {
 

@@ -55,29 +55,17 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     public static final String NEIGHBOUR_CSV_MG = "neighbourPawnMg.csv";
     public static final String NEIGHBOUR_CSV_EG = "neighbourPawnEg.csv";
 
-    private  Pattern weakPawnPstMgEg;
-    private final Pattern weakPawnPstMg;
-    private final Pattern weakPawnPstEg;
+    private final Pattern weakPawnPstMgEg;
 
-    private  Pattern blockedPawnPstMgEg;
-    private final Pattern blockedPawnPstMg;
-    private final Pattern blockedPawnPstEg;
+    private final Pattern blockedPawnPstMgEg;
 
-    private  Pattern passedPawnPstMgEg;
-    private final Pattern passedPawnPstMg;
-    private final Pattern passedPawnPstEg;
+    private final Pattern passedPawnPstMgEg;
 
-    private  Pattern protectedPasserPstMgEg;
-    private final Pattern protectedPasserPstMg;
-    private final Pattern protectedPasserPstEg;
+    private final Pattern protectedPasserPstMgEg;
 
-    private  Pattern protectedPstMgEg;
-    private final Pattern protectedPstMg;
-    private final Pattern protectedPstEg;
+    private final Pattern protectedPstMgEg;
 
-    private  Pattern neighbourPstMgEg;
-    private final Pattern neighbourPstMg;
-    private final Pattern neighbourPstEg;
+    private final Pattern neighbourPstMgEg;
 
     @Setter
     private int shield2 = 10;
@@ -131,38 +119,25 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
                 readCombinedConfigVal(config, BACKWARDED_PAWN_PENALTY_MG, BACKWARDED_PAWN_PENALTY_EG,
                         val -> backwardedPawnPenaltyMgEg = val);
 
-        weakPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE_MG);
-        weakPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + WEAK_PAWN_FILE_EG);
+        weakPawnPstMgEg = loadCombinedPattern(config, WEAK_PAWN_FILE_MG, WEAK_PAWN_FILE_EG);
 
-        blockedPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE_MG);
-        blockedPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + BLOCKED_PAWN_FILE_EG);
+        blockedPawnPstMgEg = loadCombinedPattern(config, BLOCKED_PAWN_FILE_MG, BLOCKED_PAWN_FILE_EG);
 
-        passedPawnPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE_MG);
-        passedPawnPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PASSED_PAWN_FILE_EG);
+        passedPawnPstMgEg = loadCombinedPattern(config, PASSED_PAWN_FILE_MG, PASSED_PAWN_FILE_EG);
 
-        protectedPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV_MG);
-        protectedPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_CSV_EG);
+        protectedPstMgEg = loadCombinedPattern(config, PROTECTED_CSV_MG, PROTECTED_CSV_EG);
 
-        neighbourPstMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV_MG);
-        neighbourPstEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + NEIGHBOUR_CSV_EG);
+        neighbourPstMgEg = loadCombinedPattern(config, NEIGHBOUR_CSV_MG, NEIGHBOUR_CSV_EG);
 
-        protectedPasserPstMg =
-                loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV_MG);
-        protectedPasserPstEg =
-                loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + PROTECTED_PASSER_CSV_EG);
-
-        updateCombinedVals();
+        protectedPasserPstMgEg = loadCombinedPattern(config, PROTECTED_PASSER_CSV_MG, PROTECTED_PASSER_CSV_EG);
 
         passedPawnEval.configure(config);
     }
 
-    public void updateCombinedVals() {
-        weakPawnPstMgEg = Pattern.combine(weakPawnPstMg, weakPawnPstEg);
-        blockedPawnPstMgEg = Pattern.combine(blockedPawnPstMg, blockedPawnPstEg);
-        passedPawnPstMgEg = Pattern.combine(passedPawnPstMg, passedPawnPstEg);
-        protectedPasserPstMgEg = Pattern.combine(protectedPasserPstMg, protectedPasserPstEg);
-        protectedPstMgEg = Pattern.combine(protectedPstMg, protectedPstEg);
-        neighbourPstMgEg = Pattern.combine(neighbourPstMg, neighbourPstEg);
+    private Pattern loadCombinedPattern(EvalConfig config, String mgFile, String egFile) {
+        Pattern patternMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + mgFile);
+        Pattern patternEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + egFile);
+        return Pattern.combine(patternMg, patternEg);
     }
 
     @Override

@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
+import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -32,43 +33,27 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     public static final String QUEEN_EG_CSV = "queenEG.csv";
     public static final String KING_EG_CSV = "kingEG.csv";
 
-    private Pattern pawnMG;
-    private Pattern knightMG;
-    private Pattern bishopMG;
-    private Pattern rookMG;
-    private Pattern queenMG;
-    private Pattern kingMG;
-
-    private Pattern pawnEG;
-    private Pattern knightEG;
-    private Pattern bishopEG;
-    private Pattern rookEG;
-    private Pattern queenEG;
-    private Pattern kingEG;
-
-    private Pattern pawnMGEG;
-    private Pattern knightMGEG;
-    private Pattern bishopMGEG;
-    private Pattern rookMGEG;
-    private Pattern queenMGEG;
-    private Pattern kingMGEG;
+    private final Pattern pawnMGEG;
+    private final Pattern knightMGEG;
+    private final Pattern bishopMGEG;
+    private final Pattern rookMGEG;
+    private final Pattern queenMGEG;
+    private final Pattern kingMGEG;
 
     public ParameterizedPstEvaluation(String subPath) {
-        pawnMG = loadFromFullPath(subPath + PAWN_MG_CSV);
-        knightMG = loadFromFullPath(subPath + KNIGHT_MG_CSV);
-        bishopMG = loadFromFullPath(subPath + BISHOP_MG_CSV);
-        rookMG = loadFromFullPath(subPath + ROOK_MG_CSV);
-        queenMG = loadFromFullPath(subPath + QUEEN_MG_CSV);
-        kingMG = loadFromFullPath(subPath + KING_MG_CSV);
+        pawnMGEG = loadCombinedPattern(subPath, PAWN_MG_CSV, PAWN_EG_CSV);
+        knightMGEG = loadCombinedPattern(subPath, KNIGHT_MG_CSV, KNIGHT_EG_CSV);
+        bishopMGEG = loadCombinedPattern(subPath, BISHOP_MG_CSV, BISHOP_EG_CSV);
+        rookMGEG = loadCombinedPattern(subPath, ROOK_MG_CSV, ROOK_EG_CSV);
+        queenMGEG = loadCombinedPattern(subPath, QUEEN_MG_CSV, QUEEN_EG_CSV);
+        kingMGEG = loadCombinedPattern(subPath, KING_MG_CSV, KING_EG_CSV);
 
-        pawnEG = loadFromFullPath(subPath + PAWN_EG_CSV);
-        knightEG = loadFromFullPath(subPath + KNIGHT_EG_CSV);
-        bishopEG = loadFromFullPath(subPath + BISHOP_EG_CSV);
-        rookEG = loadFromFullPath(subPath + ROOK_EG_CSV);
-        queenEG = loadFromFullPath(subPath + QUEEN_EG_CSV);
-        kingEG = loadFromFullPath(subPath + KING_EG_CSV);
+    }
 
-        updateCombinedVals();
+    private Pattern loadCombinedPattern(String subPath, String mgFile, String egFile) {
+        Pattern patternMg = loadFromFullPath(subPath + mgFile);
+        Pattern patternEg = loadFromFullPath(subPath + egFile);
+        return Pattern.combine(patternMg, patternEg);
     }
 
     @Override
@@ -85,33 +70,25 @@ public class ParameterizedPstEvaluation implements EvalComponent {
 
     public int calcPstDelta(Color color, Move m) {
         Pattern pattern = getPstForFigure(m.getFigureType());
-        return pattern.getVal(m.getToIndex(), color) - pattern.getVal(m.getFromIndex(), color);
+        return getMgScore(pattern.getVal(m.getToIndex(), color)) - getMgScore(pattern.getVal(m.getFromIndex(), color));
     }
 
     public Pattern getPstForFigure(byte figureType) {
         switch (figureType) {
         case FT_PAWN:
-            return pawnMG;
+            return pawnMGEG;
         case FT_KNIGHT:
-            return knightMG;
+            return knightMGEG;
         case FT_BISHOP:
-            return bishopMG;
+            return bishopMGEG;
         case FT_ROOK:
-            return rookMG;
+            return rookMGEG;
         case FT_QUEEN:
-            return queenMG;
+            return queenMGEG;
         case FT_KING:
-            return kingMG;
+            return kingMGEG;
         }
         throw new IllegalArgumentException("illegal figure type " + figureType);
     }
 
-    public void updateCombinedVals() {
-        pawnMGEG = Pattern.combine(pawnMG, pawnEG);
-        knightMGEG = Pattern.combine(knightMG, knightEG);
-        bishopMGEG = Pattern.combine(bishopMG, bishopEG);
-        rookMGEG = Pattern.combine(rookMG, rookEG);
-        queenMGEG = Pattern.combine(queenMG, queenEG);
-        kingMGEG = Pattern.combine(kingMG, kingEG);
-    }
 }

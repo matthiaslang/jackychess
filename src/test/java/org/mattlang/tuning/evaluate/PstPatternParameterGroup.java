@@ -1,7 +1,5 @@
 package org.mattlang.tuning.evaluate;
 
-
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
@@ -10,16 +8,14 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation;
 
 public class PstPatternParameterGroup extends PatternParameterGroup {
 
-    public PstPatternParameterGroup(String tableCsvName,
+    public PstPatternParameterGroup(String tableCsvNameMg, String tableCsvNameEg,
             boolean mirrored,
             ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedPstEvaluation, Pattern> getter,
-            Consumer<ParameterizedEvaluation> afterUpdateCallback) {
+            Function<ParameterizedPstEvaluation, Pattern> getter) {
 
-        super("pst", tableCsvName, mirrored,
+        super("pst", tableCsvNameMg, tableCsvNameEg, mirrored,
                 parameterizedEvaluation,
-                parameterizedEvaluation1 -> getter.apply(parameterizedEvaluation1.getPstEvaluation()),
-                afterUpdateCallback);
+                parameterizedEvaluation1 -> getter.apply(parameterizedEvaluation1.getPstEvaluation()));
     }
 
 }
