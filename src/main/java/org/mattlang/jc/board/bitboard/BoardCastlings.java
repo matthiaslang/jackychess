@@ -20,23 +20,32 @@ import org.mattlang.jc.moves.MoveImpl;
  */
 public final class BoardCastlings {
 
+    /**
+     * The castling moves for regular chess are statically predefined, since they are used most often.
+     * (This saves memory especially during tuning, to reuse the instances for all tuning positions).
+     */
+    public static final CastlingMove CASTLING_MOVE_WHITE_LONG = createCastlingMove(WHITE, LONG,
+            MoveImpl.CASTLING_WHITE_LONG, 4, 2, 0, 3);
+    public static final CastlingMove CASTLING_MOVE_WHITE_SHORT = createCastlingMove(WHITE, SHORT,
+            CASTLING_WHITE_SHORT, 4, 6, 7, 5);
+    public static final CastlingMove CASTLING_MOVE_BLACK_SHORT = createCastlingMove(BLACK, SHORT,
+            CASTLING_BLACK_SHORT, 60, 62, 63, 61);
+    public static final CastlingMove CASTLING_MOVE_BLACK_LONG = createCastlingMove(BLACK, LONG,
+            MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
     private final BoardRepresentation board;
 
     public BoardCastlings(BoardRepresentation board) {
         this.board = board;
     }
 
-    private CastlingMove castlingWhiteLong = createCastlingMove(WHITE, LONG,
-            CASTLING_WHITE_LONG, 4, 2, 0, 3);
 
-    private CastlingMove castlingWhiteShort = createCastlingMove(WHITE, SHORT,
-            CASTLING_WHITE_SHORT, 4, 6, 7, 5);
+    private CastlingMove castlingWhiteLong = CASTLING_MOVE_WHITE_LONG;
 
-    private CastlingMove castlingBlackShort = createCastlingMove(BLACK, SHORT,
-            CASTLING_BLACK_SHORT, 60, 62, 63, 61);
+    private CastlingMove castlingWhiteShort = CASTLING_MOVE_WHITE_SHORT;
 
-    private CastlingMove castlingBlackLong = createCastlingMove(BLACK, LONG,
-            MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
+    private CastlingMove castlingBlackShort = CASTLING_MOVE_BLACK_SHORT;
+
+    private CastlingMove castlingBlackLong = CASTLING_MOVE_BLACK_LONG;
 
 
 
