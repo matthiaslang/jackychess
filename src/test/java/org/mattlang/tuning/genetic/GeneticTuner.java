@@ -87,7 +87,7 @@ public class GeneticTuner {
 
         // start evals for initial population:
         List<ParameterSet> startConfigs = new ArrayList<>();
-        for (String startEvalConfig : params.getStartEvalConfigs()) {
+        for (String startEvalConfig : params.getGeneticParams().getStartEvalConfigs()) {
             ParamTuneableEvaluateFunction startEval =
                     new ParamTuneableEvaluateFunction(startEvalConfig, params);
             startConfigs.add(new ParameterSet(params, startEval.getParameterizedEvaluation()));

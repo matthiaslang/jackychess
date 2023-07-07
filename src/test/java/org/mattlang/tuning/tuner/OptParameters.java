@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
@@ -73,51 +74,65 @@ public class OptParameters {
      */
     private boolean resetParametersBeforeTuning = false;
 
-    /**
-     * Genetic: Eval Configs to start from. Each of them will build one Individual of the start population.
-     * The Rest of the population will be filled with random start data.
-     */
-    private List<String> startEvalConfigs;
-
-    /**
-     * Genetic: population size.
-     */
-    private int populationSize = 50;
-
-    /**
-     * creates for each start config n mutated clones.
-     */
-    private int mutateStartConfigs = 0;
-
-    /**
-     * mutation rate of genes.
-     */
-    private double mutationRate = 0.025;
-
-    private double uniformRate = 0.5;
-    private int tournamentSize = 5;
-    private boolean elitism = true;
-
-    private int maxGenCount = 100000;
+    private GeneticParams geneticParams = GeneticParams.builder().build();
 
     public void writeMarkdownInfos(MarkdownWriter mdWriter)
             throws IOException {
         mdWriter.h1("Tuning Options");
-        try {
-            MarkdownTable mtable = new MarkdownTable();
-            mtable.header("Parameter", "Value");
 
-            for (PropertyDescriptor pd : Introspector.getBeanInfo(OptParameters.class).getPropertyDescriptors()) {
+        MarkdownTable mtable = new MarkdownTable();
+        mtable.header("Parameter", "Value");
+
+        writeParams(mtable, "", this);
+
+        mdWriter.writeTable(mtable);
+
+    }
+
+    private void writeParams(MarkdownTable mtable, String subParam, Object paramObj) {
+        try {
+            for (PropertyDescriptor pd : Introspector.getBeanInfo(paramObj.getClass()).getPropertyDescriptors()) {
                 if (pd.getReadMethod() != null && !"class".equals(pd.getName())) {
-                    Object value = pd.getReadMethod().invoke(this);
-                    mtable.row(pd.getName(), value);
+                    Object value = pd.getReadMethod().invoke(paramObj);
+                    String paramName = createParamName(subParam, pd.getName());
+                    if (isNestedParamClass(value)) {
+                        writeParams(mtable, paramName, value);
+                    } else {
+                        mtable.row(paramName, value);
+                    }
                 }
             }
-
-            mdWriter.writeTable(mtable);
         } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String createParamName(String subParam, String name) {
+        if (subParam == null || subParam.length() == 0) {
+            return name;
+        } else {
+            return subParam + "." + name;
+        }
+    }
+
+    private boolean isNestedParamClass(Object value) {
+        if (value == null) {
+            return false;
+        }
+        if (value.getClass().isPrimitive()) {
+            return false;
+        }
+        if (value.getClass().getName().startsWith("java.lang")) {
+            return false;
+        }
+        if (value.getClass().isAssignableFrom(List.class)) {
+            return false;
+        }
+        if (value.getClass().isAssignableFrom(Map.class)) {
+            return false;
+        }
+
+        return true;
     }
 
 }

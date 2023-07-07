@@ -49,7 +49,7 @@ public class Population {
         // add start configs:
         for (ParameterSet startConfig : startConfigs) {
             individuals.add(new Individual(startConfig.copy()));
-            for (int i = 0; i < params.getMutateStartConfigs(); i++) {
+            for (int i = 0; i < params.getGeneticParams().getMutateStartConfigs(); i++) {
                 Individual mutatedIndividual = new Individual(startConfig.copy());
                 mutate(params, mutatedIndividual);
                 individuals.add(mutatedIndividual);
@@ -58,7 +58,7 @@ public class Population {
         int currPopulationCount=individuals.size();
 
         // fill rest of population with random configs:
-        for (int i = currPopulationCount; i < params.getPopulationSize(); i++) {
+        for (int i = currPopulationCount; i < params.getGeneticParams().getPopulationSize(); i++) {
             Individual newIndividual = new Individual(randomize(exampleConfig.copy()));
             individuals.add(newIndividual);
         }
@@ -66,7 +66,7 @@ public class Population {
 
     public void mutate(OptParameters params, Individual indiv) {
         for (int i = 0; i < indiv.getDefaultGeneLength(); i++) {
-            if (Math.random() <= params.getMutationRate()) {
+            if (Math.random() <= params.getGeneticParams().getMutationRate()) {
                 randomizeParamVal(indiv.getGene(i));
             }
         }

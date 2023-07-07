@@ -54,7 +54,7 @@ public class SimpleGeneticAlgorithm {
         int generationCount = 1;
         StopWatch stopWatch = new StopWatch();
 
-        while (generationCount < params.getMaxGenCount()
+        while (generationCount < params.getGeneticParams().getMaxGenCount()
                 && myPop.getFittest().getFitness() > delta
             //                && myPop.getFittest(dataset, evaluate).getFitness(dataset, evaluate) < currError - delta
         ) {
@@ -99,7 +99,7 @@ public class SimpleGeneticAlgorithm {
         int elitismOffset;
         Population newPopulation = new Population(pop.getIndividuals().size());
 
-        if (params.isElitism()) {
+        if (params.getGeneticParams().isElitism()) {
             newPopulation.getIndividuals().add(pop.getFittest());
             elitismOffset = 1;
         } else {
@@ -123,7 +123,7 @@ public class SimpleGeneticAlgorithm {
     private Individual crossover(Individual indiv1, Individual indiv2) {
         Individual newSol = new Individual(indiv1.getParameterSet().copy());
         for (int i = 0; i < newSol.getDefaultGeneLength(); i++) {
-            if (Math.random() <= params.getUniformRate()) {
+            if (Math.random() <= params.getGeneticParams().getUniformRate()) {
                 newSol.setSingleGene(i, indiv1.getSingleGene(i));
             } else {
                 newSol.setSingleGene(i, indiv2.getSingleGene(i));
@@ -133,8 +133,8 @@ public class SimpleGeneticAlgorithm {
     }
 
     private Individual tournamentSelection(Population pop) {
-        Population tournament = new Population(params.getTournamentSize());
-        for (int i = 0; i < params.getTournamentSize(); i++) {
+        Population tournament = new Population(params.getGeneticParams().getTournamentSize());
+        for (int i = 0; i < params.getGeneticParams().getTournamentSize(); i++) {
             int randomId = (int) (Math.random() * pop.getIndividuals().size());
             tournament.getIndividuals().add(i, pop.getIndividual(randomId));
         }
