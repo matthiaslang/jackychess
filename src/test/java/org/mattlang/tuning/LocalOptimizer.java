@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.tools.MarkdownAppender;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
@@ -37,7 +36,6 @@ public class LocalOptimizer implements Optimizer {
         this.stepGranularity = optParameters.getStepGranularity();
         this.shuffle = optParameters.isShuffleTuningParameter();
 
-
         this.markdownAppender = markdownAppender;
     }
 
@@ -45,7 +43,6 @@ public class LocalOptimizer implements Optimizer {
     public ParameterSet optimize(ParameterSet parameterSet, ParamTuneableEvaluateFunction evaluate, DataSet dataSet) {
         this.dataSet = dataSet;
         this.evaluate = evaluate;
-
 
         markdownAppender.append(w -> w.h2("new optimization round"));
 
@@ -74,12 +71,13 @@ public class LocalOptimizer implements Optimizer {
         double bestE = e(parameterSet);
         LOGGER.info("Error at start: " + bestE);
 
-
         final double errorAtStart = bestE;
         markdownAppender.append(w -> w.paragraph("Error at start: " + errorAtStart));
 
         int round = 0;
-        StopWatch stopWatch = new StopWatch();
+        int numParamAdjusted = 0;
+
+        ProgressInfo progressInfo = new ProgressInfo(outputDir, markdownAppender);
 
         boolean improved = true;
         while (improved) {
@@ -90,8 +88,8 @@ public class LocalOptimizer implements Optimizer {
 
             for (TuningParameter param : parameterSet.getParams()) {
                 round++;
-                if (round % 100 == 0 && stopWatch.timeElapsed(5 * 60000)) {
-                    progressInfo(parameterSet, step, bestE, round, stopWatch);
+                if (round % 100 == 0 && progressInfo.isEnoughTimeElapsed()) {
+                    progressInfo.progressInfo(parameterSet, step, bestE, round, numParamAdjusted);
                 }
 
                 // if we are within bounds do a step change
@@ -102,6 +100,7 @@ public class LocalOptimizer implements Optimizer {
                     if (newE < bestE - delta) {
                         bestE = newE;
                         improved = true;
+                        numParamAdjusted++;
                     } else if (param.isChangePossible(-2 * step)) {
                         // otherwise try the step in the different direction (if allowed):
                         param.change(-2 * step);
@@ -109,6 +108,7 @@ public class LocalOptimizer implements Optimizer {
                         if (newE < bestE - delta) {
                             bestE = newE;
                             improved = true;
+                            numParamAdjusted++;
                         } else {
                             // reset change:
                             param.change(step);
@@ -166,7 +166,8 @@ public class LocalOptimizer implements Optimizer {
         }
         if (minVal < 0 && maxVal > 0) {
             int evaolOfZeroValue = checkEval(0, fen, param);
-            if (evaolOfZeroValue != evalOfCurrValue || evaolOfZeroValue != evalOfMinValue || evaolOfZeroValue != evalOfMaxValue) {
+            if (evaolOfZeroValue != evalOfCurrValue || evaolOfZeroValue != evalOfMinValue
+                    || evaolOfZeroValue != evalOfMaxValue) {
                 return true;
             }
         }
@@ -199,18 +200,6 @@ public class LocalOptimizer implements Optimizer {
         param.saveValue(evaluate.getParameterizedEvaluation());
 
         return cmpValue;
-    }
-
-    private void progressInfo(ParameterSet parameterSet, int step, double bestE, int round, StopWatch stopWatch) {
-        LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
-                + ", curr Error= " + bestE);
-        LOGGER.info(parameterSet.collectParamDescr());
-        parameterSet.writeParamDescr(outputDir);
-
-        markdownAppender.append(w -> {
-            w.paragraph(stopWatch.getFormattedCurrDuration() + ": round " + round + ", step " + step
-                    + ", curr Error= " + bestE);
-        });
     }
 
     private double e(ParameterSet params) {

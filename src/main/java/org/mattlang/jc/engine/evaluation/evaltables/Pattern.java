@@ -169,7 +169,7 @@ public final class Pattern {
             String formattedVal = String.format("%1$4s", val);
             b.append(formattedVal).append(";");
             if ((i + 1) % 8 == 0) {
-                b.append("\n");
+                b.append(System.lineSeparator());
             }
         }
         return b.toString();
