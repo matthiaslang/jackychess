@@ -74,7 +74,7 @@ public final class Pattern {
         if (color == WHITE) {
             return patternWhite[toIndex] - patternWhite[fromIndex];
         } else {
-            return patternBlack[toIndex] - patternWhite[fromIndex];
+            return patternBlack[toIndex] - patternBlack[fromIndex];
         }
     }
 
