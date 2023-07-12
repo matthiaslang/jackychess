@@ -13,21 +13,16 @@ public class ChangeableMgEgScore {
     private final Consumer<Integer> changeListener;
     private int score;
     @Getter
-    private String propNameMg;
+    private final String propNameMg;
 
     @Getter
-    private String propNameEg;
+    private final String propNameEg;
 
     public ChangeableMgEgScore(Consumer<Integer> changeListener, String propNameMg, String propNameEg, int score) {
         this.score = score;
         this.changeListener = changeListener;
         this.propNameMg = propNameMg;
         this.propNameEg = propNameEg;
-    }
-
-    public ChangeableMgEgScore(Consumer<Integer> changeListener, int mg, int eg) {
-        score = MgEgScore.createMgEgScore(mg, eg);
-        this.changeListener = changeListener;
     }
 
     public int getMgScore() {

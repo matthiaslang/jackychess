@@ -4,7 +4,6 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
-import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -40,6 +39,13 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     private final Pattern queenMGEG;
     private final Pattern kingMGEG;
 
+    private final Pattern pawnDeltaScoring;
+    private final Pattern knightDeltaScoring;
+    private final Pattern bishopDeltaScoring;
+    private final Pattern rookDeltaScoring;
+    private final Pattern queenDeltaScoring;
+    private final Pattern kingDeltaScoring;
+
     public ParameterizedPstEvaluation(String subPath) {
         pawnMGEG = loadCombinedPattern(subPath, PAWN_MG_CSV, PAWN_EG_CSV);
         knightMGEG = loadCombinedPattern(subPath, KNIGHT_MG_CSV, KNIGHT_EG_CSV);
@@ -47,6 +53,13 @@ public class ParameterizedPstEvaluation implements EvalComponent {
         rookMGEG = loadCombinedPattern(subPath, ROOK_MG_CSV, ROOK_EG_CSV);
         queenMGEG = loadCombinedPattern(subPath, QUEEN_MG_CSV, QUEEN_EG_CSV);
         kingMGEG = loadCombinedPattern(subPath, KING_MG_CSV, KING_EG_CSV);
+
+        pawnDeltaScoring = pawnMGEG.extractMg();
+        knightDeltaScoring = knightMGEG.extractMg();
+        bishopDeltaScoring = bishopMGEG.extractMg();
+        rookDeltaScoring = rookMGEG.extractMg();
+        queenDeltaScoring = queenMGEG.extractMg();
+        kingDeltaScoring = kingMGEG.extractMg();
 
     }
 
@@ -70,23 +83,23 @@ public class ParameterizedPstEvaluation implements EvalComponent {
 
     public int calcPstDelta(Color color, Move m) {
         Pattern pattern = getPstForFigure(m.getFigureType());
-        return getMgScore(pattern.getVal(m.getToIndex(), color)) - getMgScore(pattern.getVal(m.getFromIndex(), color));
+        return pattern.calcPstDelta(m.getToIndex(), m.getFromIndex(), color);
     }
 
     public Pattern getPstForFigure(byte figureType) {
         switch (figureType) {
         case FT_PAWN:
-            return pawnMGEG;
+            return pawnDeltaScoring;
         case FT_KNIGHT:
-            return knightMGEG;
+            return knightDeltaScoring;
         case FT_BISHOP:
-            return bishopMGEG;
+            return bishopDeltaScoring;
         case FT_ROOK:
-            return rookMGEG;
+            return rookDeltaScoring;
         case FT_QUEEN:
-            return queenMGEG;
+            return queenDeltaScoring;
         case FT_KING:
-            return kingMGEG;
+            return kingDeltaScoring;
         }
         throw new IllegalArgumentException("illegal figure type " + figureType);
     }
