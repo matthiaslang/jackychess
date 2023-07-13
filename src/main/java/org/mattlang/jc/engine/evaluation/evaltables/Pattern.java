@@ -50,12 +50,6 @@ public final class Pattern {
         }
     }
 
-    public final int calcScore(long whiteFigures, long blackFigures, int who2mov) {
-        int w = dotProduct(whiteFigures, patternWhite);
-        int b = dotProduct(blackFigures, patternBlack);
-        return (w - b) * who2mov;
-    }
-
     public final int calcScore(long whiteFigures, long blackFigures) {
         int w = dotProduct(whiteFigures, patternWhite);
         int b = dotProduct(blackFigures, patternBlack);
@@ -91,18 +85,6 @@ public final class Pattern {
     public void setVal(int pos, int value) {
         patternBlack[pos] = value;
         patternWhite[FLIP[pos]] = value;
-    }
-
-    /**
-     * Calc weighted population count of bitmasks; useful in evaluations.
-     *
-     * @param bb
-     * @param color
-     * @return
-     */
-    public int dotProduct(long bb, Color color) {
-        int[] weights = color == WHITE ? patternWhite : patternBlack;
-        return dotProduct(bb, weights);
     }
 
     public int dotProduct(long bb, int[] weights) {

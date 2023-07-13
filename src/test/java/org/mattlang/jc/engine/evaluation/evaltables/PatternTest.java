@@ -31,27 +31,27 @@ public class PatternTest {
         board.setStartPosition();
 
         BitChessBoard bb = board.getBoard();
-        int rslt = test.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack), 1);
+        int rslt = test.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack));
         assertThat(rslt).isEqualTo(0);
 
-        rslt = test.calcScore(bb.getBishops(nWhite), 0L, 1);
+        rslt = test.calcScore(bb.getBishops(nWhite), 0L);
         assertThat(rslt).isEqualTo(50);
 
-        rslt = test.calcScore(0L, bb.getBishops(nBlack), 1);
+        rslt = test.calcScore(0L, bb.getBishops(nBlack));
         assertThat(rslt).isEqualTo(-50);
 
         // king test:
-        rslt = test.calcScore(bb.getKings(nWhite), bb.getKings(nBlack), 1);
+        rslt = test.calcScore(bb.getKings(nWhite), bb.getKings(nBlack));
         assertThat(rslt).isEqualTo(0);
 
         // queen test:
-        rslt = test.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack), 1);
+        rslt = test.calcScore(bb.getQueens(nWhite), bb.getQueens(nBlack));
         assertThat(rslt).isEqualTo(0);
 
-        rslt = test.calcScore(bb.getQueens(nWhite), 0L, 1);
+        rslt = test.calcScore(bb.getQueens(nWhite), 0L);
         assertThat(rslt).isEqualTo(115);
 
-        rslt = test.calcScore(0L, bb.getQueens(nBlack), 1);
+        rslt = test.calcScore(0L, bb.getQueens(nBlack));
         assertThat(rslt).isEqualTo(-115);
 
         Pattern loadedPattern = Pattern.load("testpattern.csv");
