@@ -2,7 +2,6 @@ package org.mattlang.jc.engine.evaluation.parameval.mobility;
 
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
-import org.mattlang.jc.engine.evaluation.parameval.functions.Function;
 
 public class MobFigParams {
 
@@ -11,8 +10,10 @@ public class MobFigParams {
 
     public ArrayFunction mobilityMGEG;
 
-    public final Function tropismMG;
-    public final Function tropismEG;
+    public final ArrayFunction tropismMG;
+    public final ArrayFunction tropismEG;
+
+    public ArrayFunction tropismMGEG;
 
     public final ArrayFunction kingAttMg;
     public final ArrayFunction kingAttEg;
@@ -31,9 +32,9 @@ public class MobFigParams {
         mobilityEG = config.parseArray(propertyMobilityEg);
 
         propertyTropismMg = propBaseName + "TropismMG";
-        tropismMG = config.parseFunction(propertyTropismMg);
+        tropismMG = config.parseArray(propertyTropismMg);
         propertyTropismEg = propBaseName + "TropismEG";
-        tropismEG = config.parseFunction(propertyTropismEg);
+        tropismEG = config.parseArray(propertyTropismEg);
 
         // todo mg/eg split
         propertyKingAttMg = propBaseName + "KingAttackMg";
@@ -48,5 +49,6 @@ public class MobFigParams {
     public void updateCombinedVals() {
         mobilityMGEG = ArrayFunction.combine(mobilityMG, mobilityEG);
         kingAttMgEg = ArrayFunction.combine(kingAttMg, kingAttEg);
+        tropismMGEG = ArrayFunction.combine(tropismMG, tropismEG);
     }
 }

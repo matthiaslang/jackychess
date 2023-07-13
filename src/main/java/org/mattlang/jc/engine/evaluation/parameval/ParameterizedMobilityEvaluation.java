@@ -42,14 +42,14 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
      * splitted results by color, and type of evaluation, e.g. mobility, captures, connectivity).
      * They are splitted mainly for debugging purpose.
      */
-    private MobilityEvalResult wResult;
-    private MobilityEvalResult bResult;
+    private final MobilityEvalResult wResult;
+    private final MobilityEvalResult bResult;
 
-    private MobFigParams paramsKnight;
-    private MobFigParams paramsBishop;
-    private MobFigParams paramsRook;
-    private MobFigParams paramsQueen;
-    private MobFigParams paramsKing;
+    private final MobFigParams paramsKnight;
+    private final MobFigParams paramsBishop;
+    private final MobFigParams paramsRook;
+    private final MobFigParams paramsQueen;
+    private final MobFigParams paramsKing;
 
     public ParameterizedMobilityEvaluation(boolean forTuning, EvalConfig config) {
 
@@ -219,15 +219,15 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     }
 
     /**
-     * Weights the distance to the king from -7 to +6.
-     * +6 == nearest to the king. -7 fartest from king.
+     * Weights the manhattan distance to the king from 0 to 13.
+     * 0 == fartest from king. 13 == nearest to king
      *
      * @param sq1
      * @param sq2
      * @return
      */
     private int getTropism(int sq1, int sq2) {
-        return 7 - Tools.manhattanDistance(sq1, sq2);
+        return 14 - Tools.manhattanDistance(sq1, sq2);
     }
 
     @Override
@@ -235,9 +235,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalMobility(result, bitBoard);
 
         result.getMgEgScore().add(wResult.mobilityMGEG - bResult.mobilityMGEG);
-
-        result.getMgEgScore().addMg(wResult.tropismMG - bResult.tropismMG);
-        result.getMgEgScore().addEg(wResult.tropismEG - bResult.tropismEG);
+        result.getMgEgScore().add(wResult.tropismMGEG - bResult.tropismMGEG);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
@@ -249,8 +247,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
             bResult.kingAttWeightMgEg = 0;
 
-        result.getMgEgScore().addMg(getSafetyValue(getMgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(getMgScore(bResult.kingAttWeightMgEg)));
-        result.getMgEgScore().addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(getEgScore(bResult.kingAttWeightMgEg)));
+        result.getMgEgScore()
+                .addMg(getSafetyValue(getMgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
+                        getMgScore(bResult.kingAttWeightMgEg)));
+        result.getMgEgScore()
+                .addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
+                        getEgScore(bResult.kingAttWeightMgEg)));
 
         result.result += (wResult.positionalThemes - bResult.positionalThemes);
 

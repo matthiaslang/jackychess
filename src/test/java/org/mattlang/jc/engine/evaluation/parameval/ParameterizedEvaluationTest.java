@@ -26,7 +26,7 @@ public class ParameterizedEvaluationTest {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
-        System.out.println(convertFunction(12, pe.getMobEvaluation().getParamsKing().kingAttMg));
+        System.out.println(convertFunction(-7, 6, pe.getMobEvaluation().getParamsKnight().tropismMG));
 
     }
 
@@ -34,6 +34,18 @@ public class ParameterizedEvaluationTest {
         int[] data = new int[max];
         for (int i = 0; i < max; i++) {
             data[i] = function.calc(i);
+        }
+        ArrayFunction arrayFunction = new ArrayFunction(data);
+
+        return arrayFunction.convertDataToString();
+
+    }
+
+    private String convertFunction(int min, int max, Function function) {
+        int size = max-min;
+        int[] data = new int[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = function.calc(i+min);
         }
         ArrayFunction arrayFunction = new ArrayFunction(data);
 

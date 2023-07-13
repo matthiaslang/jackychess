@@ -43,8 +43,7 @@ public class MobilityEvalResult {
      * mg/eg combined king attack weight.
      */
     public int kingAttWeightMgEg;
-    public int tropismMG;
-    public int tropismEG;
+    public int tropismMGEG;
     public int connectivity;
     public int positionalThemes;
     public int blockages;
@@ -112,8 +111,7 @@ public class MobilityEvalResult {
         captures = 0;
         kingAttCount = 0;
         kingAttWeightMgEg = 0;
-        tropismMG = 0;
-        tropismEG = 0;
+        tropismMGEG = 0;
         connectivity = 0;
         positionalThemes = 0;
         blockages = 0;
@@ -134,8 +132,7 @@ public class MobilityEvalResult {
         kingAttCount += currKingAttCount;
         kingAttWeightMgEg += params.kingAttMgEg.calc(currKingAttCount);
 
-        tropismMG += params.tropismMG.calc(tropism);
-        tropismEG += params.tropismEG.calc(tropism);
+        tropismMGEG += params.tropismMGEG.calc(tropism);
 
     }
 
