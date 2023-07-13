@@ -87,7 +87,9 @@ public class ParameterSet {
         if (optParams.isTuneMobility()) {
             addMobilityParameters(parameterizedEvaluation, mobEval);
         }
-
+        if (optParams.isTuneMobilityTropism()) {
+            addMobilityTropismParameters(parameterizedEvaluation, mobEval);
+        }
         if (optParams.isTuneThreats()) {
             addThreatsParameters(parameterizedEvaluation);
         }
@@ -323,6 +325,28 @@ public class ParameterSet {
                 groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityEg,
                         parameterizedEvaluation,
                         e -> e.getMobEvaluation().getMobFigParams(type).mobilityEG,
+                        MOBILITY_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
+            }
+        }
+    }
+
+    private void addMobilityTropismParameters(ParameterizedEvaluation parameterizedEvaluation,
+            ParameterizedMobilityEvaluation mobEval) {
+        for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
+
+            MobFigParams figParams = mobEval.getMobFigParams(type);
+            if (figParams.tropismMG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(figParams.propertyTropismMg,
+                        parameterizedEvaluation,
+                        e -> e.getMobEvaluation().getMobFigParams(type).tropismMG,
+                        MOBILITY_VALUE_INTERVAL,
+                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
+            }
+            if (figParams.tropismEG instanceof ArrayFunction) {
+                groups.add(new ArrayFunctionParameterGroup(figParams.propertyTropismEg,
+                        parameterizedEvaluation,
+                        e -> e.getMobEvaluation().getMobFigParams(type).tropismEG,
                         MOBILITY_VALUE_INTERVAL,
                         e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
             }
