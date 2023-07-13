@@ -64,6 +64,14 @@ public final class Pattern {
         }
     }
 
+    public final int getValWhite(int pos) {
+        return patternWhite[pos];
+    }
+
+    public final int getValBlack(int pos) {
+        return patternBlack[pos];
+    }
+
     public int calcPstDelta(int toIndex, int fromIndex, Color color) {
         if (color == WHITE) {
             return patternWhite[toIndex] - patternWhite[fromIndex];

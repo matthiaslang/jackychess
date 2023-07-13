@@ -255,22 +255,22 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             }
 
             if (isBlocked) {
-                result += blockedPawnPstMgEg.getVal(pawn, WHITE);
+                result += blockedPawnPstMgEg.getValWhite(pawn);
             }
             if (isProtected) {
-                result += protectedPstMgEg.getVal(pawn, WHITE);
+                result += protectedPstMgEg.getValWhite(pawn);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPstMgEg.getVal(pawn, WHITE);
+                result += neighbourPstMgEg.getValWhite(pawn);
             }
 
             if (isWeak) {
-                result += weakPawnPstMgEg.getVal(pawn, WHITE);
+                result += weakPawnPstMgEg.getValWhite(pawn);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPstMgEg.getVal(pawn, WHITE);
+                    result += protectedPasserPstMgEg.getValWhite(pawn);
                 } else {
-                    result += passedPawnPstMgEg.getVal(pawn, WHITE);
+                    result += passedPawnPstMgEg.getValWhite(pawn);
                 }
             }
 
@@ -344,22 +344,22 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
             }
 
             if (isBlocked) {
-                result += blockedPawnPstMgEg.getVal(pawn, BLACK);
+                result += blockedPawnPstMgEg.getValBlack(pawn);
             }
             if (isProtected) {
-                result += protectedPstMgEg.getVal(pawn, BLACK);
+                result += protectedPstMgEg.getValBlack(pawn);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPstMgEg.getVal(pawn, BLACK);
+                result += neighbourPstMgEg.getValBlack(pawn);
             }
 
             if (isWeak) {
-                result += weakPawnPstMgEg.getVal(pawn, BLACK);
+                result += weakPawnPstMgEg.getValBlack(pawn);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPstMgEg.getVal(pawn, BLACK);
+                    result += protectedPasserPstMgEg.getValBlack(pawn);
                 } else {
-                    result += passedPawnPstMgEg.getVal(pawn, BLACK);
+                    result += passedPawnPstMgEg.getValBlack(pawn);
                 }
             }
 
