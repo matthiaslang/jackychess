@@ -80,11 +80,11 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     public ParameterizedThreatsEvaluation(boolean forTuning, EvalConfig config) {
         active = forTuning || config.getBoolProp("threads.active");
 
-        threatByMinorMg = config.parseArray(THREAT_BY_MINOR_MG);
-        threatByMinorEg = config.parseArray(THREAT_BY_MINOR_EG);
+        threatByMinorMg = config.parseFigureIndexedArray(THREAT_BY_MINOR_MG);
+        threatByMinorEg = config.parseFigureIndexedArray(THREAT_BY_MINOR_EG);
 
-        threatByRookMg = config.parseArray(THREAT_BY_ROOK_MG);
-        threatByRookEg = config.parseArray(THREAT_BY_ROOK_EG);
+        threatByRookMg = config.parseFigureIndexedArray(THREAT_BY_ROOK_MG);
+        threatByRookEg = config.parseFigureIndexedArray(THREAT_BY_ROOK_EG);
 
         updateCombinedArrays();
 

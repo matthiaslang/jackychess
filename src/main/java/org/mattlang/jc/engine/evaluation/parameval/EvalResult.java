@@ -34,7 +34,10 @@ public final class EvalResult {
      */
     public int result;
 
-    private final long[][] attacks = new long[2][7];
+    /**
+     * all attacke per figure type; (index 0 unused, + "all" attacks on index FT_ALL).
+     */
+    private final long[][] attacks = new long[2][FT_ALL + 1];
     private final long[] doubleAttacks = new long[2];
 
     public void clear() {
@@ -43,7 +46,7 @@ public final class EvalResult {
 
         for (int i = 0; i < 2; i++) {
             doubleAttacks[i] = 0;
-            for (int j = 0; j < 7; j++) {
+            for (int j = FT_PAWN; j < FT_ALL; j++) {
                 attacks[i][j] = 0L;
             }
         }

@@ -6,6 +6,7 @@ import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule
 import java.util.List;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.Function;
@@ -92,4 +93,18 @@ public class EvalConfig {
                 .collect(toList());
     }
 
+    /**
+     * Parses an array which is used to index by figure code (1-6). It must therefore contain exactly 7 values
+     * (first is emtpy, unused, which symbols an empty figure; index 1-6 for the figure types).
+     * @param configName
+     * @return
+     */
+    public ArrayFunction parseFigureIndexedArray(String configName) {
+        ArrayFunction function = parseArray(configName);
+        if (function.getSize() != FigureConstants.FT_ALL) {
+            throw new ConfigParseException("Error parsing figure indexed array " + configName
+                    + "! It must have exactly 7 values (0, followed by 6 values for each figure type)!");
+        }
+        return function;
+    }
 }

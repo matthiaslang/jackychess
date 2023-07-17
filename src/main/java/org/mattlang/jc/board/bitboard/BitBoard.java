@@ -113,11 +113,11 @@ public final class BitBoard implements BoardRepresentation {
         byte oldFigure = board.get(pos);
         board.set(pos, figureCode);
         // remove from piece list, if this is a "override/capture" of this field:
-        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
+        if (oldFigure != FigureConstants.FT_EMPTY) {
             hashRemoveFig(pos, oldFigure);
         }
         // add this piece to piece list:
-        if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
+        if (figureCode != FigureConstants.FT_EMPTY) {
             hashAddFig(pos, figureCode);
         }
     }
@@ -149,7 +149,7 @@ public final class BitBoard implements BoardRepresentation {
         byte oldFigure = board.get(pos);
         board.setEmpty(pos);
         // remove from piece list, if this is a "override/capture" of this field:
-        if (oldFigure != FigureConstants.FT_EMPTY && oldFigure != 0) {
+        if (oldFigure != FigureConstants.FT_EMPTY) {
             hashRemoveFig(pos, oldFigure);
         }
     }
@@ -163,7 +163,7 @@ public final class BitBoard implements BoardRepresentation {
     private void setOnEmptyField(int pos, byte figureCode) {
         board.setOnEmptyField(pos, figureCode);
         // add this piece to piece list:
-        if (figureCode != FigureConstants.FT_EMPTY && figureCode != 0) {
+        if (figureCode != FigureConstants.FT_EMPTY) {
             hashAddFig(pos, figureCode);
         }
     }
@@ -373,6 +373,8 @@ public final class BitBoard implements BoardRepresentation {
         return copied;
     }
 
+
+    // todo getKingPos
     @Override
     public int findPosOfFigure(byte figureCode) {
         // todo that method should be renamed to something like getKingPos()

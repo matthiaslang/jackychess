@@ -32,9 +32,9 @@ public class Material {
 
     private static final int[][] MAT_VALS = {
             // WHITE QQQRRRBBBNNNPPPP
-            { W_PAWN_VAL, W_KNIGHT_VAL, W_BISHOP_VAL, W_ROOK_VAL, W_QUEEN_VAL },
+            { 0, W_PAWN_VAL, W_KNIGHT_VAL, W_BISHOP_VAL, W_ROOK_VAL, W_QUEEN_VAL },
             // BLACK QQQRRRBBBNNNPPPP
-            { B_PAWN_VAL, B_KNIGHT_VAL, B_BISHOP_VAL, B_ROOK_VAL, B_QUEEN_VAL } };
+            { 0, B_PAWN_VAL, B_KNIGHT_VAL, B_BISHOP_VAL, B_ROOK_VAL, B_QUEEN_VAL } };
 
     private static final int MASK_OUT_PAWNS = 0b11111111111100001111111111110000;
     private static final int MASK_OUT_PIECES = 0b00000000000011110000000000001111;

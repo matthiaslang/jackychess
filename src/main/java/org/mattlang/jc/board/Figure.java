@@ -59,7 +59,7 @@ public enum Figure {
     }
 
     public static Color getColor(byte figure) {
-        return (figure & WHITE.code) != 0? WHITE: BLACK;
+        return (figure & BLACK.code) != 0? BLACK: WHITE;
     }
 
     static class Index {

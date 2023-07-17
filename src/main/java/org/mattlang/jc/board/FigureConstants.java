@@ -5,18 +5,18 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 public class FigureConstants {
 
-    public static final byte FT_EMPTY = 7;
-    public static final byte FT_PAWN = 0;
-    public static final byte FT_KNIGHT = 1;
-    public static final byte FT_BISHOP = 2;
-    public static final byte FT_ROOK = 3;
-    public static final byte FT_QUEEN = 4;
-    public static final byte FT_KING = 5;
+    public static final byte FT_EMPTY = 0;
+    public static final byte FT_PAWN = 1;
+    public static final byte FT_KNIGHT = 2;
+    public static final byte FT_BISHOP = 3;
+    public static final byte FT_ROOK = 4;
+    public static final byte FT_QUEEN = 5;
+    public static final byte FT_KING = 6;
 
     /**
      * virtual value for combined values of "all" figures.
      */
-    public static final byte FT_ALL = 6;
+    public static final byte FT_ALL = 7;
 
     public static final byte W_PAWN = (byte) (FT_PAWN | Color.WHITE.code);
     public static final byte W_KNIGHT = (byte) (FT_KNIGHT | Color.WHITE.code);

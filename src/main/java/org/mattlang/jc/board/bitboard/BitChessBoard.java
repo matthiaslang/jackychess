@@ -22,8 +22,15 @@ import org.mattlang.jc.board.IndexConversion;
  */
 public class BitChessBoard {
 
-    private long[] colorBB = new long[2];
-    private long[] pieceBB = new long[6];
+    /**
+     * contains the bit masks for the colors (white and black figures).
+     */
+    private long[] colorBB = new long[Color.values().length];
+
+    /**
+     * contains the bit masks for each piece type indexed by their figure type. 0 index is empty and unused.
+     */
+    private long[] pieceBB = new long[FT_ALL];
 
     public static final int nWhite = Color.WHITE.ordinal();     // any white piece
     public static final int nBlack = Color.BLACK.ordinal();     // any black piece
@@ -164,10 +171,10 @@ public class BitChessBoard {
         long posMask = 1L << i;
 
         long invPosMask = ~posMask;
-        if (figureCode == FigureConstants.FT_EMPTY || figureCode == 0) {
+        if (figureCode == FigureConstants.FT_EMPTY) {
             colorBB[nWhite] &= invPosMask;
             colorBB[nBlack] &= invPosMask;
-            for (int figType = 0; figType < 6; figType++) {
+            for (int figType = FT_PAWN; figType < FT_ALL; figType++) {
                 pieceBB[figType] &= invPosMask;
             }
         } else {
@@ -177,7 +184,7 @@ public class BitChessBoard {
             colorBB[colorIdx] |= posMask;
             colorBB[otherColor] &= invPosMask;
 
-            for (int ft = 0; ft < 6; ft++) {
+            for (int ft = FT_PAWN; ft < FT_ALL; ft++) {
                 if (ft == figType) {
                     pieceBB[ft] |= posMask;
                 } else {
@@ -197,7 +204,7 @@ public class BitChessBoard {
         long invPosMask = ~(1L << i);
         colorBB[nWhite] &= invPosMask;
         colorBB[nBlack] &= invPosMask;
-        for (int figType = 0; figType < 6; figType++) {
+        for (int figType = FT_PAWN; figType < FT_ALL; figType++) {
             pieceBB[figType] &= invPosMask;
         }
     }
@@ -230,7 +237,7 @@ public class BitChessBoard {
             return FigureConstants.FT_EMPTY;
         }
 
-        for (int figType = 0; figType < 6; figType++) {
+        for (int figType = FT_PAWN; figType < FT_ALL; figType++) {
             if ((pieceBB[figType] & posMask) != 0) {
                 return (byte) (colorOffset + figType);
             }
@@ -241,7 +248,7 @@ public class BitChessBoard {
     public byte getFigType(int i) {
         long posMask = 1L << i;
 
-        for (int figType = 0; figType < 6; figType++) {
+        for (int figType = FT_PAWN; figType < FT_ALL; figType++) {
             if ((pieceBB[figType] & posMask) != 0) {
                 return (byte) (figType);
             }
