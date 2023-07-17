@@ -2,6 +2,7 @@ package org.mattlang.jc.board;
 
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.MAX_FIGURE_INDEX;
 
 public enum Figure {
 
@@ -63,7 +64,7 @@ public enum Figure {
     }
 
     static class Index {
-        public final static Figure[] figureCodeIndex = new Figure[128];
+        public final static Figure[] figureCodeIndex = new Figure[MAX_FIGURE_INDEX];
     }
 
     public static Figure getFigureByCode(byte figure) {

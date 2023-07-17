@@ -27,4 +27,9 @@ public class Constants {
      */
     public static final int MAX_PLY_INDEX = MAX_PLY + MAX_PLY;
 
+    /**
+     * number of chess board fields.
+     */
+    public static final int NUM_BOARD_FIELDS = 64;
+
 }

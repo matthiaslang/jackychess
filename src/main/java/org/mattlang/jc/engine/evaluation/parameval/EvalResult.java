@@ -19,6 +19,7 @@ import lombok.Getter;
 @Getter
 public final class EvalResult {
 
+    public static final int MAX_ATT_INDEX = FT_ALL + 1;
     /**
      * non pawn material, sum of both sides.
      */
@@ -37,7 +38,7 @@ public final class EvalResult {
     /**
      * all attacke per figure type; (index 0 unused, + "all" attacks on index FT_ALL).
      */
-    private final long[][] attacks = new long[2][FT_ALL + 1];
+    private final long[][] attacks = new long[2][MAX_ATT_INDEX];
     private final long[] doubleAttacks = new long[2];
 
     public void clear() {
@@ -46,7 +47,7 @@ public final class EvalResult {
 
         for (int i = 0; i < 2; i++) {
             doubleAttacks[i] = 0;
-            for (int j = FT_PAWN; j < FT_ALL; j++) {
+            for (int j = FT_PAWN; j < MAX_ATT_INDEX; j++) {
                 attacks[i][j] = 0L;
             }
         }

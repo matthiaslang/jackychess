@@ -1,5 +1,6 @@
 package org.mattlang.jc.zobrist;
 
+import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.FigureConstants.*;
 
@@ -11,14 +12,14 @@ import org.mattlang.jc.board.FigureConstants;
 public class Zobrist {
 
     // max field pos: 64 board files + 1 "virtual" für en passten unset (-1)
-    private static final int MAXPOS = 64 + 1;
+    private static final int MAXPOS = NUM_BOARD_FIELDS + 1;
     // 12 figures encoded by their figure code + 2 en passant
-    private static final int MAXFIG = FT_ALL + BLACK.code + 2;
+    private static final int MAXFIG = MAX_FIGURE_INDEX + 2;
     // castling rights are saved in the board by a nibble, so use 16 rnd values
     private static final int MAXCASTLING = 16;
 
     /* last index is used for en passant encoding. */
-    private static final int ENPASSANT_MOVE_TARGET_POS_IDX = MAXFIG-1;
+    private static final int ENPASSANT_MOVE_TARGET_POS_IDX = MAXFIG - 1;
 
     private static long[][] rnd = new long[MAXPOS][MAXFIG];
 
@@ -46,7 +47,7 @@ public class Zobrist {
 
     public static long hash(BoardRepresentation board) {
         long h = 0;
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
             byte fig = board.getFigureCode(i);
             if (fig != FigureConstants.FT_EMPTY) {
                 h = addFig(h, i, fig);
@@ -63,7 +64,7 @@ public class Zobrist {
 
     public static long hashPawns(BoardRepresentation board) {
         long h = 0;
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
             byte fig = board.getFigureCode(i);
             if (fig == W_PAWN || fig == B_PAWN) {
                 h = addFig(h, i, fig);

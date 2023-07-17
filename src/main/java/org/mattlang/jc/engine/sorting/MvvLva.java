@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.sorting;
 
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 
@@ -27,7 +28,7 @@ public class MvvLva {
     /**
      * array indexed by figure code to return a weight
      */
-    private static int[] weights = new int[256];
+    private static int[] weights = new int[FigureConstants.MAX_FIGURE_INDEX];
 
     public static final int MVVLVA_PAWN = 1;
     public static final int MVVLVA_KNIGHT = 2;
