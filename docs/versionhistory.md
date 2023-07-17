@@ -1,5 +1,12 @@
 # Versions
 
+
+### 23.06.1
+
+- Refactoring of evaluation parameters to have more distinction between mg/eg values.
+- Tuning of tropism evaluation parameters. Seem to bring a few Elos... (~10-15)
+- Refactoring and cleanup of tuning code
+
 ## 23.06
 
 Official Release since 0.13.4.
