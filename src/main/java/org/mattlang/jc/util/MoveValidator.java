@@ -5,6 +5,7 @@ import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -50,7 +51,10 @@ public class MoveValidator {
             if (legal) {
                 board.domove(move);
             } else {
-                LOGGER.warning("depth: "+ rslt.targetDepth+ " Illegal PV Move " + move.toUCIString(board) + " in " + rslt.toLogString());
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
+                            + rslt.toLogString());
+                }
                 break;
 
             }
@@ -61,7 +65,9 @@ public class MoveValidator {
         board = gameState.getBoard().copy();
         boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
         if (!legal) {
-            LOGGER.log(SEVERE, fmtSevere(gameState,"Illegal Best Move " + rslt.savedMove.toUCIString(board)));
+            if (LOGGER.isLoggable(SEVERE)) {
+                LOGGER.log(SEVERE, fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
+            }
         }
     }
 
@@ -99,7 +105,7 @@ public class MoveValidator {
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
-        ArrayList<Integer> validatedPvs=new ArrayList<>();
+        ArrayList<Integer> validatedPvs = new ArrayList<>();
 
         for (int moveI : pvs) {
 
@@ -109,7 +115,9 @@ public class MoveValidator {
                 board.domove(move);
                 validatedPvs.add(moveI);
             } else {
-                LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toUCIString(board));
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toUCIString(board));
+                }
                 break;
             }
             who2Move = who2Move.invert();
@@ -120,6 +128,7 @@ public class MoveValidator {
 
     /**
      * Tester if legal moves are available for a position
+     *
      * @param board
      * @return
      */

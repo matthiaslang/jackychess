@@ -96,6 +96,7 @@ public class EvalConfig {
     /**
      * Parses an array which is used to index by figure code (1-6). It must therefore contain exactly 7 values
      * (first is emtpy, unused, which symbols an empty figure; index 1-6 for the figure types).
+     *
      * @param configName
      * @return
      */
@@ -105,6 +106,11 @@ public class EvalConfig {
             throw new ConfigParseException("Error parsing figure indexed array " + configName
                     + "! It must have exactly 7 values (0, followed by 6 values for each figure type)!");
         }
+        // first entry is unused: we test therefore strictly to have a value of 0:
+        if (function.calc(0) != 0) {
+            throw new ConfigParseException("Error parsing figure indexed array " + configName + "! Index 0 is not 0!");
+        }
+
         return function;
     }
 }

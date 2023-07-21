@@ -19,29 +19,38 @@ import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
 
+    public static final int FEN_INDEX_FIGURES = 2;
+    public static final int FEN_INDEX_SITE_TO_MOVE = 3;
+    public static final int FEN_INDEX_CASTLING = 4;
+    public static final int FEN_INDEX_ENPASSANT = 5;
+    public static final int FEN_INDEX_NO_HALFMOVES = 6;
+    public static final int FEN_INDEX_NEXT_MOVENUM = 7;
+    public static final int FEN_INDEX_MOVES_BY_STARTPOS = 2;
+    public static final int FEN_INDEX_MOVES_BY_FEN = 8;
+
     public GameState setPosition(String positionStr, BoardRepresentation board) {
         if (!positionStr.startsWith("position")) {
             throw new IllegalStateException("Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
-        int movesSection = 2;
+        int movesSection = FEN_INDEX_MOVES_BY_STARTPOS;
         if ("startpos".equals(fen)) {
             board.setStartPosition();
 
         } else if ("fen".equals(fen)) {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
             // position fen rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 moves f1d3 a7a6 g1f3
-            String figures = splitted[2];
-            String zug = splitted[3];
-            String rochade = splitted[4];
-            String enpassant = splitted[5];
-            String noHalfMoves = splitted[6];
-            String nextMoveNum = splitted[7];
+            String figures = splitted[FEN_INDEX_FIGURES];
+            String siteToMove = splitted[FEN_INDEX_SITE_TO_MOVE];
+            String rochade = splitted[FEN_INDEX_CASTLING];
+            String enpassant = splitted[FEN_INDEX_ENPASSANT];
+            String noHalfMoves = splitted[FEN_INDEX_NO_HALFMOVES];
+            String nextMoveNum = splitted[FEN_INDEX_NEXT_MOVENUM];
 
-            setPosition(board, figures, zug, rochade, enpassant, noHalfMoves, nextMoveNum);
+            setPosition(board, figures, siteToMove, rochade, enpassant, noHalfMoves, nextMoveNum);
 
-            movesSection = 8;
+            movesSection = FEN_INDEX_MOVES_BY_FEN;
         } else {
             throw new IllegalArgumentException("fen position wrong: no 'position startpos' nor 'position fen' found!");
         }
@@ -167,7 +176,7 @@ public class FenParser {
         return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
     }
 
-    private void setPosition(BoardRepresentation board, String figures, String zug, String rochade, String enpassant,
+    private void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade, String enpassant,
                               String noHalfMoves,
                               String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -176,7 +185,7 @@ public class FenParser {
         board.setPosition(rows);
         // todo parse and set rest of fen string...
 
-        if (zug == null || zug.trim().length() == 0) {
+        if (siteToMove == null || siteToMove.trim().length() == 0) {
             return ;
         }
 
@@ -224,7 +233,7 @@ public class FenParser {
             }
             parseSchredderFenCastlingDef(rochade, board);
         }
-        if ("b".equals(zug)) {
+        if ("b".equals(siteToMove)) {
             board.switchSiteToMove();
         }
     }

@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.Getter;
@@ -79,13 +80,13 @@ public class Window {
         if (score <= alpha) {
             alpha = alpha - delta - (alpha - score);
             alphaWidened = true;
-            if (betaWidened) {
+            if (betaWidened && LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
             }
         } else if (score >= beta) {
             beta = beta + delta + (score - beta);
             betaWidened = true;
-            if (alphaWidened) {
+            if (alphaWidened && LOGGER.isLoggable(Level.WARNING)) {
                 /**
                  * a search anomaly: the result of alpha/beta switches between alpha and beta. Normally that should not be the case but can
                  * happen...

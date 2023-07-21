@@ -94,7 +94,9 @@ public class AsyncEngine {
             future = null;
         } else {
             // stop without go...?
-            logger.warning("got 'stop' without having a 'go' or internal error!");
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.warning("got 'stop' without having a 'go' or internal error!");
+            }
 
         }
         return Optional.empty();
