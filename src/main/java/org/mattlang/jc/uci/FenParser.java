@@ -103,13 +103,16 @@ public class FenParser {
         Figure target = board.getFigure(movePos.getTo());
         byte captureFig = target == EMPTY ? (byte) 0 : target.figureCode;
 
-        if (moveStr.endsWith("q")) {
+        // check promotions:
+        char lastChar = moveStr.charAt(moveStr.length() - 1);
+        switch (lastChar) {
+        case 'q':
             return createPawnPromotion(movePos, W_Queen, B_Queen, captureFig);
-        } else if (moveStr.endsWith("r")) {
+        case 'r':
             return createPawnPromotion(movePos, W_Rook, B_Rook, captureFig);
-        } else if (moveStr.endsWith("n")) {
+        case 'n':
             return createPawnPromotion(movePos, W_Knight, B_Knight, captureFig);
-        } else if (moveStr.endsWith("b")) {
+        case 'b':
             return createPawnPromotion(movePos, W_Bishop, B_Bishop, captureFig);
         }
 

@@ -11,7 +11,7 @@ import org.mattlang.jc.movegenerator.MoveGeneration;
 
 public class SEE {
 
-    private static int[] pieceValue = new int[128];
+    private static int[] pieceValue = new int[MAX_FIGURE_INDEX];
 
     // todo take weights from evaluation instead of hard coding here...
     static {

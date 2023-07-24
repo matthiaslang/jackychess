@@ -1,13 +1,14 @@
 package org.mattlang.jc.material;
 
-import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import java.util.Arrays;
 
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
@@ -30,11 +31,27 @@ public class Material {
     public static final int B_ROOK_VAL = 1 << 26;
     public static final int B_QUEEN_VAL = 1 << 29;
 
-    private static final int[][] MAT_VALS = {
-            // WHITE QQQRRRBBBNNNPPPP
-            { 0, W_PAWN_VAL, W_KNIGHT_VAL, W_BISHOP_VAL, W_ROOK_VAL, W_QUEEN_VAL },
-            // BLACK QQQRRRBBBNNNPPPP
-            { 0, B_PAWN_VAL, B_KNIGHT_VAL, B_BISHOP_VAL, B_ROOK_VAL, B_QUEEN_VAL } };
+    private static final int[] MATS = new int[FigureConstants.MAX_FIGURE_INDEX];
+
+    static {
+        MATS[Figure.B_Pawn.figureCode] = B_PAWN_VAL;
+        MATS[Figure.W_Pawn.figureCode] = W_PAWN_VAL;
+
+        MATS[Figure.B_Knight.figureCode] = B_KNIGHT_VAL;
+        MATS[Figure.W_Knight.figureCode] = W_KNIGHT_VAL;
+
+        MATS[Figure.B_Bishop.figureCode] = B_BISHOP_VAL;
+        MATS[Figure.W_Bishop.figureCode] = W_BISHOP_VAL;
+
+        MATS[Figure.B_Rook.figureCode] = B_ROOK_VAL;
+        MATS[Figure.W_Rook.figureCode] = W_ROOK_VAL;
+
+        MATS[Figure.B_Queen.figureCode] = B_QUEEN_VAL;
+        MATS[Figure.W_Queen.figureCode] = W_QUEEN_VAL;
+
+        MATS[Figure.B_King.figureCode] = 0;
+        MATS[Figure.W_King.figureCode] = 0;
+    }
 
     private static final int MASK_OUT_PAWNS = 0b11111111111100001111111111110000;
     private static final int MASK_OUT_PIECES = 0b00000000000011110000000000001111;
@@ -59,31 +76,21 @@ public class Material {
     public void init(BoardRepresentation board) {
         material = 0;
         BitChessBoard bb = board.getBoard();
-        for (Color color : Color.values()) {
-            for (FigureType type : FigureType.values()) {
-                if (type != FigureType.King && type != FigureType.EMPTY) {
-                    byte figureCode = type.figureCode;
-                    material += Long.bitCount(bb.getPieceSet(figureCode, color))
-                            * MAT_VALS[color.ordinal()][figureCode];
-                }
+        for (Figure figure : Figure.values()) {
+            if (figure != Figure.EMPTY) {
+                byte figureCode = figure.figureCode;
+                material +=
+                        Long.bitCount(bb.getPieceSet(figure.figureType.figureCode, figure.color)) * MATS[figureCode];
             }
         }
     }
 
     public void subtract(byte fig) {
-        int color = (fig & BLACK.code) == BLACK.code ? BLACK.ordinal() : WHITE.ordinal();
-        int figIndex = (fig & MASK_OUT_COLOR);
-        if (figIndex < FigureConstants.FT_KING) {
-            material -= MAT_VALS[color][figIndex];
-        }
+        material -= MATS[fig];
     }
 
     public void add(byte fig) {
-        int color = (fig & BLACK.code) == BLACK.code ? BLACK.ordinal() : WHITE.ordinal();
-        int figIndex = (fig & MASK_OUT_COLOR);
-        if (figIndex < FigureConstants.FT_KING) {
-            material += MAT_VALS[color][figIndex];
-        }
+        material += MATS[fig];
     }
 
     public boolean isDrawByMaterial() {
@@ -122,9 +129,7 @@ public class Material {
         int mat = 0;
         for (int i = 0; i < spec.length(); i++) {
             Figure figure = toFigureType(spec.charAt(i));
-            if (figure.figureType != FigureType.King) {
-                mat += MAT_VALS[figure.color.ordinal()][figure.figureType.figureCode];
-            }
+            mat += MATS[figure.figureCode];
         }
         return mat;
     }
@@ -172,7 +177,6 @@ public class Material {
         return material & MASK_BLACK_PART & MASK_OUT_PAWNS;
     }
 
-
     public boolean hasMoreWhiteMat(int thanThisWhiteMat) {
         int meWhite = getWhiteMat();
         // in case the other has only  a king and we some material:
@@ -201,7 +205,7 @@ public class Material {
                 Figure.B_Pawn,
                 Figure.W_Queen, Figure.W_Rook, Figure.W_Bishop, Figure.W_Knight, Figure.W_Pawn)) {
 
-            int figVal = MAT_VALS[figure.color.ordinal()][figure.figureType.figureCode];
+            int figVal = MATS[figure.figureCode];
             while (mat >= figVal) {
                 b.append(figure.figureChar);
                 mat -= figVal;
