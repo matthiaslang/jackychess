@@ -5,6 +5,8 @@
 # build
 mvn clean package -DskipTests
 
+CURRBRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 JARFILE=jackychess-${MVNVERSION}.jar
@@ -12,6 +14,7 @@ JARFILE=jackychess-${MVNVERSION}.jar
 LOCALARENAFOLDER=../jcversions/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
 ENGINESFILE=${LOCALTESTPROJFOLDER}/scripts/engines.json
+VERSIONLOGFILE=${LOCALTESTPROJFOLDER}/versionlog.md
 
 # copy to our folders where the test programs have access:
 echo "copy to test folders"
@@ -78,6 +81,27 @@ else
 EOF
 # insert the temp file after the first match of "[" in the config file:
     sed -i.bak -e "0,/\[/r${ENGINESFILE}.insert" $ENGINESFILE
+
+
+# write some version infos into the version log file
+GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
+
+ cat << EOF > ${VERSIONLOGFILE}.insert
+# $JARFILE
+
+- Tag $TAGNAME
+- Git Describe $GITDESCR
+
+
+## Changes
+
+    $GITLOG
+
+## Results
+
+EOF
+
+echo -e "$(cat ${VERSIONLOGFILE}.insert)\n$(cat ${VERSIONLOGFILE})" > ${VERSIONLOGFILE}
 
 fi
 
