@@ -1,12 +1,14 @@
 package org.mattlang.jc.moves;
 
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
-import static org.mattlang.jc.board.IndexConversion.convert;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.util.Objects;
 
-import org.mattlang.jc.board.*;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.board.Move;
 
 import lombok.Getter;
 
@@ -23,7 +25,6 @@ import lombok.Getter;
  * toIndex: 7 bits
  * capturedFigure: 5 bits
  * == 31 bits
- * 
  */
 @Getter
 public final class MoveImpl implements Move {
@@ -49,9 +50,9 @@ public final class MoveImpl implements Move {
     /**
      * type of move.
      * This encodes the type itself as well as some additional data for special types/moves.
-     *  - it encodes a the en passant follow up move info
-     *  - the respective castling
-     *  - the promotion
+     * - it encodes a the en passant follow up move info
+     * - the respective castling
+     * - the promotion
      */
     private byte type = NORMAL_MOVE;
 
@@ -111,8 +112,6 @@ public final class MoveImpl implements Move {
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
-
-
     public MoveImpl(byte figureType, int from, int to, byte capturedFigure) {
         this.figureType = figureType;
         this.fromIndex = (byte) from;
@@ -145,7 +144,7 @@ public final class MoveImpl implements Move {
         this.toIndex = castlingMove.getKingTo();
     }
 
-    public static MoveImpl createCastling(CastlingMove castlingMove){
+    public static MoveImpl createCastling(CastlingMove castlingMove) {
         return new MoveImpl(castlingMove);
     }
 
@@ -159,7 +158,7 @@ public final class MoveImpl implements Move {
 
     public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure
     ) {
-        return new MoveImpl(NORMAL_MOVE, figureType, (byte)fromIndex, (byte)toIndex, capturedFigure);
+        return new MoveImpl(NORMAL_MOVE, figureType, (byte) fromIndex, (byte) toIndex, capturedFigure);
     }
 
     public final static int createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
@@ -195,67 +194,12 @@ public final class MoveImpl implements Move {
 
     @Override
     public String toStr() {
-        String coords = convert(fromIndex) + convert(toIndex);
-        if (isPromotion()) {
-            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
-            coords += figureChar;
-        }
-        return coords;
+        return MoveToStringConverter.toStr(this);
     }
 
     @Override
     public String toUCIString(BoardRepresentation board) {
-        String coords = convert(fromIndex) + convert(toIndex);
-        if (isPromotion()) {
-            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
-            coords += figureChar;
-        }
-        // in chess960 we code a castling move as king captures rook to make it distinct.
-        // otherwise in some chess960 postitions it could not be distinguished between a normal king move.
-        if (board.isChess960() && isCastling()) {
-            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(getCastlingType());
-            coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
-        }
-
-        return coords;
-    }
-
-    /**
-     * Returns a long algebraic like representation. Maybe not complete to standard... as it is currently only
-     * used for debugging
-     *
-     * @return
-     */
-    public String toLongAlgebraic() {
-        if (isCastling()) {
-            if (type == CASTLING_WHITE_LONG || type == CASTLING_BLACK_LONG) {
-                return "O-O-O";
-            } else {
-                return "O-O";
-            }
-        }
-        String coords;
-        if (isCapture()) {
-            coords = convert(fromIndex) + "x" + convert(toIndex);
-        } else {
-            coords = convert(fromIndex) + "-" + convert(toIndex);
-        }
-        for (FigureType value : FigureType.values()) {
-            if (getFigureType() == value.figureCode && getFigureType() != FigureType.Pawn.figureCode) {
-                coords = Character.toUpperCase(value.figureChar) + coords;
-
-            }
-        }
-        if (isPromotion()) {
-            char figureChar = Character.toLowerCase(getPromotedFigure().figureChar);
-            coords += figureChar;
-        }
-        if (isEnPassant()) {
-            coords += " e.p";
-        }
-
-        return coords;
-
+        return MoveToStringConverter.toUCIString(this, board);
     }
 
     @Override
@@ -308,7 +252,6 @@ public final class MoveImpl implements Move {
     public byte getCastlingType() {
         return type;
     }
-
 
     @Override
     public byte getCapturedFigure() {
@@ -373,16 +316,16 @@ public final class MoveImpl implements Move {
         return (byte) (move >>> 26 & MASK_5);
     }
 
-    public static byte getFigureType(int move){
+    public static byte getFigureType(int move) {
         return (byte) (move >>> OFFSET_FIGURETYPE & MASK_5);
     }
 
-    public static byte getFromIndex(int move){
-        return (byte)  (byte) (move >>> OFFSET_FROMINDEX & MASK_7);
+    public static byte getFromIndex(int move) {
+        return (byte) (byte) (move >>> OFFSET_FROMINDEX & MASK_7);
     }
 
-    public static byte getToIndex(int move){
-        return (byte)  (byte) (move >>> OFFSET_TOINDEX & MASK_7);
+    public static byte getToIndex(int move) {
+        return (byte) (byte) (move >>> OFFSET_TOINDEX & MASK_7);
     }
 
     public static boolean isCapture(int move) {
