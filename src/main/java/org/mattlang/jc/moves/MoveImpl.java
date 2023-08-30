@@ -331,4 +331,20 @@ public final class MoveImpl implements Move {
     public static boolean isCapture(int move) {
         return getCapturedFigure(move) != 0;
     }
+
+    private static byte getType(int move) {
+        return (byte) (move & MASK_7);
+    }
+
+    public static boolean isEnPassant(int move) {
+        return getType(move) >= ENPASSANT_MOVE;
+    }
+
+    public static boolean isCastling(int move) {
+        return getType(move) >= CASTLING_WHITE_LONG && getType(move) <= CASTLING_BLACK_LONG;
+    }
+
+    public static byte getCastlingType(int move) {
+        return getType(move);
+    }
 }

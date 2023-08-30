@@ -593,55 +593,51 @@ public final class BitBoard implements BoardRepresentation {
 
     }
 
-    private MoveImpl move = new MoveImpl("a1a2");
 
     @Override
     public boolean isvalidmove(Color color, int aMove) {
-        move.fromLongEncoded(aMove);
-        int from = move.getFromIndex();
-        int to = move.getToIndex();
 
-        Color colorOfPos = board.getColorOfPos(from);
-        if (color != colorOfPos) {
+        int from = MoveImpl.getFromIndex(aMove);
+
+        if (color != board.getColorOfPos(from)) {
             return false;
         }
 
-        if (!board.isFigureType(from, move.getFigureType())) {
+        byte figureType = MoveImpl.getFigureType(aMove);
+        if (!board.isFigureType(from, figureType)) {
             return false;
         }
 
-        if (move.isEnPassant()) {
+        int to = MoveImpl.getToIndex(aMove);
+
+        if (MoveImpl.isEnPassant(aMove)) {
             if (to != enPassantMoveTargetPos) {
                 return false;
             }
-        } else if (move.isCastling()) {
-            if (!getCastlingMove(move).getDef().check(this)) {
+        } else if (MoveImpl.isCastling(aMove)) {
+            if (!boardCastlings.getCastlingMove(MoveImpl.getCastlingType(aMove)).getDef().check(this)) {
                 return false;
             }
         } else {
             // regular moves:
 
-            if (move.isCapture()) {
-                if (board.get(to) != move.getCapturedFigure()) {
+            if (MoveImpl.isCapture(aMove)) {
+                if (board.get(to) != MoveImpl.getCapturedFigure(aMove)) {
                     return false;
                 }
-                if (!board.isDifferentColor(from, to)) {
-                    return false;
-                }
-
             } else {
                 if (!board.isEmpty(to)) {
                     return false;
                 }
             }
             long allPieces = board.getPieces();
-            if (move.getFigureType() == FigureType.Bishop.figureCode
-                    || move.getFigureType() == FigureType.Rook.figureCode
-                    || move.getFigureType() == FigureType.Queen.figureCode) {
+            if (figureType == FT_BISHOP
+                    || figureType == FT_ROOK
+                    || figureType == FT_QUEEN) {
                 if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
                     return false;
                 }
-            } else if (move.getFigureType() == FigureType.Pawn.figureCode) {
+            } else if (figureType == FT_PAWN) {
                 if (color == WHITE) {
                     if (from > to) {
                         return false;
