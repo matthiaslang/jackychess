@@ -5,7 +5,8 @@ public enum Ending implements Symbol {
 
     MATE_WHITE,
 
-    MATE_BLACK;
+    MATE_BLACK,
+    UNTERMINATED;
 
     public static Ending match(String str) {
         switch (str) {
@@ -15,6 +16,8 @@ public enum Ending implements Symbol {
             return Ending.MATE_WHITE;
         case "0-1":
             return Ending.MATE_BLACK;
+        case "*":
+            return Ending.UNTERMINATED;
         }
         return null;
     }

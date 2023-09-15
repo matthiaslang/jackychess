@@ -17,6 +17,7 @@ public class Scanner implements TextPosition {
     public static final char CURL_BRACKET_CLOSE = '}';
 
     public static final char DOT = '.';
+    public static final char MULT = '*';
     public static final char QUOTE = '"';
 
     private final InputStream in;
@@ -78,6 +79,8 @@ public class Scanner implements TextPosition {
             return OrdinarySymbol.BRACKET_OPEN;
         case BRACKET_CLOSE:
             return OrdinarySymbol.BRACKET_CLOSE;
+        case MULT:
+            return Ending.UNTERMINATED;
         case CURL_BRACKET_OPEN:
             return readComment();
         case DOT:

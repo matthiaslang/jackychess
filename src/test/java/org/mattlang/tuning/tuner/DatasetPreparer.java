@@ -1,5 +1,17 @@
 package org.mattlang.tuning.tuner;
 
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -13,18 +25,6 @@ import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.data.pgnparser.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
 
 public class DatasetPreparer {
 
@@ -64,7 +64,7 @@ public class DatasetPreparer {
                     parseFen(dataSet, line);
                 } catch (RuntimeException re) {
                     LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line);
-//                    throw re;
+                    //                    throw re;
                 }
             });
             return dataSet;
@@ -134,7 +134,9 @@ public class DatasetPreparer {
         Iterator<PgnGame> iterator = games.iterator();
         while (iterator.hasNext()) {
             PgnGame game = iterator.next();
-            addGame(dataSet, game);
+            if (game.getResult() != Ending.UNTERMINATED) {
+                addGame(dataSet, game);
+            }
             iterator.remove();
             counter++;
             if (counter % 500 == 0) {
@@ -170,8 +172,8 @@ public class DatasetPreparer {
                 && anyLegalMoves
                 && !isEvalUsingEndGameFunction(board)
                 && !isCheck(board)
-            //                && isQuiet(moveList)
-            /*&& !isMateScore(moveDesr.getComment())*/) {
+                && isQuiet(moveList)
+                && !isMateScore(moveDesr.getComment())) {
             addFen(dataSet, board, ending);
         }
     }
@@ -214,7 +216,7 @@ public class DatasetPreparer {
     }
 
     private void addFen(DataSet dataSet, BoardRepresentation board, Ending ending) {
-//        String fen = FenComposer.buildFenPosition(board);
+        //        String fen = FenComposer.buildFenPosition(board);
         FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
         dataSet.addFen(entry);
     }
