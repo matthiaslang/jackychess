@@ -47,7 +47,8 @@ public class AlgebraicNotation {
 
         switch (matching.size()) {
         case 0:
-            throw new IllegalStateException("somethings wrong, no legal move seems to match!");
+            throw new PgnParserException(
+                    "Error Parsing Move " + algNotMove.getText() + ": no legal move seems to match!", algNotMove);
         case 1:
             return matching.get(0);
         default:
@@ -59,7 +60,9 @@ public class AlgebraicNotation {
                     return move;
                 }
             }
-            throw new IllegalStateException("cant identify move from ambiguous matching ones.." + board.toUniCodeStr());
+            throw new PgnParserException(
+                    "Error Parsing Move " + algNotMove.getText() + ": cant identify move from ambiguous matching ones.."
+                            + board.toUniCodeStr(), algNotMove);
         }
 
     }
@@ -116,13 +119,17 @@ public class AlgebraicNotation {
     public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
-            MoveImpl castlingMove = createCastling(color == WHITE ? board.getBoardCastlings().getCastlingWhiteShort() : board.getBoardCastlings().getCastlingBlackShort());
+            MoveImpl castlingMove = createCastling(color == WHITE ?
+                    board.getBoardCastlings().getCastlingWhiteShort() :
+                    board.getBoardCastlings().getCastlingBlackShort());
             if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }
             return castlingMove;
         case CASTLING_LONG:
-            castlingMove = createCastling(color == WHITE ? board.getBoardCastlings().getCastlingWhiteLong() : board.getBoardCastlings().getCastlingBlackLong());
+            castlingMove = createCastling(color == WHITE ?
+                    board.getBoardCastlings().getCastlingWhiteLong() :
+                    board.getBoardCastlings().getCastlingBlackLong());
             if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
             }
