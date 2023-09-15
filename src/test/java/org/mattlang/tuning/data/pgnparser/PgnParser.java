@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -21,9 +22,26 @@ public class PgnParser {
     private static final Logger LOGGER = Logger.getLogger(PgnParser.class.getSimpleName());
 
     public List<PgnGame> parse(File file) throws IOException {
+
         try (InputStream fis = new BufferedInputStream(new FileInputStream(file))) {
             return parse(fis);
+        } catch (PgnParserException parseException) {
+            LOGGER.log(Level.SEVERE,
+                    "Error " + fmtFilePosLink(file, parseException));
+            throw parseException;
         }
+    }
+
+    /**
+     * Returns a file + text position in a format, that could be interpreted by intellij to jump directly to that
+     * position from a log.
+     *
+     * @param file
+     * @param ppe
+     * @return
+     */
+    public String fmtFilePosLink(File file, PgnParserException ppe) {
+        return file.getAbsolutePath() + ":" + ppe.getLineNo() + ":" + ppe.getColNo();
     }
 
     public List<PgnGame> parse(InputStream in) throws IOException {
@@ -92,7 +110,7 @@ public class PgnParser {
                 }
                 return true;
 
-            } catch(Exception e){
+            } catch (Exception e) {
                 throw new PgnParserException("Error Parsing Move " + moveNum, e, matcher);
             }
         } else {
@@ -111,7 +129,8 @@ public class PgnParser {
 
             return new MoveDescr(moveText, optComment.orElse(null), optEnding.orElse(null));
         } catch (RuntimeException e) {
-            throw new PgnParserException("Error parsing move " + moveText.getText() + " board:\n" + board.toUniCodeStr(), e, moveText);
+            throw new PgnParserException(
+                    "Error parsing move " + moveText.getText() + " board:\n" + board.toUniCodeStr(), e, moveText);
         }
     }
 

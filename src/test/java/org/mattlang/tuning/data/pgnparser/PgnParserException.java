@@ -1,5 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
+import lombok.Getter;
+
+@Getter
 public class PgnParserException extends RuntimeException {
 
     private int lineNo;
