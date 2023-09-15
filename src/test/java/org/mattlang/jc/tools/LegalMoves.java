@@ -23,6 +23,7 @@ public class LegalMoves {
      */
     public static MoveList generateLegalMoves(BoardRepresentation board, Color color) {
         MoveList moveList = new MoveListImpl();
+        moveList.reset(color);
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
         CheckChecker checkChecker = new BBCheckCheckerImpl();
 
