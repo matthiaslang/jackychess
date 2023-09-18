@@ -174,7 +174,7 @@ public class EngineTest {
         System.out.println(move.toStr());
 
         // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e5");
+        assertThat(move.toStr()).isEqualTo("e7e6");
     }
 
     /**
@@ -276,8 +276,8 @@ public class EngineTest {
     }
 
     /**
-     * "Check" is not defined as "invalid" move position, instead we have a weight function which evals a captured
-     * king as a "very bad" value, therefore minimax should always get us out of of a chess situation.
+     * A "check" situation which leads to errors in older jc versions. Therefore a simple test that
+     * the engine finds a move to prevent/block the check.
      */
     @Test
     public void testCheckSituation() throws IOException {
@@ -294,7 +294,7 @@ public class EngineTest {
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         // block with other figure:
-        assertThat(move.toStr()).isEqualTo("d8d7");
+        assertThat(move.toStr()).isEqualTo("a7d7");
 
         System.out.println(move);
 
