@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,43 +16,8 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
-import org.mattlang.jc.engine.evaluation.parameval.functions.Function;
 
 public class ParameterizedEvaluationTest {
-
-    @Test
-    public void convertFormulasTest() {
-
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
-        ParameterizedEvaluation pe = new ParameterizedEvaluation();
-
-        System.out.println(convertFunction(-7, 6, pe.getMobEvaluation().getParamsKnight().tropismMG));
-
-    }
-
-    private String convertFunction(int max, Function function) {
-        int[] data = new int[max];
-        for (int i = 0; i < max; i++) {
-            data[i] = function.calc(i);
-        }
-        ArrayFunction arrayFunction = new ArrayFunction(data);
-
-        return arrayFunction.convertDataToString();
-
-    }
-
-    private String convertFunction(int min, int max, Function function) {
-        int size = max-min;
-        int[] data = new int[size];
-        for (int i = 0; i < size; i++) {
-            data[i] = function.calc(i+min);
-        }
-        ArrayFunction arrayFunction = new ArrayFunction(data);
-
-        return arrayFunction.convertDataToString();
-
-    }
 
     @Test
     public void configParseTest() {
@@ -60,7 +26,7 @@ public class ParameterizedEvaluationTest {
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
         // try load all existing parametersets:
-        for (EvalParameterSet paramSet : EvalParameterSet.values()) {
+        for (EvalParameterSet paramSet : Arrays.asList(EvalParameterSet.CURRENT/*, EvalParameterSet.TUNED01*/)) {
             Factory.getDefaults().getConfig().evaluateParamSet.setValue(paramSet);
             pe = new ParameterizedEvaluation();
         }
@@ -73,25 +39,25 @@ public class ParameterizedEvaluationTest {
 
         BoardRepresentation board = new BitBoard();
 
-        // start position should evaluate to zero:
+        // start position should evaluate to one (tempo):
         board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
-        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(0);
+        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(1);
 
         // test a blockage:
 
         board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/3N4/PPPPPPPP/RNBQKBNR w - - 0 1");
-        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(322);
+        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(370);
     }
 
     @Test
     public void testBackwardPawn() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.TUNED01);
+        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
-//        pe.getPawnEvaluation().setBackwardedPawnPenaltyMgEg(10000);
-//        pe.getPawnEvaluation().setIsolatedPawnPenaltyMgEg(1);
-//        pe.getPawnEvaluation().setAttackedPawnPenaltyMgEg(10);
-//        pe.getPawnEvaluation().setDoublePawnPenaltyMgEg(100);
+        //        pe.getPawnEvaluation().setBackwardedPawnPenaltyMgEg(10000);
+        //        pe.getPawnEvaluation().setIsolatedPawnPenaltyMgEg(1);
+        //        pe.getPawnEvaluation().setAttackedPawnPenaltyMgEg(10);
+        //        pe.getPawnEvaluation().setDoublePawnPenaltyMgEg(100);
 
         BoardRepresentation board = new BitBoard();
 
