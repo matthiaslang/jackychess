@@ -22,7 +22,7 @@ public class QuiescenceTest {
         UCI.instance.attachStreams();
 
         Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c->c.maxDepth.setValue(1))
+                .config(c->c.maxDepth.setValue(2))
                 .config(c->c.maxQuiescence.setValue(5))
         );
         // now starting engine:
