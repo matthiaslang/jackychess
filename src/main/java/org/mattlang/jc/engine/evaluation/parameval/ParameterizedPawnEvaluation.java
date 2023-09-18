@@ -418,7 +418,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     }
 
     public static long getPawnNeighbours(final long pawns) {
-        return pawns << 1 & BB.notHFile | pawns >>> 1 & BB.notAFile;
+        return (pawns << 1 | pawns >>> 1) & BB.notHFile & BB.notAFile;
     }
 
     public static long wPassedPawns(long wpawns, long bpawns) {
