@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.zobrist.Zobrist;
 
 /**
@@ -77,7 +76,7 @@ public class ZobristPerfTests {
                         i[0] = hash;
                     });
 
-                    perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, 6);
+                    perft.perft( board, WHITE, 6);
                 });
 
         StopWatch zobristMeasure = benchmark(
@@ -91,7 +90,7 @@ public class ZobristPerfTests {
                         l[0] = zobristHash;
                     });
 
-                    perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, 6);
+                    perft.perft( board, WHITE, 6);
                 });
 
         System.out.println("zobrist time: " + zobristMeasure.toString());
@@ -148,7 +147,7 @@ public class ZobristPerfTests {
             }
         });
 
-        perft.perft(new PseudoLegalMoveGenerator(), board, WHITE, depth);
+        perft.perft( board, WHITE, depth);
 
         List<Map.Entry<Long, Set<String>>> collisions =
                 collisionMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());

@@ -8,8 +8,8 @@ import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.MoveGenerator.GenMode.QUIESCENCE;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
 import java.util.List;
 import java.util.logging.Logger;

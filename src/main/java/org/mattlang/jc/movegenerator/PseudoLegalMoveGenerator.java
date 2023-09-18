@@ -6,20 +6,35 @@ import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 /**
- * a "pseude legal" move generator, means, not really a legal move generator by definition, but the contrary.
- * Since this seems far faster than a real legal move generator, this will probably the future code
- * and we should remove the whole legal move generator interface or use it only for test purpose...
+ * a "pseude legal" move generator.
+ *
  */
-public class PseudoLegalMoveGenerator implements MoveGenerator {
+public class PseudoLegalMoveGenerator {
 
     BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
 
-    @Override
+    /**
+     * Generates moves.
+     *
+     * @param board    current board
+     * @param side     the side to move
+     * @param moveList the resulting move list. given as argument. The Caller should reuse the movelist as much
+     *                 as possible to prevent garbage collection
+     */
     public void generate(BoardRepresentation board, Color side, MoveList moveList) {
         generator.generate(board, side, moveList);
     }
 
-    @Override
+    /**
+     * Generate moves from a given position for a given side.
+     *
+     * @param mode            either all or only for quiescence search
+     * @param orderCalculator order information which might be used already for ordering the moves
+     * @param board           the position
+     * @param side            the side to generate the moves for
+     * @param moveList        the resulting move list. given as argument. The Caller should reuse the movelist as much
+     *                        as possible to prevent garbage collection
+     */
     public void generate(GenMode mode, OrderCalculator orderCalculator,
             BoardRepresentation board,
             Color side, MoveList moveList) {

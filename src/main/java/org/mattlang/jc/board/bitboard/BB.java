@@ -1,12 +1,13 @@
 package org.mattlang.jc.board.bitboard;
 
-import lombok.Getter;
-import org.mattlang.jc.board.BoardPrinter;
-import org.mattlang.jc.board.Color;
+import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.Arrays;
 
-import static org.mattlang.jc.board.Color.WHITE;
+import org.mattlang.jc.board.BoardPrinter;
+import org.mattlang.jc.board.Color;
+
+import lombok.Getter;
 
 /**
  * Static bitboard stuff.
@@ -189,8 +190,8 @@ public class BB {
     public static final long rank12 = rank1 | rank2;
     public static final long rank78 = rank7 | rank8;
 
-    public static final long notAFile = ALL & ~A;
-    public static final long notHFile = ALL & ~H;
+    public static final long notAFile =  ~A;
+    public static final long notHFile =  ~H;
 
     public static final long ABC_File = A | B | C;
     public static final long ABC_on_rank2 = ABC_File & rank2;

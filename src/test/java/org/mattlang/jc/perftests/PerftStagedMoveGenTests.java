@@ -5,7 +5,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
  * PerfTests to validate the boards.isValid method.
@@ -35,9 +34,8 @@ public class PerftStagedMoveGenTests {
     public void initialPositionPerformanceLegalMoves() {
 
         Factory.setDefaults(Factory.createStagedMoveGen());
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
-        perft.perftInitialPosition(generator);
+        perft.perftInitialPosition();
 
     }
 
@@ -45,28 +43,25 @@ public class PerftStagedMoveGenTests {
     public void position2() {
 
         Factory.setDefaults(Factory.createStagedMoveGen());
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
 
-        perft.position2(generator);
+        perft.position2();
     }
 
     @Test
     public void position3() {
 
         Factory.setDefaults(Factory.createStagedMoveGen());
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
-        perft.position3(generator);
+        perft.position3();
     }
 
     @Test
     public void position4() {
 
         Factory.setDefaults(Factory.createStagedMoveGen());
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
-        perft.position4(generator);
+        perft.position4();
     }
 
 }

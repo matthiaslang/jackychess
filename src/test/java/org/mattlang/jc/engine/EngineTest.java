@@ -194,10 +194,8 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .config(c -> c.timeout.setValue(18000000))
-                .config(c -> c.maxDepth.setValue(21))
+                .config(c -> c.maxDepth.setValue(30))
                 //                .config(c->c.aspiration.setValue(false))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:

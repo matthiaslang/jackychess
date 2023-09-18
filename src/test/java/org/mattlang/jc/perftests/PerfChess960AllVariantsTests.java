@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 import lombok.AllArgsConstructor;
 
@@ -53,31 +52,33 @@ public class PerfChess960AllVariantsTests {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection loadCombinations() throws IOException {
         return loadAllChess960Perfts().stream()
-                .map(c -> new Object[]{c.fen, c.d1, c.d2, c.d3, c.d4, c.d5 , c.d6})
+                .map(c -> new Object[] { c.fen, c.d1, c.d2, c.d3, c.d4, c.d5, c.d6 })
                 .collect(Collectors.toList());
     }
 
     public static List<Chess960Perft> loadAllChess960Perfts() throws IOException {
-        return Files.lines(new File(PerfChess960AllVariantsTests.class.getResource("/chess960perfts.csv").getFile()).toPath())
+        return Files.lines(
+                        new File(PerfChess960AllVariantsTests.class.getResource("/chess960perfts.csv").getFile()).toPath())
                 .map(line -> parse(line))
                 .collect(Collectors.toList());
     }
 
     @AllArgsConstructor
 
-    public static class Chess960Perft{
+    public static class Chess960Perft {
+
         String fen;
-         long d1;
+        long d1;
 
-         long d2;
+        long d2;
 
-         long d3;
+        long d3;
 
-         long d4;
+        long d4;
 
         long d5;
 
-         long d6;
+        long d6;
     }
 
     private static Chess960Perft parse(String line) {
@@ -91,13 +92,12 @@ public class PerfChess960AllVariantsTests {
         long d5 = Long.parseLong(parts[5].replace("D5", "").trim());
         long d6 = Long.parseLong(parts[6].replace("D6", "").trim());
 
-        return new Chess960Perft( fen, d1, d2, d3, d4, d5, d6 );
+        return new Chess960Perft(fen, d1, d2, d3, d4, d5, d6);
     }
 
     @Test
     public void testCombination() {
 
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         Factory.setDefaults(Factory.createStable());
 
@@ -106,12 +106,12 @@ public class PerfChess960AllVariantsTests {
         System.out.println("position fen " + fen);
         System.out.println(board.toUniCodeStr());
 
-        perft.assertPerft(generator, board, WHITE, 1, (int)d1Comb);
-        perft.assertPerft(generator, board, WHITE, 2, (int)d2Comb);
-        perft.assertPerft(generator, board, WHITE, 3, (int)d3Comb);
-        perft.assertPerft(generator, board, WHITE, 4, (int)d4Comb);
-//        perft.assertPerft(generator, board, WHITE, 5, d5Comb);
-//        perft.assertPerft(generator, board, WHITE, 6, d6Comb);
+        perft.assertPerft(board, WHITE, 1, (int) d1Comb);
+        perft.assertPerft(board, WHITE, 2, (int) d2Comb);
+        perft.assertPerft(board, WHITE, 3, (int) d3Comb);
+        perft.assertPerft(board, WHITE, 4, (int) d4Comb);
+        //        perft.assertPerft(generator, board, WHITE, 5, d5Comb);
+        //        perft.assertPerft(generator, board, WHITE, 6, d6Comb);
     }
 
 }

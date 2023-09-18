@@ -17,7 +17,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.SearchThreadContext;
-import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 
@@ -38,12 +38,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove = 10572289;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
+        preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -74,12 +74,12 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
+        preparer.prepare(stc, GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -105,12 +105,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove = 0;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -137,12 +137,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove = 22188545;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -170,12 +170,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove = 22188545;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -202,12 +202,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove =1095930369;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -233,12 +233,12 @@ public class StagedMoveIterationPreparerTest {
 
         int hashMove = 10572289;
         MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
-        preparer.prepare(stc, MoveGenerator.GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
+        preparer.prepare(stc, GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, MoveGenerator.GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 

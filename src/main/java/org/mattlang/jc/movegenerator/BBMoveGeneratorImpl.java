@@ -1,10 +1,6 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -20,8 +16,7 @@ import org.mattlang.jc.engine.MoveList;
  * Mixture of mailbox & bitboard move generation to slighlty refactor using bitboards.
  * Works only with the BitBoard implementation.
  */
-public class BBMoveGeneratorImpl  {
-
+public class BBMoveGeneratorImpl {
 
     /**
      * @param board current board
@@ -37,8 +32,8 @@ public class BBMoveGeneratorImpl  {
         long opponentFigsMask = bb.getColorMask(xside);
         long empty = ~ownFigsMask & ~opponentFigsMask;
 
-        genPawnCaptureMoves(board, collector, side);
-        genPawnMoves(bb, collector, side);
+        MoveGeneration.genPawnCaptureMoves(board, collector, side);
+        MoveGeneration.genPawnMoves(bb, empty, collector, side);
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
         while (bishopBB != 0) {
@@ -169,128 +164,6 @@ public class BBMoveGeneratorImpl  {
             quiet &= quiet - 1;
         }
 
-    }
-
-    private void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {
-        BitChessBoard bb = bitBoard.getBoard();
-        long pawns = bb.getPieceSet(FT_PAWN, side);
-
-        long otherPieces = side == WHITE ? bb.getColorMask(BLACK) : bb.getColorMask(WHITE);
-
-        if (side == WHITE) {
-            long capturesEast = pawns & BB.bPawnWestAttacks(otherPieces);
-
-            while (capturesEast != 0) {
-                final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex + 9, bb.get(fromIndex + 9));
-                capturesEast &= capturesEast - 1;
-            }
-
-            long capturesWest = pawns & BB.bPawnEastAttacks(otherPieces);
-
-            while (capturesWest != 0) {
-                final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex + 7, bb.get(fromIndex + 7));
-                capturesWest &= capturesWest - 1;
-            }
-
-            // en passant:
-            if (bitBoard.getEnPassantMoveTargetPos() >= 0) {
-                long epMask = 1L << bitBoard.getEnPassantMoveTargetPos();
-
-                capturesEast = pawns & BB.bPawnWestAttacks(epMask);
-
-                while (capturesEast != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex + 9, bitBoard.getEnPassantCapturePos());
-                    capturesEast &= capturesEast - 1;
-                }
-
-                capturesWest = pawns & BB.bPawnEastAttacks(epMask);
-
-                while (capturesWest != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex + 7, bitBoard.getEnPassantCapturePos());
-                    capturesWest &= capturesWest - 1;
-                }
-
-            }
-
-        } else {
-            long capturesEast = pawns & BB.wPawnWestAttacks(otherPieces);
-
-            while (capturesEast != 0) {
-                final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                collector.genPawnMove(fromIndex, fromIndex - 7, bb.get(fromIndex - 7));
-                capturesEast &= capturesEast - 1;
-            }
-
-            long capturesWest = pawns & BB.wPawnEastAttacks(otherPieces);
-            while (capturesWest != 0) {
-                final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                collector.genPawnMove(fromIndex, fromIndex - 9, bb.get(fromIndex - 9));
-                capturesWest &= capturesWest - 1;
-            }
-
-            // en passant:
-            if (bitBoard.getEnPassantMoveTargetPos() >= 0) {
-                long epMask = 1L << bitBoard.getEnPassantMoveTargetPos();
-
-                capturesEast = pawns & BB.wPawnWestAttacks(epMask);
-
-                while (capturesEast != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex - 7, bitBoard.getEnPassantCapturePos());
-                    capturesEast &= capturesEast - 1;
-                }
-
-                capturesWest = pawns & BB.wPawnEastAttacks(epMask);
-
-                while (capturesWest != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex - 9, bitBoard.getEnPassantCapturePos());
-                    capturesWest &= capturesWest - 1;
-                }
-            }
-        }
-    }
-
-    private void genPawnMoves(BitChessBoard bb, MoveCollector collector, Color side) {
-        long pawns = bb.getPieceSet(FT_PAWN, side);
-        long empty = ~(bb.getColorMask(nWhite) | bb.getColorMask(nBlack));
-
-        if (side == WHITE) {
-            long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
-
-            while (singlePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
-                singlePushTargets &= singlePushTargets - 1;
-            }
-
-            long doublePushTargets = BB.wDblPushTargets(pawns, empty);
-            while (doublePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                collector.genPawnMove(toIndex - 16, toIndex, (byte) 0);
-                doublePushTargets &= doublePushTargets - 1;
-            }
-
-        } else {
-            long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
-
-            while (singlePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
-                singlePushTargets &= singlePushTargets - 1;
-            }
-
-            long doublePushTargets = BB.bDoublePushTargets(pawns, empty);
-            while (doublePushTargets != 0) {
-                final int toIndex = Long.numberOfTrailingZeros(doublePushTargets);
-                collector.genPawnMove(toIndex + 16, toIndex, (byte) 0);
-                doublePushTargets &= doublePushTargets - 1;
-            }
-        }
     }
 
 }

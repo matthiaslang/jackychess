@@ -15,8 +15,8 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
+import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.MoveGeneration;
-import org.mattlang.jc.movegenerator.MoveGenerator;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
@@ -37,7 +37,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
-    private MoveGenerator generator = new PseudoLegalMoveGenerator();
+    private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
@@ -61,12 +61,12 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     private SearchThreadContext stc;
 
 
-    public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove) {
         prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
     }
 
-    public void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
                         int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         movePicker.init(moveList, 0);
@@ -80,7 +80,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
 
-        if (mode == MoveGenerator.GenMode.NORMAL) {
+        if (mode == GenMode.NORMAL) {
             // do staged move generation in normal mode:
             prepareNextStage();
         } else {

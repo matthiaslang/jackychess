@@ -13,7 +13,7 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.MoveGenerator.GenMode;
+import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;

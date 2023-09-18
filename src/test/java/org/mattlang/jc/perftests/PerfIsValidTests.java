@@ -7,8 +7,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
  * PerfTests to validate the boards.isValid method.
@@ -39,12 +37,11 @@ public class PerfIsValidTests {
         Factory.setDefaults(Factory.createStable());
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
-        MoveGenerator generator = new PseudoLegalMoveGenerator();
 
         Perft perft = new Perft();
         perft.setVisitor(validtMoveTester);
 
-        perft.perftInitialPosition(generator);
+        perft.perftInitialPosition();
 
     }
 
@@ -52,30 +49,27 @@ public class PerfIsValidTests {
 
     @Test
     public void position2() {
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.setVisitor(validtMoveTester);
 
-        perft.position2(generator);
+        perft.position2();
 
     }
 
     @Test
     public void position3() {
-        MoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.setVisitor(validtMoveTester);
 
-        perft.position3(generator);
+        perft.position3();
     }
 
     @Test
     public void position4() {
-        PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
         Perft perft = new Perft();
         perft.setVisitor(validtMoveTester);
 
-        perft.position4(generator);
+        perft.position4();
     }
 
 }

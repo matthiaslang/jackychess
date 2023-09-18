@@ -3,7 +3,7 @@ package org.mattlang.jc.moves;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.search.SearchThreadContext;
-import org.mattlang.jc.movegenerator.MoveGenerator;
+import org.mattlang.jc.movegenerator.GenMode;
 
 /**
  * Encapsulates all relevant objects to prepare iteration over moves on the board.
@@ -21,10 +21,10 @@ public interface MoveIterationPreparer {
      * @param hashMove
      * @param parentMove
      */
-    void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+    void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove);
 
-    void prepare(SearchThreadContext stc, MoveGenerator.GenMode mode, BoardRepresentation board, Color color,
+    void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
                  int ply, int hashMove, int parentMove, int captureMargin);
 
     /**
