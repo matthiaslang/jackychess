@@ -1,5 +1,9 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.FigureConstants.FT_KNIGHT;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -19,9 +23,9 @@ public class BoardTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        board.domove(new MoveImpl("e2e4"));
-        board.domove(new MoveImpl("e7e5"));
-        board.domove(new MoveImpl("g1f3"));
+        board.domove(new MoveImpl(FT_PAWN, parsePos("e2"), parsePos("e4"), (byte) 0));
+        board.domove(new MoveImpl(FT_PAWN, parsePos("e7"), parsePos("e5"), (byte) 0));
+        board.domove(new MoveImpl(FT_KNIGHT, parsePos("g1"), parsePos("f3"), (byte) 0));
         System.out.println(board.toUniCodeStr());
     }
 
@@ -31,11 +35,11 @@ public class BoardTest {
         board.setStartPosition();
 
         System.out.println("doing moves...");
-        Move m1 = new MoveImpl("e2e4");
+        Move m1 = new MoveImpl(FT_PAWN, parsePos("e2"), parsePos("e4"), (byte) 0);
         board.domove(m1);
-        Move m2 = new MoveImpl("e7e5");
+        Move m2 = new MoveImpl(FT_PAWN, parsePos("e7"), parsePos("e5"), (byte) 0);
         board.domove(m2);
-        Move m3 = new MoveImpl("g1f3");
+        Move m3 = new MoveImpl(FT_KNIGHT, parsePos("g1"), parsePos("f3"), (byte) 0);
         board.domove(m3);
         System.out.println(board.toUniCodeStr());
 
@@ -50,7 +54,5 @@ public class BoardTest {
         cmpboard.setStartPosition();
         Assertions.assertThat(board.toUniCodeStr()).isEqualTo(cmpboard.toUniCodeStr());
     }
-
-
 
 }
