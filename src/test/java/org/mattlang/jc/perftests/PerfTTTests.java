@@ -1,6 +1,7 @@
 package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.Main.initLogging;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -8,13 +9,12 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.tt.TTCache3;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.MoveGenerator;
-import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
 
@@ -40,7 +40,7 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
 
         // do one opening move (knigth) which should not change the tt aging:
-        board.domove(new MoveImpl("b1c3"));
+        board.domove(new MoveImpl(FigureConstants.FT_KNIGHT, parsePos("b1"), parsePos("c3"), (byte)0));
 
         ttCache.updateAging(board);
         testCacheWithPosition(board, ttCache, depth);
@@ -53,7 +53,6 @@ public class PerfTTTests {
     }
 
     public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
-        MoveGenerator generator = new PseudoLegalMoveGenerator();
         StopWatch fillWatch = new StopWatch();
         Perft perft = new Perft();
 
@@ -67,7 +66,7 @@ public class PerfTTTests {
 
         // fill cache
         fillWatch.start();
-        perft.perft(generator, board, board.getSiteToMove(), depth);
+        perft.perft(board, board.getSiteToMove(), depth);
         fillWatch.stop();
 
         // read from cache:
@@ -82,7 +81,7 @@ public class PerfTTTests {
 
         });
 
-        perft.perft(generator, board, board.getSiteToMove(), depth);
+        perft.perft(board, board.getSiteToMove(), depth);
         readWatch.stop();
 
         System.out.println("counts " + count[0] + " hits " + hits[0] + "hits: %" + (((long) hits[0]) * 100 / count[0]));
