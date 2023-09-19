@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.mattlang.SlowTests;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -17,6 +19,7 @@ import org.mattlang.jc.engine.MoveCursor;
  * PerfTests for fischer random chess.
  * https://www.chessprogramming.org/Chess960_Perft_Results
  */
+@Category(SlowTests.class)
 public class PerfChess960Tests {
 
     @Test

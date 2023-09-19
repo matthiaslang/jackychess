@@ -1,11 +1,14 @@
 package org.mattlang.jc.perftests;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.mattlang.SlowTests;
 
 /**
  * PerfTests
  * https://www.chessprogramming.org/Perft_Results
  */
+@Category(SlowTests.class)
 public class PerfTests {
 
     @Test

@@ -2,6 +2,8 @@ package org.mattlang.jc.perftests;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.mattlang.SlowTests;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -11,6 +13,7 @@ import org.mattlang.jc.engine.MoveCursor;
 /**
  * PerfTests to validate the boards.isValid method.
  */
+@Category(SlowTests.class)
 public class PerfIsValidTests {
 
     private boolean debug = false;

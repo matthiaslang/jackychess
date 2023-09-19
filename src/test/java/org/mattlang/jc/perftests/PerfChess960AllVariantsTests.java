@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.SlowTests;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.bitboard.BitBoard;
 
@@ -22,6 +24,7 @@ import lombok.AllArgsConstructor;
  * https://www.chessprogramming.org/Chess960_Perft_Results
  */
 @RunWith(Parameterized.class)
+@Category(SlowTests.class)
 public class PerfChess960AllVariantsTests {
 
     private String fen;

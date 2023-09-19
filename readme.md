@@ -27,7 +27,7 @@ and several open source engines, just to name a few of them: cpw, stockfish, fru
 ## Building
 
 At least Java 11 & maven to compile the engine.
-However, it should run under any newer Java version. It is mainly tested with Java 11 under Linux.         
+However, it should run under any newer Java version. It is mainly tested with Java 11 under Linux.
            
 ## Usage
 
@@ -116,6 +116,23 @@ by a regular user.
 # Versions
 
 see [Version History](docs/versionhistory.md)                     
+
+
+# Build and Development 
+
+Building the project
+
+    mvn clean package
+
+This will build the project and execute all unit tests
+
+### run integration tests
+
+    mvn verify
+
+### Generate test reports
+
+    mvn surefire-report:report-only
 
 
 ## todo 

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.mattlang.SlowTests;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.zobrist.Zobrist;
@@ -17,6 +19,7 @@ import org.mattlang.jc.zobrist.Zobrist;
  * PerfTests for zobrist hashing.
  *
  */
+@Category(SlowTests.class)
 public class ZobristPerfTests {
 
     @Test
