@@ -69,6 +69,7 @@ public final class MgEgScore {
 
     /**
      * Set the mg value. Calls the change callback handler.
+     *
      * @param mg
      */
     public void setMg(int mg) {
@@ -76,7 +77,7 @@ public final class MgEgScore {
     }
 
     public void setEg(int eg) {
-        score = getMgScore() + eg;
+        set(getMgScore(), eg);
     }
 
     public static int setMg(int score, int mg) {
