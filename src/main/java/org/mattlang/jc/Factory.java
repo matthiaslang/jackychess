@@ -34,20 +34,6 @@ public class Factory {
         return appProps;
     }
 
-    public static SearchParameter createStagedMoveGen() {
-        return new SearchParameter()
-                .evaluateFunction.set(ParameterizedEvaluation::new)
-                .moveiterationPreparer.set(MoveIterationImpls.STAGED.createSupplier())
-                .boards.set(BitBoard::new)
-                .checkChecker.set(BBCheckCheckerImpl::new)
-                .searchMethod.set(()->new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
-                .config(c -> {
-                    c.timeout.setValue(15000);
-                    c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED);
-                    c.evaluateParamSet.setValue(EvalParameterSet.CURRENT);
-                });
-    }
-
 
     public static SearchParameter createStable() {
         return new SearchParameter()
