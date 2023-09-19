@@ -1,5 +1,9 @@
 # Versions
 
+### 23.06.2
+
+- refactoring and cleanup of code
+- small fix in pawn evaluation of neighbours
 
 ### 23.06.1
 
