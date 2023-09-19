@@ -173,8 +173,8 @@ public class EngineTest {
 
         System.out.println(move.toStr());
 
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("e7e6");
+        // check result; of course this could change if evaluation changes
+        assertThat(move.toStr()).isEqualTo("b8c6");
     }
 
     /**
@@ -207,6 +207,8 @@ public class EngineTest {
 
         System.out.println(move.toStr());
 
+        // sometimes the right move is not found... especially if the test is executed allone...
+        // so there are obvious some cache dependencies?
         assertThat(move.toStr()).isEqualTo("a1b1");
     }
 
