@@ -124,7 +124,11 @@ Building the project
 
     mvn clean package
 
-This will build the project and execute all unit tests
+This will build the project and execute all fast unit tests
+
+    mvn clean package -PallTests
+
+this will build and execute all tests including slow ones and will take several minutes to run.
 
 ### run integration tests
 
@@ -132,7 +136,13 @@ This will build the project and execute all unit tests
 
 ### Generate test reports
 
+after building and running tests, call:
+
     mvn surefire-report:report-only
+
+or just 
+
+    mvn site
 
 
 ## todo 
