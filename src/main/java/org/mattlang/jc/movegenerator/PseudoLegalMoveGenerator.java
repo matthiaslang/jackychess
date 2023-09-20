@@ -7,11 +7,8 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 
 /**
  * a "pseude legal" move generator.
- *
  */
 public class PseudoLegalMoveGenerator {
-
-    BBMoveGeneratorImpl generator = new BBMoveGeneratorImpl();
 
     /**
      * Generates moves.
@@ -22,7 +19,8 @@ public class PseudoLegalMoveGenerator {
      *                 as possible to prevent garbage collection
      */
     public void generate(BoardRepresentation board, Color side, MoveList moveList) {
-        generator.generate(board, side, moveList);
+        MoveGeneration.generateAttacks(board, side, moveList);
+        MoveGeneration.generateQuiets(board, side, moveList);
     }
 
     /**
@@ -41,7 +39,8 @@ public class PseudoLegalMoveGenerator {
 
         switch (mode) {
         case NORMAL:
-            generator.generate(board, side, moveList);
+            MoveGeneration.generateAttacks(board, side, moveList);
+            MoveGeneration.generateQuiets(board, side, moveList);
             break;
         case QUIESCENCE:
             MoveGeneration.generateAttacks(board, side, moveList);
