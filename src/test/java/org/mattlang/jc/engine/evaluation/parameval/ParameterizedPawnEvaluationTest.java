@@ -28,4 +28,24 @@ public class ParameterizedPawnEvaluationTest {
         System.out.println(BB.toStr(neighbours));
         Assertions.assertThat(neighbours).isEqualTo(B7 | C7 | D7 | E7 | F7 | G7);
     }
+
+    @Test
+    public void testSinglePawnNeighbors() {
+
+        BitBoard board = new BitBoard();
+        board.setFenPosition("position fen K7/8/4p3/8/8/4PP2/8/7k w - - 1 56 ");
+        board.println();
+
+        long neighbours = getPawnNeighbours(board.getBoard().getPawns(BitChessBoard.nWhite));
+        System.out.println(BB.toStrBoard(neighbours));
+        System.out.println(BB.toStrBoard(D3 | E3 | F3 | G3));
+        Assertions.assertThat(neighbours).isEqualTo(D3 | E3 | F3 | G3);
+
+        neighbours = getPawnNeighbours(board.getBoard().getPawns(BitChessBoard.nBlack));
+        System.out.println(BB.toStrBoard(neighbours));
+        Assertions.assertThat(neighbours).isEqualTo(D6 | F6);
+    }
+
+
+
 }
