@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.board.bitboard.BB.Rank.*;
+import static org.mattlang.jc.board.bitboard.Rank.*;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 

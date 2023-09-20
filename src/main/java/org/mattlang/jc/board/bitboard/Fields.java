@@ -1,6 +1,7 @@
 package org.mattlang.jc.board.bitboard;
 
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.Tools;
 
 import lombok.Getter;
 
@@ -81,10 +82,31 @@ public enum Fields {
 
     private final long whiteFieldBB;
     private final long blackFieldBB;
+    public final int square;
+    public final int rankNum;
+    public final int fileNum;
+    public final Rank rank;
+    public final File file;
 
     Fields(long whiteFieldBB) {
         this.whiteFieldBB = whiteFieldBB;
         this.blackFieldBB = BB.flipVertical(whiteFieldBB);
+
+        square = Long.numberOfTrailingZeros(whiteFieldBB);
+        rankNum = Tools.rankOf(square);
+        fileNum = Tools.fileOf(square);
+
+        rank = Rank.rank(rankNum);
+        file = File.file(fileNum);
+    }
+
+    public static Fields find(File file, Rank rank) {
+        for (Fields field : Fields.values()) {
+            if (field.file == file && field.rank == rank) {
+                return field;
+            }
+        }
+        throw new IllegalArgumentException("no matching Field!!");
     }
 
     public boolean isSet(long bitboard, Color side) {

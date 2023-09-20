@@ -4,13 +4,15 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.bitboard.BB.Direction.NORTH;
 import static org.mattlang.jc.board.bitboard.BB.Direction.SOUTH;
-import static org.mattlang.jc.board.bitboard.BB.File.FILE_H;
-import static org.mattlang.jc.board.bitboard.BB.Rank.RANK_8;
 import static org.mattlang.jc.board.bitboard.BB.Square.SQ_A8;
 import static org.mattlang.jc.board.bitboard.BB.Square.SQ_H1;
+import static org.mattlang.jc.board.bitboard.File.FILE_H;
+import static org.mattlang.jc.board.bitboard.Rank.RANK_8;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.File;
+import org.mattlang.jc.board.bitboard.Rank;
 
 public class Tools {
 
@@ -152,11 +154,11 @@ public class Tools {
         return s ^ SQ_H1.ordinal();
     }
 
-    public static int relativeRank(int c, BB.Rank r) {
+    public static int relativeRank(int c, Rank r) {
         return r.ordinal() ^ (c * 7);
     }
 
-    public static int relativeRank(Color c, BB.Rank r) {
+    public static int relativeRank(Color c, Rank r) {
         return relativeRank(c.ordinal(), r);
     }
 
@@ -168,7 +170,7 @@ public class Tools {
         return rankOf(s) ^ (c.ordinal() * 7);
     }
 
-    public static int makeSquare(BB.File f, BB.Rank r) {
+    public static int makeSquare(File f, Rank r) {
         return (r.ordinal() << 3) + f.ordinal();
     }
 
