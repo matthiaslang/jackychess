@@ -22,7 +22,8 @@ public class BitBoardForTuning implements BoardRepresentation {
     @Getter
     private BitChessBoard board = new BitChessBoard();
 
-    private CastlingRights castlingRights = new CastlingRights();
+    /** use byte  for castlingrights to save memory. */
+    private byte castlingRights = CastlingRights.INITIAL_RIGHTS;
 
     private long zobristHash = 0L;
 
@@ -36,16 +37,28 @@ public class BitBoardForTuning implements BoardRepresentation {
      */
     private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
-    private BoardCastlings boardCastlings = new BoardCastlings(this);
+    /**
+     * reusing a static board castling for all tuning bitboards:
+     * This saves memory and is only possible, since we tune only non-chess960 fens, and do not create moves from
+     * this board.
+     */
+    private static BoardCastlings boardCastlings = new BoardCastlings(null);
     private boolean chess960 = false;
 
     public BitBoardForTuning(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos,
             Color siteToMove) {
         this.board = board;
+        this.castlingRights = castlingRights.getRights();
+        this.enPassantMoveTargetPos = enPassantMoveTargetPos;
+        this.siteToMove = siteToMove;
+    }
+
+    public BitBoardForTuning(BitChessBoard board, byte castlingRights, int enPassantMoveTargetPos,
+            Color siteToMove) {
+        this.board = board;
         this.castlingRights = castlingRights;
         this.enPassantMoveTargetPos = enPassantMoveTargetPos;
         this.siteToMove = siteToMove;
-
     }
 
     @Override
@@ -140,7 +153,7 @@ public class BitBoardForTuning implements BoardRepresentation {
             return false;
         BitBoardForTuning bitBoard = (BitBoardForTuning) o;
         return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos && board.equals(bitBoard.board)
-                && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
+                && castlingRights == bitBoard.castlingRights && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
@@ -151,20 +164,22 @@ public class BitBoardForTuning implements BoardRepresentation {
     @Override
     public BitBoardForTuning copy() {
         BitBoardForTuning
-                copied = new BitBoardForTuning(board.copy(), castlingRights.copy(), enPassantMoveTargetPos, siteToMove);
+                copied = new BitBoardForTuning(board.copy(), castlingRights, enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
-        copied.chess960=chess960;
+        copied.chess960 = chess960;
         return copied;
     }
 
     public static BitBoardForTuning copy(BoardRepresentation bitBoard) {
         BitBoardForTuning
-                copied = new BitBoardForTuning(bitBoard.getBoard().copy(), new CastlingRights(bitBoard.getCastlingRights()), bitBoard.getEnPassantMoveTargetPos(), bitBoard.getSiteToMove());
+                copied =
+                new BitBoardForTuning(bitBoard.getBoard().copy(), new CastlingRights(bitBoard.getCastlingRights()),
+                        bitBoard.getEnPassantMoveTargetPos(), bitBoard.getSiteToMove());
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
-        copied.chess960=bitBoard.isChess960();
-//        copied.moveCounter = bitBoarmoveCounter;
+        copied.chess960 = bitBoard.isChess960();
+        //        copied.moveCounter = bitBoarmoveCounter;
         return copied;
     }
 
@@ -203,7 +218,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public boolean isCastlingAllowed(Color color, RochadeType type) {
-        return castlingRights.isAllowed(color, type);
+        return CastlingRights.isAllowed(castlingRights, color, type);
     }
 
     @Override
@@ -213,7 +228,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public byte getCastlingRights() {
-        return castlingRights.getRights();
+        return castlingRights;
     }
 
     @Override
@@ -235,7 +250,6 @@ public class BitBoardForTuning implements BoardRepresentation {
     public void undo(Move move) {
         throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
-
 
     @Override
     public void undoNullMove() {
@@ -275,13 +289,10 @@ public class BitBoardForTuning implements BoardRepresentation {
             e.printStackTrace();
         }
     }
+
     @Override
     public BoardCastlings getBoardCastlings() {
         return boardCastlings;
-    }
-
-    private CastlingMove getCastlingMove(Move move) {
-        return boardCastlings.getCastlingMove(move.getCastlingType());
     }
 
     @Override

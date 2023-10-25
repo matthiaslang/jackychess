@@ -6,7 +6,8 @@ import java.util.Objects;
 
 public class CastlingRights {
 
-    private byte castlingRights = 0b1111;
+    public static final byte INITIAL_RIGHTS = 0b1111;
+    private byte castlingRights = INITIAL_RIGHTS;
 
     public CastlingRights() {
     }
@@ -16,6 +17,10 @@ public class CastlingRights {
     }
 
     public boolean isAllowed(Color color, RochadeType type) {
+        return isAllowed(castlingRights, color, type);
+    }
+
+    public static boolean isAllowed(byte castlingRights, Color color, RochadeType type) {
         int allowedMask = createMask(color, type);
         return (castlingRights & allowedMask) != 0;
     }
@@ -32,10 +37,10 @@ public class CastlingRights {
 
     public void retain(Color color, RochadeType type) {
         int mask = createMask(color, type);
-        castlingRights &= 0xFF-mask;
+        castlingRights &= 0xFF - mask;
     }
 
-    private byte createMask(Color color, RochadeType type) {
+    private static byte createMask(Color color, RochadeType type) {
         int idx = type == SHORT ? 0 : 1;
         if (color == Color.BLACK) {
             idx += 2;
@@ -58,8 +63,10 @@ public class CastlingRights {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         CastlingRights that = (CastlingRights) o;
         return castlingRights == that.castlingRights;
     }
