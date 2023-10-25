@@ -95,7 +95,7 @@ public class LocalOptimizer implements Optimizer {
                 // if we are within bounds do a step change
                 if (param.isChangePossible(step)) {
 
-                    param.change(step);
+                    change(param, step);
                     double newE = e(parameterSet);
                     if (newE < bestE - delta) {
                         bestE = newE;
@@ -103,7 +103,7 @@ public class LocalOptimizer implements Optimizer {
                         numParamAdjusted++;
                     } else if (param.isChangePossible(-2 * step)) {
                         // otherwise try the step in the different direction (if allowed):
-                        param.change(-2 * step);
+                        change(param, -2 * step);
                         newE = e(parameterSet);
                         if (newE < bestE - delta) {
                             bestE = newE;
@@ -111,14 +111,21 @@ public class LocalOptimizer implements Optimizer {
                             numParamAdjusted++;
                         } else {
                             // reset change:
-                            param.change(step);
+                            change(param, step);
                         }
                     } else {
                         // change back
-                        param.change(-step);
+                        change(param, -step);
                     }
                 }
             }
+        }
+    }
+
+    private void change(TuningParameter param, int change) {
+        param.change(change);
+        if (optParameters.isOptimizeRecalcOnlyDependendFens()){
+            dataSet.resetDependingFens(param);
         }
     }
 
@@ -144,6 +151,7 @@ public class LocalOptimizer implements Optimizer {
             for (TuningParameter param : parameterSet.getParams()) {
                 if (checkFenDependsOnParam(fen, param)) {
                     param.addDependingFen(fen);
+                    fen.addDependingParameter(param);
                 }
             }
         }

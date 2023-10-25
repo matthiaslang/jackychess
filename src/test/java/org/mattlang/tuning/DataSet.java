@@ -35,12 +35,11 @@ public class DataSet {
     /**
      * scaling Constant.
      */
-//            private static final double K = 1.13;
+    //            private static final double K = 1.13;
     /**
      * calculated to 1.09 by pre-scaling. now using this fixed value.
      */
     private static final double K = 1.5800000000000003;
-
 
     private List<DataSet> workers = new ArrayList<>();
 
@@ -76,7 +75,9 @@ public class DataSet {
 
     /**
      * Calc multithreaded with n Workers woring in n Threads.
-     * Uses copies of the evaluation function, since our evaluation function is not thread safe (not pure functionl uses internal state).
+     * Uses copies of the evaluation function, since our evaluation function is not thread safe (not pure functionl uses
+     * internal state).
+     *
      * @param evaluate
      * @param params
      * @return
@@ -109,12 +110,25 @@ public class DataSet {
         // build sum:
         double sum = 0;
         for (FenEntry fen : fens) {
-            double errorValue = pow(fen.getResult() - sigmoid(evaluate.eval(fen.getBoard(), WHITE)), 2);
-            fen.setErrorValue(errorValue);
+            int eval = calcEval(fen);
+            double errorValue = pow(fen.getResult() - sigmoid(eval), 2);
             sum += errorValue;
         }
         return sum;
 
+    }
+
+    private int calcEval(FenEntry fen) {
+        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
+            int eval = fen.getLastEval();
+            if (eval == FenEntry.NO_EVAL) {
+                eval = evaluate.eval(fen.getBoard(), WHITE);
+                fen.setLastEval(eval);
+            }
+            return eval;
+        } else {
+            return evaluate.eval(fen.getBoard(), WHITE);
+        }
     }
 
     private void updateWorker(ParameterSet parameterSet) {
@@ -132,7 +146,7 @@ public class DataSet {
                 workers.get(i % optParameters.getThreadCount()).addFen(fen);
                 i++;
             }
-        }                                                                       
+        }
 
         // update the evaluation functions of the workers with the current parameter settings:
         for (DataSet worker : workers) {
@@ -224,5 +238,11 @@ public class DataSet {
 
         w.writeTable(table);
 
+    }
+
+    public void resetDependingFens(TuningParameter param) {
+        for (FenEntry fen : fens) {
+            fen.resetIfDepending(param.getParamNo());
+        }
     }
 }

@@ -57,4 +57,12 @@ public interface TuningParameter {
      * reset its value to a neutral value. (usually 0 or 1 depending if its additive or multiplicative).
      */
     void resetValue();
+
+    /**
+     * returns a unique number of that param.
+     * @return
+     */
+    int getParamNo();
+
+    void setParamNo(int i);
 }

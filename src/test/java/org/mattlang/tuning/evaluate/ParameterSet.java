@@ -112,8 +112,12 @@ public class ParameterSet {
 
     private void createRedundantParamsList() {
         params.clear();
+
         for (TuningParameterGroup group : groups) {
             params.addAll(group.getParameters());
+        }
+        for (int i = 0; i < params.size(); i++) {
+            params.get(i).setParamNo(i);
         }
     }
 
