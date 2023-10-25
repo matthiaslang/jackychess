@@ -95,7 +95,9 @@ GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
 
 ## Changes
 
-    $GITLOG
+\`\`\`
+$GITLOG
+\`\`\`
 
 ## Results
 
