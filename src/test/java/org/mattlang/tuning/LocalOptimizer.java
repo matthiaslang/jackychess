@@ -124,7 +124,7 @@ public class LocalOptimizer implements Optimizer {
 
     private void change(TuningParameter param, int change) {
         param.change(change);
-        if (optParameters.isOptimizeRecalcOnlyDependendFens()){
+        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
             dataSet.resetDependingFens(param);
         }
     }
@@ -147,7 +147,16 @@ public class LocalOptimizer implements Optimizer {
     }
 
     private void initDependendFensInformation(ParameterSet parameterSet, DataSet dataSet) {
+        int i = 0;
+        int percent = 0;
+        int numFens = dataSet.getFens().size();
         for (FenEntry fen : dataSet.getFens()) {
+            i++;
+            int currPercent = i * 100 / numFens;
+            if (currPercent != percent) {
+                percent = currPercent;
+                LOGGER.info("processed " + percent + "% of fen dependencies");
+            }
             for (TuningParameter param : parameterSet.getParams()) {
                 if (checkFenDependsOnParam(fen, param)) {
                     param.addDependingFen(fen);
