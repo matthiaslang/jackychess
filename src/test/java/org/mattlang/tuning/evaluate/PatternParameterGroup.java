@@ -35,6 +35,12 @@ public class PatternParameterGroup implements TuningParameterGroup {
     @Getter
     private final String tableCsvName;
 
+    /***
+     * Informational Name of this pattern parameter group.
+     */
+    @Getter
+    private final String paramName;
+
     private final Function<ParameterizedEvaluation, Pattern> getter;
 
     private final boolean mirrored;
@@ -52,6 +58,7 @@ public class PatternParameterGroup implements TuningParameterGroup {
             Function<ParameterizedEvaluation, Pattern> getter) {
         this.subdir = subdir;
         this.tableCsvName = tableCsvName;
+        this.paramName = tableCsvName.replace(".csv", "");
         this.mgEgCombined = false;
         this.getter = getter;
         this.pattern = getter.apply(parameterizedEvaluation).copy();
@@ -67,6 +74,13 @@ public class PatternParameterGroup implements TuningParameterGroup {
         this.subdir = subdir;
         this.tableCsvName = tableCsvNameMg;
         this.tableCsvNameEg = tableCsvNameEg;
+
+        // clean descr. name by removeing csv and Mg/MG endings:
+        this.paramName = tableCsvName
+                .replace(".csv", "")
+                .replace("Mg", "")
+                .replace("MG", "");
+
         this.mgEgCombined = true;
         this.getter = getter;
         this.pattern = getter.apply(parameterizedEvaluation).copy();
@@ -116,6 +130,8 @@ public class PatternParameterGroup implements TuningParameterGroup {
 
     public PatternParameterGroup(PatternParameterGroup orig) {
         this.tableCsvName = orig.getTableCsvName();
+        this.tableCsvNameEg = orig.tableCsvNameEg;
+        this.paramName = orig.paramName;
         this.mgEgCombined = orig.mgEgCombined;
         this.getter = orig.getter;
         this.mirrored = orig.mirrored;
