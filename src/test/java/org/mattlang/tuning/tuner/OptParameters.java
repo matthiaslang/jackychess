@@ -126,10 +126,10 @@ public class OptParameters {
         if (value.getClass().getName().startsWith("java.lang")) {
             return false;
         }
-        if (value.getClass().isAssignableFrom(List.class)) {
+        if (value instanceof List) {
             return false;
         }
-        if (value.getClass().isAssignableFrom(Map.class)) {
+        if (value instanceof Map) {
             return false;
         }
 

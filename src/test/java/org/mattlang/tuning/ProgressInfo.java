@@ -30,10 +30,11 @@ public class ProgressInfo {
     }
 
     public void progressInfo(ParameterSet parameterSet, int step, double bestE, int round, int numParamAdjusted) {
+        int adjOfProgressInterval = numParamAdjusted - lastParamsAdjusted;
 
         long secondsOfProgressInterval = (stopWatch.getCurrDuration() - lastTime) / 1000;
         if (secondsOfProgressInterval > 0) {
-            int adjOfProgressInterval = numParamAdjusted - lastParamsAdjusted;
+
             adjPerSecond = ((double) adjOfProgressInterval) / secondsOfProgressInterval;
         }
         lastParamsAdjusted = numParamAdjusted;
@@ -48,12 +49,13 @@ public class ProgressInfo {
         String progressInfoTxt =
                 stopWatch.getFormattedCurrDuration() + ": round " + round +
                         ", step " + step +
-                        ", params adjusted: " + numParamAdjusted
-                        + ", curr Error= " + bestE
+                        ", params adjustments: " + adjOfProgressInterval
+                        + ", total: " + numParamAdjusted
+                        + "; curr Error= " + bestE
                         + ", overall paramsAdjPerSecond= " + overallAdjPerSecond
                         + ", paramsAdjPerSecond= " + adjPerSecond;
         LOGGER.info(progressInfoTxt);
-        LOGGER.info(parameterSet.collectParamDescr());
+//        LOGGER.info(parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {
