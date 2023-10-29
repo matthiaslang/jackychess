@@ -51,7 +51,7 @@ public class LocalOptimizerK  {
             if (round % 100 == 0 && stopWatch.timeElapsed(60000)) {
                 LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE + " K="
                         + dataSet.getK());
-                LOGGER.info(bestParValues.collectParamDescr());
+//                LOGGER.info(bestParValues.collectParamDescr());
             }
             dataSet.setK(dataSet.getK() + KDELTA);
             double newE = e(bestParValues);
