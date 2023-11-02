@@ -101,6 +101,7 @@ public class LocalOptimizer implements Optimizer {
                         bestE = newE;
                         improved = true;
                         numParamAdjusted++;
+                        param.incAdjCounter();
                     } else if (param.isChangePossible(-2 * step)) {
                         // otherwise try the step in the different direction (if allowed):
                         change(param, -2 * step);
@@ -109,6 +110,7 @@ public class LocalOptimizer implements Optimizer {
                             bestE = newE;
                             improved = true;
                             numParamAdjusted++;
+                            param.incAdjCounter();
                         } else {
                             // reset change:
                             change(param, step);

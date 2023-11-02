@@ -65,4 +65,8 @@ public interface TuningParameter {
     int getParamNo();
 
     void setParamNo(int i);
+
+    void incAdjCounter();
+
+    int getAdjCounter();
 }

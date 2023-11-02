@@ -13,6 +13,11 @@ public abstract class AbstractTuningParameter implements TuningParameter {
     private int depCounter = 0;
 
     @Getter
+
+    /** number of adjustments during tuning. */
+    private int adjCounter=0;
+
+    @Getter
     @Setter
     private int paramNo;
 
@@ -33,4 +38,8 @@ public abstract class AbstractTuningParameter implements TuningParameter {
         return depCounter;
     }
 
+    @Override
+    public void incAdjCounter() {
+        adjCounter++;
+    }
 }
