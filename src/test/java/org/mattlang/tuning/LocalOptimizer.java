@@ -77,7 +77,7 @@ public class LocalOptimizer implements Optimizer {
         int round = 0;
         int numParamAdjusted = 0;
 
-        ProgressInfo progressInfo = new ProgressInfo(outputDir, markdownAppender);
+        ProgressInfo progressInfo = new ProgressInfo(optParameters, outputDir, markdownAppender);
 
         boolean improved = true;
         while (improved) {

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
+import org.mattlang.tuning.ProgressInfo;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +30,8 @@ public class OptParameters {
      */
     private String evalParamSet = "TUNED01";
     private final List<String> inputFiles;
+
+    private int progressUpdatesInMinutes = ProgressInfo.DEFAULT_UPDATE_MINUTES;
 
     /**
      * optimization to recalc only the fens which depend on that particular parameter.

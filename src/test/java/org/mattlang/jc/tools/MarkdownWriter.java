@@ -1,9 +1,13 @@
 package org.mattlang.jc.tools;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MarkdownWriter extends Writer {
 
@@ -83,6 +87,15 @@ public class MarkdownWriter extends Writer {
 
     public void writeTable(MarkdownTable table) throws IOException {
         table.writeTable(writer);
+    }
+
+    public void writeTableHeader(String... header) throws IOException {
+        new MarkdownTable().header(header).writeTableHeader(writer);
+    }
+
+    public void writeTableRow(Object... row) throws IOException {
+        List<String> rowAsStrings = stream(row).map(Objects::toString).collect(toList());
+        new MarkdownTable().header(rowAsStrings).row(row).writeRows(writer);
     }
 
 }

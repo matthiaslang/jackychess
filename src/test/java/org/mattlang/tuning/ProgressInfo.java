@@ -5,14 +5,20 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.tuning.evaluate.ParameterSet;
+import org.mattlang.tuning.tuner.OptParameters;
 
 public class ProgressInfo {
 
     private static final Logger LOGGER = Logger.getLogger(ProgressInfo.class.getSimpleName());
+    public static final int DEFAULT_UPDATE_MINUTES = 5;
+
+    private final int updatesInMinutes;
 
     private final File outputDir;
     private final MarkdownAppender markdownAppender;
+    private final MarkdownTable progressTable;
 
     private StopWatch stopWatch = new StopWatch();
 
@@ -23,10 +29,19 @@ public class ProgressInfo {
     private long lastTime;
     private double adjPerSecond;
 
-    public ProgressInfo(File outputDir, MarkdownAppender markdownAppender) {
+    public ProgressInfo(OptParameters optParameters, File outputDir, MarkdownAppender markdownAppender) {
         this.outputDir = outputDir;
+        this.updatesInMinutes = optParameters.getProgressUpdatesInMinutes();
         this.markdownAppender = markdownAppender;
         stopWatch.start();
+
+        progressTable =
+                new MarkdownTable().header("Duration", "Round", "Step", "Params adjustments", "Adj total", "Curr Error"
+                        , "Overall AdjPerSecond", "AdjPerSecond");
+
+        markdownAppender.append(w -> {
+            progressTable.writeTableHeader(w);
+        });
     }
 
     public void progressInfo(ParameterSet parameterSet, int step, double bestE, int round, int numParamAdjusted) {
@@ -45,7 +60,6 @@ public class ProgressInfo {
             overallAdjPerSecond = ((double) numParamAdjusted) / seconds;
         }
 
-
         String progressInfoTxt =
                 stopWatch.getFormattedCurrDuration() + ": round " + round +
                         ", step " + step +
@@ -55,15 +69,16 @@ public class ProgressInfo {
                         + ", overall paramsAdjPerSecond= " + overallAdjPerSecond
                         + ", paramsAdjPerSecond= " + adjPerSecond;
         LOGGER.info(progressInfoTxt);
-//        LOGGER.info(parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {
-            w.paragraph(progressInfoTxt);
+            progressTable.row(stopWatch.getFormattedCurrDuration(), round
+                    , step, adjOfProgressInterval, numParamAdjusted, bestE, overallAdjPerSecond, adjPerSecond);
+            progressTable.writeRows(w);
         });
     }
 
     public boolean isEnoughTimeElapsed() {
-        return stopWatch.timeElapsed(5 * 60000);
+        return stopWatch.timeElapsed(updatesInMinutes * 60000);
     }
 }
