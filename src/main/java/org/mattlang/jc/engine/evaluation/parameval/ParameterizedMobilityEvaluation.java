@@ -3,7 +3,10 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
+import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
@@ -12,7 +15,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
@@ -75,9 +77,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         // calc mobility of each piece.
         // we do not count sqares which are attached by enemy pawns.
 
+        long occupancy = bb.getColorMask(nWhite) | bb.getColorMask(nBlack);
+
         // this update also the attacks information of each piece type
-        evalMobilityAndAttacks(result, bb, Color.WHITE);
-        evalMobilityAndAttacks(result, bb, Color.BLACK);
+        evalMobilityAndAttacks(result, bb, Color.WHITE, occupancy);
+        evalMobilityAndAttacks(result, bb, Color.BLACK, occupancy);
 
     }
 
@@ -86,37 +90,19 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         bResult.clear();
     }
 
-    public void evalMobilityAndAttacks(EvalResult evalResult, BitChessBoard bb, Color side) {
+    private void evalMobilityAndAttacks(EvalResult evalResult, BitChessBoard bb, Color side, long occupancy) {
 
         MobilityEvalResult result = side == WHITE ? wResult : bResult;
-
-        Color xside = side.invert();
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
-        long occupancy = ownFigsMask | opponentFigsMask;
-
-        long oppKingMask = bb.getPieceSet(FT_KING, xside);
-        int oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
-        long oppKingZone = getKingZoneMask(xside.ordinal(), oppKingPos);
-
-        // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
-        long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
-        long noOppPawnAttacs = ~oppPawnAttacs;
+        result.init(side, bb);
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
 
-            long attacks = MagicBitboards.genBishopAttacs(bishop, occupancy);
-            long mobility = attacks & empty & noOppPawnAttacs;
-            long captures = attacks & opponentFigsMask;
-            long kingZoneAttacs = attacks & oppKingZone;
-            int tropism = getTropism(bishop, oppKingPos);
+            long attacks = genBishopAttacs(bishop, occupancy);
 
             evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
-            result.countFigureVals(paramsBishop, mobility, captures, kingZoneAttacs, tropism);
+            result.countFigureMobilityVals(paramsBishop, bishop, attacks);
 
             bishopBB &= bishopBB - 1;
         }
@@ -124,38 +110,24 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long knightBB = bb.getPieceSet(FT_KNIGHT, side);
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
-
             long knightAttack = BB.getKnightAttacs(knight);
 
-            long moves = knightAttack & ~ownFigsMask;
-            long captures = moves & opponentFigsMask;
-            long mobility = moves & ~captures & noOppPawnAttacs;
-            long kingZoneAttacs = knightAttack & oppKingZone;
-            int tropism = getTropism(knight, oppKingPos);
-
             evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
-            result.countFigureVals(paramsKnight, mobility, captures, kingZoneAttacs, tropism);
+            result.countFigureMobilityVals(paramsKnight, knight, knightAttack);
 
             knightBB &= knightBB - 1;
         }
-
-        long ownPawns = bb.getPieceSet(FT_PAWN, side);
-        long oppPawns = bb.getPieceSet(FT_PAWN, xside);
 
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
             final int rook = Long.numberOfTrailingZeros(rookBB);
 
-            long attacks = MagicBitboards.genRookAttacs(rook, occupancy);
-            long mobility = attacks & empty & noOppPawnAttacs;
-            long captures = attacks & opponentFigsMask;
-            long kingZoneAttacs = attacks & oppKingZone;
-            int tropism = getTropism(rook, oppKingPos);
+            long attacks = genRookAttacs(rook, occupancy);
 
             evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
-            result.countFigureVals(paramsRook, mobility, captures, kingZoneAttacs, tropism);
+            result.countFigureMobilityVals(paramsRook, rook, attacks);
 
-            result.rookOpenFiles(rook, oppKingPos, ownPawns, oppPawns);
+            result.rookOpenFiles(rook);
 
             rookBB &= rookBB - 1;
         }
@@ -164,16 +136,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (queenBB != 0) {
             final int queen = Long.numberOfTrailingZeros(queenBB);
 
-            long attacksRook = MagicBitboards.genRookAttacs(queen, occupancy);
-            long attacksBishop = MagicBitboards.genBishopAttacs(queen, occupancy);
-            long attacks = attacksRook | attacksBishop;
-            long mobility = attacks & empty & noOppPawnAttacs;
-            long captures = attacks & opponentFigsMask;
-            long kingZoneAttacs = attacks & oppKingZone;
-            int tropism = getTropism(queen, oppKingPos);
+            long attacks = genRookAttacs(queen, occupancy) | genBishopAttacs(queen, occupancy);
 
             evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
-            result.countFigureVals(paramsQueen, mobility, captures, kingZoneAttacs, tropism);
+            result.countFigureMobilityVals(paramsQueen, queen, attacks);
 
             result.evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
 
@@ -185,14 +151,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         long kingAttack = BB.getKingAttacs(king);
 
-        long moves = kingAttack & ~ownFigsMask;
-        long captures = moves & opponentFigsMask;
-        long mobility = moves & ~captures & noOppPawnAttacs;
-        long kingZoneAttacs = kingAttack & oppKingZone;
-        int tropism = getTropism(king, oppKingPos);
-
         evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
-        result.countFigureVals(paramsKing, mobility, captures, kingZoneAttacs, tropism);
+        result.countFigureMobilityVals(paramsKing, king, kingAttack);
 
         //        result.blockedPieces(bb, side);
     }
@@ -234,17 +194,16 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
         evalMobility(result, bitBoard);
 
-        result.getMgEgScore().add(wResult.mobilityMGEG - bResult.mobilityMGEG);
-        result.getMgEgScore().add(wResult.tropismMGEG - bResult.tropismMGEG);
+        result.getMgEgScore().add(wResult.eval - bResult.eval);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
          *  than two attackers or if the attacker has no queen.                    *
          **************************************************************************/
 
-        if (wResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nWhite) == 0)
+        if (wResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(nWhite) == 0)
             wResult.kingAttWeightMgEg = 0;
-        if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(BitChessBoard.nBlack) == 0)
+        if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(nBlack) == 0)
             bResult.kingAttWeightMgEg = 0;
 
         result.getMgEgScore()
