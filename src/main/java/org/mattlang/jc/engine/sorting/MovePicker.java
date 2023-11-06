@@ -31,11 +31,6 @@ public final class MovePicker {
      * current position of the picker.
      */
     private int current = -1;
-    private int swapCounter = 0;
-    /**
-     * marker if everything is sorted during previous lazy sorting searches.
-     */
-    private boolean alreadyFullySorted = false;
 
     public MovePicker() {
     }
@@ -53,10 +48,8 @@ public final class MovePicker {
         this.size = size;
         this.start = start;
         current = start - 1;
-        swapCounter = 0;
-        alreadyFullySorted = false;
 
-//        validate();
+        //        validate();
     }
 
     /**
@@ -88,7 +81,7 @@ public final class MovePicker {
         }
 
         ArrayList<Integer> moveOrders = new ArrayList<>();
-        for (int i = 0; i < start+size; i++) {
+        for (int i = 0; i < start + size; i++) {
             moveOrders.add(moveList.getOrder(i));
         }
         List<String> moveDebugOrders = createMoveDebugOrders(moveOrders);
@@ -139,9 +132,7 @@ public final class MovePicker {
      * @return the next move with the lowest order of all remaining moves.
      */
     public int next() {
-        if (!alreadyFullySorted) {
-            sortRound();
-        }
+        sortRound();
         size--;
         current = start;
         start++;
@@ -163,34 +154,20 @@ public final class MovePicker {
 
     private void sortRound() {
         if (start >= moveList.size() - 1) {
-            alreadyFullySorted = true;
             return;
         }
-        swapCounter = 0;
         int currLowest = -1;
-        int currLowestIndex = -1;
-        for (int i = start; i < moveList.size() - 1; i++) {
-            if (moveList.getOrder(i) > moveList.getOrder(i + 1)) {
-                swap(i, i + 1);
-
-            }
+        int currLowestIndex = start;
+        for (int i = start; i < moveList.size(); i++) {
             if (moveList.getOrder(i) < currLowest || currLowest == -1) {
                 currLowest = moveList.getOrder(i);
                 currLowestIndex = i;
             }
-
         }
 
         if (currLowestIndex != start) {
-            swap(start, currLowestIndex);
-        }
-        if (swapCounter == 0) {
-            alreadyFullySorted = true;
+            moveList.swap(start, currLowestIndex);
         }
     }
 
-    private void swap(int i, int j) {
-        swapCounter++;
-        moveList.swap(i, j);
-    }
 }
