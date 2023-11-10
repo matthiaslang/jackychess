@@ -1,5 +1,10 @@
 # Versions
 
+### 23.06.3
+
+- small refactorings, cleanups
+- retuned pawn evals
+
 ### 23.06.2
 
 - refactoring and cleanup of code
