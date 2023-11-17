@@ -6,6 +6,7 @@ import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
 
 public interface BoardRepresentation {
+
     void setStartPosition();
 
     void setPosition(String[] fenPosition);
@@ -38,7 +39,7 @@ public interface BoardRepresentation {
 
     BoardRepresentation copy();
 
-    int findPosOfFigure(byte figureCode);
+    int getKingPos(int color);
 
     /**
      * Returns true, if n is an en passant target move field.
@@ -54,7 +55,6 @@ public interface BoardRepresentation {
      * @return
      */
     int getEnPassantCapturePos();
-
 
     int getEnPassantMoveTargetPos();
 
@@ -82,6 +82,7 @@ public interface BoardRepresentation {
 
     /**
      * Returns the inner bitboard representation.
+     *
      * @return
      */
     BitChessBoard getBoard();

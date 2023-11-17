@@ -1,5 +1,7 @@
 package org.mattlang.tuning;
 
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
+
 import java.util.Objects;
 
 import org.mattlang.jc.board.*;
@@ -184,8 +186,9 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public int findPosOfFigure(byte figureCode) {
-        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
+    public int getKingPos(int color) {
+        long kingBB = board.getPieceSet(FT_KING, color);
+        return Long.numberOfTrailingZeros(kingBB);
     }
 
     @Override

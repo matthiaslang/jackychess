@@ -1,10 +1,10 @@
 package org.mattlang.jc.movegenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.junit.Test;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class CaptureTest {
@@ -18,7 +18,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos = board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }
@@ -32,7 +32,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }
@@ -46,7 +46,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }
@@ -60,7 +60,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }
@@ -73,7 +73,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isFalse();
 
     }
@@ -86,7 +86,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }
@@ -100,7 +100,7 @@ public class CaptureTest {
 
         System.out.println(board.toUniCodeStr());
 
-        int kingPos = board.findPosOfFigure(Figure.W_King.figureCode);
+        int kingPos =  board.getKingPos(nWhite);
         assertThat(Captures.canFigureCaptured(board, kingPos)).isTrue();
 
     }

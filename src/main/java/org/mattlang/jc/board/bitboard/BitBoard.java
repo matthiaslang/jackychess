@@ -329,7 +329,7 @@ public final class BitBoard implements BoardRepresentation {
     public void switchSiteToMove() {
         siteToMove = siteToMove.invert();
         zobristHash = Zobrist.colorFlip(zobristHash);
-//        pawnZobristHash = Zobrist.colorFlip(pawnZobristHash);
+        //        pawnZobristHash = Zobrist.colorFlip(pawnZobristHash);
     }
 
     @Override
@@ -373,14 +373,10 @@ public final class BitBoard implements BoardRepresentation {
         return copied;
     }
 
-
-    // todo getKingPos
     @Override
-    public int findPosOfFigure(byte figureCode) {
-        // todo that method should be renamed to something like getKingPos()
-        long kingBB = board.getPieceSet(FT_KING, (figureCode & BLACK.code) == BLACK.code ? BLACK : WHITE);
-        final int king = Long.numberOfTrailingZeros(kingBB);
-        return king;
+    public int getKingPos(int color) {
+        long kingBB = board.getPieceSet(FT_KING, color);
+        return Long.numberOfTrailingZeros(kingBB);
     }
 
     @Override
@@ -401,11 +397,11 @@ public final class BitBoard implements BoardRepresentation {
     @Override
     public void setEnPassantOption(int enPassantOption) {
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-//        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
+        //        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
         this.enPassantMoveTargetPos = enPassantOption;
 
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-//        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
+        //        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
     }
 
     private int calcEnPassantCaptureFromEnPassantOption() {
@@ -418,10 +414,10 @@ public final class BitBoard implements BoardRepresentation {
 
     private void resetEnPassant() {
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-//        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
+        //        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
         enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
         zobristHash = Zobrist.updateEnPassant(zobristHash, enPassantMoveTargetPos);
-//        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
+        //        pawnZobristHash = Zobrist.updateEnPassant(pawnZobristHash, enPassantMoveTargetPos);
     }
 
     @Override
@@ -592,7 +588,6 @@ public final class BitBoard implements BoardRepresentation {
         return false;
 
     }
-
 
     @Override
     public boolean isvalidmove(Color color, int aMove) {
