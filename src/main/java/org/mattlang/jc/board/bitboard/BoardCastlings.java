@@ -10,7 +10,7 @@ import static org.mattlang.jc.moves.MoveImpl.*;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.movegenerator.MoveCollector;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -49,7 +49,7 @@ public final class BoardCastlings {
 
 
 
-    public void generateCastlingMoves(Color side, MoveCollector collector) {
+    public void generateCastlingMoves(Color side, MoveList collector) {
         switch (side) {
         case WHITE:
             if (castlingWhiteLong.getDef().check(board)) {

@@ -14,7 +14,6 @@ import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
-import org.mattlang.jc.moves.MoveListImpl;
 
 public class BitBoardTest {
 
@@ -39,7 +38,7 @@ public class BitBoardTest {
         CheckChecker checkChecker = new BBCheckCheckerImpl();
 
         // positive check, that all legal moves are "valid" moves:
-        MoveList moveList = new MoveListImpl();
+        MoveList moveList = new MoveList();
         moveList.reset(Color.WHITE);
         movegen.generate(board, Color.WHITE, moveList);
 

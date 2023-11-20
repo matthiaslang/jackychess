@@ -20,7 +20,6 @@ import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
-import org.mattlang.jc.moves.MoveListImpl;
 
 /**
  * Helper class for debugging.
@@ -39,7 +38,7 @@ public class MoveValidator {
     /**
      * reused movelist.
      */
-    private MoveList moveList = new MoveListImpl();
+    private MoveList moveList = new MoveList();
 
     public void validate(GameState gameState, NegaMaxResult rslt) {
         if (LOGGER.isLoggable(Level.WARNING)) {

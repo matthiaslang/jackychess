@@ -6,7 +6,7 @@ import static org.mattlang.jc.moves.TestTools.getAllMoves;
 import java.util.List;
 
 import org.junit.Test;
-import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.Tuple;
 
 public class MovePickerTest {
@@ -16,7 +16,7 @@ public class MovePickerTest {
 
         MovePicker picker=new MovePicker();
 
-        MoveListImpl movelist=new MoveListImpl();
+        MoveList movelist=new MoveList();
         movelist.addMoveWithOrder(500, 500);
         movelist.addMoveWithOrder(200, 200);
         movelist.addMoveWithOrder(100, 100);
@@ -36,7 +36,7 @@ public class MovePickerTest {
 
         MovePicker picker=new MovePicker();
 
-        MoveListImpl movelist=new MoveListImpl();
+        MoveList movelist=new MoveList();
         movelist.addMoveWithOrder(500, 500);
         movelist.addMoveWithOrder(200, 200);
         movelist.addMoveWithOrder(100, 100);
@@ -55,7 +55,7 @@ public class MovePickerTest {
 
         MovePicker picker=new MovePicker();
 
-        MoveListImpl movelist=new MoveListImpl();
+        MoveList movelist=new MoveList();
         movelist.addMoveWithOrder(1, 1);
         movelist.addMoveWithOrder(200, 200);
         movelist.addMoveWithOrder(100, 100);
@@ -74,7 +74,7 @@ public class MovePickerTest {
     public void emptyPickerHasNoNext() {
         MovePicker picker = new MovePicker();
 
-        MoveListImpl movelist = new MoveListImpl();
+        MoveList movelist = new MoveList();
         picker.init(movelist, 0, 0);
 
         assertThat(picker.hasNext()).isFalse();

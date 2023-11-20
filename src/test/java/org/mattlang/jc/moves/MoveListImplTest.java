@@ -4,12 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.MoveList;
 
 public class MoveListImplTest {
 
     @Test
     public void testFilterMove() {
-        MoveListImpl moveList = new MoveListImpl();
+        MoveList moveList = new MoveList();
         moveList.addFilter(5);
         moveList.addFilter(50);
         moveList.addFilter(500);

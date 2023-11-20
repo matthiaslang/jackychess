@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.engine.MoveList;
 
 public class SorterTest {
 
     @Test
     public void alreadySorted(){
 
-        MoveListImpl ml = new MoveListImpl();
+        MoveList ml = new MoveList();
         ml.addMoveWithOrder(1,1);
         ml.addMoveWithOrder(2,2);
         ml.addMoveWithOrder(3,3);
@@ -31,7 +31,7 @@ public class SorterTest {
     @Test
     public void partSorted() {
 
-        MoveListImpl ml = new MoveListImpl();
+        MoveList ml = new MoveList();
         ml.addMoveWithOrder(1,1);
         ml.addMoveWithOrder(3,3);
         ml.addMoveWithOrder(2,2);
@@ -57,7 +57,7 @@ public class SorterTest {
     @Test
     @Ignore
     public void sortStability() {
-        MoveListImpl ml = new MoveListImpl();
+        MoveList ml = new MoveList();
         ml.addMoveWithOrder(3,2);
         ml.addMoveWithOrder(2,2);
         ml.addMoveWithOrder(1,1);
@@ -76,7 +76,7 @@ public class SorterTest {
     @Test
     public void unsorted() {
 
-        MoveListImpl ml = new MoveListImpl();
+        MoveList ml = new MoveList();
         ml.addMoveWithOrder(3,3);
         ml.addMoveWithOrder(2,2);
         ml.addMoveWithOrder(1,1);
@@ -95,7 +95,7 @@ public class SorterTest {
     @Test
     public void sorttest2() {
 
-        MoveListImpl ml = new MoveListImpl();
+        MoveList ml = new MoveList();
         ml.addMoveWithOrder(99,99);
         ml.addMoveWithOrder(12,12);
         ml.addMoveWithOrder(27,27);

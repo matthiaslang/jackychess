@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.engine.MoveList;
 
 /**
  * Move picker which does a partial sort and picks the next move by its order priority from a move list.
@@ -14,7 +14,7 @@ public final class MovePicker {
 
     public static final Logger LOGGER = Logger.getLogger(MovePicker.class.getSimpleName());
 
-    private MoveListImpl moveList;
+    private MoveList moveList;
 
     /**
      * the remaining size of the picker. Note: this can be different from the size of the used move list in cases when
@@ -35,15 +35,15 @@ public final class MovePicker {
     public MovePicker() {
     }
 
-    public MovePicker(MoveListImpl moveList, int start) {
+    public MovePicker(MoveList moveList, int start) {
         init(moveList, start);
     }
 
-    public void init(MoveListImpl moveList, int start) {
+    public void init(MoveList moveList, int start) {
         init(moveList, start, moveList.size() - start);
     }
 
-    public void init(MoveListImpl moveList, int start, int size) {
+    public void init(MoveList moveList, int start, int size) {
         this.moveList = moveList;
         this.size = size;
         this.start = start;

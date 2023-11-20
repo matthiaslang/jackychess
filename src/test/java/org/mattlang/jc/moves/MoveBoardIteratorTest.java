@@ -11,7 +11,7 @@ public class MoveBoardIteratorTest {
 
     @Test
     public void testiterating() {
-        MoveList moves = new MoveListImpl();
+        MoveList moves = new MoveList();
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         CheckChecker checkchecker = new BBCheckCheckerImpl();

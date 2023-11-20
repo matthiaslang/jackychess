@@ -12,6 +12,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -33,7 +34,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
     private static final int STAGE_KILLERS = 3;
     private static final int STAGE_COUNTER = 4;
     private static final int STAGE_REST = 5;
-    private MoveListImpl moveList = new MoveListImpl();
+    private MoveList moveList = new MoveList();
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
@@ -224,7 +225,7 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveC
      * @param start
      * @return
      */
-    private int countGoodCapturesAndPromotions(MoveListImpl moveList, int start) {
+    private int countGoodCapturesAndPromotions(MoveList moveList, int start) {
         int goodOnes = 0;
         for (int i = start; i < moveList.size(); i++) {
             if (isGoodCapture(moveList.getOrder(i)) || isGoodPromotion(moveList.getOrder(i))) {

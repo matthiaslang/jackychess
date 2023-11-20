@@ -3,6 +3,7 @@ package org.mattlang.jc.moves;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MovePicker;
 
 public final class LazySortedMoveCursorImpl implements MoveCursor {
@@ -107,11 +108,11 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
         return currMoveObj.toUCIString(board);
     }
 
-    public void init(MoveListImpl moveList) {
+    public void init(MoveList moveList) {
         init(moveList, 0);
     }
 
-    public void init(MoveListImpl moveList, int startPos) {
+    public void init(MoveList moveList, int startPos) {
         movePicker.init(moveList, startPos);
     }
 

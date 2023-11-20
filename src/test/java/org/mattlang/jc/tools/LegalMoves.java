@@ -7,7 +7,6 @@ import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
-import org.mattlang.jc.moves.MoveListImpl;
 
 public class LegalMoves {
 
@@ -22,14 +21,14 @@ public class LegalMoves {
      * @return
      */
     public static MoveList generateLegalMoves(BoardRepresentation board, Color color) {
-        MoveList moveList = new MoveListImpl();
+        MoveList moveList = new MoveList();
         moveList.reset(color);
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
         CheckChecker checkChecker = new BBCheckCheckerImpl();
 
         movegen.generate(board, color, moveList);
 
-        MoveListImpl result = new MoveListImpl();
+        MoveList result = new MoveList();
 
         // filter all legal moves
         MoveCursor iterator = moveList.iterate();

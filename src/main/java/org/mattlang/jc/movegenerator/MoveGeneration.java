@@ -13,14 +13,14 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.moves.MoveListImpl;
+import org.mattlang.jc.engine.MoveList;
 
 /**
  * Bitboard move generation used in staged move generation.
  */
 public final class MoveGeneration {
 
-    public static void generateQuiets(BoardRepresentation board, Color side, MoveCollector collector) {
+    public static void generateQuiets(BoardRepresentation board, Color side, MoveList collector) {
 
         BitChessBoard bb = board.getBoard();
 
@@ -83,7 +83,7 @@ public final class MoveGeneration {
         board.getBoardCastlings().generateCastlingMoves(side, collector);
     }
 
-    public static void generateAttacks(BoardRepresentation board, Color side, MoveCollector collector) {
+    public static void generateAttacks(BoardRepresentation board, Color side, MoveList collector) {
 
         BitChessBoard bb = board.getBoard();
 
@@ -143,7 +143,7 @@ public final class MoveGeneration {
 
     }
 
-    public static void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveCollector collector, Color side) {
+    public static void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveList collector, Color side) {
         BitChessBoard bb = bitBoard.getBoard();
         long pawns = bb.getPieceSet(FT_PAWN, side);
 
@@ -211,7 +211,7 @@ public final class MoveGeneration {
         }
     }
 
-    public static void genPawnMoves(BitChessBoard bb, long empty, MoveCollector collector, Color side) {
+    public static void genPawnMoves(BitChessBoard bb, long empty, MoveList collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
 
         if (side == WHITE) {
@@ -232,7 +232,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genPawnCaptures(MoveCollector collector, BitChessBoard bb, long targets, int offset) {
+    private static void genPawnCaptures(MoveList collector, BitChessBoard bb, long targets, int offset) {
         while (targets != 0) {
             final int fromIndex = Long.numberOfTrailingZeros(targets);
             collector.genPawnMove(fromIndex, fromIndex + offset, bb.get(fromIndex + offset));
@@ -240,7 +240,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genAttacks(MoveCollector collector, byte figType, int figPos, long captures, BitChessBoard bb) {
+    private static void genAttacks(MoveList collector, byte figType, int figPos, long captures, BitChessBoard bb) {
         while (captures != 0) {
             final int toIndex = Long.numberOfTrailingZeros(captures);
             collector.genMove(figType, figPos, toIndex, bb.get(toIndex));
@@ -250,7 +250,7 @@ public final class MoveGeneration {
 
 
 
-    public static void genPawnQuietPromotions(BitChessBoard bb, MoveCollector collector, Color side) {
+    public static void genPawnQuietPromotions(BitChessBoard bb, MoveList collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
         long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
 
@@ -258,7 +258,7 @@ public final class MoveGeneration {
             long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
             while (singlePushTargets != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                if (MoveListImpl.isOnLastLine(toIndex)) {
+                if (MoveList.isOnLastLine(toIndex)) {
                     collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
                 }
                 singlePushTargets &= singlePushTargets - 1;
@@ -267,7 +267,7 @@ public final class MoveGeneration {
             long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
             while (singlePushTargets != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                if (MoveListImpl.isOnLastLine(toIndex)) {
+                if (MoveList.isOnLastLine(toIndex)) {
                     collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
                 }
                 singlePushTargets &= singlePushTargets - 1;
