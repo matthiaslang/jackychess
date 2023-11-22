@@ -15,6 +15,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
+import org.mattlang.jc.engine.sorting.MvvLva;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -146,5 +147,30 @@ public class MoveValidator {
         }
         return hasLegalMoves;
 
+    }
+
+    /**
+     * Finds a first "best move" by ordering the moves by mmv lva.
+     * This is used to have a first proper best move before we even start our search.
+     * @param gameState
+     * @return
+     */
+    public Move findSimpleBestMove(GameState gameState) {
+        BoardRepresentation board = gameState.getBoard();
+        moveList.reset(board.getSiteToMove());
+        movegen.generate(board, board.getSiteToMove(), moveList);
+
+        int minOrder = Integer.MAX_VALUE;
+        int bestMove = 0;
+        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+            while (iterator.doNextValidMove()) {
+                int order = MvvLva.calcMMVLVA(iterator);
+                if (order < minOrder) {
+                    minOrder = order;
+                    bestMove = iterator.getMoveInt();
+                }
+            }
+        }
+        return new MoveImpl(bestMove);
     }
 }

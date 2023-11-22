@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.search;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
@@ -26,6 +27,9 @@ import lombok.Getter;
 public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchListener {
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
+    public static final IterativeDeepeningListener NOOP_LISTENER = bestMove -> {
+
+    };
 
     /**
      * Does not bring an improvement: the depth skip makes the performance/results worse... so we dont use it
@@ -67,6 +71,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     private GameState gameState;
 
     private StopWatch watch;
+    private IterativeDeepeningListener listener = NOOP_LISTENER;
 
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
@@ -129,7 +134,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                         searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
                 rounds.add(irr);
-
                 if (irr.isCheckMate()) {
                     break;
                 }
@@ -158,6 +162,17 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         logIsr(isr);
         gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
         return isr;
+    }
+
+    private void callListener(Move move) {
+        if (!isWorker) {
+            listener.updateBestRoundMove(move);
+        }
+    }
+
+    @Override
+    public void registerListener(IterativeDeepeningListener listener) {
+        this.listener = requireNonNull(listener);
     }
 
     /**
@@ -252,6 +267,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         if (rslt.savedMove != null) {
             lastCurrMove = rslt.savedMove.getMoveInt();
             printRoundInfo(gameContext, gameState, rslt, watch, negaMaxAlphaBeta);
+            callListener(rslt.savedMove);
             moveValidator.validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...

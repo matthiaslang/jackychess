@@ -17,7 +17,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepeningV2;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.uci.FenParser;
@@ -115,7 +115,7 @@ public class EngineTest {
             System.out.println(move.toStr());
 
             // with the evaluation function it should yield e7e6:
-//            assertThat(move.toStr()).isEqualTo("e7e6");
+            //            assertThat(move.toStr()).isEqualTo("e7e6");
         } catch (SearchException se) {
             System.out.println(se.toStringAllInfos());
             se.printStackTrace();
@@ -133,7 +133,7 @@ public class EngineTest {
         Factory.setDefaults(Factory.createStable()
                 .moveiterationPreparer.set(MoveIterationImpls.NORMAL.createSupplier())
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepeningV2())
+                .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
                 .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
                 .config(c -> c.hash.setValue(512))
                 .config(c -> c.timeout.setValue(36000000))
@@ -300,7 +300,6 @@ public class EngineTest {
 
     }
 
-
     @Test
     public void testFRCIssue() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
@@ -308,17 +307,19 @@ public class EngineTest {
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
         GameState gameState =
-                parser.setPosition("position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5 c1c1 a5a2 ", board);
+                parser.setPosition(
+                        "position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5 c1c1 a5a2 ",
+                        board);
 
         System.out.println(board.toUniCodeStr());
 
         SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
-//        // block with other figure:
-//        assertThat(move.toStr()).isEqualTo("d8d7");
-//
-//        System.out.println(move);
+        //        // block with other figure:
+        //        assertThat(move.toStr()).isEqualTo("d8d7");
+        //
+        //        System.out.println(move);
 
     }
 
@@ -329,7 +330,9 @@ public class EngineTest {
         BoardRepresentation board = Factory.getDefaults().boards.create();
         FenParser parser = new FenParser();
         GameState gameState =
-                parser.setPosition("position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5   ", board);
+                parser.setPosition(
+                        "position fen brkqnbrn/pppppppp/8/8/8/8/PPPPPPPP/BRKQNBRN w GBgb - 0 1 moves d2d4 d7d5 c2c4 c7c6 h1g3 d5c4 e2e3 e8d6 d1a4 b7b5 a4a7 a8b7 a7c5 e7e6 c5h5 d8a5   ",
+                        board);
 
         System.out.println(board.toUniCodeStr());
 

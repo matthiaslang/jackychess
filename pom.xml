@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <groupId>org.mattlang</groupId>
     <artifactId>jackychess</artifactId>
-    <version>23.06.3</version>
+    <version>23.06.3-T</version>
 
     <profiles>
         <profile>

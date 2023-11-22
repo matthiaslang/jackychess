@@ -78,16 +78,9 @@ public class UciProcessor {
     }
 
     private void stop(GameState gameState) {
-        LOGGER.info("got uci stop, trying to stop async running engine...");
-        Optional<Move> optBestMove = asyncEngine.stop();
-        if (optBestMove.isPresent()) {
-            LOGGER.info("stopped engine, sending best move so far:");
-            sendBestMove(gameState, optBestMove.get());
-        } else {
-            LOGGER.info(
-                    "no best move so far, maybe engine is not running... in any way we need to send bestmove with empty move!");
-            UCI.instance.putCommand(CMD_BESTMOVE + " ");
-        }
+        LOGGER.info("got uci stop, stopping async running engine...");
+        Move bestMove = asyncEngine.stop();
+        sendBestMove(gameState, bestMove);
     }
 
     private GameContext createNewGameContext() {
@@ -171,7 +164,7 @@ public class UciProcessor {
             FenParser fenParser = new FenParser();
             BoardRepresentation board = Factory.getDefaults().boards.create();
             return fenParser.setPosition(positionStr, board);
-        } catch (RuntimeException re){
+        } catch (RuntimeException re) {
             throw new RuntimeException("Error parsing UCI postion: " + positionStr, re);
         }
     }

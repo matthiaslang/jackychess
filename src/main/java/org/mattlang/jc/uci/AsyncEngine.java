@@ -4,9 +4,10 @@ import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.Constants.MAX_THREADS;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
-import java.util.Optional;
-import java.util.concurrent.*;
-import java.util.logging.Level;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
@@ -17,15 +18,12 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
+import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
 
     Logger logger = Logger.getLogger("ASYNC");
-    /**
-     * "outer" completable future. CompletableFutures unfortunately dont support cancel of asynchronous
-     * attached work. therefore we need to work with two futures.
-     */
-    private CompletableFuture<Move> result;
+
     /**
      * "inner" future which is asynchronously executed. This future can be cancelled.
      */
@@ -33,13 +31,29 @@ public class AsyncEngine {
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(2 * MAX_THREADS);
 
+    private MoveValidator moveValidator = new MoveValidator();
+
+    /**
+     * the collected best move so far.
+     * We use this to properly return a best move under all circumstances.
+     */
+    private Move bestMove;
+
+    private Engine engine;
+
     public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
         GoParameter goParams = new GoParameter();
         goParams.infinite = true;
         return start(gameState, goParams, new ConfigValues(), gameContext);
     }
 
-    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options, GameContext gameContext) {
+    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options,
+            GameContext gameContext) {
+        // init naively a best move by ordering via mvalva to have always a best move if
+        // we get a stop command before our real search has properly started and returned something better.
+        bestMove = moveValidator.findSimpleBestMove(gameState);
+
+        // init the search parameters, eval functions, etc:
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
         searchParams.evaluateFunction.set(options.evluateFunctions.getValue().getSupplier());
         searchParams.moveiterationPreparer.set(options.moveIterationImpls.getValue().createSupplier());
@@ -48,58 +62,58 @@ public class AsyncEngine {
         if (!goParams.infinite) {
             long timeToUse =
                     TimeCalc.determineCalculationTime(gameState, goParams);
-                searchParams.getConfig().timeout.setValue((int) timeToUse);
+            searchParams.getConfig().timeout.setValue((int) timeToUse);
 
         }
         Factory.setDefaults(searchParams);
         SearchThreadContexts.CONTEXTS.resetMoveLists();
         // log parameters only once for a game:
-        if (gameContext.getContext("startLogged")==null) {
+        if (gameContext.getContext("startLogged") == null) {
             Factory.getDefaults().log();
             gameContext.setContext("startLogged", true);
         }
 
+        // start the engine in a separate thread, delivering the result in a future
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
-        Future<Move> future = executorService.submit(() -> {
+        this.future = executorService.submit(() -> {
             try {
-                Move move = new Engine().go(gameState, gameContext);
+                engine = new Engine();
+                Move move = engine.go(gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
-            } catch (SearchException se){
+            } catch (SearchException se) {
                 completableFuture.completeExceptionally(se);
                 logger.log(SEVERE, se.toStringAllInfos(), se);
                 throw se;
             } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
-                logger.log(SEVERE, fmtSevere(gameState,"error during async execution!"), e);
+                logger.log(SEVERE, fmtSevere(gameState, "error during async execution!"), e);
                 throw e;
             }
 
         });
 
-        this.future = future;
-        result = completableFuture;
-        return result;
+        return completableFuture;
     }
 
-    public Optional<Move> stop() {
+    /**
+     * We got a stop command via uci, so we must stop our engine and deliver the best move found so far.
+     *
+     * @return
+     */
+    public Move stop() {
         if (future != null) {
+            // simply cancel the engine, we even do not wait till it properly stopped
             future.cancel(true);
-            try {
-                return Optional.ofNullable(result.get(2000, TimeUnit.MILLISECONDS));
-            } catch (InterruptedException | IllegalMonitorStateException | ExecutionException | TimeoutException e) {
-                logger.log(Level.WARNING, "Exception getting result", e);
-            }
-            result = null;
             future = null;
-        } else {
-            // stop without go...?
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.warning("got 'stop' without having a 'go' or internal error!");
-            }
-
         }
-        return Optional.empty();
+
+        // return the best collected move we have so far
+        if (engine != null) {
+            return engine.getBestMoveSoFar();
+        } else {
+            return bestMove;
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.search;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private int maxThreads = Factory.getDefaults().getConfig().maxThreads.getValue();
 
+    private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
+
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
         return iterativeSearch(gameState, gameContext, maxDepth).getSavedMove();
@@ -42,11 +46,17 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         }
         // and afterwards start the "main" within this thread as worker 0:
         IterativeDeepeningPVS id = new IterativeDeepeningPVS(0);
+        id.registerListener(listener);
         try {
             return id.iterativeSearch(gameState, gameContext, maxDepth);
         } finally {
             stopAllWorker(futures);
         }
+    }
+
+    @Override
+    public void registerListener(IterativeDeepeningListener listener) {
+        this.listener = requireNonNull(listener);
     }
 
     private void stopAllWorker(List<Future<IterativeSearchResult>> futures) {
