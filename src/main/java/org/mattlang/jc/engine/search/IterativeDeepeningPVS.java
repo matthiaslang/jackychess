@@ -148,7 +148,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
             logIsr(isr);
             return isr;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
         }
 

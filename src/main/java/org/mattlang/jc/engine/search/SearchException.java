@@ -16,10 +16,10 @@ public class SearchException extends RuntimeException {
     private GameContext gameContext;
     private ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds;
     private String ebfreport;
-    private Exception e;
+    private Throwable e;
 
     public SearchException(GameState gameState, GameContext gameContext,
-            ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds, String ebfreport, Exception e) {
+            ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds, String ebfreport, Throwable e) {
         super(e);
         this.gameState = gameState;
         this.gameContext = gameContext;

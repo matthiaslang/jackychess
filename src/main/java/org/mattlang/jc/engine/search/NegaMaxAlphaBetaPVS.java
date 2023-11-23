@@ -92,7 +92,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private final boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
     private final boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
 
-    /** parent moves. needs one more place than max ply to save the "following" move. */
+    /**
+     * parent moves. needs one more place than max ply to save the "following" move.
+     */
     private final int[] parentMoves = new int[MAX_PLY + 1];
 
     private SearchContext searchContext;
@@ -201,7 +203,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         boolean applyFutilityPruning = false;
 
-        boolean pruneable =  not_pv && !areWeInCheck;
+        boolean pruneable = not_pv && !areWeInCheck;
 
         if (pruneable) {
 
@@ -269,12 +271,15 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
                 int probCutMargin = beta + 90;
                 int probCutCount = 0;
-                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0, probCutMargin - staticEval)) {
+                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0,
+                        probCutMargin - staticEval)) {
                     while (moveCursor.nextMove() && probCutCount < 3) {
                         if (moveCursor.doValidMove()) {
                             probCutCount++;
                             if (moveCursor.getMoveInt() != hashMove) {
-                                int score = -negaMaximize(ply + 1, depth - depth / 4 - 4, color.invert(), -probCutMargin, -probCutMargin + 1);
+                                int score =
+                                        -negaMaximize(ply + 1, depth - depth / 4 - 4, color.invert(), -probCutMargin,
+                                                -probCutMargin + 1);
                                 if (score >= probCutMargin)
                                     return score;
                             }
@@ -282,8 +287,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     }
                 }
             }
-
-
 
             /**************************************************************************
              *  RAZORING - if a node is close to the leaf and its static score is low, *
@@ -351,7 +354,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                  *  prune insufficient captures as well, but that seems too risky.     *
                  **********************************************************************/
 
-                boolean quietMove=!moveCursor.isCapture() && !moveCursor.isPromotion();
+                boolean quietMove = !moveCursor.isCapture() && !moveCursor.isPromotion();
 
                 // todo the condition that it gives check is now out-commented...
                 if (applyFutilityPruning
@@ -515,7 +518,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 !moveCursor.isPromotion() &&
                 !isPawnPush(moveCursor) &&
                 //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
-//                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
+                //                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
                 !areWeInCheck) {
 
             int reduction = LMR_TABLE[min(depth, 63)][min(searchedMoves, 63)];
@@ -575,11 +578,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
             throw new TimeoutException();
         }
-        if (statistics.nodesVisited % 10000 == 0) {
-            if (Thread.interrupted()) {
-                throw new TimeoutException();
-            }
-
+        if (Thread.interrupted()) {
+            throw new TimeoutException();
         }
         if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
             updateListener();

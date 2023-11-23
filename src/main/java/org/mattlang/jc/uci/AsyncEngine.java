@@ -4,10 +4,7 @@ import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.Constants.MAX_THREADS;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
@@ -37,9 +34,17 @@ public class AsyncEngine {
      * the collected best move so far.
      * We use this to properly return a best move under all circumstances.
      */
-    private Move bestMove;
+    private BestMoveCollector bestMoveCollector;
 
-    private Engine engine;
+    /**
+     * A Semaphore to guarantee that no two "start" processes are executed simultaneously.
+     * We need this, as we do not "wait" on a "stop" command for a process to properly finish because we want
+     * no delayed response on "stop".
+     * As an asynchronous job may therefore still running/trying to stop when the next "start" is executed
+     * we take care by this semaphore to not overlap the calls. Overlaps would be critical, as they would use
+     * the same internal structures (movelists, etc) which would result in Exceptions.
+     */
+    private Semaphore semaphore = new Semaphore(1, true);
 
     public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
         GoParameter goParams = new GoParameter();
@@ -49,9 +54,9 @@ public class AsyncEngine {
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options,
             GameContext gameContext) {
-        // init naively a best move by ordering via mvalva to have always a best move if
+        // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
-        bestMove = moveValidator.findSimpleBestMove(gameState);
+        bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState));
 
         // init the search parameters, eval functions, etc:
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
@@ -75,9 +80,11 @@ public class AsyncEngine {
 
         // start the engine in a separate thread, delivering the result in a future
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
-        this.future = executorService.submit(() -> {
+        Future<Move> newFuture = executorService.submit(() -> {
             try {
-                engine = new Engine();
+                semaphore.acquire();
+                Engine engine = new Engine();
+                engine.registerListener(bestMoveCollector);
                 Move move = engine.go(gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
@@ -89,10 +96,12 @@ public class AsyncEngine {
                 completableFuture.completeExceptionally(e);
                 logger.log(SEVERE, fmtSevere(gameState, "error during async execution!"), e);
                 throw e;
+            } finally {
+                semaphore.release();
             }
 
         });
-
+        this.future = newFuture;
         return completableFuture;
     }
 
@@ -103,17 +112,13 @@ public class AsyncEngine {
      */
     public Move stop() {
         if (future != null) {
+            // fire and forget:
             // simply cancel the engine, we even do not wait till it properly stopped
             future.cancel(true);
             future = null;
         }
-
-        // return the best collected move we have so far
-        if (engine != null) {
-            return engine.getBestMoveSoFar();
-        } else {
-            return bestMove;
-        }
+        // deliver without any delay the best move we got so far:
+        return bestMoveCollector.getBestMove();
     }
 
 }
