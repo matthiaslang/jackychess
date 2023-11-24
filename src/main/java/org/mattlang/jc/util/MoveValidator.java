@@ -42,31 +42,32 @@ public class MoveValidator {
     private MoveList moveList = new MoveListImpl();
 
     public void validate(GameState gameState, NegaMaxResult rslt) {
-        BoardRepresentation board = gameState.getBoard().copy();
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            BoardRepresentation board = gameState.getBoard().copy();
 
-        Color who2Move = gameState.getWho2Move();
-        for (Move move : rslt.pvList.getPvMoves()) {
+            Color who2Move = gameState.getWho2Move();
+            for (Move move : rslt.pvList.getPvMoves()) {
 
-            boolean legal = isLegalMove(board, move, who2Move);
+                boolean legal = isLegalMove(board, move, who2Move);
 
-            if (legal) {
-                board.domove(move);
-            } else {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning("depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
-                            + rslt.toLogString());
+                if (legal) {
+                    board.domove(move);
+                } else {
+                    LOGGER.warning(
+                            "depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
+                                    + rslt.toLogString());
+                    break;
+
                 }
-                break;
-
+                who2Move = who2Move.invert();
             }
-            who2Move = who2Move.invert();
         }
 
         // test the best move itself:
-        board = gameState.getBoard().copy();
-        boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
-        if (!legal) {
-            if (LOGGER.isLoggable(SEVERE)) {
+        if (LOGGER.isLoggable(SEVERE)) {
+            BoardRepresentation board = gameState.getBoard().copy();
+            boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
+            if (!legal) {
                 LOGGER.log(SEVERE, fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
             }
         }
@@ -152,6 +153,7 @@ public class MoveValidator {
     /**
      * Finds a first "best move" by ordering the moves by mmv lva.
      * This is used to have a first proper best move before we even start our search.
+     *
      * @param gameState
      * @return
      */
