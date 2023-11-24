@@ -1,5 +1,10 @@
 # Versions
 
+### 23.06.4
+
+- jacky has now proper support for short time games. Before that uci "stop" commands have been delayed and caused issues returning wrong "bestmove" results.
+- refactored code & code cleanup
+
 ### 23.06.3
 
 - small refactorings, cleanups
