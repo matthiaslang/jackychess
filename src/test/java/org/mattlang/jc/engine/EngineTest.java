@@ -17,6 +17,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.jc.engine.search.IterativeDeepeningListener;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.engine.search.SearchException;
@@ -169,9 +170,19 @@ public class EngineTest {
         engine.getBoard().switchSiteToMove();
         GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
 
+        Move[] bestm =new Move[1];
+        engine.registerListener(new IterativeDeepeningListener() {
+
+            @Override
+            public void updateBestRoundMove(Move bestMove) {
+                System.out.println("new best move of round: " + bestMove.toStr());
+                bestm[0] = bestMove;
+            }
+        });
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
+        assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
         assertThat(move.toStr()).isEqualTo("b8c6");
