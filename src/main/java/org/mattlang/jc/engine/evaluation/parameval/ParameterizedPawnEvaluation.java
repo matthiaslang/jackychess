@@ -23,7 +23,7 @@ import lombok.Setter;
  * see also https://www.chessprogramming.org/Pawns_and_Files_(Bitboards)  for bitboard actions.
  */
 @Getter
-public class ParameterizedPawnEvaluation implements EvalComponent {
+public final class ParameterizedPawnEvaluation implements EvalComponent {
 
     public static final String PAWN_SHIELD_2 = "pawnShield2";
     public static final String PAWN_SHIELD_3 = "pawnShield3";
@@ -99,8 +99,6 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
     private final boolean forTuning;
     private boolean caching;
 
-    @Setter
-    private PawnCache pawnCache = PawnCache.EMPTY_CACHE;
 
     public ParameterizedPawnEvaluation(boolean forTuning, boolean caching, EvalConfig config) {
         this.forTuning = forTuning;
@@ -150,13 +148,13 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         result.getMgEgScore().addMg(wKingShield - bKingShield);
 
         if (caching && !forTuning) {
-            long pawnHashKey = bitBoard.getPawnZobristHash();
-            PawnCacheEntry entry = pawnCache.find(pawnHashKey);
+            PawnCacheEntry entry = result.getPawnEntry();
             if (entry == null) {
-
                 int pawnEval = calcPawnEval(bitBoard);
                 result.getMgEgScore().add(pawnEval);
-                pawnCache.save(pawnHashKey, pawnEval, whitePassers, blackPassers);
+                result.pawnEval= pawnEval;
+                result.whitePassers = whitePassers;
+                result.blackPassers = blackPassers;
             } else {
                 // use cached score:
                 result.getMgEgScore().add(entry.score);
@@ -209,7 +207,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         long whiteAdvanceAttackedPawns = BB.nortOne(whitePawns) & blackPawnAttacs;
 
-        long blockedWhitePawns = whitePawns & BB.soutOne(blackPawns);
+        long blockedWhitePawns = calcBlockedWhitePawns(whitePawns, blackPawns);
 
         //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
         //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
@@ -298,7 +296,7 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
 
         long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
 
-        long blockedBlackPawns = blackPawns & BB.nortOne(whitePawns);
+        long blockedBlackPawns = calcBlockedBlackPawns(blackPawns, whitePawns);
 
         //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
         //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
@@ -433,5 +431,27 @@ public class ParameterizedPawnEvaluation implements EvalComponent {
         allFrontSpans |= BB.eastOne(allFrontSpans)
                 | BB.westOne(allFrontSpans);
         return bpawns & ~allFrontSpans;
+    }
+
+    /**
+     * calc blocked (rammed) white pawns.
+     *
+     * @param whitePawns
+     * @param blackPawns
+     * @return
+     */
+    public static long calcBlockedWhitePawns(long whitePawns, long blackPawns) {
+        return whitePawns & BB.soutOne(blackPawns);
+    }
+
+    /**
+     * calc blocked (rammed) black pawns.
+     *
+     * @param blackPawns
+     * @param whitePawns
+     * @return
+     */
+    public static long calcBlockedBlackPawns(long blackPawns, long whitePawns) {
+        return blackPawns & BB.nortOne(whitePawns);
     }
 }

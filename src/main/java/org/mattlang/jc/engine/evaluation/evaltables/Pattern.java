@@ -90,6 +90,11 @@ public final class Pattern {
         return patternBlack[pos];
     }
 
+    public int getRawVal(int x, int y) {
+        int pos = y * 8 + x;
+        return patternBlack[pos];
+    }
+
     public void setVal(int pos, int value) {
         patternBlack[pos] = value;
         patternWhite[FLIP[pos]] = value;

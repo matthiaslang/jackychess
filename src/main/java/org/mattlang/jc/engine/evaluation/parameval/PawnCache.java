@@ -21,11 +21,10 @@ public final class PawnCache {
         }
     }
 
-
     public PawnCacheEntry find(long zobristHash) {
         int index = h0(zobristHash);
         PawnCacheEntry entry = entries[index];
-        if (entry.zobrist != zobristHash){
+        if (entry.zobrist != zobristHash) {
             return null;
         }
         return entry;
@@ -35,15 +34,19 @@ public final class PawnCache {
         return (int) (key & (capacity - 1));
     }
 
-    public void save(long zobristHash, int score, long whitePassers, long blackPassers) {
+    public void save(long zobristHash, EvalResult result) {
         int index = h0(zobristHash);
 
         PawnCacheEntry entry = entries[index];
 
         entry.zobrist = zobristHash;
-        entry.score = score;
-        entry.whitePassers = whitePassers;
-        entry.blackPassers = blackPassers;
+        entry.score = result.pawnEval;
+        entry.whitePassers = result.whitePassers;
+        entry.blackPassers = result.blackPassers;
+        entry.pkeval = result.pkeval;
+        for (int i = 0; i < 2; i++) {
+            entry.pksafety[i] = result.pksafety[i];
+        }
     }
 
     public void reset() {

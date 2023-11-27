@@ -137,12 +137,12 @@ public class MobilityEvalResult {
         int mobCount = bitCount(mobility) + bitCount(captures);
         int currKingAttCount = bitCount(kingZoneAttacs);
 
-        eval += params.mobilityMGEG.calc(mobCount);
+        eval += params.mobility.calc(mobCount);
 
         kingAttCount += currKingAttCount;
-        kingAttWeightMgEg += params.kingAttMgEg.calc(currKingAttCount);
+        kingAttWeightMgEg += params.kingAtt.calc(currKingAttCount);
 
-        eval += params.tropismMGEG.calc(tropism);
+        eval += params.tropism.calc(tropism);
 
     }
 

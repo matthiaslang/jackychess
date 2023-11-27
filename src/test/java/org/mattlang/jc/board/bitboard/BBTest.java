@@ -25,11 +25,11 @@ public class BBTest {
         long kingMask = 1L << 63;
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
-        long fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.WHITE);
+        long fileFilled = KingZoneMasks.createKingZoneMask(63, kingMask, Color.WHITE);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
-        fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.BLACK);
+        fileFilled = KingZoneMasks.createKingZoneMask(63, kingMask, Color.BLACK);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
@@ -40,11 +40,11 @@ public class BBTest {
         long kingMask = 1L << 1;
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(kingMask));
-        long fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.WHITE);
+        long fileFilled = KingZoneMasks.createKingZoneMask(1,kingMask, Color.WHITE);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 
-        fileFilled = KingZoneMasks.createKingZoneMask(kingMask, Color.BLACK);
+        fileFilled = KingZoneMasks.createKingZoneMask(1,kingMask, Color.BLACK);
 
         System.out.println("Pattern \n" + BitChessBoard.toStr(fileFilled));
 

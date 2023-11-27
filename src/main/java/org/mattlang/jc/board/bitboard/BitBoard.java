@@ -9,6 +9,7 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 import java.util.Objects;
 
@@ -42,7 +43,11 @@ public final class BitBoard implements BoardRepresentation {
     private final CastlingRights castlingRights;
 
     private long zobristHash = 0L;
-    private long pawnZobristHash = 0L;
+
+    /**
+     * Zobrist hash based on only pawns and the kings for caching of pawn and king related evaluations.
+     */
+    private long pawnKingZobristHash = 0L;
 
     private final Material material = new Material();
 
@@ -52,7 +57,7 @@ public final class BitBoard implements BoardRepresentation {
     private int[] historyEp = new int[MAXMOVES];
     private int[] historyMaterial = new int[MAXMOVES];
     private long[] historyZobrist = new long[MAXMOVES];
-    private long[] historyPawnZobrist = new long[MAXMOVES];
+    private long[] historyPawnKingZobrist = new long[MAXMOVES];
     private byte[] historyCastling = new byte[MAXMOVES];
 
     private int moveCounter = 0;
@@ -99,7 +104,7 @@ public final class BitBoard implements BoardRepresentation {
         siteToMove = WHITE;
         castlingRights.setAllCasltingRights();
         zobristHash = Zobrist.hash(this);
-        pawnZobristHash = Zobrist.hashPawns(this);
+        pawnKingZobristHash = Zobrist.hashPawnsAndKings(this);
         material.init(this);
     }
 
@@ -125,17 +130,16 @@ public final class BitBoard implements BoardRepresentation {
     private void hashAddFig(int pos, byte figureCode) {
         zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
         material.add(figureCode);
-        if (figureCode == W_PAWN || figureCode == B_PAWN) {
-            pawnZobristHash = Zobrist.addFig(pawnZobristHash, pos, figureCode);
-
+        if (isKingOrPawn(figureCode)) {
+            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, pos, figureCode);
         }
     }
 
     private void hashRemoveFig(int pos, byte oldFigure) {
         zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
         material.subtract(oldFigure);
-        if (oldFigure == W_PAWN || oldFigure == B_PAWN) {
-            pawnZobristHash = Zobrist.removeFig(pawnZobristHash, pos, oldFigure);
+        if (isKingOrPawn(oldFigure)) {
+            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, pos, oldFigure);
         }
     }
 
@@ -300,14 +304,17 @@ public final class BitBoard implements BoardRepresentation {
         // check double pawn move. here we need to mark an possible en passant follow up move:
         // be careful: we must not set the en passant option by undoing a double pawn move:
         if (figType == FT_PAWN) {
-            pawnZobristHash = Zobrist.removeFig(pawnZobristHash, from, figCode);
-            pawnZobristHash = Zobrist.addFig(pawnZobristHash, to, figCode);
+            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, from, figCode);
+            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, to, figCode);
 
             if (isWhiteFigure && to - from == 16) {
                 setEnPassantOption((from + to) / 2);
             } else if (!isWhiteFigure && from - to == 16) {
                 setEnPassantOption((from + to) / 2);
             }
+        } else if (figType == FT_KING) {
+            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, from, figCode);
+            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, to, figCode);
         }
     }
 
@@ -362,7 +369,7 @@ public final class BitBoard implements BoardRepresentation {
     public BitBoard copy() {
         BitBoard copied = new BitBoard(board, castlingRights, enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
-        copied.pawnZobristHash = Zobrist.hashPawns(copied);
+        copied.pawnKingZobristHash = Zobrist.hashPawnsAndKings(copied);
         copied.material.init(copied);
         copied.historyCastling = historyCastling.clone();
         copied.historyZobrist = historyZobrist.clone();
@@ -445,8 +452,8 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     @Override
-    public long getPawnZobristHash() {
-        return pawnZobristHash;
+    public long getPawnKingZobristHash() {
+        return pawnKingZobristHash;
     }
 
     @Override
@@ -542,7 +549,7 @@ public final class BitBoard implements BoardRepresentation {
         castlingRights.setRights(historyCastling[moveCounter]);
         enPassantMoveTargetPos = historyEp[moveCounter];
         zobristHash = historyZobrist[moveCounter];
-        pawnZobristHash = historyPawnZobrist[moveCounter];
+        pawnKingZobristHash = historyPawnKingZobrist[moveCounter];
         material.setMaterial(historyMaterial[moveCounter]);
     }
 
@@ -569,7 +576,7 @@ public final class BitBoard implements BoardRepresentation {
         historyEp[moveCounter] = enPassantMoveTargetPos;
         historyMaterial[moveCounter] = material.getMaterial();
         historyZobrist[moveCounter] = zobristHash;
-        historyPawnZobrist[moveCounter] = pawnZobristHash;
+        historyPawnKingZobrist[moveCounter] = pawnKingZobristHash;
         moveCounter++;
     }
 

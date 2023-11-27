@@ -62,11 +62,18 @@ public final class ArrayFunction implements Function {
         return combined;
     }
 
+    public static void updateCombined(ArrayFunction combinedMgEg, ArrayFunction funMG, ArrayFunction funEG) {
+        for (int i = 0; i < combinedMgEg.getSize(); i++) {
+            int valMg = i < funMG.getSize() ? funMG.calc(i) : 0;
+            int valEg = i < funEG.getSize() ? funEG.calc(i) : 0;
+            combinedMgEg.setVal(i, MgEgScore.createMgEgScore(valMg, valEg));
+        }
+    }
+
     /**
      * experimental: linear interpolates all values of the function.
      *
      * use apache commons math spline interpolation instead...!!!
-     * 
      */
     public void linearInterpolate() {
         for (int i = 0; i < getSize(); i++) {
@@ -76,7 +83,6 @@ public final class ArrayFunction implements Function {
                 int x1 = i;
                 int x = i + 1;
                 int x2 = i + 2;
-
 
                 int y = interpolate(x1, x, x2);
                 setVal(x, y);

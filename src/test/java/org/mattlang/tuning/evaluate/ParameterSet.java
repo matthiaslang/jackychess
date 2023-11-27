@@ -4,6 +4,8 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.board.FigureType.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedAdjustmentsEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedComplexityEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedKingEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPstEvaluation.*;
@@ -16,8 +18,7 @@ import java.util.Set;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.parameval.*;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
-import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 import org.mattlang.tuning.FloatIntervall;
 import org.mattlang.tuning.IntIntervall;
@@ -82,16 +83,21 @@ public class ParameterSet {
         if (optParams.isTunePst()) {
             addPstParameters(parameterizedEvaluation);
         }
-        ParameterizedMobilityEvaluation mobEval = parameterizedEvaluation.getMobEvaluation();
 
         if (optParams.isTuneMobility()) {
-            addMobilityParameters(parameterizedEvaluation, mobEval);
+            addMobilityParameters(parameterizedEvaluation);
         }
         if (optParams.isTuneMobilityTropism()) {
-            addMobilityTropismParameters(parameterizedEvaluation, mobEval);
+            addMobilityTropismParameters(parameterizedEvaluation);
         }
         if (optParams.isTuneThreats()) {
             addThreatsParameters(parameterizedEvaluation);
+        }
+        if (optParams.isTuneKingSafety()) {
+            addKingSafetyParameters(parameterizedEvaluation);
+        }
+        if (optParams.isTuneComplexity()) {
+            addComplexityParameters(parameterizedEvaluation);
         }
 
         if (optParams.isTunePositional()) {
@@ -99,7 +105,7 @@ public class ParameterSet {
         }
 
         if (optParams.isTuneKingAttack()) {
-            addKingAttackParameters(parameterizedEvaluation, mobEval);
+            addKingAttackParameters(parameterizedEvaluation);
         }
 
         createRedundantParamsList();
@@ -119,6 +125,97 @@ public class ParameterSet {
         for (int i = 0; i < params.size(); i++) {
             params.get(i).setParamNo(i);
         }
+    }
+
+    private void addComplexityParameters(ParameterizedEvaluation parameterizedEvaluation) {
+        addMgEgFunction(e -> e.getComplexityEvaluation().getClosednessKnightAdjustment(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+        addMgEgFunction(e -> e.getComplexityEvaluation().getClosednessRookAdjustment(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        groups.add(new IntegerValueParam(COMPLEXITY_TOTAL_PAWNS, parameterizedEvaluation,
+                e -> e.getComplexityEvaluation().getComplexityTotalPawnsEG(),
+                (e, val) -> e.getComplexityEvaluation().setComplexityTotalPawnsEG(val),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new IntegerValueParam(COMPLEXITY_ADJUSTMENT, parameterizedEvaluation,
+                e -> e.getComplexityEvaluation().getComplexityAdjustmentEG(),
+                (e, val) -> e.getComplexityEvaluation().setComplexityAdjustmentEG(val),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new IntegerValueParam(COMPLEXITY_PAWN_FLANKS, parameterizedEvaluation,
+                e -> e.getComplexityEvaluation().getComplexityPawnFlanksEG(),
+                (e, val) -> e.getComplexityEvaluation().setComplexityPawnFlanksEG(val),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new IntegerValueParam(COMPLEXITY_PAWN_ENDGAME, parameterizedEvaluation,
+                e -> e.getComplexityEvaluation().getComplexityPawnEndgameEG(),
+                (e, val) -> e.getComplexityEvaluation().setComplexityPawnEndgameEG(val),
+                MOBILITY_VALUE_INTERVAL));
+
+    }
+
+    private void addKingSafetyParameters(ParameterizedEvaluation parameterizedEvaluation) {
+
+        groups.add(new PatternParameterGroup(KING_CONFIG_SUB_DIR,
+                KING_SHELTER_KING_FILE_MG_CSV, KING_SHELTER_KING_FILE_EG_CSV, true,
+                parameterizedEvaluation,
+                e -> e.getKingEvaluation().getKingShelterKingFileMgEg()));
+
+        groups.add(new PatternParameterGroup(KING_CONFIG_SUB_DIR,
+                KING_SHELTER_ADJACENT_FILE_MG_CSV, KING_SHELTER_ADJACENT_FILE_EG_CSV, true,
+                parameterizedEvaluation,
+                e -> e.getKingEvaluation().getKingShelterAdjacentFileMgEg()));
+
+        groups.add(new PatternParameterGroup(KING_CONFIG_SUB_DIR,
+                KING_STORM_BLOCKED_MG_CSV, KING_STORM_BLOCKED_EG_CSV, true,
+                parameterizedEvaluation,
+                e -> e.getKingEvaluation().getKingStormBlockedMgEg()));
+
+        groups.add(new PatternParameterGroup(KING_CONFIG_SUB_DIR,
+                KING_STORM_NON_BLOCKED_MG_CSV, KING_STORM_NON_BLOCKED_EG_CSV, true,
+                parameterizedEvaluation,
+                e -> e.getKingEvaluation().getKingStormNonBlockedMgEg()));
+
+        addMgEgFunction(e -> e.getKingEvaluation().getSafetyShelterKingFile(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+        addMgEgFunction(e -> e.getKingEvaluation().getSafetyShelterAdjacentFile(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        addMgEgFunction(e -> e.getKingEvaluation().getSafetyStormBlocked(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        addMgEgFunction(e -> e.getKingEvaluation().getSafetyStormNonBlocked(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        addMgEgFunction(e -> e.getKingEvaluation().getKingPawnFileProximity(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        addMgEgFunction(e -> e.getKingEvaluation().getKingDefenders(),
+                parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
+
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetyAttackValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetyWeakSquaresValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetyNoEnemyQueensValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetySafeQueenCheckValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetySafeRookCheckValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetySafeBishopCheckValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetySafeKnightCheckValue(),
+                MOBILITY_VALUE_INTERVAL));
+        groups.add(new ChangeableMgEgScoreParameterGroup(parameterizedEvaluation,
+                e -> e.getKingEvaluation().getSafetyAdjustmentValue(),
+                MOBILITY_VALUE_INTERVAL));
+
     }
 
     private void addThreatsParameters(ParameterizedEvaluation parameterizedEvaluation) {
@@ -290,70 +387,47 @@ public class ParameterSet {
 
     }
 
-    private void addKingAttackParameters(ParameterizedEvaluation parameterizedEvaluation,
-            ParameterizedMobilityEvaluation mobEval) {
+    private void addKingAttackParameters(ParameterizedEvaluation parameterizedEvaluation) {
         for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
-
-            if (mobEval.getMobFigParams(type).kingAttMg instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAttMg,
-                        parameterizedEvaluation,
-                        e -> (e.getMobEvaluation().getMobFigParams(type).kingAttMg),
-                        KINGATTACK_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
-            if (mobEval.getMobFigParams(type).kingAttEg instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(mobEval.getMobFigParams(type).propertyKingAttEg,
-                        parameterizedEvaluation,
-                        e -> (e.getMobEvaluation().getMobFigParams(type).kingAttEg),
-                        KINGATTACK_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
-
+            addMgEgFunction(e -> e.getMobEvaluation().getMobFigParams(type).kingAtt,
+                    parameterizedEvaluation, KINGATTACK_VALUE_INTERVAL);
         }
 
     }
 
-    private void addMobilityParameters(ParameterizedEvaluation parameterizedEvaluation,
-            ParameterizedMobilityEvaluation mobEval) {
-        for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
+    private void addMgEgFunction(
+            java.util.function.Function<ParameterizedEvaluation, MgEgArrayFunction> mgEgFunctionGetter,
+            ParameterizedEvaluation parameterizedEvaluation,
+            IntIntervall intervall) {
 
-            MobFigParams figParams = mobEval.getMobFigParams(type);
-            if (figParams.mobilityMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityMg,
-                        parameterizedEvaluation,
-                        e -> e.getMobEvaluation().getMobFigParams(type).mobilityMG,
-                        MOBILITY_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
-            if (figParams.mobilityEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(figParams.propertyMobilityEg,
-                        parameterizedEvaluation,
-                        e -> e.getMobEvaluation().getMobFigParams(type).mobilityEG,
-                        MOBILITY_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
+        String propMg = mgEgFunctionGetter.apply(parameterizedEvaluation).getPropertyMg();
+        String propEg = mgEgFunctionGetter.apply(parameterizedEvaluation).getPropertyEg();
+
+        groups.add(new ArrayFunctionParameterGroup(propMg,
+                parameterizedEvaluation,
+                e -> mgEgFunctionGetter.apply(e).functionMg,
+                intervall,
+                e -> mgEgFunctionGetter.apply(e).updateCombinedVals()));
+
+        groups.add(new ArrayFunctionParameterGroup(propEg,
+                parameterizedEvaluation,
+                e -> mgEgFunctionGetter.apply(e).functionEg,
+                intervall,
+                e -> mgEgFunctionGetter.apply(e).updateCombinedVals()));
+
+    }
+
+    private void addMobilityParameters(ParameterizedEvaluation parameterizedEvaluation) {
+        for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
+            addMgEgFunction(e -> e.getMobEvaluation().getMobFigParams(type).mobility,
+                    parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
         }
     }
 
-    private void addMobilityTropismParameters(ParameterizedEvaluation parameterizedEvaluation,
-            ParameterizedMobilityEvaluation mobEval) {
+    private void addMobilityTropismParameters(ParameterizedEvaluation parameterizedEvaluation) {
         for (FigureType type : asList(Knight, Bishop, Rook, Queen, King)) {
-
-            MobFigParams figParams = mobEval.getMobFigParams(type);
-            if (figParams.tropismMG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(figParams.propertyTropismMg,
-                        parameterizedEvaluation,
-                        e -> e.getMobEvaluation().getMobFigParams(type).tropismMG,
-                        MOBILITY_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
-            if (figParams.tropismEG instanceof ArrayFunction) {
-                groups.add(new ArrayFunctionParameterGroup(figParams.propertyTropismEg,
-                        parameterizedEvaluation,
-                        e -> e.getMobEvaluation().getMobFigParams(type).tropismEG,
-                        MOBILITY_VALUE_INTERVAL,
-                        e -> e.getMobEvaluation().getMobFigParams(type).updateCombinedVals()));
-            }
+            addMgEgFunction(e -> e.getMobEvaluation().getMobFigParams(type).tropism,
+                    parameterizedEvaluation, MOBILITY_VALUE_INTERVAL);
         }
     }
 

@@ -119,6 +119,10 @@ public class BitChessBoard {
         return getPieceSet(FT_PAWN, color);
     }
 
+    public long getPawns() {
+        return getPieceSet(FT_PAWN);
+    }
+
     public long getPawns(Color color) {
         return getPieceSet(FT_PAWN, color);
     }

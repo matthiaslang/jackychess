@@ -68,7 +68,7 @@ public interface BoardRepresentation {
 
     long getZobristHash();
 
-    long getPawnZobristHash();
+    long getPawnKingZobristHash();
 
     void domove(Move move);
 

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.SearchStatistics;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.engine.tt.TTCacheInterface;
@@ -37,6 +38,7 @@ public class GameContext {
     public GameContext(ConfigValues configValues) {
         ttCache = Caching.CACHING.getTtCache();
         ttCache.reset();
+        EvalCache.instance.reset();
         System.gc();
     }
 

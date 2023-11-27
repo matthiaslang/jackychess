@@ -13,4 +13,8 @@ public enum Color {
     public final Color invert() {
         return this == WHITE ? BLACK : WHITE;
     }
+
+    public static final int invert(int color) {
+        return 1 - color;
+    }
 }

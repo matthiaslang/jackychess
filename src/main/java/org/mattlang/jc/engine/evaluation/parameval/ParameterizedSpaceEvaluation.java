@@ -173,11 +173,11 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
         // idea taken from Laser
         long space = whitePawns >>> 8;
         space |= space >>> 8 | space >>> 16;
-        score += SPACE[Long.bitCount(bb.getPieceSet(nWhite))]
+        score += SPACE[Long.bitCount(bb.getColorMask(nWhite))]
                 * Long.bitCount(space & ~whitePawns & ~result.getAttacks(BLACK, FT_PAWN) & FILE_CDEF);
         space = blackPawns << 8;
         space |= space << 8 | space << 16;
-        score -= SPACE[Long.bitCount(bb.getPieceSet(nBlack))]
+        score -= SPACE[Long.bitCount(bb.getColorMask(nBlack))]
                 * Long.bitCount(space & ~blackPawns & ~result.getAttacks(WHITE, FT_PAWN) & FILE_CDEF);
 
         return score;

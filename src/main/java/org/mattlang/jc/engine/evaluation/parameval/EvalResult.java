@@ -6,6 +6,8 @@ import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
+import java.util.Arrays;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
@@ -25,6 +27,14 @@ public final class EvalResult {
      */
     public int nonPawnMat;
 
+    // values cached in pawn/king hash cache:
+    public int pawnEval;
+    public long whitePassers;
+    public long blackPassers;
+
+    public int[] pksafety = new int[2];
+    public int pkeval;
+
     /**
      * summed up mid game/ end game score.
      */
@@ -41,6 +51,11 @@ public final class EvalResult {
     private final long[][] attacks = new long[2][MAX_ATT_INDEX];
     private final long[] doubleAttacks = new long[2];
 
+    /**
+     * found pawn cache entry of the position to be evaluated.
+     */
+    private PawnCacheEntry pawnEntry;
+
     public void clear() {
         mgEgScore.clear();
         result = 0;
@@ -51,6 +66,13 @@ public final class EvalResult {
                 attacks[i][j] = 0L;
             }
         }
+        pawnEval = 0;
+        whitePassers = 0L;
+        blackPassers = 0L;
+        pkeval = 0;
+        Arrays.fill(pksafety, 0);
+        pawnEntry = null;
+
     }
 
     /**
@@ -101,6 +123,10 @@ public final class EvalResult {
         return doubleAttacks[color.ordinal()];
     }
 
+    public long getDoubleAttacks(int color) {
+        return doubleAttacks[color];
+    }
+
     public EvalResult add(MgEgScore score) {
         mgEgScore.add(score);
         return this;
@@ -109,5 +135,13 @@ public final class EvalResult {
     public EvalResult minus(MgEgScore score) {
         mgEgScore.subtract(score);
         return this;
+    }
+
+    public void setPawnEntry(PawnCacheEntry pawnEntry) {
+        this.pawnEntry = pawnEntry;
+    }
+
+    public PawnCacheEntry getPawnEntry() {
+        return pawnEntry;
     }
 }

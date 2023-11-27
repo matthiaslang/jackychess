@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.evaluation.Tools;
 
 import lombok.Getter;
 
@@ -28,21 +29,8 @@ public class BB {
         throw new IllegalStateException("cant map file from char sym!");
     }
 
-    /**
-     * all squares numbered starting with 0 as enums:
-     */
-    public enum Square {
-        SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
-        SQ_A2, SQ_B2, SQ_C2, SQ_D2, SQ_E2, SQ_F2, SQ_G2, SQ_H2,
-        SQ_A3, SQ_B3, SQ_C3, SQ_D3, SQ_E3, SQ_F3, SQ_G3, SQ_H3,
-        SQ_A4, SQ_B4, SQ_C4, SQ_D4, SQ_E4, SQ_F4, SQ_G4, SQ_H4,
-        SQ_A5, SQ_B5, SQ_C5, SQ_D5, SQ_E5, SQ_F5, SQ_G5, SQ_H5,
-        SQ_A6, SQ_B6, SQ_C6, SQ_D6, SQ_E6, SQ_F6, SQ_G6, SQ_H6,
-        SQ_A7, SQ_B7, SQ_C7, SQ_D7, SQ_E7, SQ_F7, SQ_G7, SQ_H7,
-        SQ_A8, SQ_B8, SQ_C8, SQ_D8, SQ_E8, SQ_F8, SQ_G8, SQ_H8,
-    }
 
-    public enum Direction{
+    public enum Direction {
         NORTH(8),
         EAST(1),
         SOUTH(-8),
@@ -60,8 +48,8 @@ public class BB {
             this.offset = offset;
         }
 
-        Direction(Direction...other){
-            offset = Arrays.stream(other).map(d->d.offset).reduce(Integer::sum).orElse(0);
+        Direction(Direction... other) {
+            offset = Arrays.stream(other).map(d -> d.offset).reduce(Integer::sum).orElse(0);
         }
     }
 
@@ -130,7 +118,6 @@ public class BB {
     public static final long H7 = 1L << Square.SQ_H7.ordinal();
     public static final long H8 = 1L << Square.SQ_H8.ordinal();
 
-
     // the individual files:
     public static final long A = 0x0101010101010101L;
     public static final long B = 0x0202020202020202L;
@@ -142,6 +129,9 @@ public class BB {
     public static final long H = 0x8080808080808080L;
 
     public static final long ALL = A | B | C | D | E | F | G | H;
+
+    public static final long LEFT_FLANK = A | B | C | D;
+    public static final long RIGHT_FLANK = E | F | G | H;
 
     public static final long rank1 = 0x00000000000000FFL;
     public static final long rank2 = 0x000000000000FF00L;
@@ -155,8 +145,8 @@ public class BB {
     public static final long rank12 = rank1 | rank2;
     public static final long rank78 = rank7 | rank8;
 
-    public static final long notAFile =  ~A;
-    public static final long notHFile =  ~H;
+    public static final long notAFile = ~A;
+    public static final long notHFile = ~H;
 
     public static final long ABC_File = A | B | C;
     public static final long ABC_on_rank2 = ABC_File & rank2;
@@ -181,7 +171,6 @@ public class BB {
 
     public static final long[][] IN_BETWEEN = new long[64][64];
 
-
     public static final long ADJACENT_FILES[] = {
             B,
             C | A,
@@ -191,8 +180,11 @@ public class BB {
             G | E,
             H | F,
             G,
-             };
+    };
 
+    public static final int FILE_NB = 8;
+
+    private static int[][] KING_PAWN_FILE_DISTANCE = new int[FILE_NB][1 << FILE_NB];
 
     static {
         // precalculate attacks:
@@ -203,6 +195,33 @@ public class BB {
         }
 
         fillInbetweens();
+
+        fillPawnKingFileDistance();
+    }
+
+
+    private static void fillPawnKingFileDistance() {
+        // Init a table to compute the distance between Pawns and Kings file-wise
+        for (int mask = 0; mask <= 0xFF; mask++) {
+            for (int file = 0; file < FILE_NB; file++) {
+
+                int leftDist = FILE_NB - 1;
+                for (int i = 0; i < file; i++) {
+                    if ((mask & (1 << i)) != 0) {
+                        leftDist = file - i;
+                    }
+                }
+                int rightDist = FILE_NB - 1;
+                for (int i = file; i >= 0; i--) {
+                    if ((mask & (1 << i)) != 0) {
+                        rightDist = file - i;
+                    }
+                }
+                int dist = Math.min(rightDist, leftDist);
+
+                KING_PAWN_FILE_DISTANCE[file][mask] = dist;
+            }
+        }
     }
 
     private static void fillInbetweens() {
@@ -258,12 +277,12 @@ public class BB {
         }
     }
 
-    public static final long getKingAttacs(int kingPos){
-        return kingAttacks[kingPos] ;
+    public static final long getKingAttacs(int kingPos) {
+        return kingAttacks[kingPos];
     }
 
-    public static final long getKnightAttacs(int kingPos){
-        return knightAttacks[kingPos] ;
+    public static final long getKnightAttacs(int kingPos) {
+        return knightAttacks[kingPos];
     }
 
     public static final long soutOne(long b) {
@@ -273,8 +292,6 @@ public class BB {
     public static final long nortOne(long b) {
         return b << 8;
     }
-
-
 
     public static final long eastOne(long b) {
         return (b << 1) & notAFile;
@@ -393,7 +410,6 @@ public class BB {
     }
 
     // pawn file fills, see: https://www.chessprogramming.org/Pawn_Fills#FileFill
-    
 
     public static long nortFill(long gen) {
         gen |= (gen << 8);
@@ -407,6 +423,27 @@ public class BB {
         gen |= (gen >>> 16);
         gen |= (gen >>> 32);
         return gen;
+    }
+
+    /**
+     * Returns the number of open files of a pawn mask.
+     *
+     * This is calculated by front filling the pask to the first rank and "anding" with the inverse front filled mask.
+     *
+     * @param pawns
+     * @return
+     */
+    public static int openFileCount(long pawns) {
+        // front fill till, inverse to get free fields anding with rank1 gives the number of free files:
+        long southFilled = southFill(pawns);
+        long freeFields = ~southFilled;
+        long freeOnFirstRank = freeFields & rank1;
+        return Long.bitCount(freeOnFirstRank);
+    }
+
+    public static int kingPawnFileDistance(long pawns, int ksq) {
+        long southFilled = southFill(pawns);
+        return KING_PAWN_FILE_DISTANCE[Tools.fileOf(ksq)][(int) (southFilled & rank1)];
     }
 
     public static long wFrontFill(long wpawns) {

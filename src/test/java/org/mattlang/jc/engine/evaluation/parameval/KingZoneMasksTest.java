@@ -14,9 +14,9 @@ public class KingZoneMasksTest {
     @Test
     public void testIdenticalPreCalc() {
         for (int i = 0; i < 64; i++) {
-            assertThat(KingZoneMasks.createKingZoneMask(1L << (i), WHITE)).isEqualTo(
+            assertThat(KingZoneMasks.createKingZoneMask(i, 1L << (i), WHITE)).isEqualTo(
                     KingZoneMasks.getKingZoneMask(nWhite, i));
-            assertThat(KingZoneMasks.createKingZoneMask(1L << (i), BLACK)).isEqualTo(
+            assertThat(KingZoneMasks.createKingZoneMask(i,1L << (i), BLACK)).isEqualTo(
                     KingZoneMasks.getKingZoneMask(nBlack, i));
         }
     }
@@ -28,7 +28,7 @@ public class KingZoneMasksTest {
         long result = 0;
         watch.start();
         for (int i = 0; i < 1_000_000_000; i++) {
-            result |= KingZoneMasks.createKingZoneMask(1L << (i % 64), WHITE);
+            result |= KingZoneMasks.createKingZoneMask(i,1L << (i % 64), WHITE);
         }
         watch.stop();
         System.out.println(watch.toString());

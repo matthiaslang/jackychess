@@ -4,13 +4,14 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.bitboard.BB.Direction.NORTH;
 import static org.mattlang.jc.board.bitboard.BB.Direction.SOUTH;
-import static org.mattlang.jc.board.bitboard.BB.Square.SQ_A8;
-import static org.mattlang.jc.board.bitboard.BB.Square.SQ_H1;
 import static org.mattlang.jc.board.bitboard.File.FILE_H;
 import static org.mattlang.jc.board.bitboard.Rank.RANK_8;
+import static org.mattlang.jc.board.bitboard.Square.SQ_A8;
+import static org.mattlang.jc.board.bitboard.Square.SQ_H1;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.File;
 import org.mattlang.jc.board.bitboard.Rank;
 
@@ -214,5 +215,9 @@ public class Tools {
 
     public static BB.Direction pawn_push(int c) {
         return c == WHITE.ordinal() ? NORTH : SOUTH;
+    }
+
+    public static int backmost(int color, long bb) {
+        return color == BitChessBoard.nWhite ? Long.numberOfTrailingZeros(bb) : 63 - Long.numberOfLeadingZeros(bb);
     }
 }

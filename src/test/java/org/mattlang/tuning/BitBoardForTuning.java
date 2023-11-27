@@ -240,7 +240,7 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public long getPawnZobristHash() {
+    public long getPawnKingZobristHash() {
         throw new IllegalStateException("not implemented!");
     }
 

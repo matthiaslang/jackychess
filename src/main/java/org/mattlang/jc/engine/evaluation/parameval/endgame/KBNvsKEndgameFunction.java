@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.board.bitboard.BB.Square.SQ_A1;
+import static org.mattlang.jc.board.bitboard.Square.SQ_A1;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 

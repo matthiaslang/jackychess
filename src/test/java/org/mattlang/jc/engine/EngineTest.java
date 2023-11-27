@@ -21,6 +21,7 @@ import org.mattlang.jc.engine.search.IterativeDeepeningListener;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.engine.search.SearchException;
+import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -203,6 +204,7 @@ public class EngineTest {
     public void testFine70TTCaching() throws IOException {
 
         initLogging();
+        Caching.CACHING.getTtCache().reset();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(18000000))

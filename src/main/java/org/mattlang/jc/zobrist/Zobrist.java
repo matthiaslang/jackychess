@@ -62,15 +62,20 @@ public class Zobrist {
         return h;
     }
 
-    public static long hashPawns(BoardRepresentation board) {
+    public static long hashPawnsAndKings(BoardRepresentation board) {
         long h = 0;
         for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
             byte fig = board.getFigureCode(i);
-            if (fig == W_PAWN || fig == B_PAWN) {
+            if (isKingOrPawn(fig)) {
                 h = addFig(h, i, fig);
             }
         }
         return h;
+    }
+
+    public static boolean isKingOrPawn(byte figureCode) {
+        byte figureType = (byte) (figureCode & MASK_OUT_COLOR);
+        return figureType == FT_PAWN || figureType == FT_KING;
     }
 
     public static long addFig(long h, int i, byte fig) {

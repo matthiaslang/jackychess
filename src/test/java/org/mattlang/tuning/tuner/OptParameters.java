@@ -63,6 +63,8 @@ public class OptParameters {
     private boolean tunePst = true;
     private boolean tuneAdjustments = true;
     private boolean tuneAdjustmentsFactors = true;
+    private boolean tuneKingSafety = true;
+    private boolean tuneComplexity = true;
 
     private boolean removeDuplicateFens = true;
 

@@ -12,6 +12,7 @@ import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Another experimental evaluation.
@@ -34,10 +35,16 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     private ParameterizedMobilityEvaluation mobEvaluation;
 
     @Getter
+    private ParameterizedKingEvaluation kingEvaluation;
+
+    @Getter
     private ParameterizedPawnEvaluation pawnEvaluation;
 
     @Getter
     private ParameterizedThreatsEvaluation threatsEvaluation;
+
+    @Getter
+    private ParameterizedComplexityEvaluation complexityEvaluation;
 
     private ParameterizedSpaceEvaluation spaceEvaluation;
 
@@ -48,6 +55,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private EvalResult result = new EvalResult();
 
+    @Getter
+    @Setter
     private boolean caching = false;
 
     private boolean endgameEvaluations = false;
@@ -59,6 +68,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     private boolean forTuning = false;
 
     private IntIntCache evalCache = EvalCache.instance;
+
+    private PawnCache pawnCache = PawnCache.EMPTY_CACHE;
 
     public ParameterizedEvaluation() {
         this(false);
@@ -90,6 +101,9 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         threatsEvaluation = new ParameterizedThreatsEvaluation(forTuning, config);
 
         spaceEvaluation = new ParameterizedSpaceEvaluation();
+
+        kingEvaluation = new ParameterizedKingEvaluation(forTuning, config);
+        complexityEvaluation = new ParameterizedComplexityEvaluation(forTuning, config);
     }
 
     /**
@@ -149,6 +163,11 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
+        if (caching) {
+            long pawnHashKey = currBoard.getPawnKingZobristHash();
+            result.setPawnEntry(pawnCache.find(pawnHashKey));
+        }
+
         pstEvaluation.eval(result, currBoard);
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
         mobEvaluation.eval(result, currBoard);
@@ -157,6 +176,10 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         threatsEvaluation.eval(result, currBoard);
         //        spaceEvaluation.eval(result, currBoard);
+
+        kingEvaluation.eval(result, currBoard);
+
+        complexityEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
 
@@ -167,6 +190,9 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         if (caching) {
             evalCache.save(currBoard.getZobristHash(), score);
+            if (result.getPawnEntry() == null) {
+                pawnCache.save(currBoard.getPawnKingZobristHash(), result);
+            }
         }
 
         return score;
@@ -179,7 +205,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     @Override
     public void setPawnCache(PawnCache pawnCache) {
-        pawnEvaluation.setPawnCache(pawnCache);
+        this.pawnCache = pawnCache;
     }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
