@@ -1,5 +1,15 @@
 # Versions
 
+### 23.06.5
+
+- king safety evaluation
+- complexity evaluation
+- small refactorings
+
+Elo: 
+  - +~20 compared to 23.06.4
+  - +~50-60 compared to 23.06
+
 ### 23.06.4
 
 - jacky has now proper support for short time games. Before that uci "stop" commands have been delayed and caused issues returning wrong "bestmove" results.
