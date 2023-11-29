@@ -131,14 +131,20 @@ public class PropertyConfig {
         try (FileInputStream fis = new FileInputStream(file)) {
             p.load(fis);
 
-            LOGGER.log(INFO, "loaded following properties:");
-            for (String propertyName : p.stringPropertyNames()) {
-                LOGGER.log(INFO, "{0} = {1}", new Object[] { propertyName, p.getProperty(propertyName) });
-            }
+            logProperties(p);
         } catch (IOException e) {
             throw new RuntimeException("error loading config file " + file.getAbsolutePath());
         }
         return p;
+    }
+
+    private static void logProperties(Properties p) {
+        if (LOGGER.isLoggable(INFO)) {
+            LOGGER.log(INFO, "loaded following properties:");
+            for (String propertyName : p.stringPropertyNames()) {
+                LOGGER.log(INFO, "{0} = {1}", new Object[] { propertyName, p.getProperty(propertyName) });
+            }
+        }
     }
 
     public static Properties loadPropertyFromResourceFile(String resourceFile) {

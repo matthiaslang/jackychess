@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -59,12 +60,14 @@ public class SearchParameter {
             }
         }
 
-        LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
-        LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
-        LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
-        LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
-        for (UCIOption option : config.getAllOptions().getAllOptions()) {
-            LOGGER.info(option.getName() + ": " + option.getValue());
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
+            LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+            LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+            LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
+            for (UCIOption option : config.getAllOptions().getAllOptions()) {
+                LOGGER.info(option.getName() + ": " + option.getValue());
+            }
         }
 
     }
