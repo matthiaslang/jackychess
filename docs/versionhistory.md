@@ -1,5 +1,13 @@
 # Versions
 
+### 23.06.6
+
+- space evaluation
+  
+Elo:
+  - space evaluation brings only very low benefits, nearly unmeasurable, but nevertheless it brings some Elos, around 10 Elos...
+
+
 ### 23.06.5
 
 - king safety evaluation

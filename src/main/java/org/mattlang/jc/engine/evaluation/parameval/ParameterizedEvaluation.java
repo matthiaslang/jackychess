@@ -175,11 +175,12 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         result.getMgEgScore().add(adjustments.adjust(currBoard.getBoard(), who2Move));
 
         threatsEvaluation.eval(result, currBoard);
-        //        spaceEvaluation.eval(result, currBoard);
 
         kingEvaluation.eval(result, currBoard);
 
         complexityEvaluation.eval(result, currBoard);
+
+        spaceEvaluation.eval(result, currBoard);
 
         int score = result.calcCompleteScore(currBoard);
 
