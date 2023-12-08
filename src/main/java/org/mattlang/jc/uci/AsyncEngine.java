@@ -82,7 +82,8 @@ public class AsyncEngine {
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> newFuture = executorService.submit(() -> {
             try {
-                semaphore.acquire();
+                // acquire the semaphore, but do not wait endless in case of any issues of e.g. the uci client
+                semaphore.tryAcquire(5, TimeUnit.SECONDS);
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
                 Move move = engine.go(gameState, gameContext);
