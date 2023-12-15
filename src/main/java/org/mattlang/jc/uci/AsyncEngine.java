@@ -82,7 +82,7 @@ public class AsyncEngine {
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> newFuture = executorService.submit(() -> {
             try {
-                // acquire the semaphore, but do not wait endless in case of any issues of e.g. the uci client
+                // acquire the semaphore, but do not wait endless in case the JVM or Thread gets interrupted
                 semaphore.tryAcquire(5, TimeUnit.SECONDS);
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
@@ -98,6 +98,12 @@ public class AsyncEngine {
                 logger.log(SEVERE, fmtSevere(gameState, "error during async execution!"), e);
                 throw e;
             } finally {
+                // release the semaphore. according to the JVM specification in case of thread interruption or
+                // JVM exit the "finally" block may not be executed (see https://docs.oracle.com/javase/tutorial/essential/exceptions/finally.html);
+                // Means we can not ensure that we properly release the semaphore under all circumstance.
+                // this is the reason why we use tryAcquire
+                // with a timeout; otherwise we got from time to time "hanging" processes in linux and docker
+                // when e.g. clients like cutechess gets interrupted by the user.
                 semaphore.release();
             }
 
