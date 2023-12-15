@@ -57,13 +57,6 @@ else
     "protocol": "uci",
     "options": [{"name": "maxThreads", "value": "1"}, {"name": "Hash","value": "128"}]
   },
-  {
-      "workingDirectory": "/jackychess",
-      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE  -Dopt.evalParamSet=TUNED01 -Duser.home=/logs -jar /jackychess/$JARFILE",
-      "name": "jacky${MVNVERSION}TUNED",
-      "protocol": "uci",
-      "options": [{"name": "maxThreads", "value": "1"}, {"name": "Hash","value": "128"}]
-    },
     {
       "workingDirectory": "/jackychess",
       "command": "java -Djacky.logging.activate=true -Djacky.logging.level=INFO -Duser.home=/logs -jar /jackychess/$JARFILE",
