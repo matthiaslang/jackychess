@@ -1,11 +1,16 @@
 # Versions
 
+### 23.06.6.1
+
+- fixed severe threading semaphore issue which come in 23.06.4 for fixing short time games: This caused issues in cutechess tournaments if cutechess got interrupted with hanging java threads. Solution is now to acquire the semaphore with a timeout to not hang endless.
+ 
+
 ### 23.06.6
 
 - space evaluation
   
 Elo:
-  - space evaluation brings only very low benefits, nearly unmeasurable, but nevertheless it brings some Elos, around 10 Elos...
+  - space evaluation brings only very low benefits, nearly unmeasurable, maybe around 10 Elos on very long tournaments...
 
 
 ### 23.06.5
