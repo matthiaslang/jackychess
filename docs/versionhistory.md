@@ -1,5 +1,21 @@
 # Versions
 
+## 23.12
+
+Official Version since 23.06.
+Estimated Elo strength: ~2760, ~80 Elo stronger than 23.06.
+
+Summary of changes compared to 23.06:
+
+- more evaluation terms
+  - space evaluation
+  - king safety evaluation
+  - complexity evaluation
+  - retuning evaluation parameter
+- better thread handling for short time games
+- refactoring of code
+
+
 ### 23.06.6.1
 
 - fixed severe threading semaphore issue which come in 23.06.4 for fixing short time games: This caused issues in cutechess tournaments if cutechess got interrupted with hanging java threads. Solution is now to acquire the semaphore with a timeout to not hang endless.

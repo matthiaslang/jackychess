@@ -3,7 +3,7 @@
 A simple UCI chess engine written in Java named after my dog "Jacky"!
                                                   
 The engine is written from scratch as an educational project to learn chess programming.
-It started as a simple proof of concept experiment within a weekend, but is now derived to a rather stable playing UCI engine.
+It started as a simple proof of concept experiment within a weekend, but is now derived to a stable playing UCI engine.
 
 I got a lot of inspiration from other resources in the web, mainly the great https://www.chessprogramming.org/ wiki
 and several open source engines, just to name a few of them: cpw, stockfish, fruit, chess22k.
@@ -49,14 +49,15 @@ on http://ccrl.chessdom.com/ccrl/404/:
 Here is a quick overview of my estimated rating and the results from the CCRL team (maybe outdated):
 
 | Version | Estimated Rating | CCRL Blitz | 40/15 |
-|--------|------------------|------------|-------|
-| 23.06  | 2680             | 2688       | 2675  |
-| 0.14.3 | 2580             | 2595       | 2601  |
-| 0.13.1 | 2330             | --         | 2397  |
-| 0.13.0 | 2330             | 2388       | --    |
-| 0.12.0 | 2180             | 2284       | --    |
-| 0.10.0 | 2000             | 2119       | --    |
-| 0.9.14 | --               | 1453       | --    |
+|---------|------------------|------------|-------|
+| 23.12   | 2760             |        |   |
+| 23.06   | 2680             | 2688       | 2675  |
+| 0.14.3  | 2580             | 2595       | 2601  |
+| 0.13.1  | 2330             | --         | 2397  |
+| 0.13.0  | 2330             | 2388       | --    |
+| 0.12.0  | 2180             | 2284       | --    |
+| 0.10.0  | 2000             | 2119       | --    |
+| 0.9.14  | --               | 1453       | --    |
 
 ## Copyright
 
@@ -95,7 +96,7 @@ The chess engine uses following technics/algorithms
 - staged move generation and separate move generation for quiescence
 - Move sorting by Hash Moves, killer moves, history heuristic, counter moves, captures sorted by SEE
 - Transposition Table using zobrist hashing to cache Scores
-- basic quiescence search with delta cut off
+- quiescence search with pruning, e.g. delta cut off, futility pruning and move count based pruning
 - Multithreading with Lazy SMP
 
 
