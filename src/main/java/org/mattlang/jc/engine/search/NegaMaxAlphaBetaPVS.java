@@ -1,19 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
-
-import java.util.List;
-import java.util.logging.Logger;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
@@ -29,7 +16,19 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import lombok.Getter;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -46,8 +45,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     public static final int VALUE_TB_WIN_IN_MAX_PLY = KING_WEIGHT - 2 * MAX_PLY;
     public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
-
-    private static final SEE see = new SEE();
     private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
@@ -378,7 +375,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     }
                     /** SEE Pruning*/
                     if (moveCursor.isCapture() && !moveCursor.isPromotion() && depth <= 6
-                            && see.see_ge(searchContext.getBoard(), moveCursor, -20 * depth * depth)) {
+                            && SEE.see_ge(searchContext.getBoard(), moveCursor, -20 * depth * depth)) {
                         statistics.seePruningCount++;
                         continue;
                     }
@@ -607,7 +604,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             return searchContext.evaluateRepetition(color);
         }
 
-        TTResult tte = searchContext.getTTEntry();
+        final TTResult tte = searchContext.getTTEntry();
         if (tte != null) {
             if (tte.isExact()) {// stored value is exact
                 statistics.ttPruningCount++;
@@ -624,7 +621,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         }
 
-        int eval = searchContext.eval(color);
+        final int eval = searchContext.eval(color);
 
         /* are we too deep? */
         if (depth < -maxQuiescenceDepth) {
@@ -640,7 +637,10 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (x > alpha)
             alpha = x;
 
-        //        int alphaStart = alpha;
+        int bestValue = x;
+        final int futilityBase = x + 200;
+
+        int movecount = 0;
 
         try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0, 0)) {
             statistics.quiescenceNodesVisited++;
@@ -657,39 +657,41 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     continue;
                 }
 
-                //                searchedMoves++;
+                /**********************************************************************
+                 *  Delta cutoff - a move guarentees the score well below alpha, so    *
+                 *  there's no point in searching it. We don't use his heuristic in    *
+                 *  the endgame, because of the insufficient material issues.          *
+                 **********************************************************************/
+                if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY) {
+                    if (!moveCursor.isPromotion()) {
+                        if (movecount > 2) {
+                            continue;
+                        }
 
-                if (moveCursor.isCapture()
-                        || moveCursor.isPromotion()) {
+                        if (deltaCutOff
+                                && futilityBase + SEE.pieceVal(moveCursor.getCapturedFigure()) < alpha
+                                && searchContext.isOpeningOrMiddleGame()
+                        ) {
+                            statistics.deltaCutoffCount++;
+                            continue;
+                        }
 
-                    /**********************************************************************
-                     *  Delta cutoff - a move guarentees the score well below alpha, so    *
-                     *  there's no point in searching it. We don't use his heuristic in    *
-                     *  the endgame, because of the insufficient material issues.          *
-                     **********************************************************************/
+                        if (futilityBase <= alpha && !SEE.see_ge(searchContext.getBoard(), moveCursor, 1)) {
+                            statistics.deltaCutoffCount++;
+                            continue;
+                        }
 
-                    if (deltaCutOff
-                            && !moveCursor.isPromotion()
-                            && x + see.pieceVal(moveCursor.getCapturedFigure()) + 200 < alpha
-                            && searchContext.isOpeningOrMiddleGame()
-                    ) {
-                        statistics.deltaCutoffCount++;
-                        continue;
+                        // Do not search moves with bad enough SEE values
+                        if (!SEE.see_ge(searchContext.getBoard(), moveCursor,-95))
+                            continue;
                     }
+                }
 
-                    if (moveCursor.doValidMove()) {
-                        //Do not search moves with negative SEE values
-                        //                    boolean seeGood =
-                        //                            moveCursor.getOrder() >= GOOD_CAPT_LOWER && moveCursor.getOrder() <= GOOD_CAPT_UPPER;
-                        //                    if (x > alphaStart
-                        //                            && !moveCursor.isPawnPromotion()
-                        //                            && searchContext.isOpeningOrMiddleGame()
-                        //                            && !seeGood) {
-                        //                        searchContext.undoMove(moveCursor);
-                        //                        continue;
-                        //                    }
-
-                        x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                if (moveCursor.doValidMove()) {
+                    movecount++;
+                    x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                    if (x > bestValue) {
+                        bestValue = x;
                         if (x > alpha) {
                             if (x >= beta) {
                                 return beta;

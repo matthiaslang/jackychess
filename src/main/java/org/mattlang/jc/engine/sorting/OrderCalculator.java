@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.sorting;
 
-import static java.util.Objects.requireNonNull;
-
+import lombok.Getter;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -14,7 +13,7 @@ import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.moves.MoveImpl;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
 
 @Getter
 public final class OrderCalculator {
@@ -61,7 +60,6 @@ public final class OrderCalculator {
 
     private BoardRepresentation board;
 
-    private static SEE see = new SEE();
     private int captureMargin = 0;
 
     public OrderCalculator(SearchThreadContext stc, EvaluateFunction evaluateFunction) {
@@ -138,7 +136,7 @@ public final class OrderCalculator {
         } else if (m.isCapture()) {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
             // find out good moves (via see)
-            if (see.see_ge(board, m, captureMargin)) {
+            if (SEE.see_ge(board, m, captureMargin)) {
                 return -mvvLva + GOOD_CAPTURES_SCORE;
             } else {
                 return -mvvLva + BAD_CAPTURES_SCORE;
