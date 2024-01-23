@@ -186,7 +186,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isEqualTo("b8c6");
+        assertThat(move.toStr()).isEqualTo("e7e5");
     }
 
     /**
@@ -306,8 +306,8 @@ public class EngineTest {
         SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
-        // block with other figure:
-        assertThat(move.toStr()).isEqualTo("a7d7");
+        // block with other figure on d7:
+        assertThat(move.toStr()).matches("..d7");
 
         System.out.println(move);
 

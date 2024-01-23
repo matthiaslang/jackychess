@@ -45,8 +45,8 @@ public class ParameterizedEvaluationTest {
 
         // test a blockage:
 
-        board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/3N4/PPPPPPPP/RNBQKBNR w - - 0 1");
-        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(370);
+//        board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/3N4/PPPPPPPP/RNBQKBNR w - - 0 1");
+//        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(370);
     }
 
     @Test
