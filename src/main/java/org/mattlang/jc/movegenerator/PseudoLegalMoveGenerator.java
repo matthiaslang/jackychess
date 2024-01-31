@@ -46,6 +46,12 @@ public class PseudoLegalMoveGenerator {
             MoveGeneration.generateAttacks(board, side, moveList);
             MoveGeneration.genPawnQuietPromotions(board.getBoard(), moveList, side);
             break;
+        case QUIESCENCE_PROMOTIONS:
+            MoveGeneration.genPawnQuietPromotions(board.getBoard(), moveList, side);
+            break;
+        case QUIESCENCE_CAPTURES:
+            MoveGeneration.generateAttacks(board, side, moveList);
+            break;
         }
 
     }

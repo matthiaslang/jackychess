@@ -31,7 +31,7 @@ public class LegalMoves {
         MoveList result = new MoveList();
 
         // filter all legal moves
-        MoveCursor iterator = moveList.iterate();
+        MoveCursor iterator = createCursor(moveList);
         while (iterator.hasNext()) {
             iterator.next();
 
@@ -44,5 +44,11 @@ public class LegalMoves {
         }
 
         return result;
+    }
+
+    public static final MoveCursor createCursor(MoveList moveList){
+        LazySortedMoveCursorImpl cursor = new LazySortedMoveCursorImpl();
+        cursor.init(moveList);
+        return cursor;
     }
 }

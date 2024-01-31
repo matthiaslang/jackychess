@@ -5,6 +5,8 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
 import java.util.ArrayList;
@@ -15,9 +17,9 @@ import java.util.List;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.LazySortedMoveCursorImpl;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -28,7 +30,7 @@ public final class MoveList {
 
     private int size = 0;
 
-    private LazySortedMoveCursorImpl moveCursor = new LazySortedMoveCursorImpl();
+    private MovePicker movePicker = new MovePicker();
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
@@ -119,12 +121,24 @@ public final class MoveList {
         }
     }
 
-    public void scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
+    /**
+     * Scores capture moves and returns the number of "good" captures.
+     * @param orderCalculator
+     * @param start
+     * @return
+     */
+    public int scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
+        int goodOnes = 0;
         for (int i = start; i < size; i++) {
             int moveInt = moves[i];
             moveWrapper.fromLongEncoded(moveInt);
-            order[i] = orderCalculator.calcOrderForCaptures(moveWrapper);
+            int orderVal = orderCalculator.calcOrderForCaptures(moveWrapper);
+            this.order[i] = orderVal;
+            if (isGoodCapture(orderVal) || isGoodPromotion(orderVal)) {
+                goodOnes++;
+            }
         }
+        return goodOnes;
     }
 
     public void scoreQuietMoves(OrderCalculator orderCalculator, int start) {
@@ -140,18 +154,6 @@ public final class MoveList {
     }
 
     /**
-     * Returns a cursor initialized for iteration.
-     * Note: due ot performance and memory usage, there is only one cursor associated with a move list.
-     * So the caller can not use more than one iteration at one time.
-     *
-     * @return
-     */
-    public MoveCursor iterate() {
-        moveCursor.init(this);
-        return moveCursor;
-    }
-
-    /**
      * Returns a cursor doing/undoing moves on a board. Only legal moves will be iterated, illegal moves are skipped
      * by this iterator.
      * Note: due ot performance and memory usage, there is only one cursor and MoveBoardIterator associated with a move
@@ -163,8 +165,8 @@ public final class MoveList {
      * @return
      */
     public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
-        MoveCursor moveCursor = iterate();
-        moveBoardIterator.init(moveCursor, board, checkChecker);
+        movePicker.init(this, 0);
+        moveBoardIterator.init(movePicker, board, checkChecker);
         return moveBoardIterator;
     }
 
@@ -243,10 +245,8 @@ public final class MoveList {
      */
     public List<MoveImpl> extractList() {
         ArrayList<MoveImpl> l1 = new ArrayList<>();
-        MoveCursor moveCursor = iterate();
-        while (moveCursor.hasNext()) {
-            moveCursor.next();
-            l1.add(new MoveImpl(moveCursor.getMoveInt()));
+        for (int i = 0; i < size; i++) {
+            l1.add(new MoveImpl(moves[i]));
         }
         l1.sort(Comparator.comparingInt(MoveImpl::getMoveInt));
         return l1;

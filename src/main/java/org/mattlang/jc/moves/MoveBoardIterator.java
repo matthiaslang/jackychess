@@ -5,13 +5,14 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.sorting.MoveIterator;
 
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
  */
 public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
-    private MoveCursor moveCursor;
+    private MoveIterator moveIterator;
     private BoardRepresentation board;
 
     private CheckChecker checkChecker;
@@ -21,19 +22,24 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     private boolean nextStepped = false;
 
+    private int currMove;
+    private int orderOfCurrentMove;
+
+    private MoveImpl currMoveObj = new MoveImpl("a1a2");
+
     public MoveBoardIterator() {
     }
 
-    public MoveBoardIterator(MoveCursor moveCursor, BoardRepresentation board, CheckChecker checkChecker) {
-        this.moveCursor = moveCursor;
+    public MoveBoardIterator(MoveIterator moveIterator, BoardRepresentation board, CheckChecker checkChecker) {
+        this.moveIterator = moveIterator;
         this.board = board;
         siteToMove = board.getSiteToMove();
         this.checkChecker = checkChecker;
         nextStepped = false;
     }
 
-    public void init(MoveCursor moveCursor, BoardRepresentation board, CheckChecker checkChecker) {
-        this.moveCursor = moveCursor;
+    public void init(MoveIterator moveIterator, BoardRepresentation board, CheckChecker checkChecker) {
+        this.moveIterator = moveIterator;
         this.board = board;
         siteToMove = board.getSiteToMove();
         this.checkChecker = checkChecker;
@@ -51,11 +57,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         if (moveDone) {
             undoMove();
         }
-        if (moveCursor.hasNext()) {
+        if (moveIterator.hasNext()) {
             doMove();
             while (checkChecker.isInChess(board, siteToMove)) {
                 undoMove();
-                if (moveCursor.hasNext()) {
+                if (moveIterator.hasNext()) {
                     doMove();
                 } else {
                     return false;
@@ -68,14 +74,15 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     /**
      * steps to the next move if a next move is available.
+     *
      * @return
      */
     public boolean nextMove() {
         if (moveDone) {
             undoMove();
         }
-        if (moveCursor.hasNext()) {
-            moveCursor.next();
+        if (moveIterator.hasNext()) {
+            prepareNext();
             nextStepped = true;
             return true;
         }
@@ -93,110 +100,116 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         if (!nextStepped) {
             return false;
         }
-        moveCursor.move(board);
+        board.domove(currMoveObj);
         moveDone = true;
         return !checkChecker.isInChess(board, siteToMove);
     }
 
     private void undoMove() {
-        moveCursor.undoMove(board);
+        board.undo(currMoveObj);
         moveDone = false;
     }
 
     private void doMove() {
-        moveCursor.next();
-        moveCursor.move(board);
+        prepareNext();
+        board.domove(currMoveObj);
         moveDone = true;
+    }
+
+    private void prepareNext() {
+        currMove = moveIterator.next();
+        orderOfCurrentMove = moveIterator.getOrder();
+        currMoveObj.fromLongEncoded(currMove);
     }
 
     @Override
     public void move(BoardRepresentation board) {
-        moveCursor.move(board);
+        board.domove(currMoveObj);
     }
 
     @Override
     public int getMoveInt() {
-        return moveCursor.getMoveInt();
+        return currMove;
     }
 
     @Override
     public int getEnPassantCapturePos() {
-        return moveCursor.getEnPassantCapturePos();
+        return currMoveObj.getEnPassantCapturePos();
     }
 
     @Override
     public byte getPromotedFigureByte() {
-        return moveCursor.getPromotedFigureByte();
+        return currMoveObj.getPromotedFigureByte();
     }
 
     @Override
     public byte getCastlingType() {
-        return moveCursor.getCastlingType();
+        return currMoveObj.getCastlingType();
     }
 
     @Override
     public int getOrder() {
-        return moveCursor.getOrder();
+        return orderOfCurrentMove;
     }
 
     @Override
     public void undoMove(BoardRepresentation board) {
-        moveCursor.undoMove(board);
+        board.undo(currMoveObj);
     }
 
     @Override
     public boolean isCapture() {
-        return moveCursor.isCapture();
+        return currMoveObj.isCapture();
     }
 
     @Override
     public boolean isPromotion() {
-        return moveCursor.isPromotion();
+        return currMoveObj.isPromotion();
     }
 
     @Override
     public boolean isEnPassant() {
-        return moveCursor.isEnPassant();
+        return currMoveObj.isEnPassant();
     }
 
     @Override
     public boolean isCastling() {
-        return moveCursor.isCastling();
+        return currMoveObj.isCastling();
     }
 
     @Override
     public byte getCapturedFigure() {
-        return moveCursor.getCapturedFigure();
+        return currMoveObj.getCapturedFigure();
     }
 
     @Override
     public Figure getPromotedFigure() {
-        return moveCursor.getPromotedFigure();
+        return currMoveObj.getPromotedFigure();
     }
 
     @Override
     public byte getFigureType() {
-        return moveCursor.getFigureType();
+        return currMoveObj.getFigureType();
     }
 
     @Override
     public int getFromIndex() {
-        return moveCursor.getFromIndex();
+        return currMoveObj.getFromIndex();
     }
 
     @Override
     public int getToIndex() {
-        return moveCursor.getToIndex();
+        return currMoveObj.getToIndex();
     }
 
     @Override
     public String toStr() {
-        return moveCursor.toStr();
+        return currMoveObj.toStr();
     }
 
     @Override
     public String toUCIString(BoardRepresentation board) {
-        return moveCursor.toUCIString(board);
+        return currMoveObj.toUCIString(board);
     }
 
     @Override

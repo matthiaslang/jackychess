@@ -1,6 +1,19 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
@@ -16,19 +29,7 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+import lombok.Getter;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -180,7 +181,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         TTResult tte = searchContext.getTTEntry();
         if (tte != null) {
-            hashMove = tte.getMove();
             if (tte.getDepth() >= depth && ply != 1) {
                 if (tte.isExact()) {// stored value is exact
                     statistics.ttPruningCount++;
@@ -194,6 +194,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
                 }
             }
+
+            hashMove = tte.getMove();
         }
 
         checkTimeout();
@@ -268,7 +270,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
                 int probCutMargin = beta + 90;
                 int probCutCount = 0;
-                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0,
+                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color,
+                        hashMove, 0,
                         probCutMargin - staticEval)) {
                     while (moveCursor.nextMove() && probCutCount < 3) {
                         if (moveCursor.doValidMove()) {
@@ -331,9 +334,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         if (iid && hashMove == 0) {
             doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
+            hashMove = searchContext.probeTTHashMove();
         }
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, color, parentMove, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, color, hashMove,
+                parentMove, 0)) {
 
             boolean firstChild = true;
 
@@ -604,8 +609,10 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             return searchContext.evaluateRepetition(color);
         }
 
+        int hashMove = 0;
         final TTResult tte = searchContext.getTTEntry();
         if (tte != null) {
+            hashMove = tte.getMove();
             if (tte.isExact()) {// stored value is exact
                 statistics.ttPruningCount++;
                 return adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY);
@@ -642,7 +649,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         int movecount = 0;
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, 0, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, hashMove, 0,
+                0)) {
             statistics.quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);
 
@@ -682,7 +690,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         }
 
                         // Do not search moves with bad enough SEE values
-                        if (!SEE.see_ge(searchContext.getBoard(), moveCursor,-95))
+                        if (!SEE.see_ge(searchContext.getBoard(), moveCursor, -95))
                             continue;
                     }
                 }

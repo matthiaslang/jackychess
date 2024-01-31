@@ -15,6 +15,8 @@ public interface TTCacheInterface extends StatisticsCollector {
      */
     boolean findEntry(TTResult result, BoardRepresentation board);
 
+    int findHashMove(BoardRepresentation board);
+
     void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta,
             int depth, int move);
 

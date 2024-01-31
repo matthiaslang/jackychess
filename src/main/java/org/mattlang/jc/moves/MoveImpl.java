@@ -332,6 +332,10 @@ public final class MoveImpl implements Move {
         return getCapturedFigure(move) != 0;
     }
 
+    public static boolean isPromotion(int move) {
+        return getType(move) >= PAWN_PROMOTION_W_KNIGHT && getType(move) <= PAWN_PROMOTION_B_QUEEN;
+    }
+
     private static byte getType(int move) {
         return (byte) (move & MASK_7);
     }

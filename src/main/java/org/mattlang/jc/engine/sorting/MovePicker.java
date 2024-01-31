@@ -10,7 +10,7 @@ import org.mattlang.jc.engine.MoveList;
 /**
  * Move picker which does a partial sort and picks the next move by its order priority from a move list.
  */
-public final class MovePicker {
+public final class MovePicker implements MoveIterator {
 
     public static final Logger LOGGER = Logger.getLogger(MovePicker.class.getSimpleName());
 

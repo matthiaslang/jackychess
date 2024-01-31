@@ -39,7 +39,7 @@ public class LegalMoveGeneratorImplTest {
     }
 
     private MoveImpl getFirstMove(MoveList moveList) {
-        MoveCursor cursor = moveList.iterate();
+        MoveCursor cursor = LegalMoves.createCursor(moveList);
         cursor.next();
         return new MoveImpl(cursor.getMoveInt());
     }

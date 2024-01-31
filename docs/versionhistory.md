@@ -1,5 +1,9 @@
 # Versions
 
+### 23.12.1
+
+- code cleanup staged move generation: no elo gain.
+
 ## 23.12
 
 Official Version since 23.06.

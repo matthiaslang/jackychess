@@ -187,7 +187,7 @@ public class DatasetPreparer {
     }
 
     private boolean isQuiet(MoveList moveList) {
-        MoveCursor iterator = moveList.iterate();
+        MoveCursor iterator = LegalMoves.createCursor(moveList);
         while (iterator.hasNext()) {
             iterator.next();
             if (iterator.isCapture() || iterator.isPromotion()) {

@@ -142,6 +142,7 @@ public final class SearchContext {
      * Return true, if this position is a repetition in the search path.
      * We treat this all the time as "draw" (not only after 3 times), means we treat repetitions not as beneficial,
      * since it means we have chosen this before and it has not made the situation better.
+     *
      * @return
      */
     public boolean isRepetition() {
@@ -152,8 +153,8 @@ public final class SearchContext {
         board.undoNullMove();
     }
 
-    public void resetNullMoveCounter(){
-        nullMoveCounter=0;
+    public void resetNullMoveCounter() {
+        nullMoveCounter = 0;
     }
 
     public void doPrepareNullMove() {
@@ -181,26 +182,23 @@ public final class SearchContext {
 
     public int probeTTHashMove() {
         if (doCaching) {
-            if (ttCache.findEntry(ttResult, board)) {
-                return ttResult.getMove();
-            }
+            return ttCache.findHashMove(board);
         }
         return 0;
 
     }
 
-    public MoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color,
+    public MoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
-        int hashMove = probeTTHashMove();
 
         MoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove, captureMargin);
         return preparer;
     }
 
-    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color,
+    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
-        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, parentMove, captureMargin);
+        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, hashMove, parentMove, captureMargin);
         return preparer.iterateMoves();
     }
 
@@ -219,7 +217,8 @@ public final class SearchContext {
      * unintentionally for the winning side.
      *
      * At the moment it seems we do not have to do special handling. the described situations lead from a general
-     * wrong handling of keeping the move history in cloned boards. So at the moement we do simply return the weight of 0.
+     * wrong handling of keeping the move history in cloned boards. So at the moement we do simply return the weight of
+     * 0.
      *
      * @param color
      * @return
@@ -229,11 +228,11 @@ public final class SearchContext {
         // not have to do any special logic here...
 
         //        int staticEval = eval(color);
-//        if (staticEval >= WINNING_WEIGHT && weAre == WHITE) {
-//            return -DRAW_IS_VERY_BAD;
-//        } else if (staticEval <= -WINNING_WEIGHT && weAre == BLACK) {
-//            return +DRAW_IS_VERY_BAD;
-//        }
+        //        if (staticEval >= WINNING_WEIGHT && weAre == WHITE) {
+        //            return -DRAW_IS_VERY_BAD;
+        //        } else if (staticEval <= -WINNING_WEIGHT && weAre == BLACK) {
+        //            return +DRAW_IS_VERY_BAD;
+        //        }
         return Weights.REPETITION_WEIGHT;
     }
 
@@ -284,7 +283,7 @@ public final class SearchContext {
      *
      * @return
      */
-    public static boolean isNoZugwang(BoardRepresentation board){
+    public static boolean isNoZugwang(BoardRepresentation board) {
         return board.getMaterial().hasNonPawnMat(board.getSiteToMove());
     }
 }
