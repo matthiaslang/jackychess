@@ -40,8 +40,6 @@ public interface Move {
      */
     int getMoveInt();
 
-    int getEnPassantCapturePos();
-
     byte getPromotedFigureByte();
 
     byte getCastlingType();

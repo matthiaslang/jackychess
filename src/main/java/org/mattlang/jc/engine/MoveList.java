@@ -93,8 +93,8 @@ public final class MoveList {
         }
     }
 
-    public void genEnPassant(int from, int to, int enPassantCapturePos) {
-        addMove(createEnPassantMove(from, to, sideToMove == Color.WHITE ? B_PAWN : W_PAWN, enPassantCapturePos));
+    public void genEnPassant(int from, int to) {
+        addMove(createEnPassantMove(from, to, sideToMove == Color.WHITE ? B_PAWN : W_PAWN));
     }
 
     public void addCastlingMove(CastlingMove castlingMove) {

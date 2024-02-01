@@ -90,8 +90,8 @@ public final class MovePicker implements MoveIterator {
             moveOrders.add(moveList.getOrder(i));
         }
         List<String> moveDebugOrders = createMoveDebugOrders(moveOrders);
-        LOGGER.info("picker prepared " + size + " moves, starting at " + start);
-        LOGGER.info("move list order: " + moveDebugOrders);
+//        LOGGER.info("picker prepared " + size + " moves, starting at " + start);
+//        LOGGER.info("move list order: " + moveDebugOrders);
     }
 
     private List<String> createMoveDebugOrders(ArrayList<Integer> moveOrders) {

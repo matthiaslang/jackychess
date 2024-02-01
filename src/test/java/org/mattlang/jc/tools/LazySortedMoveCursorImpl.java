@@ -30,11 +30,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
-    public int getEnPassantCapturePos() {
-        return currMoveObj.getEnPassantCapturePos();
-    }
-
-    @Override
     public byte getPromotedFigureByte() {
         return currMoveObj.getPromotedFigureByte();
     }

@@ -142,9 +142,9 @@ public final class MoveImpl implements Move {
         this.type = promotedFigureToType[promotedFigure.figureCode];
     }
 
-    private MoveImpl(int from, int to, byte capturedFigure, int enPassantCapturePos) {
+    private MoveImpl(int from, int to, byte capturedFigure) {
         this(FigureConstants.FT_PAWN, from, to, capturedFigure);
-        this.type = (byte) (ENPASSANT_MOVE + enPassantCapturePos);
+        this.type = (byte) (ENPASSANT_MOVE );
     }
 
     private MoveImpl(CastlingMove castlingMove) {
@@ -166,8 +166,8 @@ public final class MoveImpl implements Move {
         return new MoveImpl(from, to, capturedFigure, promotedFigure);
     }
 
-    public static MoveImpl createEnPassant(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        return new MoveImpl(from, to, capturedFigure, enPassantCapturePos);
+    public static MoveImpl createEnPassant(int from, int to, byte capturedFigure) {
+        return new MoveImpl(from, to, capturedFigure);
     }
 
     public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure
@@ -192,8 +192,8 @@ public final class MoveImpl implements Move {
                 capturedFigure);
     }
 
-    public final static int createEnPassantMove(int from, int to, byte capturedFigure, int enPassantCapturePos) {
-        return longRepresentation((byte) (ENPASSANT_MOVE + enPassantCapturePos), FigureConstants.FT_PAWN, (byte) from,
+    public final static int createEnPassantMove(int from, int to, byte capturedFigure) {
+        return longRepresentation((byte) (ENPASSANT_MOVE), FigureConstants.FT_PAWN, (byte) from,
                 (byte) to,
                 capturedFigure);
     }
@@ -249,17 +249,8 @@ public final class MoveImpl implements Move {
     }
 
     @Override
-    public int getEnPassantCapturePos() {
-        return decodeEnPassantCapturePos();
-    }
-
-    @Override
     public String toString() {
         return toStr();
-    }
-
-    private int decodeEnPassantCapturePos() {
-        return type - ENPASSANT_MOVE;
     }
 
     @Override

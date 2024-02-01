@@ -166,7 +166,7 @@ public final class MoveGeneration {
 
                 while (capturesEast != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex + 9, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex + 9);
                     capturesEast &= capturesEast - 1;
                 }
 
@@ -174,7 +174,7 @@ public final class MoveGeneration {
 
                 while (capturesWest != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex + 7, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex + 7);
                     capturesWest &= capturesWest - 1;
                 }
 
@@ -196,7 +196,7 @@ public final class MoveGeneration {
 
                 while (capturesEast != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex - 7, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex - 7);
                     capturesEast &= capturesEast - 1;
                 }
 
@@ -204,7 +204,7 @@ public final class MoveGeneration {
 
                 while (capturesWest != 0) {
                     final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex - 9, bitBoard.getEnPassantCapturePos());
+                    collector.genEnPassant(fromIndex, fromIndex - 9);
                     capturesWest &= capturesWest - 1;
                 }
             }

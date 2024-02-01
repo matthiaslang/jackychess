@@ -133,11 +133,6 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public int getEnPassantCapturePos() {
-        return currMoveObj.getEnPassantCapturePos();
-    }
-
-    @Override
     public byte getPromotedFigureByte() {
         return currMoveObj.getPromotedFigureByte();
     }

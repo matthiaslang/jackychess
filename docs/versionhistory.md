@@ -3,6 +3,7 @@
 ### 23.12.1
 
 - code cleanup staged move generation: no elo gain.
+- code cleanup en passant capture move encoding
 
 ## 23.12
 

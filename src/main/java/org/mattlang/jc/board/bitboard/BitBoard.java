@@ -489,7 +489,7 @@ public final class BitBoard implements BoardRepresentation {
             resetEnPassant();
         } else if (move.isEnPassant()) {
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), (byte) 0);
-            set(move.getEnPassantCapturePos(), FigureConstants.FT_EMPTY);
+            set(getEnPassantCapturePos(move), FigureConstants.FT_EMPTY);
         } else if (move.isPromotion()) {
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
             set(move.getToIndex(), move.getPromotedFigureByte());
@@ -529,7 +529,7 @@ public final class BitBoard implements BoardRepresentation {
             // override the "default" overrider field with empty..
             board.setEmpty(move.getToIndex());
             // because we have the special en passant capture pos which we need to reset with the captured figure
-            board.set(move.getEnPassantCapturePos(), move.getCapturedFigure());
+            board.set(getEnPassantCapturePos(move), move.getCapturedFigure());
         } else if (move.isPromotion()) {
             Figure promotedFigure = getFigure(move.getFromIndex());
             byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
@@ -724,5 +724,19 @@ public final class BitBoard implements BoardRepresentation {
 
     private CastlingMove getCastlingMove(Move move) {
         return boardCastlings.getCastlingMove(move.getCastlingType());
+    }
+
+    /**
+     * For an en passant move this returns the position of the captured pawn.
+     * @param move
+     * @return
+     */
+    private int getEnPassantCapturePos(Move move) {
+        if (move.getFromIndex() < move.getToIndex()) {
+            // white en passant:
+            return move.getToIndex() - 8;
+        } else {
+            return move.getToIndex() + 8;
+        }
     }
 }

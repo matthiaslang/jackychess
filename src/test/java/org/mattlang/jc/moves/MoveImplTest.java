@@ -17,7 +17,7 @@ public class MoveImplTest {
         MoveImpl m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
 
-        m = MoveImpl.createEnPassant(50, 60, Figure.B_Bishop.figureCode, 61);
+        m = MoveImpl.createEnPassant(50, 60, Figure.B_Bishop.figureCode);
         l = m.toLongEncoded();
 
         m2 = new MoveImpl(l);

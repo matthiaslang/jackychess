@@ -120,8 +120,7 @@ public class FenParser {
         if (fig.figureType == Pawn && board.isEnPassantCapturePossible(movePos.getTo())) {
             Color side = board.getFigure(movePos.getFrom()).color;
             byte otherSidePawn = side == WHITE ? B_PAWN : W_PAWN;
-            return MoveImpl.createEnPassant(movePos.getFrom(), movePos.getTo(), otherSidePawn,
-                    board.getEnPassantCapturePos());
+            return MoveImpl.createEnPassant(movePos.getFrom(), movePos.getTo(), otherSidePawn);
         }
 
         // normal move:
