@@ -330,13 +330,6 @@ public class BitChessBoard {
         return ((colorBB[nWhite] & posMask) == 0 && (colorBB[nBlack] & posMask) == 0);
     }
 
-    public boolean isDifferentColor(int p1, int p2) {
-        long posMask1 = 1L << p1;
-        long posMask2 = 1L << p2;
-        return ((colorBB[nWhite] & posMask1) != 0 && (colorBB[nBlack] & posMask2) != 0
-                || (colorBB[nWhite] & posMask2) != 0 && (colorBB[nBlack] & posMask1) != 0);
-    }
-
     public Color getColorOfPos(int p1) {
         long posMask1 = 1L << p1;
         return (colorBB[nWhite] & posMask1) != 0 ? WHITE : BLACK;
