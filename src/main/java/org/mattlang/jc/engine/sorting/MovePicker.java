@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -49,7 +50,9 @@ public final class MovePicker implements MoveIterator {
         this.start = start;
         current = start - 1;
 
-        //        validate();
+        if (BuildConstants.ASSERTIONS) {
+            validate();
+        }
     }
 
     /**
@@ -70,10 +73,12 @@ public final class MovePicker implements MoveIterator {
                 currOrder = moveList.getOrder(i);
             }
             // it means also that all moves beyond start should have a lower prio order (higher value) than the last used one:
-
+            // only exception is a quiet queen promotion which has a rel. high value (higher than most good captures) but is part
+            // of the quiet staging phase:
             for (int i = start; i < moveList.size(); i++) {
 
-                if (moveList.getOrder(i) <= currOrder) {
+                if (moveList.getOrder(i) <= currOrder
+                        && moveList.getOrder(i) != OrderCalculator.QUEEN_PROMOTION_SCORE) {
                     throw new IllegalStateException(
                             "inconsistent order of following moves. They should have been chosen earlier!");
                 }

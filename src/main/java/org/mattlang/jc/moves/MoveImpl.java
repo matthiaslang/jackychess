@@ -2,9 +2,11 @@ package org.mattlang.jc.moves;
 
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
+import static org.mattlang.util.Assertions.*;
 
 import java.util.Objects;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureConstants;
@@ -117,6 +119,10 @@ public final class MoveImpl implements Move {
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
+
+        if (BuildConstants.ASSERTIONS) {
+            doAssertions();
+        }
     }
 
     public MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure) {
@@ -125,6 +131,10 @@ public final class MoveImpl implements Move {
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
         this.capturedFigure = capturedFigure;
+
+        if (BuildConstants.ASSERTIONS) {
+            doAssertions();
+        }
     }
 
     private MoveImpl(int from, int to, byte capturedFigure, Figure promotedFigure) {
@@ -142,6 +152,10 @@ public final class MoveImpl implements Move {
         this.type = castlingMove.getType();
         this.fromIndex = castlingMove.getKingFrom();
         this.toIndex = castlingMove.getKingTo();
+
+        if (BuildConstants.ASSERTIONS) {
+            doAssertions();
+        }
     }
 
     public static MoveImpl createCastling(CastlingMove castlingMove) {
@@ -296,6 +310,14 @@ public final class MoveImpl implements Move {
 
     public static int longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
             byte capturedFigure) {
+
+        if (BuildConstants.ASSERTIONS) {
+            assertFigureType(figureType);
+            assertFieldNum(fromIndex);
+            assertFieldNum(toIndex);
+            assertFigureCodeOrEmpty(capturedFigure);
+        }
+
         return (int) type & MASK_7 |
                 (int) figureType << OFFSET_FIGURETYPE |
                 (int) fromIndex << OFFSET_FROMINDEX |
@@ -310,10 +332,14 @@ public final class MoveImpl implements Move {
         toIndex = (byte) (l >>> OFFSET_TOINDEX & MASK_7);
 
         capturedFigure = (byte) (l >>> OFFSET_CAPTUREDFIGURE & MASK_5);
+
+        if (BuildConstants.ASSERTIONS) {
+            doAssertions();
+        }
     }
 
     public static byte getCapturedFigure(int move) {
-        return (byte) (move >>> 26 & MASK_5);
+        return (byte) (move >>> OFFSET_CAPTUREDFIGURE & MASK_5);
     }
 
     public static byte getFigureType(int move) {
@@ -350,5 +376,12 @@ public final class MoveImpl implements Move {
 
     public static byte getCastlingType(int move) {
         return getType(move);
+    }
+
+    private void doAssertions() {
+        assertFigureType(figureType);
+        assertFieldNum(fromIndex);
+        assertFieldNum(toIndex);
+        assertFigureCodeOrEmpty(capturedFigure);
     }
 }

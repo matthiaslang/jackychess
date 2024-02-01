@@ -13,6 +13,7 @@ import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 import java.util.Objects;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.moves.CastlingMove;
@@ -458,6 +459,10 @@ public final class BitBoard implements BoardRepresentation {
 
     @Override
     public void domove(Move move) {
+        if (BuildConstants.ASSERTIONS) {
+            board.doAssertions();
+        }
+
         pushHistory();
 
         if (move.isCastling()) {
@@ -493,10 +498,18 @@ public final class BitBoard implements BoardRepresentation {
         }
 
         switchSiteToMove();
+
+        if (BuildConstants.ASSERTIONS) {
+            board.doAssertions();
+        }
     }
 
     @Override
     public void undo(Move move) {
+
+        if (BuildConstants.ASSERTIONS) {
+            board.doAssertions();
+        }
 
         long fromMask = 1L << move.getToIndex();
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
@@ -542,6 +555,9 @@ public final class BitBoard implements BoardRepresentation {
 
         popHistory();
 
+        if (BuildConstants.ASSERTIONS) {
+            board.doAssertions();
+        }
     }
 
     private void popHistory() {

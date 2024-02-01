@@ -8,12 +8,15 @@ import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
 import static org.mattlang.jc.moves.MoveImpl.*;
+import static org.mattlang.util.Assertions.assertFieldNum;
+import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
@@ -65,6 +68,11 @@ public final class MoveList {
     }
 
     public void genPawnMove(int from, int to, byte capturedFigure) {
+        if (BuildConstants.ASSERTIONS) {
+            assertFieldNum(from);
+            assertFieldNum(to);
+            assertFigureCodeOrEmpty(capturedFigure);
+        }
 
         if (isOnLastLine(to)) {
             addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Queen : B_Queen));
@@ -123,6 +131,7 @@ public final class MoveList {
 
     /**
      * Scores capture moves and returns the number of "good" captures.
+     *
      * @param orderCalculator
      * @param start
      * @return

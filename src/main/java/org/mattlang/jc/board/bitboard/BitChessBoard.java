@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.FigureType;
@@ -305,6 +306,10 @@ public class BitChessBoard {
 
         //occupiedBB            ^=  fromBB;     // update occupied, only from becomes empty
         //emptyBB               ^=  fromBB;     // update empty bitboard
+
+        if (BuildConstants.ASSERTIONS){
+            doAssertions();
+        }
     }
 
     private int opponentColor(int color) {
