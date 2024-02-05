@@ -17,8 +17,7 @@ public final class MgEgArrayFunction {
     @Getter
     private final String propertyEg;
 
-    @Getter
-    private final ArrayFunction combinedMgEg;
+    private final int[] combinedMgEg;
 
     public MgEgArrayFunction(EvalConfig config, String propBaseName) {
         this(config, propBaseName, "Mg", "Eg");
@@ -31,12 +30,12 @@ public final class MgEgArrayFunction {
         propertyEg = propBaseName + egPostFix;
         functionEg = config.parseArray(propertyEg);
 
-        combinedMgEg = ArrayFunction.combine(functionMg, functionEg);
+        combinedMgEg = ArrayFunction.combineArr(functionMg, functionEg);
 
     }
 
     public int calc(int x) {
-        return combinedMgEg.calc(x);
+        return combinedMgEg[x];
     }
 
     public void updateCombinedVals() {

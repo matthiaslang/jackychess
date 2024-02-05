@@ -51,6 +51,10 @@ public final class ArrayFunction implements Function {
     }
 
     public static ArrayFunction combine(ArrayFunction funMG, ArrayFunction funEG) {
+        return new ArrayFunction(combineArr(funMG, funEG));
+    }
+
+    public static int[] combineArr(ArrayFunction funMG, ArrayFunction funEG) {
         int combinedSize = Math.max(funEG.getSize(), funMG.getSize());
         int[] vals = new int[combinedSize];
         for (int i = 0; i < combinedSize; i++) {
@@ -58,15 +62,14 @@ public final class ArrayFunction implements Function {
             int valEg = i < funEG.getSize() ? funEG.calc(i) : 0;
             vals[i] = MgEgScore.createMgEgScore(valMg, valEg);
         }
-        ArrayFunction combined = new ArrayFunction(vals);
-        return combined;
+        return vals;
     }
 
-    public static void updateCombined(ArrayFunction combinedMgEg, ArrayFunction funMG, ArrayFunction funEG) {
-        for (int i = 0; i < combinedMgEg.getSize(); i++) {
+    public static void updateCombined(int[] combinedMgEg, ArrayFunction funMG, ArrayFunction funEG) {
+        for (int i = 0; i < combinedMgEg.length; i++) {
             int valMg = i < funMG.getSize() ? funMG.calc(i) : 0;
             int valEg = i < funEG.getSize() ? funEG.calc(i) : 0;
-            combinedMgEg.setVal(i, MgEgScore.createMgEgScore(valMg, valEg));
+            combinedMgEg[i] = MgEgScore.createMgEgScore(valMg, valEg);
         }
     }
 
