@@ -15,7 +15,6 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
@@ -176,18 +175,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long capturesWest = BB.wPawnEastAttacks(otherPawns);
             return capturesEast | capturesWest;
         }
-    }
-
-    /**
-     * Weights the manhattan distance to the king from 0 to 13.
-     * 0 == fartest from king. 13 == nearest to king
-     *
-     * @param sq1
-     * @param sq2
-     * @return
-     */
-    private int getTropism(int sq1, int sq2) {
-        return 14 - Tools.manhattanDistance(sq1, sq2);
     }
 
     @Override
