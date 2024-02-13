@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
@@ -250,7 +251,23 @@ public class DataSet {
 
         table = new MarkdownTable().header("Phase", "Count", "%");
         for (Map.Entry<Long, Long> entry : countsByPhase.entrySet()) {
-            table.row(entry.getKey(), entry.getValue(), entry.getValue()*100 / all);
+            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / all);
+        }
+        w.writeTable(table);
+
+        w.h2("Number of fens by having figures");
+
+        Map<FigureType, Long> fensByHavingFigures = new HashMap<>();
+        for (FenEntry fen : fens) {
+            for (FigureType ft : FigureType.values()) {
+                if (fen.getBoard().getBoard().getPieceSet(ft.ordinal()) != 0L) {
+                    fensByHavingFigures.compute(ft, (k, v) -> (v == null) ? 1 : v + 1);
+                }
+            }
+        }
+        table = new MarkdownTable().header("FigureType", "Count", "%");
+        for (Map.Entry<Long, Long> entry : countsByPhase.entrySet()) {
+            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / all);
         }
         w.writeTable(table);
     }
