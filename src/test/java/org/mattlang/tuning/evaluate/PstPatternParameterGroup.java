@@ -18,4 +18,15 @@ public class PstPatternParameterGroup extends PatternParameterGroup {
                 parameterizedEvaluation1 -> getter.apply(parameterizedEvaluation1.getPstEvaluation()));
     }
 
+    public PstPatternParameterGroup(String tableCsvNameMg, String tableCsvNameEg,
+            boolean mirrored,
+            Function<Integer, Boolean> includePositions,
+            ParameterizedEvaluation parameterizedEvaluation,
+            Function<ParameterizedPstEvaluation, Pattern> getter) {
+
+        super("pst", tableCsvNameMg, tableCsvNameEg, mirrored, includePositions,
+                parameterizedEvaluation,
+                parameterizedEvaluation1 -> getter.apply(parameterizedEvaluation1.getPstEvaluation()));
+    }
+
 }

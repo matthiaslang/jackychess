@@ -31,6 +31,7 @@ import lombok.Getter;
 public class PatternParameterGroup implements TuningParameterGroup {
 
     private final static IntIntervall PST_VALUE_INTERVAL = new IntIntervall(-500, +500);
+    public static final Function<Integer, Boolean> INCLUDE_ALL_POSITIONS = pos -> true;
 
     @Getter
     private final String tableCsvName;
@@ -52,6 +53,8 @@ public class PatternParameterGroup implements TuningParameterGroup {
 
     private List<TuningParameter> parameters = new ArrayList<>();
 
+    private Function<Integer, Boolean> includePositions = INCLUDE_ALL_POSITIONS;
+
     public PatternParameterGroup(String subdir, String tableCsvName,
             boolean mirrored,
             ParameterizedEvaluation parameterizedEvaluation,
@@ -71,6 +74,14 @@ public class PatternParameterGroup implements TuningParameterGroup {
             boolean mirrored,
             ParameterizedEvaluation parameterizedEvaluation,
             Function<ParameterizedEvaluation, Pattern> getter) {
+        this(subdir, tableCsvNameMg, tableCsvNameEg, mirrored, INCLUDE_ALL_POSITIONS, parameterizedEvaluation, getter);
+    }
+
+    public PatternParameterGroup(String subdir, String tableCsvNameMg, String tableCsvNameEg,
+            boolean mirrored,
+            Function<Integer, Boolean> includePositions,
+            ParameterizedEvaluation parameterizedEvaluation,
+            Function<ParameterizedEvaluation, Pattern> getter) {
         this.subdir = subdir;
         this.tableCsvName = tableCsvNameMg;
         this.tableCsvNameEg = tableCsvNameEg;
@@ -85,6 +96,7 @@ public class PatternParameterGroup implements TuningParameterGroup {
         this.getter = getter;
         this.pattern = getter.apply(parameterizedEvaluation).copy();
         this.mirrored = mirrored;
+        this.includePositions = includePositions;
 
         initPatternParamValues();
     }
@@ -93,36 +105,40 @@ public class PatternParameterGroup implements TuningParameterGroup {
         if (mirrored) {
             Set<Integer> alreadyHandled = new HashSet<>();
             for (int pos = 0; pos < 64; pos++) {
-                int mirroredPos = mirroredPos(pos);
-                if (!alreadyHandled.contains(pos) && !alreadyHandled.contains(mirroredPos)) {
+                if (includePositions.apply(pos)) {
+                    int mirroredPos = mirroredPos(pos);
+                    if (!alreadyHandled.contains(pos) && !alreadyHandled.contains(mirroredPos)) {
 
-                    int value = pattern.getRawVal(pos);
-                    if (mgEgCombined) {
-                        parameters.add(
-                                new PatternValueParam(this, MG, pos, mirroredPos, getMgScore(value),
-                                        PST_VALUE_INTERVAL));
-                        parameters.add(
-                                new PatternValueParam(this, EG, pos, mirroredPos, getEgScore(value),
-                                        PST_VALUE_INTERVAL));
-                    } else {
-                        parameters.add(
-                                new PatternValueParam(this, INDEPENDANT, pos, mirroredPos, value,
-                                        PST_VALUE_INTERVAL));
+                        int value = pattern.getRawVal(pos);
+                        if (mgEgCombined) {
+                            parameters.add(
+                                    new PatternValueParam(this, MG, pos, mirroredPos, getMgScore(value),
+                                            PST_VALUE_INTERVAL));
+                            parameters.add(
+                                    new PatternValueParam(this, EG, pos, mirroredPos, getEgScore(value),
+                                            PST_VALUE_INTERVAL));
+                        } else {
+                            parameters.add(
+                                    new PatternValueParam(this, INDEPENDANT, pos, mirroredPos, value,
+                                            PST_VALUE_INTERVAL));
+                        }
                     }
+                    alreadyHandled.add(pos);
+                    alreadyHandled.add(mirroredPos);
                 }
-                alreadyHandled.add(pos);
-                alreadyHandled.add(mirroredPos);
             }
 
         } else {
             for (int pos = 0; pos < 64; pos++) {
-                int value = pattern.getRawVal(pos);
-                if (mgEgCombined) {
-                    parameters.add(new PatternValueParam(this, MG, pos, getMgScore(value), PST_VALUE_INTERVAL));
-                    parameters.add(new PatternValueParam(this, EG, pos, getEgScore(value), PST_VALUE_INTERVAL));
-                } else {
-                    parameters.add(
-                            new PatternValueParam(this, INDEPENDANT, pos, value, PST_VALUE_INTERVAL));
+                if (includePositions.apply(pos)) {
+                    int value = pattern.getRawVal(pos);
+                    if (mgEgCombined) {
+                        parameters.add(new PatternValueParam(this, MG, pos, getMgScore(value), PST_VALUE_INTERVAL));
+                        parameters.add(new PatternValueParam(this, EG, pos, getEgScore(value), PST_VALUE_INTERVAL));
+                    } else {
+                        parameters.add(
+                                new PatternValueParam(this, INDEPENDANT, pos, value, PST_VALUE_INTERVAL));
+                    }
                 }
             }
         }

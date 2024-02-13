@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.parameval.*;
@@ -40,6 +41,7 @@ public class ParameterSet {
 
     public static final IntIntervall THREATS_PARAMS_INTERVALl = new IntIntervall(0, 200);
     public static final IntIntervall PASSEDPAWN_SCORE_INTERVALl = new IntIntervall(0, 400);
+    private static final Function<Integer, Boolean> ONLY_PAWN_FIELDS = pos -> pos >= 0 + 8 && pos <= 64 - 8;
 
     /**
      * all parameter groups.
@@ -361,27 +363,33 @@ public class ParameterSet {
         boolean mirrored = true;
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, WEAK_PAWN_FILE_MG, WEAK_PAWN_FILE_EG, mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getWeakPawnPstMgEg()));
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_PASSER_CSV_MG, PROTECTED_PASSER_CSV_EG,
                 mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getProtectedPasserPstMgEg()));
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PASSED_PAWN_FILE_MG, PASSED_PAWN_FILE_EG, mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getPassedPawnPstMgEg()));
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, BLOCKED_PAWN_FILE_MG, BLOCKED_PAWN_FILE_EG, mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getBlockedPawnPstMgEg()));
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, PROTECTED_CSV_MG, PROTECTED_CSV_EG, mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getProtectedPstMgEg()));
 
         groups.add(new PatternParameterGroup(PAWN_CONFIG_SUB_DIR, NEIGHBOUR_CSV_MG, NEIGHBOUR_CSV_EG, mirrored,
+                ONLY_PAWN_FIELDS,
                 parameterizedEvaluation,
                 e -> e.getPawnEvaluation().getNeighbourPstMgEg()));
 
@@ -518,7 +526,9 @@ public class ParameterSet {
     private void addPstParameters(ParameterizedEvaluation parameterizedEvaluation) {
         boolean mirrored = true;
 
-        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, PAWN_EG_CSV, mirrored, parameterizedEvaluation,
+        groups.add(new PstPatternParameterGroup(PAWN_MG_CSV, PAWN_EG_CSV, mirrored,
+                ONLY_PAWN_FIELDS,
+                parameterizedEvaluation,
                 ParameterizedPstEvaluation::getPawnMGEG));
         groups.add(new PstPatternParameterGroup(BISHOP_MG_CSV, BISHOP_EG_CSV, mirrored, parameterizedEvaluation,
                 ParameterizedPstEvaluation::getBishopMGEG));
