@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.tuning.data.pgnparser.Ending;
@@ -238,6 +239,26 @@ public class DataSet {
 
         w.writeTable(table);
 
+        w.h2("Number of fens by Game Phase");
+
+        // stats about mid/end game:
+        Map<Long, Long> countsByPhase = fens.stream()
+                .map(f -> calcPhaseStatistic(f))
+                .collect(groupingBy(identity(), counting()));
+
+        long all = countsByPhase.values().stream().mapToLong(Long::longValue).sum();
+
+        table = new MarkdownTable().header("Phase", "Count", "%");
+        for (Map.Entry<Long, Long> entry : countsByPhase.entrySet()) {
+            table.row(entry.getKey(), entry.getValue(), entry.getValue()*100 / all);
+        }
+        w.writeTable(table);
+    }
+
+    private long calcPhaseStatistic(FenEntry f) {
+        double factor = PhaseCalculator.calcPhaseFactor(f.getBoard());
+        long decFactor = Math.round(factor * 10);
+        return decFactor;
     }
 
     public void resetDependingFens(TuningParameter param) {
