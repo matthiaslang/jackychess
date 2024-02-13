@@ -19,8 +19,6 @@ import lombok.Getter;
  */
 public class BitBoardForTuning implements BoardRepresentation {
 
-    public static final int NO_EN_PASSANT_OPTION = -1;
-
     @Getter
     private BitChessBoard board = new BitChessBoard();
 
@@ -33,25 +31,13 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Getter
     private Color siteToMove;
-    /**
-     * the target pos of the en passant move that could be taken as next move on the board.
-     * -1 if no en passant is possible.
-     */
-    private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
 
-    /**
-     * reusing a static board castling for all tuning bitboards:
-     * This saves memory and is only possible, since we tune only non-chess960 fens, and do not create moves from
-     * this board.
-     */
-    private static BoardCastlings boardCastlings = new BoardCastlings(null);
     private boolean chess960 = false;
 
     public BitBoardForTuning(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos,
             Color siteToMove) {
         this.board = board;
         this.castlingRights = castlingRights.getRights();
-        this.enPassantMoveTargetPos = enPassantMoveTargetPos;
         this.siteToMove = siteToMove;
     }
 
@@ -59,7 +45,6 @@ public class BitBoardForTuning implements BoardRepresentation {
             Color siteToMove) {
         this.board = board;
         this.castlingRights = castlingRights;
-        this.enPassantMoveTargetPos = enPassantMoveTargetPos;
         this.siteToMove = siteToMove;
     }
 
@@ -154,19 +139,19 @@ public class BitBoardForTuning implements BoardRepresentation {
         if (o == null || getClass() != o.getClass())
             return false;
         BitBoardForTuning bitBoard = (BitBoardForTuning) o;
-        return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos && board.equals(bitBoard.board)
+        return  board.equals(bitBoard.board)
                 && castlingRights == bitBoard.castlingRights && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, castlingRights, siteToMove, enPassantMoveTargetPos);
+        return Objects.hash(board, castlingRights, siteToMove);
     }
 
     @Override
     public BitBoardForTuning copy() {
         BitBoardForTuning
-                copied = new BitBoardForTuning(board.copy(), castlingRights, enPassantMoveTargetPos, siteToMove);
+                copied = new BitBoardForTuning(board.copy(), castlingRights, 0, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
         copied.chess960 = chess960;
@@ -178,7 +163,7 @@ public class BitBoardForTuning implements BoardRepresentation {
                 copied =
                 new BitBoardForTuning(bitBoard.getBoard().copy(), new CastlingRights(bitBoard.getCastlingRights()),
                         bitBoard.getEnPassantMoveTargetPos(), bitBoard.getSiteToMove());
-        copied.zobristHash = Zobrist.hash(copied);
+        copied.zobristHash = bitBoard.getZobristHash();
         copied.material.init(copied);
         copied.chess960 = bitBoard.isChess960();
         //        copied.moveCounter = bitBoarmoveCounter;
@@ -193,30 +178,22 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public boolean isEnPassantCapturePossible(int n) {
-        return enPassantMoveTargetPos == n;
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public int getEnPassantCapturePos() {
-        return calcEnPassantCaptureFromEnPassantOption();
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public int getEnPassantMoveTargetPos() {
-        return enPassantMoveTargetPos;
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
     public void setEnPassantOption(int enPassantOption) {
         throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
-    }
-
-    private int calcEnPassantCaptureFromEnPassantOption() {
-        if (enPassantMoveTargetPos >= 16 && enPassantMoveTargetPos <= 23) {
-            return enPassantMoveTargetPos + 8;
-        } else {
-            return enPassantMoveTargetPos - 8;
-        }
     }
 
     @Override
@@ -295,7 +272,7 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public BoardCastlings getBoardCastlings() {
-        return boardCastlings;
+        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 
     @Override
