@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
+import org.mattlang.jc.material.Material;
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.tuning.data.pgnparser.Ending;
@@ -240,34 +241,65 @@ public class DataSet {
 
         w.writeTable(table);
 
-        w.h2("Number of fens by Game Phase");
+        writeStatsNumberOfFensByGamePhase(w);
 
+        writeStatsNumberOfFensByHavingFigures(w);
+
+        writeNumberOfFensByMaterial(w);
+    }
+
+    private void writeStatsNumberOfFensByGamePhase(MarkdownWriter w) throws IOException {
+        w.h2("Number of fens by Game Phase");
         // stats about mid/end game:
         Map<Long, Long> countsByPhase = fens.stream()
                 .map(f -> calcPhaseStatistic(f))
                 .collect(groupingBy(identity(), counting()));
 
-        long all = countsByPhase.values().stream().mapToLong(Long::longValue).sum();
-
-        table = new MarkdownTable().header("Phase", "Count", "%");
+        MarkdownTable table = new MarkdownTable().header("Phase", "Count", "%");
         for (Map.Entry<Long, Long> entry : countsByPhase.entrySet()) {
-            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / all);
+            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / fens.size());
         }
         w.writeTable(table);
+    }
 
+    private void writeStatsNumberOfFensByHavingFigures(MarkdownWriter w) throws IOException {
         w.h2("Number of fens by having figures");
 
         Map<FigureType, Long> fensByHavingFigures = new HashMap<>();
         for (FenEntry fen : fens) {
             for (FigureType ft : FigureType.values()) {
-                if (fen.getBoard().getBoard().getPieceSet(ft.ordinal()) != 0L) {
-                    fensByHavingFigures.compute(ft, (k, v) -> (v == null) ? 1 : v + 1);
+                if (ft != FigureType.EMPTY && ft != FigureType.King) {
+                    if (fen.getBoard().getBoard().getPieceSet(ft.ordinal()) != 0L) {
+                        fensByHavingFigures.compute(ft, (k, v) -> (v == null) ? 1 : v + 1);
+                    }
                 }
             }
         }
-        table = new MarkdownTable().header("FigureType", "Count", "%");
-        for (Map.Entry<Long, Long> entry : countsByPhase.entrySet()) {
-            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / all);
+        MarkdownTable table = new MarkdownTable().header("FigureType", "Count", "%");
+        for (Map.Entry<FigureType, Long> entry : fensByHavingFigures.entrySet()) {
+            table.row(entry.getKey(), entry.getValue(), entry.getValue() * 100 / fens.size());
+        }
+        w.writeTable(table);
+    }
+
+    private void writeNumberOfFensByMaterial(MarkdownWriter w) throws IOException {
+        w.h2("Number of fens by Material");
+        // stats about mid/end game:
+//        TreeMap<Material, Long> countsByPhase = fens.stream()
+//                .map(f -> f.getBoard().getMaterial())
+//                .collect(groupingBy(identity(), TreeMap::new, counting()));
+        TreeMap<Material, Long> countsByPhase = new TreeMap<>();
+        for (FenEntry fen : fens) {
+            // add white and black mat separate to group by the material of one side (regardless of the side)
+            Material mw=new Material(fen.getBoard().getMaterial().getWhiteMat());
+            countsByPhase.compute(mw, (k, v) -> (v == null) ? 1 : v + 1);
+            Material mb=new Material(fen.getBoard().getMaterial().getBlackAsWhitePart());
+            countsByPhase.compute(mb, (k, v) -> (v == null) ? 1 : v + 1);
+        }
+
+        MarkdownTable table = new MarkdownTable().header("Material", "Count", "%");
+        for (Map.Entry<Material, Long> entry : countsByPhase.entrySet()) {
+            table.row(entry.getKey().toString(), entry.getValue(), entry.getValue() * 100 / fens.size());
         }
         w.writeTable(table);
     }

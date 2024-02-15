@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -18,7 +19,7 @@ import lombok.Setter;
  * Material of the board.
  * Encoded in a single int value.
  */
-public class Material {
+public class Material implements Comparable<Material> {
 
     public static final int W_PAWN_VAL = 1 << 0;
     public static final int W_KNIGHT_VAL = 1 << 4;
@@ -224,5 +225,25 @@ public class Material {
     public boolean hasNonPawnMat(int color) {
         int nonPawnMatOfColor = material & MASK_OUT_PAWNS & (color == nWhite ? MASK_WHITE_PART : MASK_BLACK_PART);
         return nonPawnMatOfColor > 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Material material1 = (Material) o;
+        return material == material1.material;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material);
+    }
+
+    @Override
+    public int compareTo(Material o) {
+        return material - o.material;
     }
 }
