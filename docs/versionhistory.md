@@ -1,5 +1,10 @@
 # Versions
 
+### 23.12.2
+
+retuned most parameters. brings a few elos (in self compare 10-15, to other engines less ~8).
+
+
 ### 23.12.1
 
 - code cleanup staged move generation: no elo gain.
