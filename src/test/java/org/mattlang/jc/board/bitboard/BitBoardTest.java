@@ -6,10 +6,12 @@ import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -42,7 +44,7 @@ public class BitBoardTest {
         moveList.reset(Color.WHITE);
         movegen.generate(board, Color.WHITE, moveList);
 
-        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(moveList, board, checkChecker)) {
             while (iterator.nextMove()) {
                 assertThat(board.isvalidmove(Color.WHITE, iterator.getMoveInt())).isTrue();
             }
@@ -51,7 +53,7 @@ public class BitBoardTest {
         moveList.reset(Color.BLACK);
         movegen.generate(board, Color.BLACK, moveList);
 
-        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(moveList, board, checkChecker)) {
             while (iterator.nextMove()) {
                 assertThat(board.isvalidmove(Color.BLACK, iterator.getMoveInt())).isTrue();
             }
@@ -110,7 +112,7 @@ public class BitBoardTest {
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
         System.out.println(board.toUniCodeStr());
 
-        int ROUNDS=100000000;
+        int ROUNDS = 100000000;
         for (int i = 0; i < ROUNDS; i++) {
 
             // 1. from is wrong:
@@ -155,4 +157,11 @@ public class BitBoardTest {
         }
     }
 
+    public MoveBoardIterator iterateMoves(MoveList moveList, BoardRepresentation board, CheckChecker checkChecker) {
+        MovePicker movePicker = new MovePicker();
+        movePicker.init(moveList, 0);
+        MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+        moveBoardIterator.init(movePicker, board, checkChecker);
+        return moveBoardIterator;
+    }
 }

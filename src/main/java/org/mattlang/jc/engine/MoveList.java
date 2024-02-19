@@ -17,13 +17,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 
 public final class MoveList {
@@ -32,10 +29,6 @@ public final class MoveList {
     private int[] order = new int[MAX_MOVES];
 
     private int size = 0;
-
-    private MovePicker movePicker = new MovePicker();
-
-    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     /**
      * Moves which should be filtered during collecting of moves (used in staged move generation).
@@ -160,23 +153,6 @@ public final class MoveList {
 
     public int size() {
         return size;
-    }
-
-    /**
-     * Returns a cursor doing/undoing moves on a board. Only legal moves will be iterated, illegal moves are skipped
-     * by this iterator.
-     * Note: due ot performance and memory usage, there is only one cursor and MoveBoardIterator associated with a move
-     * list.
-     * So the caller can not use more than one iteration at one time.
-     *
-     * @param board
-     * @param checkChecker
-     * @return
-     */
-    public MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
-        movePicker.init(this, 0);
-        moveBoardIterator.init(movePicker, board, checkChecker);
-        return moveBoardIterator;
     }
 
     public int get(int i) {

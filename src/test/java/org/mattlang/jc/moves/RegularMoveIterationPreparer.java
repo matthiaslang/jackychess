@@ -6,6 +6,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
+import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
@@ -20,6 +21,10 @@ public class RegularMoveIterationPreparer {
 
     private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
     private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
+
+    private MovePicker movePicker = new MovePicker();
+
+    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     private OrderCalculator orderCalculator;
     private BoardRepresentation board;
@@ -49,6 +54,8 @@ public class RegularMoveIterationPreparer {
     }
 
     public MoveBoardIterator iterateMoves() {
-        return moveList.iterateMoves(board, checkChecker);
+        movePicker.init(moveList, 0);
+        moveBoardIterator.init(movePicker, board, checkChecker);
+        return moveBoardIterator;
     }
 }

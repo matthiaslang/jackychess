@@ -15,6 +15,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
+import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.MvvLva;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
@@ -34,6 +35,10 @@ public class MoveValidator {
     private PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
 
     private CheckChecker checkChecker = new BBCheckCheckerImpl();
+
+    private MovePicker movePicker = new MovePicker();
+
+    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     /**
      * reused movelist.
@@ -81,7 +86,7 @@ public class MoveValidator {
         moveList.reset(who2Move);
         movegen.generate(board, who2Move, moveList);
 
-        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(board, checkChecker)) {
             while (iterator.doNextValidMove()) {
                 if (iterator.getMoveInt() == move) {
                     return true;
@@ -139,7 +144,7 @@ public class MoveValidator {
         movegen.generate(board, board.getSiteToMove(), moveList);
 
         boolean hasLegalMoves = false;
-        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(board, checkChecker)) {
             while (iterator.doNextValidMove()) {
                 hasLegalMoves = true;
                 break;
@@ -163,7 +168,7 @@ public class MoveValidator {
 
         int minOrder = Integer.MAX_VALUE;
         int bestMove = 0;
-        try (MoveBoardIterator iterator = moveList.iterateMoves(board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(board, checkChecker)) {
             while (iterator.doNextValidMove()) {
                 int order = MvvLva.calcMMVLVA(iterator);
                 if (order < minOrder) {
@@ -173,5 +178,11 @@ public class MoveValidator {
             }
         }
         return new MoveImpl(bestMove);
+    }
+
+    private MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
+        movePicker.init(moveList, 0);
+        moveBoardIterator.init(movePicker, board, checkChecker);
+        return moveBoardIterator;
     }
 }
