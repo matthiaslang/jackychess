@@ -144,7 +144,7 @@ public final class MoveImpl implements Move {
 
     private MoveImpl(int from, int to, byte capturedFigure) {
         this(FigureConstants.FT_PAWN, from, to, capturedFigure);
-        this.type = (byte) (ENPASSANT_MOVE );
+        this.type = (byte) (ENPASSANT_MOVE);
     }
 
     private MoveImpl(CastlingMove castlingMove) {
@@ -168,11 +168,6 @@ public final class MoveImpl implements Move {
 
     public static MoveImpl createEnPassant(int from, int to, byte capturedFigure) {
         return new MoveImpl(from, to, capturedFigure);
-    }
-
-    public final static MoveImpl createNormal(byte figureType, int fromIndex, int toIndex, byte capturedFigure
-    ) {
-        return new MoveImpl(NORMAL_MOVE, figureType, (byte) fromIndex, (byte) toIndex, capturedFigure);
     }
 
     public final static int createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {

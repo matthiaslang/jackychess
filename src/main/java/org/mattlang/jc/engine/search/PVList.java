@@ -9,25 +9,15 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.moves.MoveImpl;
 
-import lombok.Getter;
-
 /**
  * Result Container for the pv list.
  */
 public final class PVList {
 
-    @Getter
     private List<Integer> pvs;
 
     public PVList(List<Integer> pvs) {
         this.pvs = pvs;
-    }
-
-    public int getMove(int index) {
-        if (index < getPvs().size()) {
-            return getPvs().get(index);
-        }
-        return 0;
     }
 
     public String toPvStr(BoardRepresentation boardRepresentation) {
