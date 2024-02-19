@@ -4,8 +4,6 @@ import static org.mattlang.jc.Main.initLogging;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,7 +13,6 @@ import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.tt.TTCache3;
-import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
@@ -35,7 +32,7 @@ public class PerfTTTests {
         testCache(new TTCache3(), 5);
     }
 
-    public void testCache(TTCacheInterface ttCache, int depth) {
+    public void testCache(TTCache3 ttCache, int depth) {
         BitBoard board = new BitBoard();
         board.setStartPosition();
         //        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
@@ -55,7 +52,7 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
     }
 
-    public void testCacheWithPosition(BitBoard board, TTCacheInterface ttCache, int depth) {
+    public void testCacheWithPosition(BitBoard board, TTCache3 ttCache, int depth) {
         StopWatch fillWatch = new StopWatch();
         Perft perft = new Perft();
 
@@ -91,9 +88,6 @@ public class PerfTTTests {
         System.out.println("fill time" + fillWatch.toString());
         System.out.println("read time" + readWatch.toString());
 
-        Map map = new LinkedHashMap();
-        ttCache.collectStatistics(map);
-        System.out.println(map);
         // ~30 pct collission
     }
 }

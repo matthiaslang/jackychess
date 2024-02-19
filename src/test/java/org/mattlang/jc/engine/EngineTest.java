@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mattlang.jc.CacheImpls;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -131,7 +130,6 @@ public class EngineTest {
         Factory.setDefaults(Factory.createStable()
                 .evaluateFunction.set(() -> new ParameterizedEvaluation())
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
-                .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
                 .config(c -> c.hash.setValue(512))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))
@@ -235,7 +233,6 @@ public class EngineTest {
                 .config(c -> c.useNullMoves.setValue(true))
                 .config(c -> c.staticNullMove.setValue(true))
                 .config(c -> c.futilityPruning.setValue(true))
-                .config(c -> c.cacheImpls.setValue(CacheImpls.STANDARD))
                 //                .config(c->c.aspiration.setValue(false))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:

@@ -4,7 +4,6 @@ import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
 import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
@@ -16,7 +15,7 @@ import org.mattlang.jc.board.Color;
  * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
  * It combines a "always save" with replace "lowest depth" in a multi bucket cache.
  */
-public final class TTCache3 implements TTCacheInterface {
+public final class TTCache3 {
 
     public static final long NORESULT = Long.MAX_VALUE;
 
@@ -87,7 +86,6 @@ public final class TTCache3 implements TTCacheInterface {
         keys = new long[maxEntries];
     }
 
-    @Override
     public void reset() {
         Arrays.fill(keys, 0);
         halfMoveCounter = 0;
@@ -192,17 +190,6 @@ public final class TTCache3 implements TTCacheInterface {
         return usage;
     }
 
-    @Override
-    public void resetStatistics() {
-
-    }
-
-    @Override
-    public void collectStatistics(Map stats) {
-
-    }
-
-    @Override
     public boolean findEntry(TTResult result, BoardRepresentation board) {
         long v = getValue(board.getZobristHash());
         if (v != NORESULT) {
@@ -215,19 +202,16 @@ public final class TTCache3 implements TTCacheInterface {
         return false;
     }
 
-    @Override
     public int findHashMove(BoardRepresentation board) {
         long v = getValue(board.getZobristHash());
         return v != NORESULT ? getMove(v) : 0;
     }
 
-    @Override
     public void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
             int move) {
         addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move);
     }
 
-    @Override
     public void updateAging(BoardRepresentation board) {
         LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
         halfMoveCounter = aging.updateAging(board);
@@ -242,12 +226,10 @@ public final class TTCache3 implements TTCacheInterface {
         }
     }
 
-    @Override
     public long calcHashFull() {
         return getUsagePercentage();
     }
 
-    @Override
     public boolean isUsableForLazySmp() {
         return true;
     }

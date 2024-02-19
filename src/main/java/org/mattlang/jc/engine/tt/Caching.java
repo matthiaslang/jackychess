@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.tt;
 
-import org.mattlang.jc.Factory;
-
 import lombok.Getter;
 
 /**
@@ -11,12 +9,12 @@ import lombok.Getter;
 public class Caching {
 
     @Getter
-    private TTCacheInterface ttCache;
+    private TTCache3 ttCache;
 
     public static final Caching CACHING = new Caching();
 
     private Caching() {
-        ttCache = Factory.getDefaults().getConfig().cacheImpls.getValue().createSupplier().get();
+        ttCache = new TTCache3();
     }
 
 }

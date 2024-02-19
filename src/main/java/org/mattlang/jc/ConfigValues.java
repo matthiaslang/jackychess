@@ -75,11 +75,6 @@ public class ConfigValues {
                     "the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing",
                     EvalParameterSet.class, EvalParameterSet.CURRENT);
 
-    public final UCIComboOption<CacheImpls> cacheImpls =
-            caching.createComboOpt("TTCacheImpl",
-                    "internally. Only for development testing",
-                    CacheImpls.class, CacheImpls.STANDARD);
-
     public final UCIGroup moveOrder =
             allOptions.createInternalGroup("Move Order", "Parameter influencing the move order in alpha beta search");
 

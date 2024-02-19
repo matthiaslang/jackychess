@@ -35,10 +35,6 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
     @Override
     public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
 
-        if (!gameContext.ttCache.isUsableForLazySmp()) {
-            throw new IllegalStateException("Configured TTCache not threadsafe and not usable for Lazy SMP!");
-        }
-
         // start max-1 workerthreads
         List<Future<IterativeSearchResult>> futures = new ArrayList<>();
         for (int i = 1; i < maxThreads; i++) {

@@ -8,7 +8,7 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.SearchStatistics;
 import org.mattlang.jc.engine.tt.Caching;
-import org.mattlang.jc.engine.tt.TTCacheInterface;
+import org.mattlang.jc.engine.tt.TTCache3;
 
 import lombok.Getter;
 
@@ -23,7 +23,7 @@ public class GameContext {
     private static final Logger LOGGER = Logger.getLogger(GameContext.class.getSimpleName());
 
     @Getter
-    public TTCacheInterface ttCache;
+    public TTCache3 ttCache;
 
     private HashMap<String, Object> context = new HashMap<>();
 
