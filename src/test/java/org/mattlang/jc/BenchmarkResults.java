@@ -34,7 +34,6 @@ public class BenchmarkResults<T> {
     private final Boolean pvSearch;
     private final Integer maxQuiescence;
     private final String searchAlgorithm;
-    private final String moveListImpl;
 
     public BenchmarkResults(String name, ExecResults<T> execResults, Map stats, TestPosition testPosition) {
         this.name = name;
@@ -64,7 +63,6 @@ public class BenchmarkResults<T> {
         this.razoring = config.razoring.getValue();
         this.useLateMoveReductions = config.useLateMoveReductions.getValue();
         this.deltaCutoff = config.deltaCutoff.getValue();
-        this.moveListImpl = Factory.getDefaults().moveiterationPreparer.instance().getClass().getSimpleName();
 
     }
 

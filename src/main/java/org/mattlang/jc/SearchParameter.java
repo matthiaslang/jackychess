@@ -17,7 +17,6 @@ import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -28,8 +27,6 @@ public class SearchParameter {
     private List<Impl> impls = new ArrayList<>();
 
     private ConfigValues config = new ConfigValues();
-
-    public final Impl<MoveIterationPreparer> moveiterationPreparer = new Impl<>(this, MoveIterationImpls.STAGED.createSupplier());
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 

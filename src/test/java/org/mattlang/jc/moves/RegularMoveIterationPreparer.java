@@ -11,9 +11,10 @@ import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 /**
- * Encapsulates all relevant objects to prepare iteration over moves on the board.
+ * Old Variant to encapsulates all preparation for move iteration in one stage.
+ * Is obsolete due to the new staged move generation.
  */
-public class RegularMoveIterationPreparer implements MoveIterationPreparer {
+public class RegularMoveIterationPreparer {
 
     private MoveList moveList = new MoveList();
 
@@ -36,7 +37,7 @@ public class RegularMoveIterationPreparer implements MoveIterationPreparer {
     }
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
-                        int ply, int hashMove, int parentMove, int captureMargin) {
+            int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..

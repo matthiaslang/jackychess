@@ -1,13 +1,15 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.MoveIterationPreparer;
+import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+import lombok.Getter;
 
 /**
  * Holds variables used during a search for one thread which is used for all nested iterative deepening and negamax
@@ -60,7 +62,7 @@ public class SearchThreadContext {
 
     public void resetMoveLists() {
         for (int i = 0; i < moveIterationPreparers.length; i++) {
-            moveIterationPreparers[i] = Factory.getDefaults().moveiterationPreparer.create();
+            moveIterationPreparers[i] = new StagedMoveIterationPreparer();
         }
     }
 

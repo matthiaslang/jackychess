@@ -7,9 +7,17 @@ import org.mattlang.jc.engine.sorting.MovePicker;
 
 public class TestTools {
 
+    public static List<Tuple> getAllMoves(RegularMoveIterationPreparer preparer) {
+        return getAllMoves(preparer.iterateMoves());
+    }
+
     public static List<Tuple> getAllMoves(MoveIterationPreparer preparer) {
+        return getAllMoves(preparer.iterateMoves());
+    }
+
+    public static List<Tuple> getAllMoves(MoveBoardIterator iterator) {
         List<Tuple> moves = new ArrayList<>();
-        try (MoveBoardIterator iterator = preparer.iterateMoves()) {
+        try (iterator) {
             while (iterator.doNextValidMove()) {
                 moves.add(new Tuple(iterator.toStr(), iterator.getMoveInt(), iterator.getOrder()));
             }

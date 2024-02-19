@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
-import org.mattlang.jc.MoveIterationImpls;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -37,7 +36,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove = 10572289;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -73,7 +72,7 @@ public class StagedMoveIterationPreparerTest {
         board.setFenPosition("position fen " + fen);
         System.out.println(board.toUniCodeStr());
 
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -104,7 +103,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove = 0;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -136,7 +135,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove = 22188545;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -169,7 +168,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove = 22188545;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -201,7 +200,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove =1095930369;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -232,7 +231,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(board.toUniCodeStr());
 
         int hashMove = 10572289;
-        MoveIterationPreparer preparer = new RegularMoveIterationPreparer();
+        RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
         System.out.println(movesRegular);
@@ -295,7 +294,6 @@ public class StagedMoveIterationPreparerTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .moveiterationPreparer.set(MoveIterationImpls.STAGED.createSupplier())
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(20)));
         // now starting engine:
