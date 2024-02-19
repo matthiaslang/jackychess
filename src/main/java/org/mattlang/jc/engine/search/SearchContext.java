@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import java.util.ArrayList;
-
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -60,12 +58,6 @@ public final class SearchContext {
     @Getter
     private int savedMoveScore = 0;
 
-    /**
-     * Movescores on ply 1 for each searched move.
-     */
-    @Getter
-    private ArrayList<MoveScore> moveScores = new ArrayList<>();
-
     @Getter
     private final BoardRepresentation board;
 
@@ -122,12 +114,6 @@ public final class SearchContext {
         // ever used in this round:
         if (targetDepth - depth > selDepth) {
             selDepth = targetDepth - depth;
-        }
-    }
-
-    public void updateRootMoveScore(int depth, int move, int score, int numSearchedNodes) {
-        if (depth == targetDepth) {
-            moveScores.add(new MoveScore(move, score, numSearchedNodes));
         }
     }
 

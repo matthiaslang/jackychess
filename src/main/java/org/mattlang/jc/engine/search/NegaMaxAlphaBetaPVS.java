@@ -430,10 +430,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         }
                     } while (redo);
 
-                    /** save score for all root moves: */
-                    searchContext.updateRootMoveScore(depth, moveCursor.getMoveInt(), score,
-                            statistics.nodesVisited - currSearchedNodes);
-
                     if (score > max) {
                         max = score;
 

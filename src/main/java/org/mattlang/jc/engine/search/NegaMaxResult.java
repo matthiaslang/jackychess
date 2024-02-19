@@ -20,11 +20,6 @@ public class NegaMaxResult {
      */
     public final Move savedMove;
 
-    /***
-     * Scores for (all?) moves on ply 1.
-     */
-    public final List<MoveScore> moveScores;
-
     /**
      * pv list from negamax search.
      */
@@ -52,7 +47,6 @@ public class NegaMaxResult {
         } else {
             this.savedMove = null;
         }
-        this.moveScores = searchContext.getMoveScores();
         this.pvList = new PVList(pvMoves);
         ;
         //        if (!pvList.getPvMoves().equals(pvMoves)){
@@ -74,7 +68,6 @@ public class NegaMaxResult {
                 ", pvList=" + pvList.toPvLogStr() +
                 ", targetDepth=" + targetDepth +
                 ", selDepth=" + selDepth +
-                ", moveScores=" + moveScores +
                 '}';
     }
 
