@@ -184,14 +184,14 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             if (tte.getDepth() >= depth && ply != 1) {
                 if (tte.isExact()) {// stored value is exact
                     statistics.ttPruningCount++;
-                    return adjustScore(tte.getScore(), ply);
+                    return tte.getAdjustedScore(ply);
                 } else if (tte.isLowerBound() && tte.getScore() > alpha)
-                    alpha = adjustScore(tte.getScore(), ply); // update lowerbound alpha if needed
+                    alpha = tte.getAdjustedScore(ply); // update lowerbound alpha if needed
                 else if (tte.isUpperBound() && tte.getScore() < beta)
-                    beta = adjustScore(tte.getScore(), ply); // update upperbound beta if needed
+                    beta = tte.getAdjustedScore(ply); // update upperbound beta if needed
                 if (alpha >= beta) {
                     statistics.ttPruningCount++;
-                    return adjustScore(tte.getScore(), ply); // if lowerbound surpasses upperbound
+                    return tte.getAdjustedScore(ply); // if lowerbound surpasses upperbound
                 }
             }
 
@@ -341,8 +341,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 parentMove, 0)) {
 
             boolean firstChild = true;
-
-            int currSearchedNodes = statistics.nodesVisited;
 
             int searchedMoves = 0;
 
@@ -553,25 +551,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return moveCursor.getFigureType() == FT_PAWN && (moveCursor.getToIndex() > 47 || moveCursor.getToIndex() < 16);
     }
 
-    /**
-     * Adjust Mate scores by the ply.
-     *
-     * We do this by adjusting it with the current given ply.
-     *
-     * @param score
-     * @param ply
-     * @return
-     */
-    private int adjustScore(int score, int ply) {
-        int sc = score;
-        if (sc > KING_WEIGHT - 1000) {
-            sc = KING_WEIGHT - ply;
-        } else if (sc < -(KING_WEIGHT - 1000)) {
-            sc = -KING_WEIGHT + ply;
-        }
-        return sc;
-    }
-
     private void checkTimeout() {
         if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
             throw new TimeoutException();
@@ -611,15 +590,15 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             hashMove = tte.getMove();
             if (tte.isExact()) {// stored value is exact
                 statistics.ttPruningCount++;
-                return adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY);
+                return tte.getAdjustedScore(MAX_QUIESCENCE_TT_PLY);
             }
             if (tte.isLowerBound() && tte.getScore() > alpha)
-                alpha = adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // update lowerbound alpha if needed
+                alpha = tte.getAdjustedScore(MAX_QUIESCENCE_TT_PLY); // update lowerbound alpha if needed
             else if (tte.isUpperBound() && tte.getScore() < beta)
-                beta = adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // update upperbound beta if needed
+                beta = tte.getAdjustedScore(MAX_QUIESCENCE_TT_PLY); // update upperbound beta if needed
             if (alpha >= beta) {
                 statistics.ttPruningCount++;
-                return adjustScore(tte.getScore(), MAX_QUIESCENCE_TT_PLY); // if lowerbound surpasses upperbound
+                return tte.getAdjustedScore(MAX_QUIESCENCE_TT_PLY); // if lowerbound surpasses upperbound
             }
 
         }
