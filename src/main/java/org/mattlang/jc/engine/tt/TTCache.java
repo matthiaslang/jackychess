@@ -31,7 +31,7 @@ public final class TTCache {
 
     private TTAging aging = new TTAging();
 
-    public int halfMoveCounter = 0;
+    private int halfMoveCounter = 0;
 
     /**
      * 8: depth
@@ -152,8 +152,7 @@ public final class TTCache {
     }
 
     public static int getScore(final long value) {
-        int score = (int) (value >> SCORE);
-        return score;
+        return (int) (value >> SCORE);
     }
 
     public int getDepth(final long value) {
@@ -230,7 +229,4 @@ public final class TTCache {
         return getUsagePercentage();
     }
 
-    public boolean isUsableForLazySmp() {
-        return true;
-    }
 }
