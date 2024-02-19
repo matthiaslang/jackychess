@@ -11,7 +11,7 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
-import org.mattlang.jc.engine.tt.TTCache3;
+import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -72,7 +72,7 @@ public final class SearchContext {
     @Getter
     private final boolean openingOrMiddleGame;
 
-    private final TTCache3 ttCache;
+    private final TTCache ttCache;
 
     private final EvaluateFunction evaluate;
 

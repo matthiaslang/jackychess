@@ -12,7 +12,7 @@ import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.tt.TTCache3;
+import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
@@ -29,10 +29,10 @@ public class PerfTTTests {
         initLogging();
         UCI.instance.attachStreams();
         
-        testCache(new TTCache3(), 5);
+        testCache(new TTCache(), 5);
     }
 
-    public void testCache(TTCache3 ttCache, int depth) {
+    public void testCache(TTCache ttCache, int depth) {
         BitBoard board = new BitBoard();
         board.setStartPosition();
         //        Factory.getDefaults().moveGenerator.set(() -> new MoveGeneratorImpl3());
@@ -52,7 +52,7 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
     }
 
-    public void testCacheWithPosition(BitBoard board, TTCache3 ttCache, int depth) {
+    public void testCacheWithPosition(BitBoard board, TTCache ttCache, int depth) {
         StopWatch fillWatch = new StopWatch();
         Perft perft = new Perft();
 

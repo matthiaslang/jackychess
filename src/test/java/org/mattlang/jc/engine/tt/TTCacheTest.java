@@ -11,7 +11,7 @@ public class TTCacheTest {
 
     @Test
     public void test() {
-        TTCache3 cache = new TTCache3();
+        TTCache cache = new TTCache();
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
@@ -29,7 +29,7 @@ public class TTCacheTest {
 
     @Test
     public void test2() {
-        TTCache3 cache = new TTCache3();
+        TTCache cache = new TTCache();
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
@@ -37,23 +37,23 @@ public class TTCacheTest {
         cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 400000);
 
         board.switchSiteToMove();
-        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache3.NORESULT);
+        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache.NORESULT);
         board.switchSiteToMove();
 
         long entry = cache.getValue(board.getZobristHash());
 
-        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
+        assertThat(entry).isNotEqualTo(TTCache.NORESULT);
 
         assertThat(cache.getDepth(entry)).isEqualTo(5);
-        assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
-        assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
-        assertThat(TTCache3.getMove(entry)).isEqualTo(400000);
+        assertThat(TTCache.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
+        assertThat(TTCache.getScore(entry)).isEqualTo(-500);
+        assertThat(TTCache.getMove(entry)).isEqualTo(400000);
 
     }
 
     @Test
     public void test3() {
-        TTCache3 cache = new TTCache3();
+        TTCache cache = new TTCache();
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
@@ -61,16 +61,16 @@ public class TTCacheTest {
         cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 0);
 
         board.switchSiteToMove();
-        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache3.NORESULT);
+        assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache.NORESULT);
         board.switchSiteToMove();
 
         long entry = cache.getValue(board.getZobristHash());
 
-        assertThat(entry).isNotEqualTo(TTCache3.NORESULT);
+        assertThat(entry).isNotEqualTo(TTCache.NORESULT);
 
         assertThat(cache.getDepth(entry)).isEqualTo(5);
-        assertThat(TTCache3.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
-        assertThat(TTCache3.getScore(entry)).isEqualTo(-500);
+        assertThat(TTCache.getFlag(entry)).isEqualTo(TTResult.EXACT_VALUE);
+        assertThat(TTCache.getScore(entry)).isEqualTo(-500);
 
     }
 
@@ -95,14 +95,14 @@ public class TTCacheTest {
     }
     @Test
     public void testSizeCalc() {
-        assertThat(TTCache3.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
+        assertThat(TTCache.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
 
-        assertThat(TTCache3.determineCacheBitSizeFromMb(1, 16)).isEqualTo(16);
+        assertThat(TTCache.determineCacheBitSizeFromMb(1, 16)).isEqualTo(16);
 
-        assertThat(TTCache3.determineCacheBitSizeFromMb(256, 16)).isEqualTo(24);
+        assertThat(TTCache.determineCacheBitSizeFromMb(256, 16)).isEqualTo(24);
 
         // take smaller or higer bit??
-        assertThat(TTCache3.determineCacheBitSizeFromMb(192, 16)).isEqualTo(23);
+        assertThat(TTCache.determineCacheBitSizeFromMb(192, 16)).isEqualTo(23);
     }
 
 }

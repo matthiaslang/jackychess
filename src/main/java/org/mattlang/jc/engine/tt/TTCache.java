@@ -15,11 +15,11 @@ import org.mattlang.jc.board.Color;
  * It is also thread-safe (thread consistent for read access), so that it could be used for a Lazy-SMP Search algorithm.
  * It combines a "always save" with replace "lowest depth" in a multi bucket cache.
  */
-public final class TTCache3 {
+public final class TTCache {
 
     public static final long NORESULT = Long.MAX_VALUE;
 
-    private static final Logger LOGGER = Logger.getLogger(TTCache3.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(TTCache.class.getSimpleName());
 
     private static int POWER_2_TT_ENTRIES = 22;
     private static final int BUCKET_SIZE = 3;
@@ -71,7 +71,7 @@ public final class TTCache3 {
         return bits;
     }
 
-    public TTCache3() {
+    public TTCache() {
         initCache();
     }
 

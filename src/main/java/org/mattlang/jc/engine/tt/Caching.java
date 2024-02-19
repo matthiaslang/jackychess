@@ -9,12 +9,12 @@ import lombok.Getter;
 public class Caching {
 
     @Getter
-    private TTCache3 ttCache;
+    private TTCache ttCache;
 
     public static final Caching CACHING = new Caching();
 
     private Caching() {
-        ttCache = new TTCache3();
+        ttCache = new TTCache();
     }
 
 }
