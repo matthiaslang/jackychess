@@ -6,7 +6,6 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
-import org.mattlang.jc.moves.MoveIterationPreparer;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
 import lombok.Getter;
@@ -24,7 +23,7 @@ public class SearchThreadContext {
      * Movelists used during iterative deepening and negamax. We need only at most max play instances during search.
      * which are always reused during recursive search.
      */
-    private MoveIterationPreparer[] moveIterationPreparers = new MoveIterationPreparer[MAX_PLY_INDEX];
+    private StagedMoveIterationPreparer[] moveIterationPreparers = new StagedMoveIterationPreparer[MAX_PLY_INDEX];
 
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
@@ -56,7 +55,7 @@ public class SearchThreadContext {
         orderCalculator = new OrderCalculator(this, getEvaluate());
     }
 
-    public MoveIterationPreparer getMoveIterationPreparer(int ply) {
+    public StagedMoveIterationPreparer getMoveIterationPreparer(int ply) {
         return moveIterationPreparers[ply];
     }
 

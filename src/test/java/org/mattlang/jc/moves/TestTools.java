@@ -3,6 +3,9 @@ package org.mattlang.jc.moves;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.engine.CheckChecker;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MovePicker;
 
 public class TestTools {
@@ -11,7 +14,7 @@ public class TestTools {
         return getAllMoves(preparer.iterateMoves());
     }
 
-    public static List<Tuple> getAllMoves(MoveIterationPreparer preparer) {
+    public static List<Tuple> getAllMoves(StagedMoveIterationPreparer preparer) {
         return getAllMoves(preparer.iterateMoves());
     }
 
@@ -31,5 +34,13 @@ public class TestTools {
             moves.add(new Tuple("", picker.next(), 0));
         }
         return moves;
+    }
+
+    public static MoveBoardIterator iterateMoves(MoveList moveList, BoardRepresentation board, CheckChecker checkChecker) {
+        MovePicker movePicker = new MovePicker();
+        movePicker.init(moveList, 0);
+        MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+        moveBoardIterator.init(movePicker, board, checkChecker);
+        return moveBoardIterator;
     }
 }

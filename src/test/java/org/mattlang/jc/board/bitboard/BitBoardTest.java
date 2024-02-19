@@ -3,15 +3,14 @@ package org.mattlang.jc.board.bitboard;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
+import static org.mattlang.jc.moves.TestTools.iterateMoves;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -157,11 +156,4 @@ public class BitBoardTest {
         }
     }
 
-    public MoveBoardIterator iterateMoves(MoveList moveList, BoardRepresentation board, CheckChecker checkChecker) {
-        MovePicker movePicker = new MovePicker();
-        movePicker.init(moveList, 0);
-        MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
-        moveBoardIterator.init(movePicker, board, checkChecker);
-        return moveBoardIterator;
-    }
 }

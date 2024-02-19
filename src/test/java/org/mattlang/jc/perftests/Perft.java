@@ -13,7 +13,7 @@ import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
-import org.mattlang.jc.moves.MoveIterationPreparer;
+import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -107,7 +107,7 @@ public class Perft {
             }
             return;
         }
-        MoveIterationPreparer moveIterationPreparer = SearchThreadContexts.CONTEXTS.getContext(0).getMoveIterationPreparer(depth);
+        StagedMoveIterationPreparer moveIterationPreparer = SearchThreadContexts.CONTEXTS.getContext(0).getMoveIterationPreparer(depth);
         moveIterationPreparer.prepare(SearchThreadContexts.CONTEXTS.getContext(0), GenMode.NORMAL,
                 board, color, 0, 0, 0);
 

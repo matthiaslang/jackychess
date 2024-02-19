@@ -15,7 +15,7 @@ import org.mattlang.jc.engine.tt.TTCacheInterface;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
-import org.mattlang.jc.moves.MoveIterationPreparer;
+import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
 import lombok.Getter;
@@ -188,17 +188,17 @@ public final class SearchContext {
 
     }
 
-    public MoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color, int hashMove,
+    private StagedMoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
 
-        MoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
+        StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove, captureMargin);
         return preparer;
     }
 
     public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
-        MoveIterationPreparer preparer = prepareMoves(mode, ply, color, hashMove, parentMove, captureMargin);
+        StagedMoveIterationPreparer preparer = prepareMoves(mode, ply, color, hashMove, parentMove, captureMargin);
         return preparer.iterateMoves();
     }
 

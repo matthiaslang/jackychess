@@ -28,9 +28,8 @@ import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
  * on the code, so this variant has been discarded.
  * Another variant using special code for one-move-stages (like hashmoves, killers) has also been evaluated, but has
  * also not brought any benefit.
- *
  */
-public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveIterator {
+public class StagedMoveIterationPreparer implements MoveIterator {
 
     public static final Logger LOGGER = Logger.getLogger(StagedMoveIterationPreparer.class.getSimpleName());
 
@@ -42,18 +41,18 @@ public class StagedMoveIterationPreparer implements MoveIterationPreparer, MoveI
     private static final int STAGE_QUIESCENCE_REST = 6;
     private static final int STAGE_REST = 7;
 
-    /** stages for "normal" negamax iteration.
+    /**
+     * stages for "normal" negamax iteration.
      * This is currently the best split in stages. Other combinations, e.g. split killers in two stages, etc.
      * have not given any benefits.
-     * */
+     */
     private static final int[] STAGES_NORMAL =
             { STAGE_HASH, STAGE_GOOD_CAPTURES, STAGE_KILLERS, STAGE_COUNTER, STAGE_REST };
 
     /**
      * Stages for quiescence. Actually we only have on stage for quiescence; other experiments have not
      * given any benefit.
-     *
-     * */
+     */
     private static final int[] STAGES_QUIESCENCE = { /*STAGE_QUIESCENCE_HASH,*/ STAGE_QUIESCENCE_REST };
 
     private MoveList moveList = new MoveList();
