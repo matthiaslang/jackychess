@@ -1,5 +1,10 @@
 # Versions
 
+### 23.12.3
+
+- code cleanup: removed meanwhile unused interfaces, methods, classes and related application options. No elo gain.
+
+
 ### 23.12.2
 
 retuned most parameters. brings a few elos (in self compare 10-15, to other engines less ~8).
