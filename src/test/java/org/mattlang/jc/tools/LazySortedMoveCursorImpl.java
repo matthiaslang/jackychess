@@ -20,11 +20,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     }
 
     @Override
-    public void move(BoardRepresentation board) {
-        board.domove(currMoveObj);
-    }
-
-    @Override
     public int getMoveInt() {
         return currMove;
     }
@@ -42,11 +37,6 @@ public final class LazySortedMoveCursorImpl implements MoveCursor {
     @Override
     public int getOrder() {
         return orderOfCurrentMove;
-    }
-
-    @Override
-    public void undoMove(BoardRepresentation board) {
-        board.undo(currMoveObj);
     }
 
     @Override

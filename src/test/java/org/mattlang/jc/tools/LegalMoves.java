@@ -35,18 +35,18 @@ public class LegalMoves {
         while (iterator.hasNext()) {
             iterator.next();
 
-            iterator.move(board);
+            board.domove(iterator);
             if (!checkChecker.isInChess(board, color)) {
 
                 result.addMove(iterator.getMoveInt());
             }
-            iterator.undoMove(board);
+            board.undo(iterator);
         }
 
         return result;
     }
 
-    public static final MoveCursor createCursor(MoveList moveList){
+    public static final MoveCursor createCursor(MoveList moveList) {
         LazySortedMoveCursorImpl cursor = new LazySortedMoveCursorImpl();
         cursor.init(moveList);
         return cursor;

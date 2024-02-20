@@ -22,16 +22,17 @@ public class PerfIsValidTests {
         @Override
         public void accept(BoardRepresentation board, Color color, int depth, MoveCursor cursor) {
             // undo the currently done move to have the position before the legal move has been executed:
-            cursor.undoMove(board);
+            board.undo(cursor);
+
             // now we can test the validity of the move:
             Assertions.assertThat(board.isvalidmove(color, cursor.getMoveInt()))
-//                    .withFailMessage("on Board %s: Move %s is not valid!",
-//                            board.toUniCodeStr(),
-//                            new MoveImpl(cursor.getMoveInt()).toStr())
+                    //                    .withFailMessage("on Board %s: Move %s is not valid!",
+                    //                            board.toUniCodeStr(),
+                    //                            new MoveImpl(cursor.getMoveInt()).toStr())
                     .isTrue();
 
             // redo the move to get back in the state that the move is done
-            cursor.move(board);
+            board.domove(cursor);
         }
     };
 
@@ -47,8 +48,6 @@ public class PerfIsValidTests {
         perft.perftInitialPosition();
 
     }
-
-
 
     @Test
     public void position2() {
