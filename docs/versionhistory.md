@@ -1,5 +1,12 @@
 # Versions
 
+
+### 23.12.4
+
+Fixing/cleanup killer move usage: resetting killers of children during recursive search. resetting killers on start of search
+Elo difference: 19.1 +/- 13.6, LOS: 99.7 %, DrawRatio: 45.1 %
+
+
 ### 23.12.3
 
 - code cleanup: removed meanwhile unused interfaces, methods, classes and related application options. No elo gain.
