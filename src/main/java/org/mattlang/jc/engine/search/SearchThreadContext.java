@@ -78,5 +78,7 @@ public class SearchThreadContext {
         return evaluate;
     }
 
-
+    public void resetKillers() {
+        killerMoves.reset();
+    }
 }

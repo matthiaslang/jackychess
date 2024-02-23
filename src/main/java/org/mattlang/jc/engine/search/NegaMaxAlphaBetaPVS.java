@@ -200,6 +200,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         checkTimeout();
 
+        // Reset killers of children to keep them local to similar positions
+        searchContext.resetKillers(ply + 1);
+
         boolean applyFutilityPruning = false;
 
         boolean pruneable = not_pv && !areWeInCheck;
@@ -259,6 +262,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         return eval;
                     }
                 }
+                searchContext.resetKillers(ply + 1);
             }
 
             // ProbCut

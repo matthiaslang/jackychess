@@ -26,8 +26,8 @@ public class StagedMoveIterationPreparerTest {
     public void testStagingWithHashMove() {
 
         SearchThreadContext stc = new SearchThreadContext();
-        stc.getKillerMoves().addKiller(Color.WHITE, 10048001, 1);
-        stc.getKillerMoves().addKiller(Color.WHITE, 19485185, 1);
+        stc.getKillerMoves().addKiller(10048001, 1);
+        stc.getKillerMoves().addKiller( 19485185, 1);
         int parentMove = 4711;
         stc.getCounterMoveHeuristic().addCounterMove(Color.WHITE.ordinal(), parentMove, 1589889);
 

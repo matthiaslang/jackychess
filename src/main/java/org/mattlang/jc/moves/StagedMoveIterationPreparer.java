@@ -147,7 +147,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private boolean prepareKillerStage() {
         int currIndex = movePicker.getCurrentIndex();
         int currStartPos = moveList.size();
-        int[] killers = stc.getKillerMoves().getOrCreateKillerList(color, ply);
+        int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
         for (int killer : killers) {
             if (killer != 0 && board.isvalidmove(color, killer)) {
                 moveList.addMoveWithOrder(killer, OrderCalculator.KILLER_SCORE);

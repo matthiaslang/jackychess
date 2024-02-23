@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.sorting;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -13,7 +14,7 @@ import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.moves.MoveImpl;
 
-import static java.util.Objects.requireNonNull;
+import lombok.Getter;
 
 @Getter
 public final class OrderCalculator {
@@ -103,7 +104,7 @@ public final class OrderCalculator {
             return HASHMOVE_SCORE;
         } else if (m.isCapture()) {
             return calcOrderForCaptures(m);
-        } else if (killerMoves.isKiller(color, moveInt, ply)) {
+        } else if (killerMoves.isKiller(moveInt, ply)) {
             return KILLER_SCORE;
         } else if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;

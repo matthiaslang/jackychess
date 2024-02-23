@@ -230,7 +230,7 @@ public final class SearchContext {
                 historyHeuristic.update(color, moveCursor, depth);
             }
             if (useKillerMoves) {
-                killerMoves.addKiller(color, bestMove, ply);
+                killerMoves.addKiller(bestMove, ply);
             }
 
             if (useCounterMove) {
@@ -271,5 +271,13 @@ public final class SearchContext {
      */
     public static boolean isNoZugwang(BoardRepresentation board) {
         return board.getMaterial().hasNonPawnMat(board.getSiteToMove());
+    }
+
+    /**
+     * Reset Killers on a ply. This is done to keep killers of children local to similar positions.
+     * @param ply
+     */
+    public void resetKillers(int ply) {
+        killerMoves.resetAtPly(ply);
     }
 }

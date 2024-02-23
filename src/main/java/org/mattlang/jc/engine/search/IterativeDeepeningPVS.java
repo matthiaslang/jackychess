@@ -130,6 +130,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                     }
                 }
 
+                stc.resetKillers();
+
                 IterativeRoundResult irr =
                         searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
