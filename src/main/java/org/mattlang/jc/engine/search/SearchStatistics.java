@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 
@@ -15,12 +16,6 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 public class SearchStatistics {
 
     private static final Logger LOGGER = Logger.getLogger(SearchStatistics.class.getSimpleName());
-
-    /**
-     * final flag to let remove the statistics code from bytecode when deactivated.
-     * Usually this is only activated (hartcoded) during local tests or in special test versions.
-     */
-    public static final boolean STATS_ACTIVATED = false;
 
     public int nodesVisited = 0;
     public int quiescenceNodesVisited = 0;
@@ -97,7 +92,7 @@ public class SearchStatistics {
     }
 
     public void countCutOff(MoveCursor moveCursor, int searchedMoves) {
-        if (!STATS_ACTIVATED) {
+        if (!BuildConstants.STATS_ACTIVATED) {
             return;
         }
         cutOff++;
@@ -137,7 +132,7 @@ public class SearchStatistics {
 
     public void logStats(Logger logger, Level level, String msg) {
         if (logger.isLoggable(level)) {
-            if (hasStatistics() && STATS_ACTIVATED) {
+            if (BuildConstants.STATS_ACTIVATED && hasStatistics()) {
                 String completeMsg = formatStats(msg);
                 logger.log(level, completeMsg);
             } else {
@@ -152,7 +147,7 @@ public class SearchStatistics {
     }
 
     public String formatStats(String msg) {
-        if (!STATS_ACTIVATED) {
+        if (!BuildConstants.STATS_ACTIVATED) {
             return "";
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -213,7 +208,7 @@ public class SearchStatistics {
     }
 
     public void add(SearchStatistics statistics) {
-        if (!STATS_ACTIVATED){
+        if (!BuildConstants.STATS_ACTIVATED){
             return;
         }
 

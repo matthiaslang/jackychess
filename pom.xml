@@ -29,6 +29,7 @@
             </build>
             <properties>
                 <activateAssertions>false</activateAssertions>
+                <activateStatistics>false</activateStatistics>
             </properties>
 
         </profile>
@@ -68,6 +69,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <activateAssertions>true</activateAssertions>
+        <activateStatistics>true</activateStatistics>
     </properties>
     <build>
         <plugins>
