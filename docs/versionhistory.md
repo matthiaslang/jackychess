@@ -1,5 +1,10 @@
 # Versions
 
+### 23.12.5
+
+- cleanup negamax pvs search recursion: always search pv with full depth
+  Elo difference: 11.4 +/- 9.1, LOS: 99.3 %, DrawRatio: 43.5 %
+
 
 ### 23.12.4
 

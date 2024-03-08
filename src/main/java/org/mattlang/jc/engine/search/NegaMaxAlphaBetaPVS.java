@@ -79,8 +79,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private SearchListener searchListener;
 
-    private int extensionCounter = 0;
-
     private final boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
 
     private final boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
@@ -96,8 +94,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private final int[] parentMoves = new int[MAX_PLY + 1];
 
     private SearchContext searchContext;
-
-    private boolean debug = true;
 
     private final MoveValidator moveValidator = new MoveValidator();
 
@@ -129,7 +125,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         resetStatistics();
     }
 
-    private int negaMaximize(int ply, int depth, Color color,
+    private int negaMaximize(final int ply, final int depth, final Color color,
             int alpha, int beta) {
 
         /**
@@ -147,7 +143,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             return searchContext.evaluateRepetition(color);
         }
 
-        int mateValue = KING_WEIGHT - ply;
+        final int mateValue = KING_WEIGHT - ply;
 
         statistics.nodesVisited++;
         boolean not_pv = abs(beta - alpha) <= 1;
@@ -171,7 +167,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         }
 
         boolean areWeInCheck = searchContext.isInCheck(color);
-        depth = checkToExtend(areWeInCheck, color, depth);
 
         if (depth == 0) {
             return quiesce(ply + 1, -1, color, alpha, beta);
@@ -358,7 +353,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                  *  prune insufficient captures as well, but that seems too risky.     *
                  **********************************************************************/
 
-                boolean quietMove = !moveCursor.isCapture() && !moveCursor.isPromotion();
+                final boolean quietMove = !moveCursor.isCapture() && !moveCursor.isPromotion();
 
                 // todo the condition that it gives check is now out-commented...
                 if (applyFutilityPruning
@@ -395,42 +390,36 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     /**
                      * Late move reduction
                      */
-                    int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, not_pv);
+                    final int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, not_pv);
 
-                    boolean redo = false;
+                    // currently we do not support any extensions
+                    final int extension = 0;
                     int score;
-                    do {
-                        if (firstChild) {
-                            /**
-                             * do full search (for pvs search on the first move, or if pvs search is deactivated)
-                             */
-                            score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
-                            if (doPVSSearch) {
-                                firstChild = false;
-                            }
-                        } else {
-                            // pvs try 0 window
-                            score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -max - 1, -max);
 
-                            /**
-                             * do a full window search in pvs search if score is out of our max, beta window:
-                             */
-                            if (max < score && score < beta) {
-                                score = -negaMaximize(ply + 1, depth - 1 - r, color.invert(), -beta, -max);
-                            }
+                    if (firstChild) {
+                        /**
+                         * do full search (for pvs search on the first move, or if pvs search is deactivated)
+                         */
+                        score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
+                        if (doPVSSearch) {
+                            firstChild = false;
                         }
+                    } else {
+                        // pvs try 0 window
+                        score = -negaMaximize(ply + 1, depth - 1 - r + extension, color.invert(), -max - 1, -max);
 
-                        /**********************************************************************
-                         *  Sometimes reduced search brings us above alpha. This is unusual,   *
-                         *  since we expected reduced move to be bad in first place. It is     *
-                         *  not certain now, so let's search to the full, unreduced depth.     *
-                         **********************************************************************/
-                        redo = false;
+                        // research if the reduced search did not fail low
                         if (r > 0 && score > max) {
-                            r = 0;
-                            redo = true;
+                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -max - 1, -max);
                         }
-                    } while (redo);
+
+                        /**
+                         * do a full window search in pvs search if score is out of our max, beta window:
+                         */
+                        if (max < score && score < beta) {
+                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
+                        }
+                    }
 
                     if (score > max) {
                         max = score;
@@ -577,7 +566,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         );
     }
 
-    private int quiesce(int ply, int depth, Color color, int alpha, int beta) {
+    private int quiesce(final int ply, final int depth, final Color color, int alpha, int beta) {
         statistics.nodesVisited++;
 
         if (searchContext.isDrawByMaterial()) {
@@ -695,15 +684,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return alpha;
     }
 
-    private int checkToExtend(boolean areWeInCheck, Color color, int currDepth) {
-        if (doChessExtension) {
-            if (areWeInCheck) {
-                return currDepth + 1;
-            }
-        }
-        return currDepth;
-    }
-
     @Override
     public NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState,
             GameContext context,
@@ -717,8 +697,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         this.stopTime = stopTime;
         this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
-
-        extensionCounter = 0;
 
         pvArray.reset();
 
