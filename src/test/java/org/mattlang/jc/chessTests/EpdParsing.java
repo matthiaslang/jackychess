@@ -58,19 +58,20 @@ public class EpdParsing {
         System.out.println(position + " " + expectedBestMove);
 
 
-
         // set fen position out of the epd description:
         // todo we are not able to parse epd correctly right now, but with that workaround we get it to work
         // as FEN:
         GameState gameState = engine.getBoard().setFenPosition("position fen " + position + " 0 0");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState, new GameContext());
+        GameContext gameContext = new GameContext();
+        Move move = engine.go(gameState, gameContext);
 
         System.out.println(move.toStr());
 
         MoveText moveText=new MoveText(expectedBestMove, emptyPos());
         Move algExpectedMove=AlgebraicNotation.moveFromAN(gameState.getBoard(), gameState.getWho2Move(), moveText);
 
+        gameContext.logStatistics();
         assertThat(move).isEqualTo(algExpectedMove);
 
     }

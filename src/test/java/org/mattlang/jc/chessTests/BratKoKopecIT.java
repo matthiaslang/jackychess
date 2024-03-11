@@ -71,6 +71,7 @@ public class BratKoKopecIT {
 
     @BeforeClass
     public static void init() throws IOException {
+        System.setProperty("jacky.logging.activate", "true");
         initLogging();
         UCI.instance.attachStreams();
     }

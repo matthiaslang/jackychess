@@ -58,7 +58,7 @@ public class SearchStatistics {
 
     public int skipLowPromotionsCount;
 
-    public int[] searchedMoveIndexCount = new int[30];
+    public int[] searchedMoveIndexCount = new int[40];
 
 
     public void resetStatistics() {
