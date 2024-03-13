@@ -3,6 +3,14 @@ package org.mattlang.jc;
 /**
  * Build constants which are generated via the maven templating plugin during build.
  * This is used as a kind of "preprocessor" to include or exclude e.g. assertions, etc. code in the byte code.
+ * The idea is to exclude such optional code in the release versions.
+ *
+ * It is of course questionable if such a "trick" should be used in java as the jit compiler is doing similar optimizations
+ * during runtime.
+ * It is therefore only used for "heavy" things like assertions and statistics collection which really removes reasonable code and would
+ * heavily influence the speed of the algorithm.
+ * It is not used for toggling features like null move pruning, etc. which is anyway always active in the release version. This would
+ * not result in speed gains.
  */
 public class BuildConstants {
 
