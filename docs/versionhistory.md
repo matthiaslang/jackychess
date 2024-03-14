@@ -1,15 +1,28 @@
 # Versions
 
+### 23.12.6
+
+- history heuristic: exclude check positions from history.
+
+        Score of jacky23.12.5-H01 vs jacky23.12.5: 1846 - 1698 - 2590  [0.512] 6134
+        ...      jacky23.12.5-H01 playing White: 1037 - 781 - 1249  [0.542] 3067
+        ...      jacky23.12.5-H01 playing Black: 809 - 917 - 1341  [0.482] 3067
+        ...      White vs Black: 1954 - 1590 - 2590  [0.530] 6134
+        Elo difference: 8.4 +/- 6.6, LOS: 99.4 %, DrawRatio: 42.2 %
+        SPRT: llr 2.98 (101.1%), lbound -2.94, ubound 2.94 - H1 was accepted
+
 ### 23.12.5
 
 - cleanup negamax pvs search recursion: always search pv with full depth
-  Elo difference: 11.4 +/- 9.1, LOS: 99.3 %, DrawRatio: 43.5 %
+        
+        Elo difference: 11.4 +/- 9.1, LOS: 99.3 %, DrawRatio: 43.5 %
 
 
 ### 23.12.4
 
 Fixing/cleanup killer move usage: resetting killers of children during recursive search. resetting killers on start of search
-Elo difference: 19.1 +/- 13.6, LOS: 99.7 %, DrawRatio: 45.1 %
+
+        Elo difference: 19.1 +/- 13.6, LOS: 99.7 %, DrawRatio: 45.1 %
 
 
 ### 23.12.3

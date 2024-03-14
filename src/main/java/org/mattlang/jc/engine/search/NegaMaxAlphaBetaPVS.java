@@ -430,8 +430,10 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         searchContext.updateRootBestMove(depth, bestMove, score);
 
                         if (max >= beta) {
-                            //                        if (!areWeInCheck) {
-                            searchContext.updateCutOffHeuristics(ply, depth, color, parentMove, bestMove, moveCursor);
+                            if (!areWeInCheck) {
+                                searchContext.updateCutOffHeuristics(ply, depth, color, parentMove,
+                                        bestMove, moveCursor);
+                            }
                             statistics.countCutOff(moveCursor, searchedMoves);
                             break;
                         }
@@ -439,7 +441,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     }
 
                     // update "bad" heuristic
-                    searchContext.updateBadHeuristic(depth, color, moveCursor);
+                    if (!areWeInCheck) {
+                        searchContext.updateBadHeuristic(depth, color, moveCursor);
+                    }
                 }
             }
             statistics.noCutOffFoundCount++;
