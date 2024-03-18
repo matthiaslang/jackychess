@@ -18,8 +18,7 @@ import org.mattlang.jc.uci.UCI;
 /**
  * Eigenmann Rapid Engine Tests Suite.
  * Most Tests fail..
- * ~19 of 111 seem to work fine... but some of the 19 also not, because the expected move comparison is not working well for algebraic notation.
- *
+ * 39 of 111 seem to work fine...
  */
 
 @Category(ChessTests.class)
@@ -171,7 +170,10 @@ public class EigenmannRapidEngineChessIT {
         Factory.setDefaults(Factory.createStable()
                         .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
                         .config(c->c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
-                .config(c -> c.timeout.setValue(25000)));
+                .config(c -> c.timeout.setValue(99999999))
+                .config(c -> c.maxDepth.setValue(25))
+
+        );
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }

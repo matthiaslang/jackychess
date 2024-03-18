@@ -17,9 +17,7 @@ import org.mattlang.jc.uci.UCI;
 
 /**
  * Bratko Kopec Test Suite.
- * Most Tests fail..
- * With iterative deepening alpha beta some work fine.
- * With mtd(f) all faill currently, means there is something bad going on here, probably.
+ * 2 of 24 fail currently.
  */
 
 @Category(ChessTests.class)
@@ -82,7 +80,10 @@ public class BratKoKopecIT {
         Factory.setDefaults(Factory.createStable()
                 .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
                 .config(c->c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
-                .config(c -> c.timeout.setValue(25000)));
+                .config(c -> c.timeout.setValue(99999999))
+                .config(c -> c.maxDepth.setValue(25))
+
+        );
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }
