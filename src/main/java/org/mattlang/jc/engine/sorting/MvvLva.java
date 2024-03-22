@@ -1,7 +1,8 @@
 package org.mattlang.jc.engine.sorting;
 
-import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.FigureConstants;
+import static org.mattlang.jc.board.FigureConstants.FT_QUEEN;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 
@@ -26,61 +27,23 @@ import org.mattlang.jc.board.Move;
 public class MvvLva {
 
     /**
-     * array indexed by figure code to return a weight
-     */
-    private static int[] weights = new int[FigureConstants.MAX_FIGURE_INDEX];
-
-    public static final int MVVLVA_PAWN = 1;
-    public static final int MVVLVA_KNIGHT = 2;
-    public static final int MVVLVA_BISHOP = 3;
-    public static final int MVVLVA_ROOK = 4;
-    public static final int MVVLVA_QUEEN = 5;
-    public static final int MVVLVA_KING = 6;
-
-    static {
-        weights[FigureType.Pawn.figureCode] = MVVLVA_PAWN;
-        weights[Figure.B_Pawn.figureCode] = MVVLVA_PAWN;
-        weights[Figure.W_Pawn.figureCode] = MVVLVA_PAWN;
-
-        weights[FigureType.Knight.figureCode] = MVVLVA_KNIGHT;
-        weights[Figure.B_Knight.figureCode] = MVVLVA_KNIGHT;
-        weights[Figure.W_Knight.figureCode] = MVVLVA_KNIGHT;
-
-        weights[FigureType.Bishop.figureCode] = MVVLVA_BISHOP;
-        weights[Figure.B_Bishop.figureCode] = MVVLVA_BISHOP;
-        weights[Figure.W_Bishop.figureCode] = MVVLVA_BISHOP;
-
-        weights[FigureType.Rook.figureCode] = MVVLVA_ROOK;
-        weights[Figure.B_Rook.figureCode] = MVVLVA_ROOK;
-        weights[Figure.W_Rook.figureCode] = MVVLVA_ROOK;
-
-        weights[FigureType.Queen.figureCode] = MVVLVA_QUEEN;
-        weights[Figure.B_Queen.figureCode] = MVVLVA_QUEEN;
-        weights[Figure.W_Queen.figureCode] = MVVLVA_QUEEN;
-
-        weights[FigureType.King.figureCode] = MVVLVA_KING;
-        weights[Figure.B_King.figureCode] = MVVLVA_KING;
-        weights[Figure.W_King.figureCode] = MVVLVA_KING;
-
-    }
-
-    /**
      * Calcs the MMV-LVA   (Most Valuable Victim - Least Valuable Aggressor) simple order heuristic,
      */
 
     public static int calcMMVLVA(Move move) {
         int weight = 0;
         if (move.isCapture()) {
+            int captFigType = move.getCapturedFigure() & MASK_OUT_COLOR;
             // for a capture build the difference to order for good and bad captures:
-            weight = weights[move.getCapturedFigure()] * 6 - weights[move.getFigureType()];
+            weight = captFigType * 6 - move.getFigureType();
         } else {
             // non captures are the figure wheight div 10 to distinguish the value from "bad" captures by factor 10:
-            weight = -weights[move.getFigureType()];
+            weight = -move.getFigureType();
         }
         // weight "high" promotions (queen promotion);
         // all other promotions are mostly not of interest(bishop & rook are redundant to queen; Knight is mostly not desirable)
         if (move.isPromotion() && move.getPromotedFigure().figureType == FigureType.Queen) {
-            weight += (FigureType.Queen.figureCode + 1) * 6;
+            weight += (FT_QUEEN + 1) * 6;
         }
         return weight;
     }

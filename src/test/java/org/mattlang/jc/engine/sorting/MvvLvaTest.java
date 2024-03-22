@@ -23,6 +23,10 @@ public class MvvLvaTest {
 
         softly.assertThat(calcMMVLVA(new MoveImpl(movePawnXQueen))).isEqualTo(29);
 
+        int movePawnYQueen = createNormalMove(FigureType.Pawn.figureCode, 7, 12, Figure.W_Queen.figureCode);
+
+        softly.assertThat(calcMMVLVA(new MoveImpl(movePawnYQueen))).isEqualTo(29);
+
         softly.assertAll();
     }
 }
