@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -91,9 +92,24 @@ public class MoveToStringConverter {
             int move = moveList.get(i);
             int order = moveList.getOrder(i);
             moveimpl.fromLongEncoded(move);
-            String moveDescr = toLongAlgebraic(moveimpl) + ": " + mapDebugOrderStr(order) + ": " + order;
+            String moveDescr = movedescr(move, order);
             moves.add(moveDescr);
         }
         return moves;
+    }
+
+    public static String movedescr(int move, int order) {
+        MoveImpl moveimpl = new MoveImpl("a1a1");
+        moveimpl.fromLongEncoded(move);
+        return movedescr(moveimpl, order);
+    }
+
+    public static String movedescr(MoveCursor moveCursor) {
+        return movedescr(moveCursor, moveCursor.getOrder());
+    }
+
+    public static String movedescr(Move move, int order) {
+        String moveDescr = toLongAlgebraic(move) + ": " + mapDebugOrderStr(order) + "(" + order + ")";
+        return moveDescr;
     }
 }

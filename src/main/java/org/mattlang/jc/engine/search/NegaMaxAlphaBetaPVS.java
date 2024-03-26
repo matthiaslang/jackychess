@@ -7,10 +7,10 @@ import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
-import static org.mattlang.jc.engine.sorting.MovePicker.mapDebugOrderStr;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+import static org.mattlang.jc.moves.MoveToStringConverter.movedescr;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 import java.util.List;
@@ -355,9 +355,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             while (moveCursor.nextMove()) {
 
                 if (BuildConstants.ASSERTIONS) {
-                    LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + toLongAlgebraic(moveCursor)
-                            + ": "
-                            + mapDebugOrderStr(moveCursor.getOrder()) + ": " + moveCursor.getOrder());
+                    LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + movedescr(moveCursor));
                     if (lastorder > moveCursor.getOrder() && lastorder != QUEEN_PROMOTION_SCORE
                             && moveCursor.getOrder() != QUEEN_PROMOTION_SCORE) {
                         throw new IllegalStateException(
