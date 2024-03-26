@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.logging.Logger;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -40,6 +41,11 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private static final int STAGE_QUIESCENCE_HASH = 5;
     private static final int STAGE_QUIESCENCE_REST = 6;
     private static final int STAGE_REST = 7;
+
+    /* stage names, used for debugging. */
+    private static final String[] STAGENAME =
+            { "NONE", "STAGE HASH", "STAGE GOOD CAPTURES", "STAGE KILLERS", "STAGE COUNTER MOVE",
+                    "STAGE QUIESCENCE HASH", "STAGE QUIESCENCE REST", "STAGE REST" };
 
     /**
      * stages for "normal" negamax iteration.
@@ -114,6 +120,10 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         boolean nextStagePrepared = false;
         while (!nextStagePrepared && stage < stages.length - 1) {
             stage++;
+
+            if (BuildConstants.ASSERTIONS){
+                LOGGER.fine("try stage " + STAGENAME[stage]);
+            }
 
             switch (stages[stage]) {
             case STAGE_HASH:
