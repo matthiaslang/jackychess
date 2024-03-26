@@ -7,13 +7,16 @@ import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.sorting.MovePicker.mapDebugOrderStr;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
@@ -343,7 +346,25 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
             int searchedMoves = 0;
 
+            int lastorder = Integer.MIN_VALUE;
+
+            if (BuildConstants.ASSERTIONS) {
+                LOGGER.fine("ply: " + ply + " depth: " + depth + " hashmove: " + hashMove + " start traversion");
+            }
+
             while (moveCursor.nextMove()) {
+
+                if (BuildConstants.ASSERTIONS) {
+                    LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + toLongAlgebraic(moveCursor)
+                            + ": "
+                            + mapDebugOrderStr(moveCursor.getOrder()) + ": " + moveCursor.getOrder());
+                    if (lastorder > moveCursor.getOrder() && lastorder != QUEEN_PROMOTION_SCORE
+                            && moveCursor.getOrder() != QUEEN_PROMOTION_SCORE) {
+                        throw new IllegalStateException(
+                                "last order: " + lastorder + " > curr order: " + moveCursor.getOrder());
+                    }
+                    lastorder = moveCursor.getOrder();
+                }
 
                 parentMoves[ply] = moveCursor.getMoveInt();
 
@@ -426,10 +447,20 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                         bestMove = moveCursor.getMoveInt();
 
+                        if (BuildConstants.ASSERTIONS) {
+                            LOGGER.fine("ply: " + ply + " depth: " + depth + " found new bestmove: "
+                                    + toLongAlgebraic(moveCursor) + " score: " + max);
+                        }
+
                         pvArray.set(bestMove, ply);
                         searchContext.updateRootBestMove(depth, bestMove, score);
 
                         if (max >= beta) {
+                            if (BuildConstants.ASSERTIONS) {
+                                LOGGER.fine("ply: " + ply + " depth: " + depth + " found cut off: "
+                                        + toLongAlgebraic(moveCursor) + " score: " + max + " beta: " + beta);
+                            }
+
                             if (!areWeInCheck) {
                                 searchContext.updateCutOffHeuristics(ply, depth, color, parentMove,
                                         bestMove, moveCursor);

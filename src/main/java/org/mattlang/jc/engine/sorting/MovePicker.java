@@ -100,7 +100,7 @@ public final class MovePicker implements MoveIterator {
                 .collect(Collectors.toList());
     }
 
-    private String mapDebugOrderStr(Integer o) {
+    public static String mapDebugOrderStr(Integer o) {
         int oi = o.intValue();
         if (oi == OrderCalculator.HASHMOVE_SCORE) {
             return "1.HASH";
