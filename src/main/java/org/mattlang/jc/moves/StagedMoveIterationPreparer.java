@@ -122,7 +122,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             stage++;
 
             if (BuildConstants.ASSERTIONS){
-                LOGGER.fine("try stage " + STAGENAME[stage]);
+                LOGGER.fine("try stage " + STAGENAME[stages[stage]]);
             }
 
             switch (stages[stage]) {
