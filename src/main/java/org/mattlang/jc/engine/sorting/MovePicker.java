@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.moves.MoveToStringConverter;
 
 /**
  * Move picker which does a partial sort and picks the next move by its order priority from a move list.
@@ -85,13 +86,9 @@ public final class MovePicker implements MoveIterator {
             }
         }
 
-        ArrayList<Integer> moveOrders = new ArrayList<>();
-        for (int i = 0; i < start + size; i++) {
-            moveOrders.add(moveList.getOrder(i));
-        }
-        List<String> moveDebugOrders = createMoveDebugOrders(moveOrders);
-//        LOGGER.info("picker prepared " + size + " moves, starting at " + start);
-//        LOGGER.info("move list order: " + moveDebugOrders);
+        List<String> moves = MoveToStringConverter.toString(moveList, 0, start + size);
+        LOGGER.info("picker prepared " + size + " moves, starting at " + start);
+        LOGGER.info("move list order: " + moves);
     }
 
     private List<String> createMoveDebugOrders(ArrayList<Integer> moveOrders) {
