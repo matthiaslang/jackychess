@@ -27,7 +27,7 @@ public class ParamConfiguratorTraverser {
         this.visitor = visitor;
     }
 
-    public void configure(ParameterizedEvaluation eval, ConfigFilter configFilter) {
+    public void traverse(ParameterizedEvaluation eval, ConfigFilter configFilter) {
         this.evaluation = eval;
 
         final EvalConfigurable configurableTest = eval.getClass().getAnnotation(EvalConfigurable.class);
@@ -112,7 +112,7 @@ public class ParamConfiguratorTraverser {
             if (evalConfigParam.mgEgCombined()) {
                 String propMg = qualifiedName + "MG";
                 String propEg = qualifiedName + "EG";
-               visitor.visitArray(propMg, propEg, fieldAccessStack, evalConfigParam, definedInterval);
+                visitor.visitArray(propMg, propEg, fieldAccessStack, evalConfigParam, definedInterval);
             } else {
                 visitor.visitArray(qualifiedName, fieldAccessStack, evalConfigParam, definedInterval);
             }
@@ -130,7 +130,8 @@ public class ParamConfiguratorTraverser {
                 String tableCsvPathNameMg = prefixes.getQualifiedPathName(evalConfigParam) + "MG" + ".csv";
                 String tableCsvPathNameEg = prefixes.getQualifiedPathName(evalConfigParam) + "EG" + ".csv";
 
-                visitor.visitMgEgPattern(subDir, tableCsvPathNameMg, tableCsvPathNameEg, fieldAccessStack, evalConfigParam,
+                visitor.visitMgEgPattern(subDir, tableCsvPathNameMg, tableCsvPathNameEg, fieldAccessStack,
+                        evalConfigParam,
                         definedInterval);
 
             } else {

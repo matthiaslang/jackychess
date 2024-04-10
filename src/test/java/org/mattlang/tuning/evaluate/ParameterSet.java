@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.mattlang.jc.engine.evaluation.annotation.configure.ConfigFilter;
+import org.mattlang.jc.engine.evaluation.annotation.configure.ParamConfiguratorTraverser;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.TuningParameterGroup;
@@ -43,7 +44,6 @@ public class ParameterSet {
      */
     public ParameterSet(OptParameters optParams, ParameterizedEvaluation parameterizedEvaluation) {
 
-        TuningParamConfigurator tuningParamConfigurator = new TuningParamConfigurator();
         ConfigFilter configFilter = new ConfigFilter();
 
         if (optParams.isTunePawnEval()) {
@@ -93,7 +93,10 @@ public class ParameterSet {
             configFilter.addFilter("mob\\..*KingAttack.*");
         }
 
-        groups.addAll(tuningParamConfigurator.configure(parameterizedEvaluation, configFilter));
+        TuningParamVisitor visitor = new TuningParamVisitor(parameterizedEvaluation);
+        ParamConfiguratorTraverser traverser = new ParamConfiguratorTraverser(visitor);
+        traverser.traverse(parameterizedEvaluation, configFilter);
+        groups.addAll(visitor.getGroups());
 
         createRedundantParamsList();
 

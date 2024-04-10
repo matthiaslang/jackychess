@@ -31,7 +31,7 @@ public class EvalConfigurator implements EvalConfigVisitor {
         this.eval = eval;
 
         ParamConfiguratorTraverser traverser = new ParamConfiguratorTraverser(this);
-        traverser.configure(eval, new ConfigFilter(".*"));
+        traverser.traverse(eval, new ConfigFilter(".*"));
     }
 
     @Override
