@@ -3,12 +3,13 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedThreatsEvaluation.readCombinedConfigVal;
-import static org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction.combine;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 
 import lombok.Getter;
 
@@ -16,66 +17,29 @@ import lombok.Getter;
  * Paremeterized positional and material adjustments.
  */
 @Getter
+@EvalConfigurable(prefix = "adjustments")
+@EvalValueInterval(min = -2000, max = 2000)
 public class ParameterizedAdjustmentsEvaluation {
 
-    public static final String TEMPO_MG = "tempoMg";
-    public static final String TEMPO_EG = "tempoEg";
-    public static final String BISHOP_PAIR_MG = "bishopPairMg";
-    public static final String BISHOP_PAIR_EG = "bishopPairEg";
-    public static final String KNIGHT_PAIR_MG = "knightPairMg";
-    public static final String KNIGHT_PAIR_EG = "knightPairEg";
-    public static final String ROOK_PAIR_MG = "rookPairMg";
-    public static final String ROOK_PAIR_EG = "rookPairEg";
-
-    public static final String KNIGHT_ADJ_MG = "knightAdjMg";
-    public static final String KNIGHT_ADJ_EG = "knightAdjEg";
-
-    public static final String ROOK_ADJ_MG = "rookAdjMg";
-    public static final String ROOK_ADJ_EG = "rookAdjEg";
-
+    @EvalConfigParam(configName = "tempo", mgEgCombined = true)
     private int tempoMgEg;
-    private final ChangeableMgEgScore tempoScore;
 
+    @EvalConfigParam(configName = "bishopPair", mgEgCombined = true)
     private int bishopPairMgEg;
-    private final ChangeableMgEgScore bishopPairScore;
 
+    @EvalConfigParam(configName = "knightPair", mgEgCombined = true)
     private int knightPairMgEg;
-    private final ChangeableMgEgScore knightPairScore;
 
+    @EvalConfigParam(configName = "rookPair", mgEgCombined = true)
     private int rookPairMgEg;
-    private final ChangeableMgEgScore rookPairScore;
 
-    /* adjustements of piece value based on the number of own pawns */
-    //    int n_adj[] = { -20, -16, -12, -8, -4, 0, 4, 8, 12 };
-    //    int r_adj[] = { 15, 12, 9, 6, 3, 0, -3, -6, -9 };
+    @EvalConfigParam(configName = "knightAdj")
+    public MgEgArrayFunction knightAdjustmentMGEG;
 
-    public final ArrayFunction knightAdjustmentMG;
-    public final ArrayFunction knightAdjustmentEG;
-    public ArrayFunction knightAdjustmentMGEG;
-
-    public final ArrayFunction rookAdjustmentMG;
-    public final ArrayFunction rookAdjustmentEG;
-    public ArrayFunction rookAdjustmentMGEG;
+    @EvalConfigParam(configName = "rookAdj")
+    public MgEgArrayFunction rookAdjustmentMGEG;
 
     public ParameterizedAdjustmentsEvaluation(EvalConfig config) {
-        tempoScore = readCombinedConfigVal(config, TEMPO_MG, TEMPO_EG, val -> tempoMgEg = val);
-
-        bishopPairScore = readCombinedConfigVal(config, BISHOP_PAIR_MG, BISHOP_PAIR_EG, val -> bishopPairMgEg = val);
-        knightPairScore = readCombinedConfigVal(config, KNIGHT_PAIR_MG, KNIGHT_PAIR_EG, val -> knightPairMgEg = val);
-        rookPairScore = readCombinedConfigVal(config, ROOK_PAIR_MG, ROOK_PAIR_EG, val -> rookPairMgEg = val);
-
-        knightAdjustmentMG = config.parseArray(KNIGHT_ADJ_MG);
-        knightAdjustmentEG = config.parseArray(KNIGHT_ADJ_EG);
-
-        rookAdjustmentMG = config.parseArray(ROOK_ADJ_MG);
-        rookAdjustmentEG = config.parseArray(ROOK_ADJ_EG);
-
-        updateCombinedVals();
-    }
-
-    public void updateCombinedVals() {
-        knightAdjustmentMGEG = combine(knightAdjustmentMG, knightAdjustmentEG);
-        rookAdjustmentMGEG = combine(rookAdjustmentMG, rookAdjustmentEG);
     }
 
     public int adjust(BitChessBoard bb, Color who2Move) {

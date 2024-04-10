@@ -88,6 +88,7 @@ public class LocalOptimizationTuner {
             for (TuningParameter param : parameterSet.getParams()) {
                 param.resetValue();
             }
+            LOGGER.info("Resetted Parameter values:\n" + parameterSet.collectParamDescr());
             parameterSet.writeParamDescr(outputDir);
         }
 

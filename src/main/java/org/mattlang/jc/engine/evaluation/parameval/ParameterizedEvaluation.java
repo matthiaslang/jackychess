@@ -7,6 +7,8 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
@@ -23,6 +25,7 @@ import lombok.Setter;
  * All parameters are bundled by a named "configuration" which can be selected via UCI (or property).
  * All parameters of a bundled configuration are inside a resource folder with the same name as the configuration.
  */
+@EvalConfigurable
 public class ParameterizedEvaluation implements EvaluateFunction {
 
     @Getter
@@ -89,6 +92,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         caching = config.getBoolProp("caching.active");
         endgameEvaluations = config.getBoolProp("endgameEvaluations.active");
 
+        EvalConfigurator configurator = new EvalConfigurator(config);
+
         matEvaluation = new ParameterizedMaterialEvaluation(forTuning, config);
         pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
 
@@ -104,6 +109,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         kingEvaluation = new ParameterizedKingEvaluation(forTuning, config);
         complexityEvaluation = new ParameterizedComplexityEvaluation(forTuning, config);
+
+        configurator.configure(this);
     }
 
     /**

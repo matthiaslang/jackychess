@@ -1,9 +1,9 @@
 package org.mattlang.tuning.evaluate;
 
 import java.io.File;
-import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.parameval.ChangeableMgEgScore;
+import org.mattlang.jc.engine.evaluation.annotation.configure.FieldAccessStack;
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.tuning.IntIntervall;
 import org.mattlang.tuning.TuningParameterGroup;
@@ -13,33 +13,28 @@ import org.mattlang.tuning.TuningParameterGroup;
  */
 public class ChangeableMgEgScoreParameterGroup extends AbstractTuningParameterGroup {
 
-    private final Function<ParameterizedEvaluation, ChangeableMgEgScore> getter;
-
     private final IntegerValueParam paramMg;
 
     private final IntegerValueParam paramEg;
 
     public ChangeableMgEgScoreParameterGroup(ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedEvaluation, ChangeableMgEgScore> getter, IntIntervall intervall) {
-        this.getter = getter;
+            FieldAccessStack fieldAccessStack,
+            String propMg, String propEg, IntIntervall intervall) {
 
-        ChangeableMgEgScore mgEgScore = getter.apply(parameterizedEvaluation);
-
-        paramMg = new IntegerValueParam(mgEgScore.getPropNameMg(), parameterizedEvaluation,
-                e -> getter.apply(e).getMgScore(),
-                (e, val) -> getter.apply(e).setMg(val),
+        paramMg = new IntegerValueParam(propMg, parameterizedEvaluation,
+                e -> MgEgScore.getMgScore((Integer) fieldAccessStack.get(e)),
+                (e, val) -> fieldAccessStack.set(e, MgEgScore.setMg((Integer) fieldAccessStack.get(e), val)),
                 intervall);
         getParameters().add(paramMg);
 
-        paramEg = new IntegerValueParam(mgEgScore.getPropNameEg(), parameterizedEvaluation,
-                e -> getter.apply(e).getEgScore(),
-                (e, val) -> getter.apply(e).setEg(val),
+        paramEg = new IntegerValueParam(propEg, parameterizedEvaluation,
+                e -> MgEgScore.getEgScore((Integer) fieldAccessStack.get(e)),
+                (e, val) -> fieldAccessStack.set(e, MgEgScore.setEg((Integer) fieldAccessStack.get(e), val)),
                 intervall);
         getParameters().add(paramEg);
     }
 
     public ChangeableMgEgScoreParameterGroup(ChangeableMgEgScoreParameterGroup src) {
-        this.getter = src.getter;
         this.paramMg = (IntegerValueParam) src.paramMg.copy();
         this.paramEg = (IntegerValueParam) src.paramEg.copy();
     }

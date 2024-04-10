@@ -10,6 +10,9 @@ public class LocalOptExperiment02 {
 
     public static final String SF_PGN = testingProject + "results\\tuningdata\\sf\\run20230914_1415\\tournament.pgn";
 
+    public static final String QUIET_LABELED_DEBUG =
+            testingProject + "tuningdata\\quiet-labeled_debug.epd";
+
     public static final String QUIET_LABELED_EPD =
             testingProject + "tuningdata\\quiet-labeled.epd";
 
@@ -79,7 +82,7 @@ public class LocalOptExperiment02 {
                 .tuneComplexity(true)
                 .tuneThreats(false)
                 //                .inputFiles(asList(QUIET_LABELED_EPD))
-                .inputFiles(asList(QUIET_LABELED_EPD))
+                .inputFiles(asList(QUIET_LABELED_DEBUG))
                 .build();
 
         LocalOptimizationTuner.run(params);

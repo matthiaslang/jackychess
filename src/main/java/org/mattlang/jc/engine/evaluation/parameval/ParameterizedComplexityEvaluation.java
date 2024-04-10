@@ -9,43 +9,39 @@ import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvalu
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Complexity Evaluation.
  */
 @Getter
+@EvalConfigurable(prefix = "complexity")
 public class ParameterizedComplexityEvaluation implements EvalComponent {
 
-    public static final String COMPLEXITY_TOTAL_PAWNS = "complexityTotalPawnsEG";
-    public static final String COMPLEXITY_PAWN_FLANKS = "complexityPawnFlanksEG";
-    public static final String COMPLEXITY_PAWN_ENDGAME = "complexityPawnEndgameEG";
-    public static final String COMPLEXITY_ADJUSTMENT = "complexityAdjustmentEG";
+    @EvalConfigParam(configName = "closednessKnightAdjustment")
+    private MgEgArrayFunction closednessKnightAdjustment;
 
-    private final MgEgArrayFunction closednessKnightAdjustment;
-    private final MgEgArrayFunction closednessRookAdjustment;
+    @EvalConfigParam(configName = "closednessRookAdjustment")
+    private MgEgArrayFunction closednessRookAdjustment;
 
-    @Setter
+    @EvalConfigParam(configName = "complexityTotalPawnsEG")
     private int complexityTotalPawnsEG;
-    @Setter
+
+    @EvalConfigParam(configName = "complexityPawnFlanksEG")
     private int complexityPawnFlanksEG;
-    @Setter
+
+    @EvalConfigParam(configName = "complexityPawnEndgameEG")
     private int complexityPawnEndgameEG;
-    @Setter
+
+    @EvalConfigParam(configName = "complexityAdjustmentEG")
     private int complexityAdjustmentEG;
 
     public ParameterizedComplexityEvaluation(boolean forTuning, EvalConfig config) {
 
-        complexityTotalPawnsEG = config.getIntProp(COMPLEXITY_TOTAL_PAWNS);
-        complexityPawnFlanksEG = config.getIntProp(COMPLEXITY_PAWN_FLANKS);
-        complexityPawnEndgameEG = config.getIntProp(COMPLEXITY_PAWN_ENDGAME);
-        complexityAdjustmentEG = config.getIntProp(COMPLEXITY_ADJUSTMENT);
-
-        closednessKnightAdjustment = new MgEgArrayFunction(config, "closednessKnightAdjustment");
-        closednessRookAdjustment = new MgEgArrayFunction(config, "closednessRookAdjustment");
     }
 
     @Override

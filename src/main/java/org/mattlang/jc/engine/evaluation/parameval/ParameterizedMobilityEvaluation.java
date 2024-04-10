@@ -15,6 +15,8 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
@@ -24,6 +26,7 @@ import lombok.Getter;
  * Paremeterized Mobility Evaluation.
  */
 @Getter
+@EvalConfigurable(prefix = "mob")
 public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     private static int[] SAFETYTABLE = {
@@ -46,19 +49,28 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private final MobilityEvalResult wResult;
     private final MobilityEvalResult bResult;
 
+    @EvalConfigPrefix(prefix = "knight")
     private final MobFigParams paramsKnight;
+
+    @EvalConfigPrefix(prefix = "bishop")
     private final MobFigParams paramsBishop;
+
+    @EvalConfigPrefix(prefix = "rook")
     private final MobFigParams paramsRook;
+
+    @EvalConfigPrefix(prefix = "queen")
     private final MobFigParams paramsQueen;
+
+    @EvalConfigPrefix(prefix = "king")
     private final MobFigParams paramsKing;
 
     public ParameterizedMobilityEvaluation(boolean forTuning, EvalConfig config) {
 
-        paramsKnight = new MobFigParams(config, "knight");
-        paramsBishop = new MobFigParams(config, "bishop");
-        paramsRook = new MobFigParams(config, "rook");
-        paramsQueen = new MobFigParams(config, "queen");
-        paramsKing = new MobFigParams(config, "king");
+        paramsKnight = new MobFigParams(config);
+        paramsBishop = new MobFigParams(config);
+        paramsRook = new MobFigParams(config);
+        paramsQueen = new MobFigParams(config);
+        paramsKing = new MobFigParams(config);
 
         wResult = new MobilityEvalResult(forTuning, config);
         bResult = new MobilityEvalResult(forTuning, config);

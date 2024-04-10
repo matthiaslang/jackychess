@@ -5,12 +5,13 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
-import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedThreatsEvaluation.readCombinedConfigVal;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
 import lombok.Getter;
@@ -23,66 +24,52 @@ import lombok.Setter;
  * see also https://www.chessprogramming.org/Pawns_and_Files_(Bitboards)  for bitboard actions.
  */
 @Getter
+@EvalConfigurable(prefix = "pawn")
 public final class ParameterizedPawnEvaluation implements EvalComponent {
 
-    public static final String PAWN_SHIELD_2 = "pawnShield2";
-    public static final String PAWN_SHIELD_3 = "pawnShield3";
+    @EvalConfigParam(configName = "weakPawn", mgEgCombined = true)
+    private Pattern weakPawnPstMgEg;
 
-    public static final String DOUBLE_PAWN_PENALTY_MG = "doublePawnPenaltyMg";
-    public static final String DOUBLE_PAWN_PENALTY_EG = "doublePawnPenaltyEg";
+    @EvalConfigParam(configName = "blockedPawn", mgEgCombined = true)
+    private Pattern blockedPawnPstMgEg;
 
-    public static final String ATTACKED_PAWN_PENALTY_MG = "attackedPawnPenaltyMg";
-    public static final String ATTACKED_PAWN_PENALTY_EG = "attackedPawnPenaltyEg";
+    @EvalConfigParam(configName = "passedPawn", mgEgCombined = true)
+    private Pattern passedPawnPstMgEg;
 
-    public static final String ISOLATED_PAWN_PENALTY_MG = "isolatedPawnPenaltyMg";
-    public static final String ISOLATED_PAWN_PENALTY_EG = "isolatedPawnPenaltyEg";
+    @EvalConfigParam(configName = "protectedPasser", mgEgCombined = true)
+    private Pattern protectedPasserPstMgEg;
 
-    public static final String BACKWARDED_PAWN_PENALTY_MG = "backwardedPawnPenaltyMg";
-    public static final String BACKWARDED_PAWN_PENALTY_EG = "backwardedPawnPenaltyEg";
+    @EvalConfigParam(configName = "protectedPawn", mgEgCombined = true)
+    private Pattern protectedPstMgEg;
 
-    public static final String PAWN_CONFIG_SUB_DIR = "pawn";
+    @EvalConfigParam(configName = "neighbourPawn", mgEgCombined = true)
+    private Pattern neighbourPstMgEg;
 
-    public static final String WEAK_PAWN_FILE_MG = "weakPawnMg.csv";
-    public static final String WEAK_PAWN_FILE_EG = "weakPawnEg.csv";
-    public static final String BLOCKED_PAWN_FILE_MG = "blockedPawnMg.csv";
-    public static final String BLOCKED_PAWN_FILE_EG = "blockedPawnEg.csv";
-    public static final String PASSED_PAWN_FILE_MG = "passedPawnMg.csv";
-    public static final String PASSED_PAWN_FILE_EG = "passedPawnEg.csv";
-    public static final String PROTECTED_PASSER_CSV_MG = "protectedPasserMg.csv";
-    public static final String PROTECTED_PASSER_CSV_EG = "protectedPasserEg.csv";
-    public static final String PROTECTED_CSV_MG = "protectedPawnMg.csv";
-    public static final String PROTECTED_CSV_EG = "protectedPawnEg.csv";
-    public static final String NEIGHBOUR_CSV_MG = "neighbourPawnMg.csv";
-    public static final String NEIGHBOUR_CSV_EG = "neighbourPawnEg.csv";
-
-    private final Pattern weakPawnPstMgEg;
-
-    private final Pattern blockedPawnPstMgEg;
-
-    private final Pattern passedPawnPstMgEg;
-
-    private final Pattern protectedPasserPstMgEg;
-
-    private final Pattern protectedPstMgEg;
-
-    private final Pattern neighbourPstMgEg;
-
+    @EvalConfigParam(configName = "pawnShield2")
+    @EvalValueInterval(min = 0, max = 100)
     @Setter
     private int shield2 = 10;
+
+    @EvalConfigParam(configName = "pawnShield3")
+    @EvalValueInterval(min = 0, max = 100)
     @Setter
     private int shield3 = 5;
 
+    @EvalConfigParam(configName = "doublePawnPenalty", mgEgCombined = true)
+    @EvalValueInterval(min = 0, max = 100)
     private int doublePawnPenaltyMgEg;
-    private ChangeableMgEgScore doublePawnPenaltyScore;
 
+    @EvalConfigParam(configName = "attackedPawnPenalty", mgEgCombined = true)
+    @EvalValueInterval(min = 0, max = 100)
     private int attackedPawnPenaltyMgEg;
-    private ChangeableMgEgScore attackedPawnPenaltyScore;
 
+    @EvalConfigParam(configName = "isolatedPawnPenalty", mgEgCombined = true)
+    @EvalValueInterval(min = 0, max = 100)
     private int isolatedPawnPenaltyMgEg;
-    private ChangeableMgEgScore isolatedPawnPenaltyScore;
 
+    @EvalConfigParam(configName = "backwardedPawnPenalty", mgEgCombined = true)
+    @EvalValueInterval(min = 0, max = 100)
     private int backwardedPawnPenaltyMgEg;
-    private ChangeableMgEgScore backwardedPawnPenaltyScore;
 
     private PassedPawnEval passedPawnEval = new PassedPawnEval();
 
@@ -99,43 +86,10 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     private final boolean forTuning;
     private boolean caching;
 
-
     public ParameterizedPawnEvaluation(boolean forTuning, boolean caching, EvalConfig config) {
         this.forTuning = forTuning;
         this.caching = caching;
 
-        shield2 = config.getPosIntProp(PAWN_SHIELD_2);
-        shield3 = config.getPosIntProp(PAWN_SHIELD_3);
-        doublePawnPenaltyScore = readCombinedConfigVal(config, DOUBLE_PAWN_PENALTY_MG, DOUBLE_PAWN_PENALTY_EG,
-                val -> doublePawnPenaltyMgEg = val);
-
-        attackedPawnPenaltyScore = readCombinedConfigVal(config, ATTACKED_PAWN_PENALTY_MG, ATTACKED_PAWN_PENALTY_EG,
-                val -> attackedPawnPenaltyMgEg = val);
-        isolatedPawnPenaltyScore = readCombinedConfigVal(config, ISOLATED_PAWN_PENALTY_MG, ISOLATED_PAWN_PENALTY_EG,
-                val -> isolatedPawnPenaltyMgEg = val);
-        backwardedPawnPenaltyScore =
-                readCombinedConfigVal(config, BACKWARDED_PAWN_PENALTY_MG, BACKWARDED_PAWN_PENALTY_EG,
-                        val -> backwardedPawnPenaltyMgEg = val);
-
-        weakPawnPstMgEg = loadCombinedPattern(config, WEAK_PAWN_FILE_MG, WEAK_PAWN_FILE_EG);
-
-        blockedPawnPstMgEg = loadCombinedPattern(config, BLOCKED_PAWN_FILE_MG, BLOCKED_PAWN_FILE_EG);
-
-        passedPawnPstMgEg = loadCombinedPattern(config, PASSED_PAWN_FILE_MG, PASSED_PAWN_FILE_EG);
-
-        protectedPstMgEg = loadCombinedPattern(config, PROTECTED_CSV_MG, PROTECTED_CSV_EG);
-
-        neighbourPstMgEg = loadCombinedPattern(config, NEIGHBOUR_CSV_MG, NEIGHBOUR_CSV_EG);
-
-        protectedPasserPstMgEg = loadCombinedPattern(config, PROTECTED_PASSER_CSV_MG, PROTECTED_PASSER_CSV_EG);
-
-        passedPawnEval.configure(config);
-    }
-
-    private Pattern loadCombinedPattern(EvalConfig config, String mgFile, String egFile) {
-        Pattern patternMg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + mgFile);
-        Pattern patternEg = loadFromFullPath(config.getConfigDir() + PAWN_CONFIG_SUB_DIR + "/" + egFile);
-        return Pattern.combine(patternMg, patternEg);
     }
 
     @Override
@@ -152,7 +106,7 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
             if (entry == null) {
                 int pawnEval = calcPawnEval(bitBoard);
                 result.getMgEgScore().add(pawnEval);
-                result.pawnEval= pawnEval;
+                result.pawnEval = pawnEval;
                 result.whitePassers = whitePassers;
                 result.blackPassers = blackPassers;
             } else {

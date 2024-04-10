@@ -3,12 +3,13 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
-import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 
 import lombok.Getter;
@@ -17,56 +18,37 @@ import lombok.Getter;
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
 @Getter
+@EvalConfigurable(prefix = "pst")
 public class ParameterizedPstEvaluation implements EvalComponent {
 
-    public static final String PAWN_MG_CSV = "pawnMG.csv";
-    public static final String KNIGHT_MG_CSV = "knightMG.csv";
-    public static final String BISHOP_MG_CSV = "bishopMG.csv";
-    public static final String ROOK_MG_CSV = "rookMG.csv";
-    public static final String QUEEN_MG_CSV = "queenMG.csv";
-    public static final String KING_MG_CSV = "kingMG.csv";
-    public static final String PAWN_EG_CSV = "pawnEG.csv";
-    public static final String KNIGHT_EG_CSV = "knightEG.csv";
-    public static final String BISHOP_EG_CSV = "bishopEG.csv";
-    public static final String ROOK_EG_CSV = "rookEG.csv";
-    public static final String QUEEN_EG_CSV = "queenEG.csv";
-    public static final String KING_EG_CSV = "kingEG.csv";
+    @EvalConfigParam(configName = "pawn", mgEgCombined = true)
+    private Pattern pawnMGEG;
+    @EvalConfigParam(configName = "knight", mgEgCombined = true)
+    private Pattern knightMGEG;
+    @EvalConfigParam(configName = "bishop", mgEgCombined = true)
+    private Pattern bishopMGEG;
+    @EvalConfigParam(configName = "rook", mgEgCombined = true)
+    private Pattern rookMGEG;
+    @EvalConfigParam(configName = "queen", mgEgCombined = true)
+    private Pattern queenMGEG;
+    @EvalConfigParam(configName = "king", mgEgCombined = true)
+    private Pattern kingMGEG;
 
-    private final Pattern pawnMGEG;
-    private final Pattern knightMGEG;
-    private final Pattern bishopMGEG;
-    private final Pattern rookMGEG;
-    private final Pattern queenMGEG;
-    private final Pattern kingMGEG;
-
-    private final Pattern pawnDeltaScoring;
-    private final Pattern knightDeltaScoring;
-    private final Pattern bishopDeltaScoring;
-    private final Pattern rookDeltaScoring;
-    private final Pattern queenDeltaScoring;
-    private final Pattern kingDeltaScoring;
+    @EvalConfigParam(configName = "pawnMG", disableTuning = true)
+    private Pattern pawnDeltaScoring;
+    @EvalConfigParam(configName = "knightMG", disableTuning = true)
+    private Pattern knightDeltaScoring;
+    @EvalConfigParam(configName = "bishopMG", disableTuning = true)
+    private Pattern bishopDeltaScoring;
+    @EvalConfigParam(configName = "rookMG", disableTuning = true)
+    private Pattern rookDeltaScoring;
+    @EvalConfigParam(configName = "queenMG", disableTuning = true)
+    private Pattern queenDeltaScoring;
+    @EvalConfigParam(configName = "kingMG", disableTuning = true)
+    private Pattern kingDeltaScoring;
 
     public ParameterizedPstEvaluation(String subPath) {
-        pawnMGEG = loadCombinedPattern(subPath, PAWN_MG_CSV, PAWN_EG_CSV);
-        knightMGEG = loadCombinedPattern(subPath, KNIGHT_MG_CSV, KNIGHT_EG_CSV);
-        bishopMGEG = loadCombinedPattern(subPath, BISHOP_MG_CSV, BISHOP_EG_CSV);
-        rookMGEG = loadCombinedPattern(subPath, ROOK_MG_CSV, ROOK_EG_CSV);
-        queenMGEG = loadCombinedPattern(subPath, QUEEN_MG_CSV, QUEEN_EG_CSV);
-        kingMGEG = loadCombinedPattern(subPath, KING_MG_CSV, KING_EG_CSV);
 
-        pawnDeltaScoring = pawnMGEG.extractMg();
-        knightDeltaScoring = knightMGEG.extractMg();
-        bishopDeltaScoring = bishopMGEG.extractMg();
-        rookDeltaScoring = rookMGEG.extractMg();
-        queenDeltaScoring = queenMGEG.extractMg();
-        kingDeltaScoring = kingMGEG.extractMg();
-
-    }
-
-    private Pattern loadCombinedPattern(String subPath, String mgFile, String egFile) {
-        Pattern patternMg = loadFromFullPath(subPath + mgFile);
-        Pattern patternEg = loadFromFullPath(subPath + egFile);
-        return Pattern.combine(patternMg, patternEg);
     }
 
     @Override

@@ -12,12 +12,17 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation;
 
 import lombok.Getter;
 
+@EvalConfigurable(prefix = "positional")
+@EvalValueInterval(min = 0, max=100)
 @Getter
 public class MobilityEvalResult {
 
@@ -28,17 +33,6 @@ public class MobilityEvalResult {
     public static final long BLACK_BISHOPS_STARTPOS = C8 | F8;
     public static final long WHITE_KNIGHT_STARTPOS = B1 | G1;
     public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
-    public static final String ROOK_OPEN = "rookOpen";
-    public static final String ROOK_HALF = "rookHalf";
-    public static final String EARLY_QUEEN_PENALTY = "earlyQueenPenalty";
-    //    public static final String KING_BLOCKS_ROOK_PENALTY = "kingBlocksRookPenalty";
-    //    public static final String BLOCK_CENTRAL_PAWN_PENALTY = "blockCentralPawnPenalty";
-    //    public static final String BISHOP_TRAPPED_A_7_PENALTY = "bishopTrappedA7Penalty";
-    //    public static final String BISHOP_TRAPPED_A_6_PENALTY = "bishopTrappedA6Penalty";
-    //    public static final String KNIGHT_TRAPPED_A_8_PENALTY = "knightTrappedA8Penalty";
-    //    public static final String KNIGHT_TRAPPED_A_7_PENALTY = "knightTrappedA7Penalty";
-    //    public static final String C_3_KNIGHT_PENALTY = "c3KnightPenalty";
-    //    public static final String RETURNING_BISHOP = "returningBishop";
 
     public int eval;
 
@@ -55,19 +49,20 @@ public class MobilityEvalResult {
     private final int MGEG_TWO = MgEgScore.createMgEgScore(2, 2);
 
     // parameters:
-
-    private int rookOpen;
-
     /**
-     * combined for mg, eg; currently we use only one value at all..
+     * combined for mg, eg;
      */
+    @EvalConfigParam(configName = "rookOpen", mgEgCombined = true)
     private int rookOpenMgEg;
 
-    private int rookHalf;
+
     /**
-     * combined value for mg+eg; currently we use only one value at all..
+     * combined value for mg+eg;
      */
+    @EvalConfigParam(configName = "rookHalf", mgEgCombined = true)
     private int rookHalfMgEg;
+
+    @EvalConfigParam(configName = "earlyQueenPenalty")
     private int earlyQueenPenalty;
 
     private long empty;
@@ -79,43 +74,8 @@ public class MobilityEvalResult {
     private long ownPawns;
     private long oppPawns;
 
-    //    private int kingBlocksRookPenalty;
-    //    private int blockCentralPawnPenalty;
-    //    private int bishopTrappedA7Penalty;
-    //    private int bishopTrappedA6Penalty;
-    //    private int knightTrappedA8Penalty;
-    //    private int knightTrappedA7Penalty;
-    //    private int c3KnightPenalty;
-    //    private int returningBishop;
-
-    //    private boolean blockEvalDeactivated = false;
 
     public MobilityEvalResult(boolean forTuning, EvalConfig config) {
-
-        rookOpen = config.getPosIntProp(ROOK_OPEN);
-        rookOpenMgEg = MgEgScore.createMgEgScore(rookOpen, rookOpen);
-
-        rookHalf = config.getPosIntProp(ROOK_HALF);
-        rookHalfMgEg = MgEgScore.createMgEgScore(rookHalf, rookHalf);
-
-        earlyQueenPenalty = config.getPosIntProp(EARLY_QUEEN_PENALTY);
-
-        /* trapped and blocked pieces */
-        //        kingBlocksRookPenalty = config.getPosIntProp(KING_BLOCKS_ROOK_PENALTY);
-        //        blockCentralPawnPenalty = config.getPosIntProp(BLOCK_CENTRAL_PAWN_PENALTY);
-        //        bishopTrappedA7Penalty = config.getPosIntProp(BISHOP_TRAPPED_A_7_PENALTY);
-        //        bishopTrappedA6Penalty = config.getPosIntProp(BISHOP_TRAPPED_A_6_PENALTY);
-        //        knightTrappedA8Penalty = config.getPosIntProp(KNIGHT_TRAPPED_A_8_PENALTY);
-        //        knightTrappedA7Penalty = config.getPosIntProp(KNIGHT_TRAPPED_A_7_PENALTY);
-        //
-        //        c3KnightPenalty = config.getPosIntProp(C_3_KNIGHT_PENALTY);
-        //
-        //        returningBishop = config.getPosIntProp(RETURNING_BISHOP);
-        //
-        //        blockEvalDeactivated = !forTuning &&
-        //                kingBlocksRookPenalty + blockCentralPawnPenalty + bishopTrappedA7Penalty + bishopTrappedA6Penalty
-        //                        + knightTrappedA8Penalty + knightTrappedA7Penalty
-        //                        + c3KnightPenalty + returningBishop == 0;
     }
 
     public void clear() {
@@ -192,15 +152,6 @@ public class MobilityEvalResult {
         }
     }
 
-    public void setRookOpen(int rookOpen) {
-        this.rookOpen = rookOpen;
-        rookOpenMgEg = MgEgScore.createMgEgScore(rookOpen, rookOpen);
-    }
-
-    public void setRookHalf(int rookHalf) {
-        this.rookHalf = rookHalf;
-        rookHalfMgEg = MgEgScore.createMgEgScore(rookHalf, rookHalf);
-    }
 
     public void setEarlyQueenPenalty(int earlyQueenPenalty) {
         this.earlyQueenPenalty = earlyQueenPenalty;

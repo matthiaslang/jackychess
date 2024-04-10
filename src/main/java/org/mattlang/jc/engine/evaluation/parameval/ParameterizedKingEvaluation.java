@@ -7,10 +7,7 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
-import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
 import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
-
-import java.util.function.Consumer;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -20,6 +17,8 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.File;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
 import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 
@@ -29,100 +28,64 @@ import lombok.Getter;
  * Parameterized King Evaluation.
  */
 @Getter
+@EvalConfigurable(prefix = "king")
 public class ParameterizedKingEvaluation implements EvalComponent {
 
-    public static final String KING_CONFIG_SUB_DIR = "king";
+    @EvalConfigParam(configName = "kingShelterKingFile", mgEgCombined = true)
+    private Pattern kingShelterKingFileMgEg;
 
-    public static final String KING_SHELTER_KING_FILE_MG_CSV = "kingShelterKingFileMg.csv";
-    public static final String KING_SHELTER_KING_FILE_EG_CSV = "kingShelterKingFileEg.csv";
+    @EvalConfigParam(configName = "kingShelterAdjacentFile", mgEgCombined = true)
+    private Pattern kingShelterAdjacentFileMgEg;
 
-    public static final String KING_SHELTER_ADJACENT_FILE_MG_CSV = "kingShelterAdjacentFileMg.csv";
-    public static final String KING_SHELTER_ADJACENT_FILE_EG_CSV = "kingShelterAdjacentFileEg.csv";
+    @EvalConfigParam(configName = "safetyShelterKingFile")
+    private MgEgArrayFunction safetyShelterKingFile;
 
-    public static final String KING_STORM_BLOCKED_MG_CSV = "kingStormBlockedMg.csv";
-    public static final String KING_STORM_BLOCKED_EG_CSV = "kingStormBlockedEg.csv";
+    @EvalConfigParam(configName = "safetyShelterAdjacentFile")
+    private MgEgArrayFunction safetyShelterAdjacentFile;
 
-    public static final String KING_STORM_NON_BLOCKED_MG_CSV = "kingStormNonBlockedMg.csv";
-    public static final String KING_STORM_NON_BLOCKED_EG_CSV = "kingStormNonBlockedEg.csv";
+    @EvalConfigParam(configName = "kingStormBlocked", mgEgCombined = true)
+    private Pattern kingStormBlockedMgEg;
 
-    private final Pattern kingShelterKingFileMgEg;
-    private final Pattern kingShelterAdjacentFileMgEg;
+    @EvalConfigParam(configName = "kingStormNonBlocked", mgEgCombined = true)
+    private Pattern kingStormNonBlockedMgEg;
 
-    private final MgEgArrayFunction safetyShelterKingFile;
-    private final MgEgArrayFunction safetyShelterAdjacentFile;
-    private final Pattern kingStormBlockedMgEg;
-    private final Pattern kingStormNonBlockedMgEg;
-    private final MgEgArrayFunction safetyStormBlocked;
-    private final MgEgArrayFunction safetyStormNonBlocked;
-    private final MgEgArrayFunction kingPawnFileProximity;
-    private final MgEgArrayFunction kingDefenders;
-    private final ChangeableMgEgScore safetyAttackValue;
-    private final ChangeableMgEgScore safetyWeakSquaresValue;
-    private final ChangeableMgEgScore safetyNoEnemyQueensValue;
-    private final ChangeableMgEgScore safetySafeQueenCheckValue;
-    private final ChangeableMgEgScore safetySafeRookCheckValue;
-    private final ChangeableMgEgScore safetySafeBishopCheckValue;
-    private final ChangeableMgEgScore safetySafeKnightCheckValue;
-    private final ChangeableMgEgScore safetyAdjustmentValue;
+    @EvalConfigParam(configName = "safetyStormBlocked")
+    private MgEgArrayFunction safetyStormBlocked;
 
+    @EvalConfigParam(configName = "safetyStormNonBlocked")
+    private MgEgArrayFunction safetyStormNonBlocked;
+
+    @EvalConfigParam(configName = "kingPawnFileProximity")
+    private MgEgArrayFunction kingPawnFileProximity;
+
+    @EvalConfigParam(configName = "kingDefenders")
+    private MgEgArrayFunction kingDefenders;
+
+    @EvalConfigParam(configName = "safetySafeQueenCheck", mgEgCombined = true)
     private int safetySafeQueenCheck;
+
+    @EvalConfigParam(configName = "safetySafeRookCheck", mgEgCombined = true)
     private int safetySafeRookCheck;
+
+    @EvalConfigParam(configName = "safetySafeBishopCheck", mgEgCombined = true)
     private int safetySafeBishopCheck;
+
+    @EvalConfigParam(configName = "safetySafeKnightCheck", mgEgCombined = true)
     private int safetySafeKnightCheck;
+
+    @EvalConfigParam(configName = "safetyAdjustment", mgEgCombined = true)
     private int safetyAdjustment;
+
+    @EvalConfigParam(configName = "safetyNoEnemyQueens", mgEgCombined = true)
     private int safetyNoEnemyQueens;
+
+    @EvalConfigParam(configName = "safetyWeakSquares", mgEgCombined = true)
     private int safetyWeakSquares;
+
+    @EvalConfigParam(configName = "safetyAttackValue", mgEgCombined = true)
     private int safetyAttack;
 
     public ParameterizedKingEvaluation(boolean forTuning, EvalConfig config) {
-
-        kingShelterKingFileMgEg =
-                loadCombinedPattern(config, KING_SHELTER_KING_FILE_MG_CSV, KING_SHELTER_KING_FILE_EG_CSV);
-        kingShelterAdjacentFileMgEg =
-                loadCombinedPattern(config, KING_SHELTER_ADJACENT_FILE_MG_CSV, KING_SHELTER_ADJACENT_FILE_EG_CSV);
-
-        kingStormBlockedMgEg =
-                loadCombinedPattern(config, KING_STORM_BLOCKED_MG_CSV, KING_STORM_BLOCKED_EG_CSV);
-        kingStormNonBlockedMgEg =
-                loadCombinedPattern(config, KING_STORM_NON_BLOCKED_MG_CSV, KING_STORM_NON_BLOCKED_EG_CSV);
-
-        safetyShelterKingFile = new MgEgArrayFunction(config, "king.safetyShelterKingFile");
-        safetyShelterAdjacentFile = new MgEgArrayFunction(config, "king.safetyShelterAdjacentFile");
-
-        safetyStormBlocked = new MgEgArrayFunction(config, "king.safetyStormBlocked");
-        safetyStormNonBlocked = new MgEgArrayFunction(config, "king.safetyStormNonBlocked");
-        kingPawnFileProximity = new MgEgArrayFunction(config, "king.kingPawnFileProximity");
-        kingDefenders = new MgEgArrayFunction(config, "king.kingDefenders");
-
-        safetyAttackValue = readCombinedConfigVal(config, "king.safetyAttackValue", val -> safetyAttack = val);
-
-        safetyWeakSquaresValue =
-                readCombinedConfigVal(config, "king.safetyWeakSquares", val -> safetyWeakSquares = val);
-
-        safetyNoEnemyQueensValue =
-                readCombinedConfigVal(config, "king.safetyNoEnemyQueens", val -> safetyNoEnemyQueens = val);
-
-        safetySafeQueenCheckValue =
-                readCombinedConfigVal(config, "king.safetySafeQueenCheck", val -> safetySafeQueenCheck = val);
-
-        safetySafeRookCheckValue =
-                readCombinedConfigVal(config, "king.safetySafeRookCheck", val -> safetySafeRookCheck = val);
-
-        safetySafeBishopCheckValue =
-                readCombinedConfigVal(config, "king.safetySafeBishopCheck", val -> safetySafeBishopCheck = val);
-
-        safetySafeKnightCheckValue =
-                readCombinedConfigVal(config, "king.safetySafeKnightCheck", val -> safetySafeKnightCheck = val);
-
-        safetyAdjustmentValue = readCombinedConfigVal(config, "king.safetyAdjustment", val -> safetyAdjustment = val);
-
-    }
-
-    public static ChangeableMgEgScore readCombinedConfigVal(EvalConfig config, String propKey,
-            Consumer<Integer> changeListener) {
-        String mgPropKey = propKey + "Mg";
-        String egPropKey = propKey + "Eg";
-        return ParameterizedThreatsEvaluation.readCombinedConfigVal(config, mgPropKey, egPropKey, changeListener);
 
     }
 
@@ -332,9 +295,4 @@ public class ParameterizedKingEvaluation implements EvalComponent {
         return eval;
     }
 
-    private Pattern loadCombinedPattern(EvalConfig config, String mgFile, String egFile) {
-        Pattern patternMg = loadFromFullPath(config.getConfigDir() + KING_CONFIG_SUB_DIR + "/" + mgFile);
-        Pattern patternEg = loadFromFullPath(config.getConfigDir() + KING_CONFIG_SUB_DIR + "/" + egFile);
-        return Pattern.combine(patternMg, patternEg);
-    }
 }

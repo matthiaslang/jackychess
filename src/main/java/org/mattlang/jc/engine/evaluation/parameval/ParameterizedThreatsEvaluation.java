@@ -4,124 +4,62 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
 
-import java.util.function.Consumer;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.MagicBitboards;
-import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 
 import lombok.Getter;
 
 @Getter
+@EvalConfigurable(prefix = "threats")
+@EvalValueInterval(min = 0, max = 200)
 public class ParameterizedThreatsEvaluation implements EvalComponent {
 
-    public static final String THREAT_BY_MINOR_MG = "threads.ThreatByMinorMg";
-    public static final String THREAT_BY_MINOR_EG = "threads.ThreatByMinorEg";
-    public static final String THREAT_BY_ROOK_MG = "threads.ThreatByRookMg";
-    public static final String THREAT_BY_ROOK_EG = "threads.ThreatByRookEg";
-    public static final String THREAT_BY_KING_MG = "threads.ThreatByKingMg";
-    public static final String THREAT_BY_KING_EG = "threads.ThreatByKingEg";
-    public static final String HANGING_MG = "threads.HangingMg";
-    public static final String HANGING_EG = "threads.HangingEg";
-    public static final String WEAK_QUEEN_PROTECTION_MG = "threads.WeakQueenProtectionMg";
-    public static final String WEAK_QUEEN_PROTECTION_EG = "threads.WeakQueenProtectionEg";
-    public static final String RESTRICTED_PIECE_MG = "threads.RestrictedPieceMg";
-    public static final String RESTRICTED_PIECE_EG = "threads.RestrictedPieceEg";
-    public static final String THREAT_BY_PAWN_PUSH_MG = "threads.ThreatByPawnPushMg";
-    public static final String THREAT_BY_PAWN_PUSH_EG = "threads.ThreatByPawnPushEg";
-    public static final String THREAT_BY_SAFE_PAWN_MG = "threads.ThreatBySafePawnMg";
-    public static final String THREAT_BY_SAFE_PAWN_EG = "threads.ThreatBySafePawnEg";
-    public static final String SLIDER_ON_QUEEN_MG = "threads.SliderOnQueenMg";
-    public static final String SLIDER_ON_QUEEN_EG = "threads.SliderOnQueenEg";
-    public static final String KNIGHT_ON_QUEEN_MG = "threads.KnightOnQueenMg";
-    public static final String KNIGHT_ON_QUEEN_EG = "threads.KnightOnQueenEg";
+    @EvalConfigParam(configName = "ThreatByMinor")
+    private MgEgArrayFunction threatByMinorMgEg;
 
-    private final ArrayFunction threatByMinorMg;
-    private final ArrayFunction threatByMinorEg;
-    private ArrayFunction threatByMinorMgEg;
-
-    private final ArrayFunction threatByRookMg;
-    private final ArrayFunction threatByRookEg;
-    private ArrayFunction threatByRookMgEg;
+    @EvalConfigParam(configName = "ThreatByRook")
+    private MgEgArrayFunction threatByRookMgEg;
 
     private final boolean active;
 
+    @EvalConfigParam(configName = "ThreatByKing", mgEgCombined = true)
     private int threatByKingMgEg;
-    private final ChangeableMgEgScore threatByKingScore;
 
+    @EvalConfigParam(configName = "Hanging", mgEgCombined = true)
     private int hangingMgEg;
-    private final ChangeableMgEgScore hangingScore;
 
+    @EvalConfigParam(configName = "WeakQueenProtection", mgEgCombined = true)
     private int weakQueenProtectionMgEg;
-    private final ChangeableMgEgScore weakQueenProtectionScore;
 
+    @EvalConfigParam(configName = "RestrictedPiece", mgEgCombined = true)
     private int restrictedPieceMgEg;
-    private final ChangeableMgEgScore restrictedPieceScore;
 
+    @EvalConfigParam(configName = "ThreatByPawnPush", mgEgCombined = true)
     private int threatByPawnPushMgEg;
-    private final ChangeableMgEgScore threatByPawnPushScore;
 
+    @EvalConfigParam(configName = "ThreatBySafePawn", mgEgCombined = true)
     private int threatBySafePawnMgEg;
-    private final ChangeableMgEgScore threatBySafePawnScore;
 
+    @EvalConfigParam(configName = "SliderOnQueen", mgEgCombined = true)
     private int sliderOnQueenMgEg;
-    private final ChangeableMgEgScore sliderOnQueenScore;
 
+    @EvalConfigParam(configName = "KnightOnQueen", mgEgCombined = true)
     private int knightOnQueenMgEg;
-    private final ChangeableMgEgScore knightOnQueenScore;
 
     private MgEgScore whiteThreats = new MgEgScore();
 
     private MgEgScore blackThreats = new MgEgScore();
 
     public ParameterizedThreatsEvaluation(boolean forTuning, EvalConfig config) {
-        active = forTuning || config.getBoolProp("threads.active");
+        active = forTuning || config.getBoolProp("threats.active");
 
-        threatByMinorMg = config.parseFigureIndexedArray(THREAT_BY_MINOR_MG);
-        threatByMinorEg = config.parseFigureIndexedArray(THREAT_BY_MINOR_EG);
-
-        threatByRookMg = config.parseFigureIndexedArray(THREAT_BY_ROOK_MG);
-        threatByRookEg = config.parseFigureIndexedArray(THREAT_BY_ROOK_EG);
-
-        updateCombinedArrays();
-
-        threatByKingScore =
-                readCombinedConfigVal(config, THREAT_BY_KING_MG, THREAT_BY_KING_EG, val -> threatByKingMgEg = val);
-
-        hangingScore = readCombinedConfigVal(config, HANGING_MG, HANGING_EG, val -> hangingMgEg = val);
-
-        weakQueenProtectionScore = readCombinedConfigVal(config, WEAK_QUEEN_PROTECTION_MG, WEAK_QUEEN_PROTECTION_EG,
-                val -> weakQueenProtectionMgEg = val);
-
-        restrictedPieceScore = readCombinedConfigVal(config, RESTRICTED_PIECE_MG, RESTRICTED_PIECE_EG,
-                val -> restrictedPieceMgEg = val);
-
-        threatByPawnPushScore = readCombinedConfigVal(config, THREAT_BY_PAWN_PUSH_MG, THREAT_BY_PAWN_PUSH_EG,
-                val -> threatByPawnPushMgEg = val);
-
-        threatBySafePawnScore = readCombinedConfigVal(config, THREAT_BY_SAFE_PAWN_MG, THREAT_BY_SAFE_PAWN_EG,
-                val -> threatBySafePawnMgEg = val);
-
-        sliderOnQueenScore =
-                readCombinedConfigVal(config, SLIDER_ON_QUEEN_MG, SLIDER_ON_QUEEN_EG, val -> sliderOnQueenMgEg = val);
-
-        knightOnQueenScore =
-                readCombinedConfigVal(config, KNIGHT_ON_QUEEN_MG, KNIGHT_ON_QUEEN_EG, val -> knightOnQueenMgEg = val);
-
-    }
-
-    public static ChangeableMgEgScore readCombinedConfigVal(EvalConfig config, String mgPropKey, String egPropKey,
-            Consumer<Integer> changeListener) {
-        int mgVal = config.getIntProp(mgPropKey);
-        int egVal = config.getIntProp(egPropKey);
-        int score = MgEgScore.createMgEgScore(mgVal, egVal);
-        ChangeableMgEgScore changeableMgEgScore = new ChangeableMgEgScore(changeListener, mgPropKey, egPropKey, score);
-        // call changelistener after initialisation to update value:
-        changeListener.accept(score);
-        return changeableMgEgScore;
     }
 
     @Override
@@ -256,8 +194,4 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
                 us.ordinal()) /*| pos.blockers_for_king(Us) | pe->pawn_attacks(Them)*/);
     }
 
-    public void updateCombinedArrays() {
-        threatByMinorMgEg = ArrayFunction.combine(threatByMinorMg, threatByMinorEg);
-        threatByRookMgEg = ArrayFunction.combine(threatByRookMg, threatByRookEg);
-    }
 }

@@ -6,78 +6,50 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 
 import lombok.Getter;
 
 /**
  * A Tapered, parameterized PST Evaluation where the PST Tables are loaded from resource files.
  */
-@Getter
+@EvalConfigurable(prefix = "mat")
+@EvalValueInterval(min = 0, max = 2000)
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
-    public static final String MAT_PAWN_MG = "matPawnMG";
-    public static final String MAT_KNIGHT_MG = "matKnightMG";
-    public static final String MAT_BISHOP_MG = "matBishopMG";
-    public static final String MAT_ROOK_MG = "matRookMG";
-    public static final String MAT_QUEEN_MG = "matQueenMG";
-    public static final String MAT_PAWN_EG = "matPawnEG";
-    public static final String MAT_KNIGHT_EG = "matKnightEG";
-    public static final String MAT_BISHOP_EG = "matBishopEG";
-    public static final String MAT_ROOK_EG = "matRookEG";
-    public static final String MAT_QUEEN_EG = "matQueenEG";
-    private int pawnMG;
-    private int knightMG;
-    private int bishopMG;
-    private int rookMG;
-    private int queenMG;
-
+    @EvalConfigParam(configName = "PawnEG", disableTuning = true)
+    @Getter
     private int pawnEG;
+    @EvalConfigParam(configName = "KnightEG", disableTuning = true)
     private int knightEG;
+    @EvalConfigParam(configName = "BishopEG", disableTuning = true)
     private int bishopEG;
+    @EvalConfigParam(configName = "RookEG", disableTuning = true)
+    @Getter
     private int rookEG;
+    @EvalConfigParam(configName = "QueenEG", disableTuning = true)
+    @Getter
     private int queenEG;
 
+    @EvalConfigParam(configName = "Pawn", mgEgCombined = true)
     private int pawnMGEG;
+    @EvalConfigParam(configName = "Knight", mgEgCombined = true)
     private int knightMGEG;
+    @EvalConfigParam(configName = "Bishop", mgEgCombined = true)
     private int bishopMGEG;
+    @EvalConfigParam(configName = "Rook", mgEgCombined = true)
     private int rookMGEG;
+    @EvalConfigParam(configName = "Queen", mgEgCombined = true)
     private int queenMGEG;
 
-    private boolean deactivated = false;
-
     public ParameterizedMaterialEvaluation(boolean forTuning, EvalConfig config) {
-
-        pawnMG = config.getIntProp(MAT_PAWN_MG);
-        knightMG = config.getIntProp(MAT_KNIGHT_MG);
-        bishopMG = config.getIntProp(MAT_BISHOP_MG);
-        rookMG = config.getIntProp(MAT_ROOK_MG);
-        queenMG = config.getIntProp(MAT_QUEEN_MG);
-
-        pawnEG = config.getIntProp(MAT_PAWN_EG);
-        knightEG = config.getIntProp(MAT_KNIGHT_EG);
-        bishopEG = config.getIntProp(MAT_BISHOP_EG);
-        rookEG = config.getIntProp(MAT_ROOK_EG);
-        queenEG = config.getIntProp(MAT_QUEEN_EG);
-
-        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
-        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
-        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
-        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
-        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
-
-        /**
-         * some configs might not use material properties, but use only PST for the material evaluation.
-         * In that case the properties are all 0, and we can disable this evaluation.
-         */
-        deactivated = !forTuning &&
-                pawnMG + knightMG + bishopMG + rookMG + queenMG + pawnEG + knightEG + bishopEG + rookEG + queenEG == 0;
     }
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        if (deactivated) {
-            return;
-        }
+
         BitChessBoard bb = bitBoard.getBoard();
 
         int pawnsDiff = bb.getPawnsCount(nWhite) - bb.getPawnsCount(nBlack);
@@ -103,53 +75,4 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
                 queenEG * bb.getQueensCount(color);
     }
 
-    public void setPawnMG(int pawnMG) {
-        this.pawnMG = pawnMG;
-        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
-    }
-
-    public void setKnightMG(int knightMG) {
-        this.knightMG = knightMG;
-        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
-    }
-
-    public void setBishopMG(int bishopMG) {
-        this.bishopMG = bishopMG;
-        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
-    }
-
-    public void setRookMG(int rookMG) {
-        this.rookMG = rookMG;
-        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
-    }
-
-    public void setQueenMG(int queenMG) {
-        this.queenMG = queenMG;
-        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
-    }
-
-    public void setPawnEG(int pawnEG) {
-        this.pawnEG = pawnEG;
-        pawnMGEG = MgEgScore.createMgEgScore(pawnMG, pawnEG);
-    }
-
-    public void setKnightEG(int knightEG) {
-        this.knightEG = knightEG;
-        knightMGEG = MgEgScore.createMgEgScore(knightMG, knightEG);
-    }
-
-    public void setBishopEG(int bishopEG) {
-        this.bishopEG = bishopEG;
-        bishopMGEG = MgEgScore.createMgEgScore(bishopMG, bishopEG);
-    }
-
-    public void setRookEG(int rookEG) {
-        this.rookEG = rookEG;
-        rookMGEG = MgEgScore.createMgEgScore(rookMG, rookEG);
-    }
-
-    public void setQueenEG(int queenEG) {
-        this.queenEG = queenEG;
-        queenMGEG = MgEgScore.createMgEgScore(queenMG, queenEG);
-    }
 }
