@@ -184,7 +184,7 @@ public final class MoveList {
         }
     }
 
-    private boolean isFiltered(int aMove) {
+    public boolean isFiltered(int aMove) {
         for (int i = 0; i < filterMoves.length; i++) {
             int filterMove = filterMoves[i];
             // no more filtered moves set, so we kan skip

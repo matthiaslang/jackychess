@@ -1,10 +1,8 @@
 package org.mattlang.jc.moves;
 
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-@ToString(includeFieldNames = false)
 public class Tuple {
 
     final String move;
@@ -12,4 +10,13 @@ public class Tuple {
     final int moveInt;
 
     final int order;
+
+    @Override
+    public String toString() {
+        return "(" +
+                move  +
+                ", " + moveInt +
+                ", " + order +
+                ')';
+    }
 }
