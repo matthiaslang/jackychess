@@ -1,5 +1,17 @@
 # Versions
 
+### 23.12.7
+
+Refactorings:
+
+- refactored staged move generation: refactored to use less methods and ease "single move stages". 
+  No real Elo gain expected from this change.
+- using annotation based evalutation configuration:
+  - cleaned up parameter and file naming to match better with annotation based config
+  - tuning code refactored to use annotation based configuration
+  - clean up obsolete code
+  - no Elo gain
+
 ### 23.12.6
 
 - history heuristic: exclude check positions from history.
