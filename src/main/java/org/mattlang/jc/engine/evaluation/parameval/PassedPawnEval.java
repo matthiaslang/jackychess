@@ -48,35 +48,35 @@ public final class PassedPawnEval {
     private static final long PROMOTION_HOT_RANKS_BLACK = BB.rank12;
     private static final long PROMOTION_RANK_BLACK = BB.rank1;
 
-    @EvalConfigParam(configName = "multiplier.blocked")
+    @EvalConfigParam(name = "multiplier.blocked")
     private float multiplierBlocked = 0.5f;
 
-    @EvalConfigParam(configName = "multiplier.noEnemyAttacksInFront")
+    @EvalConfigParam(name = "multiplier.noEnemyAttacksInFront")
     private float multiplierNoEnemyAttacksInFront = 1.8f;
 
-    @EvalConfigParam(configName = "multiplier.nextSquareAttacked")
+    @EvalConfigParam(name = "multiplier.nextSquareAttacked")
     private float multiplierNextSquareAttacked = 1.3f;
 
-    @EvalConfigParam(configName = "multiplier.nextSquareDefended")
+    @EvalConfigParam(name = "multiplier.nextSquareDefended")
     private float multiplierNextSquareDefended = 1.2f;
 
-    @EvalConfigParam(configName = "multiplier.enemyKingInFront")
+    @EvalConfigParam(name = "multiplier.enemyKingInFront")
     private float multiplierEnemyKingInFront = 0.4f;
 
-    @EvalConfigParam(configName = "multiplier.attacked")
+    @EvalConfigParam(name = "multiplier.attacked")
     private float multiplierAttacked = 0.7f;
 
-    @EvalConfigParam(configName = "multiplier.defendedByRookFromBehind")
+    @EvalConfigParam(name = "multiplier.defendedByRookFromBehind")
     private float multiplierDefendedByRookFromBehind = 1.7f;
 
-    @EvalConfigParam(configName = "multiplier.attackedByRookFromBehind")
+    @EvalConfigParam(name = "multiplier.attackedByRookFromBehind")
     private float multiplierAttackedByRookFromBehind = 0.6f;
 
-    @EvalConfigParam(configName = "kingMultiplicators")
+    @EvalConfigParam(name = "kingMultiplicators")
     private FloatArrayFunction passedKingMulti = new FloatArrayFunction(
             new float[] { 0, 1.4f, 1.4f, 1.2f, 1.1f, 1.0f, 0.8f, 0.8f });
 
-    @EvalConfigParam(configName = "passedScoreEg")
+    @EvalConfigParam(name = "passedScoreEg")
     @EvalValueInterval(min = 0, max = 400)
     private ArrayFunction passedScoreEg = new ArrayFunction(new int[] { 0, 14, 16, 34, 62, 128, 232 });
 

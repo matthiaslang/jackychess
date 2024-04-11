@@ -82,62 +82,47 @@ public class ParamConfiguratorTraverser {
             FieldAccessStack fieldAccessStack,
             EvalConfigParam evalConfigParam,
             EvalValueInterval definedInterval) {
-        String qualifiedName = prefixes.getQualifiedName(evalConfigParam);
+
+        ConfigDefinition configDefinition = new ConfigDefinition(prefixes, evalConfigParam, declaredField);
+
         log.fine("Configuring " + eval.getClass().getSimpleName() + "." + declaredField.getName()
-                + ", config key: " + qualifiedName + " annotation: " + evalConfigParam);
+                + ", config key: " + configDefinition.getFullQualifiedConfigName() + " annotation: " + evalConfigParam);
         if (declaredField.getType() == Integer.class || declaredField.getType() == int.class) {
             if (evalConfigParam.mgEgCombined()) {
-                String propMg = qualifiedName + "MG";
-                String propEg = qualifiedName + "EG";
-                visitor.visitMgEgIntProperty(propMg, propEg, fieldAccessStack, evalConfigParam,
+
+                visitor.visitMgEgIntProperty(new MgEgConfigDefinition(configDefinition), fieldAccessStack,
                         definedInterval);
             } else {
-                visitor.visitIntProperty(qualifiedName, fieldAccessStack, evalConfigParam,
-                        definedInterval);
+                visitor.visitIntProperty(configDefinition, fieldAccessStack, definedInterval);
             }
         } else if (declaredField.getType() == Float.class || declaredField.getType() == float.class) {
             if (evalConfigParam.mgEgCombined()) {
                 throw new IllegalArgumentException("Float values can not be configured as mg eg combined!");
             } else {
-                visitor.visitFloatProperty(qualifiedName, fieldAccessStack,
-                        evalConfigParam);
+                visitor.visitFloatProperty(configDefinition, fieldAccessStack);
             }
         } else if (declaredField.getType() == FloatArrayFunction.class) {
             if (evalConfigParam.mgEgCombined()) {
                 throw new IllegalArgumentException("Float array values can not be configured as mg eg combined!");
             } else {
-                visitor.visitFloatArray(qualifiedName, fieldAccessStack, evalConfigParam);
+                visitor.visitFloatArray(configDefinition, fieldAccessStack);
             }
         } else if (declaredField.getType() == ArrayFunction.class) {
             if (evalConfigParam.mgEgCombined()) {
-                String propMg = qualifiedName + "MG";
-                String propEg = qualifiedName + "EG";
-                visitor.visitArray(propMg, propEg, fieldAccessStack, evalConfigParam, definedInterval);
+                visitor.visitArray(new MgEgConfigDefinition(configDefinition), fieldAccessStack, definedInterval);
             } else {
-                visitor.visitArray(qualifiedName, fieldAccessStack, evalConfigParam, definedInterval);
+                visitor.visitArray(configDefinition, fieldAccessStack, definedInterval);
             }
         } else if (declaredField.getType() == MgEgArrayFunction.class) {
-
-            String propMg = qualifiedName + "MG";
-            String propEg = qualifiedName + "EG";
-
-            visitor.visitMgEgArray(propMg, propEg, fieldAccessStack, evalConfigParam, definedInterval);
-
+            visitor.visitMgEgArray(new MgEgConfigDefinition(configDefinition), fieldAccessStack, definedInterval);
         } else if (declaredField.getType() == Pattern.class) {
-            String subDir = prefixes.with(evalConfigParam.prefix()).getQualifiedPathName();
+            PatternConfigDefinition patternConfigDefinition =
+                    new PatternConfigDefinition(new MgEgConfigDefinition(configDefinition), prefixes);
+
             if (evalConfigParam.mgEgCombined()) {
-
-                String tableCsvPathNameMg = prefixes.getQualifiedPathName(evalConfigParam) + "MG" + ".csv";
-                String tableCsvPathNameEg = prefixes.getQualifiedPathName(evalConfigParam) + "EG" + ".csv";
-
-                visitor.visitMgEgPattern(subDir, tableCsvPathNameMg, tableCsvPathNameEg, fieldAccessStack,
-                        evalConfigParam,
-                        definedInterval);
-
+                visitor.visitMgEgPattern(patternConfigDefinition, fieldAccessStack, definedInterval);
             } else {
-                String tableCsvPathName = prefixes.getQualifiedPathName(evalConfigParam) + ".csv";
-                visitor.visitPattern(subDir, tableCsvPathName, fieldAccessStack, evalConfigParam,
-                        definedInterval);
+                visitor.visitPattern(patternConfigDefinition, fieldAccessStack, definedInterval);
             }
         }
     }

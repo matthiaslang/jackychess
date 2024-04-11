@@ -2,10 +2,8 @@ package org.mattlang.tuning.evaluate;
 
 import java.util.ArrayList;
 
-import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
-import org.mattlang.jc.engine.evaluation.annotation.configure.EvalConfigVisitor;
-import org.mattlang.jc.engine.evaluation.annotation.configure.FieldAccessStack;
+import org.mattlang.jc.engine.evaluation.annotation.configure.*;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
@@ -31,23 +29,23 @@ public class TuningParamVisitor implements EvalConfigVisitor {
     }
 
     @Override
-    public void visitMgEgIntProperty(String propMg, String propEg, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam, EvalValueInterval definedInterval) {
+    public void visitMgEgIntProperty(MgEgConfigDefinition configDefinition, FieldAccessStack fieldAccessStack,
+            EvalValueInterval definedInterval) {
 
-        if (!evalConfigParam.disableTuning()) {
+        if (!configDefinition.getConfigDefinition().isDisableTuning()) {
             groups.add(new ChangeableMgEgScoreParameterGroup(evaluation,
                     fieldAccessStack,
-                    propMg,
-                    propEg,
+                    configDefinition.getFullQualifiedPropNameMg(),
+                    configDefinition.getFullQualifiedPropNameEg(),
                     deriveInterval(definedInterval)));
         }
     }
 
     @Override
-    public void visitIntProperty(String qualifiedName, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam, EvalValueInterval definedInterval) {
-        if (!evalConfigParam.disableTuning()) {
-            groups.add(new IntegerValueParam(qualifiedName, evaluation,
+    public void visitIntProperty(ConfigDefinition configDefinition, FieldAccessStack fieldAccessStack,
+            EvalValueInterval definedInterval) {
+        if (!configDefinition.isDisableTuning()) {
+            groups.add(new IntegerValueParam(configDefinition.getFullQualifiedConfigName(), evaluation,
                     e -> (Integer) fieldAccessStack.get(e),
                     (e, val) -> fieldAccessStack.set(e, val),
                     deriveInterval(definedInterval)));
@@ -55,10 +53,9 @@ public class TuningParamVisitor implements EvalConfigVisitor {
     }
 
     @Override
-    public void visitFloatProperty(String qualifiedName, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam) {
-        if (!evalConfigParam.disableTuning()) {
-            groups.add(new FloatValueParam(qualifiedName, evaluation,
+    public void visitFloatProperty(ConfigDefinition configDefinition, FieldAccessStack fieldAccessStack) {
+        if (!configDefinition.isDisableTuning()) {
+            groups.add(new FloatValueParam(configDefinition.getFullQualifiedConfigName(), evaluation,
                     e -> (Float) fieldAccessStack.get(e),
                     (e, val) -> fieldAccessStack.set(e, val),
                     deriveFloatInterval()));
@@ -66,11 +63,10 @@ public class TuningParamVisitor implements EvalConfigVisitor {
     }
 
     @Override
-    public void visitFloatArray(String qualifiedName, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam) {
-        if (!evalConfigParam.disableTuning()) {
+    public void visitFloatArray(ConfigDefinition configDefinition, FieldAccessStack fieldAccessStack) {
+        if (!configDefinition.isDisableTuning()) {
             groups.add(new FloatArrayFunctionParameterGroup(
-                    qualifiedName,
+                    configDefinition.getFullQualifiedConfigName(),
                     evaluation,
                     e -> (FloatArrayFunction) fieldAccessStack.get(e),
                     deriveFloatInterval()));
@@ -78,31 +74,31 @@ public class TuningParamVisitor implements EvalConfigVisitor {
     }
 
     @Override
-    public void visitMgEgArray(String propMg, String propEg, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam, EvalValueInterval definedInterval) {
+    public void visitMgEgArray(MgEgConfigDefinition configDefinition, FieldAccessStack fieldAccessStack,
+            EvalValueInterval intIntervall) {
 
-        if (!evalConfigParam.disableTuning()) {
-            groups.add(new ArrayFunctionParameterGroup(propMg,
+        if (!configDefinition.getConfigDefinition().isDisableTuning()) {
+            groups.add(new ArrayFunctionParameterGroup(configDefinition.getFullQualifiedPropNameMg(),
                     evaluation,
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).functionMg,
-                    deriveInterval(definedInterval),
+                    deriveInterval(intIntervall),
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedVals()));
 
-            groups.add(new ArrayFunctionParameterGroup(propEg,
+            groups.add(new ArrayFunctionParameterGroup(configDefinition.getFullQualifiedPropNameEg(),
                     evaluation,
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).functionEg,
-                    deriveInterval(definedInterval),
+                    deriveInterval(intIntervall),
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedVals()));
         }
     }
 
     @Override
-    public void visitMgEgPattern(String subDir, String tableCsvPathNameMg, String tableCsvPathNameEg,
-            FieldAccessStack fieldAccessStack, EvalConfigParam evalConfigParam, EvalValueInterval intIntervall) {
-        if (!evalConfigParam.disableTuning()) {
-            groups.add(new PatternParameterGroup(subDir,
-                    evalConfigParam.configName() + "MG" + ".csv",
-                    evalConfigParam.configName() + "EG" + ".csv",
+    public void visitMgEgPattern(PatternConfigDefinition patternConfigDefinition,
+            FieldAccessStack fieldAccessStack, EvalValueInterval intIntervall) {
+        if (!patternConfigDefinition.getMgEgConfigDefinition().getConfigDefinition().isDisableTuning()) {
+            groups.add(new PatternParameterGroup(patternConfigDefinition.getSubDir(),
+                    patternConfigDefinition.getCsvTableNameMG(),
+                    patternConfigDefinition.getCsvTableNameEG(),
                     true,
                     evaluation,
                     e -> (Pattern) fieldAccessStack.get(e)));
@@ -110,21 +106,21 @@ public class TuningParamVisitor implements EvalConfigVisitor {
     }
 
     @Override
-    public void visitPattern(String subDir, String tableCsvPathName, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam, EvalValueInterval intIntervall) {
-        if (!evalConfigParam.disableTuning()) {
+    public void visitPattern(PatternConfigDefinition patternConfigDefinition, FieldAccessStack fieldAccessStack,
+            EvalValueInterval intIntervall) {
+        if (!patternConfigDefinition.getMgEgConfigDefinition().getConfigDefinition().isDisableTuning()) {
             throw new IllegalArgumentException("Tuning of normal patterns not supported anymore! only mg/eg patterns!");
         }
     }
 
     @Override
-    public void visitArray(String propMg, String propEg, FieldAccessStack fieldAccessStack,
-            EvalConfigParam evalConfigParam, EvalValueInterval definedInterval) {
+    public void visitArray(MgEgConfigDefinition configDefinition, FieldAccessStack fieldAccessStack,
+            EvalValueInterval definedInterval) {
         // do not tune non mg/eg arrays
     }
 
     @Override
-    public void visitArray(String qualifiedName, FieldAccessStack fieldAccessStack, EvalConfigParam evalConfigParam,
+    public void visitArray(ConfigDefinition configDefinition, FieldAccessStack fieldAccessStack,
             EvalValueInterval definedInterval) {
         // do not tune non mg/eg arrays
     }

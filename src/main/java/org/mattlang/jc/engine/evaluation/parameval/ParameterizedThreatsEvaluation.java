@@ -21,36 +21,36 @@ import lombok.Getter;
 @EvalValueInterval(min = 0, max = 200)
 public class ParameterizedThreatsEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "ThreatByMinor")
+    @EvalConfigParam(name = "ThreatByMinor")
     private MgEgArrayFunction threatByMinorMgEg;
 
-    @EvalConfigParam(configName = "ThreatByRook")
+    @EvalConfigParam(name = "ThreatByRook")
     private MgEgArrayFunction threatByRookMgEg;
 
     private final boolean active;
 
-    @EvalConfigParam(configName = "ThreatByKing", mgEgCombined = true)
+    @EvalConfigParam(name = "ThreatByKing", mgEgCombined = true)
     private int threatByKingMgEg;
 
-    @EvalConfigParam(configName = "Hanging", mgEgCombined = true)
+    @EvalConfigParam(name = "Hanging", mgEgCombined = true)
     private int hangingMgEg;
 
-    @EvalConfigParam(configName = "WeakQueenProtection", mgEgCombined = true)
+    @EvalConfigParam(name = "WeakQueenProtection", mgEgCombined = true)
     private int weakQueenProtectionMgEg;
 
-    @EvalConfigParam(configName = "RestrictedPiece", mgEgCombined = true)
+    @EvalConfigParam(name = "RestrictedPiece", mgEgCombined = true)
     private int restrictedPieceMgEg;
 
-    @EvalConfigParam(configName = "ThreatByPawnPush", mgEgCombined = true)
+    @EvalConfigParam(name = "ThreatByPawnPush", mgEgCombined = true)
     private int threatByPawnPushMgEg;
 
-    @EvalConfigParam(configName = "ThreatBySafePawn", mgEgCombined = true)
+    @EvalConfigParam(name = "ThreatBySafePawn", mgEgCombined = true)
     private int threatBySafePawnMgEg;
 
-    @EvalConfigParam(configName = "SliderOnQueen", mgEgCombined = true)
+    @EvalConfigParam(name = "SliderOnQueen", mgEgCombined = true)
     private int sliderOnQueenMgEg;
 
-    @EvalConfigParam(configName = "KnightOnQueen", mgEgCombined = true)
+    @EvalConfigParam(name = "KnightOnQueen", mgEgCombined = true)
     private int knightOnQueenMgEg;
 
     private MgEgScore whiteThreats = new MgEgScore();

@@ -22,22 +22,22 @@ import lombok.Getter;
 @EvalConfigurable(prefix = "complexity")
 public class ParameterizedComplexityEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "closednessKnightAdjustment")
+    @EvalConfigParam
     private MgEgArrayFunction closednessKnightAdjustment;
 
-    @EvalConfigParam(configName = "closednessRookAdjustment")
+    @EvalConfigParam
     private MgEgArrayFunction closednessRookAdjustment;
 
-    @EvalConfigParam(configName = "complexityTotalPawnsEG")
+    @EvalConfigParam
     private int complexityTotalPawnsEG;
 
-    @EvalConfigParam(configName = "complexityPawnFlanksEG")
+    @EvalConfigParam
     private int complexityPawnFlanksEG;
 
-    @EvalConfigParam(configName = "complexityPawnEndgameEG")
+    @EvalConfigParam
     private int complexityPawnEndgameEG;
 
-    @EvalConfigParam(configName = "complexityAdjustmentEG")
+    @EvalConfigParam
     private int complexityAdjustmentEG;
 
     public ParameterizedComplexityEvaluation(boolean forTuning, EvalConfig config) {

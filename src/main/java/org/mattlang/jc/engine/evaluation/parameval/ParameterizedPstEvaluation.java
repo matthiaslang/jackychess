@@ -21,30 +21,30 @@ import lombok.Getter;
 @EvalConfigurable(prefix = "pst")
 public class ParameterizedPstEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "pawn", mgEgCombined = true)
+    @EvalConfigParam(name = "pawn", mgEgCombined = true)
     private Pattern pawnMGEG;
-    @EvalConfigParam(configName = "knight", mgEgCombined = true)
+    @EvalConfigParam(name = "knight", mgEgCombined = true)
     private Pattern knightMGEG;
-    @EvalConfigParam(configName = "bishop", mgEgCombined = true)
+    @EvalConfigParam(name = "bishop", mgEgCombined = true)
     private Pattern bishopMGEG;
-    @EvalConfigParam(configName = "rook", mgEgCombined = true)
+    @EvalConfigParam(name = "rook", mgEgCombined = true)
     private Pattern rookMGEG;
-    @EvalConfigParam(configName = "queen", mgEgCombined = true)
+    @EvalConfigParam(name = "queen", mgEgCombined = true)
     private Pattern queenMGEG;
-    @EvalConfigParam(configName = "king", mgEgCombined = true)
+    @EvalConfigParam(name = "king", mgEgCombined = true)
     private Pattern kingMGEG;
 
-    @EvalConfigParam(configName = "pawnMG", disableTuning = true)
+    @EvalConfigParam(name = "pawnMG", disableTuning = true)
     private Pattern pawnDeltaScoring;
-    @EvalConfigParam(configName = "knightMG", disableTuning = true)
+    @EvalConfigParam(name = "knightMG", disableTuning = true)
     private Pattern knightDeltaScoring;
-    @EvalConfigParam(configName = "bishopMG", disableTuning = true)
+    @EvalConfigParam(name = "bishopMG", disableTuning = true)
     private Pattern bishopDeltaScoring;
-    @EvalConfigParam(configName = "rookMG", disableTuning = true)
+    @EvalConfigParam(name = "rookMG", disableTuning = true)
     private Pattern rookDeltaScoring;
-    @EvalConfigParam(configName = "queenMG", disableTuning = true)
+    @EvalConfigParam(name = "queenMG", disableTuning = true)
     private Pattern queenDeltaScoring;
-    @EvalConfigParam(configName = "kingMG", disableTuning = true)
+    @EvalConfigParam(name = "kingMG", disableTuning = true)
     private Pattern kingDeltaScoring;
 
     public ParameterizedPstEvaluation(String subPath) {

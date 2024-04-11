@@ -8,7 +8,6 @@ import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 
 /**
  * Helper class to collect found prefixes for a configuration parameter.
- *
  */
 public class PrefixStack {
 
@@ -30,11 +29,11 @@ public class PrefixStack {
     }
 
     public String getQualifiedName(EvalConfigParam evalConfigParam) {
-        return this.with(evalConfigParam.prefix()).with(evalConfigParam.configName()).getQualifiedName();
+        return this.with(evalConfigParam.prefix()).with(evalConfigParam.name()).getQualifiedName();
     }
 
     public String getQualifiedPathName(EvalConfigParam evalConfigParam) {
-        return this.with(evalConfigParam.prefix()).with(evalConfigParam.configName()).getQualifiedPathName();
+        return this.with(evalConfigParam.prefix()).with(evalConfigParam.name()).getQualifiedPathName();
     }
 
     public String getQualifiedName() {

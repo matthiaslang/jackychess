@@ -27,49 +27,49 @@ import lombok.Setter;
 @EvalConfigurable(prefix = "pawn")
 public final class ParameterizedPawnEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "weakPawn", mgEgCombined = true)
-    private Pattern weakPawnPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern weakPawn;
 
-    @EvalConfigParam(configName = "blockedPawn", mgEgCombined = true)
-    private Pattern blockedPawnPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern blockedPawn;
 
-    @EvalConfigParam(configName = "passedPawn", mgEgCombined = true)
-    private Pattern passedPawnPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern passedPawn;
 
-    @EvalConfigParam(configName = "protectedPasser", mgEgCombined = true)
-    private Pattern protectedPasserPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern protectedPasser;
 
-    @EvalConfigParam(configName = "protectedPawn", mgEgCombined = true)
-    private Pattern protectedPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern protectedPawn;
 
-    @EvalConfigParam(configName = "neighbourPawn", mgEgCombined = true)
-    private Pattern neighbourPstMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern neighbourPawn;
 
-    @EvalConfigParam(configName = "pawnShield2")
+    @EvalConfigParam
     @EvalValueInterval(min = 0, max = 100)
     @Setter
-    private int shield2 = 10;
+    private int pawnShield2 = 10;
 
-    @EvalConfigParam(configName = "pawnShield3")
+    @EvalConfigParam
     @EvalValueInterval(min = 0, max = 100)
     @Setter
-    private int shield3 = 5;
+    private int pawnShield3 = 5;
 
-    @EvalConfigParam(configName = "doublePawnPenalty", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     @EvalValueInterval(min = 0, max = 100)
-    private int doublePawnPenaltyMgEg;
+    private int doublePawnPenalty;
 
-    @EvalConfigParam(configName = "attackedPawnPenalty", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     @EvalValueInterval(min = 0, max = 100)
-    private int attackedPawnPenaltyMgEg;
+    private int attackedPawnPenalty;
 
-    @EvalConfigParam(configName = "isolatedPawnPenalty", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     @EvalValueInterval(min = 0, max = 100)
-    private int isolatedPawnPenaltyMgEg;
+    private int isolatedPawnPenalty;
 
-    @EvalConfigParam(configName = "backwardedPawnPenalty", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     @EvalValueInterval(min = 0, max = 100)
-    private int backwardedPawnPenaltyMgEg;
+    private int backwardedPawnPenalty;
 
     private PassedPawnEval passedPawnEval = new PassedPawnEval();
 
@@ -192,37 +192,37 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
                     !isBlocked && isBehindNeighbours && ((BB.nortOne(pawnMask) & whiteAdvanceAttackedPawns) != 0);
 
             if (isBackward) {
-                result -= backwardedPawnPenaltyMgEg;
+                result -= backwardedPawnPenalty;
             }
 
             if (isIsolated) {
-                result -= isolatedPawnPenaltyMgEg;
+                result -= isolatedPawnPenalty;
             }
 
             if (isDoubled) {
-                result -= doublePawnPenaltyMgEg;
+                result -= doublePawnPenalty;
             }
             if (isAttacked) {
-                result -= attackedPawnPenaltyMgEg;
+                result -= attackedPawnPenalty;
             }
 
             if (isBlocked) {
-                result += blockedPawnPstMgEg.getValWhite(pawn);
+                result += blockedPawn.getValWhite(pawn);
             }
             if (isProtected) {
-                result += protectedPstMgEg.getValWhite(pawn);
+                result += protectedPawn.getValWhite(pawn);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPstMgEg.getValWhite(pawn);
+                result += neighbourPawn.getValWhite(pawn);
             }
 
             if (isWeak) {
-                result += weakPawnPstMgEg.getValWhite(pawn);
+                result += weakPawn.getValWhite(pawn);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPstMgEg.getValWhite(pawn);
+                    result += protectedPasser.getValWhite(pawn);
                 } else {
-                    result += passedPawnPstMgEg.getValWhite(pawn);
+                    result += passedPawn.getValWhite(pawn);
                 }
             }
 
@@ -281,37 +281,37 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
                     !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
 
             if (isBackward) {
-                result -= backwardedPawnPenaltyMgEg;
+                result -= backwardedPawnPenalty;
             }
 
             if (isIsolated) {
-                result -= isolatedPawnPenaltyMgEg;
+                result -= isolatedPawnPenalty;
             }
 
             if (isDoubled) {
-                result -= doublePawnPenaltyMgEg;
+                result -= doublePawnPenalty;
             }
             if (isAttacked) {
-                result -= attackedPawnPenaltyMgEg;
+                result -= attackedPawnPenalty;
             }
 
             if (isBlocked) {
-                result += blockedPawnPstMgEg.getValBlack(pawn);
+                result += blockedPawn.getValBlack(pawn);
             }
             if (isProtected) {
-                result += protectedPstMgEg.getValBlack(pawn);
+                result += protectedPawn.getValBlack(pawn);
             }
             if (hasDirectNeighbour) {
-                result += neighbourPstMgEg.getValBlack(pawn);
+                result += neighbourPawn.getValBlack(pawn);
             }
 
             if (isWeak) {
-                result += weakPawnPstMgEg.getValBlack(pawn);
+                result += weakPawn.getValBlack(pawn);
             } else if (isPasser) {
                 if ((isProtected || isSupported)) {
-                    result += protectedPasserPstMgEg.getValBlack(pawn);
+                    result += protectedPasser.getValBlack(pawn);
                 } else {
-                    result += passedPawnPstMgEg.getValBlack(pawn);
+                    result += passedPawn.getValBlack(pawn);
                 }
             }
 
@@ -334,12 +334,12 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
             int shieldCountOnRank2 = bitCount(pawnsMask & BB.FGH_on_rank7);
             int shieldCountOnRank3 = bitCount(pawnsMask & BB.FGH_on_rank6);
 
-            result += shieldCountOnRank2 * shield2 + shieldCountOnRank3 * shield3;
+            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
         } else if ((kingMask & BB.ABC_File) != 0) {
             int shieldCountOnRank2 = bitCount(pawnsMask & BB.ABC_on_rank7);
             int shieldCountOnRank3 = bitCount(pawnsMask & BB.ABC_on_rank6);
 
-            result += shieldCountOnRank2 * shield2 + shieldCountOnRank3 * shield3;
+            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
         }
 
         return result;
@@ -358,12 +358,12 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
             int shieldCountOnRank2 = bitCount(pawnsMask & BB.FGH_on_rank2);
             int shieldCountOnRank3 = bitCount(pawnsMask & BB.FGH_on_rank3);
 
-            result += shieldCountOnRank2 * shield2 + shieldCountOnRank3 * shield3;
+            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
         } else if ((kingMask & BB.ABC_File) != 0) {
             int shieldCountOnRank2 = bitCount(pawnsMask & BB.ABC_on_rank2);
             int shieldCountOnRank3 = bitCount(pawnsMask & BB.ABC_on_rank3);
 
-            result += shieldCountOnRank2 * shield2 + shieldCountOnRank3 * shield3;
+            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
         }
 
         return result;

@@ -21,23 +21,23 @@ import lombok.Getter;
 @EvalValueInterval(min = -2000, max = 2000)
 public class ParameterizedAdjustmentsEvaluation {
 
-    @EvalConfigParam(configName = "tempo", mgEgCombined = true)
-    private int tempoMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private int tempo;
 
-    @EvalConfigParam(configName = "bishopPair", mgEgCombined = true)
-    private int bishopPairMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private int bishopPair;
 
-    @EvalConfigParam(configName = "knightPair", mgEgCombined = true)
-    private int knightPairMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private int knightPair;
 
-    @EvalConfigParam(configName = "rookPair", mgEgCombined = true)
-    private int rookPairMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private int rookPair;
 
-    @EvalConfigParam(configName = "knightAdj")
-    public MgEgArrayFunction knightAdjustmentMGEG;
+    @EvalConfigParam
+    public MgEgArrayFunction knightAdj;
 
-    @EvalConfigParam(configName = "rookAdj")
-    public MgEgArrayFunction rookAdjustmentMGEG;
+    @EvalConfigParam
+    public MgEgArrayFunction rookAdj;
 
     public ParameterizedAdjustmentsEvaluation(EvalConfig config) {
     }
@@ -46,9 +46,9 @@ public class ParameterizedAdjustmentsEvaluation {
         int result = 0;
         /* tempo bonus */
         if (who2Move == WHITE)
-            result += tempoMgEg;
+            result += tempo;
         else
-            result -= tempoMgEg;
+            result -= tempo;
 
         int adjWhite = 0;
         int adjBlack = 0;
@@ -73,22 +73,22 @@ public class ParameterizedAdjustmentsEvaluation {
         int blackRooks = bb.getRooksCount(nBlack);
 
         if (whiteBishops > 1)
-            adjWhite += bishopPairMgEg;
+            adjWhite += bishopPair;
         if (blackBishops > 1)
-            adjBlack += bishopPairMgEg;
+            adjBlack += bishopPair;
         if (whiteKnights > 1)
-            adjWhite -= knightPairMgEg;
+            adjWhite -= knightPair;
         if (blackKnights > 1)
-            adjBlack -= knightPairMgEg;
+            adjBlack -= knightPair;
         if (whiteRooks > 1)
-            adjWhite -= rookPairMgEg;
+            adjWhite -= rookPair;
         if (blackRooks > 1)
-            adjBlack -= rookPairMgEg;
+            adjBlack -= rookPair;
 
-        adjWhite += knightAdjustmentMGEG.calc(whitePawns) * whiteKnights;
-        adjBlack += knightAdjustmentMGEG.calc(blackPawns) * blackKnights;
-        adjWhite += rookAdjustmentMGEG.calc(whitePawns) * whiteRooks;
-        adjBlack += rookAdjustmentMGEG.calc(blackPawns) * blackRooks;
+        adjWhite += knightAdj.calc(whitePawns) * whiteKnights;
+        adjBlack += knightAdj.calc(blackPawns) * blackKnights;
+        adjWhite += rookAdj.calc(whitePawns) * whiteRooks;
+        adjBlack += rookAdj.calc(blackPawns) * blackRooks;
 
         return result + (adjWhite - adjBlack);
     }

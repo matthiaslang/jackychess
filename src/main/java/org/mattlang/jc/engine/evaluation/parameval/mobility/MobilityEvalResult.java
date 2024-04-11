@@ -52,17 +52,17 @@ public class MobilityEvalResult {
     /**
      * combined for mg, eg;
      */
-    @EvalConfigParam(configName = "rookOpen", mgEgCombined = true)
+    @EvalConfigParam(name = "rookOpen", mgEgCombined = true)
     private int rookOpenMgEg;
 
 
     /**
      * combined value for mg+eg;
      */
-    @EvalConfigParam(configName = "rookHalf", mgEgCombined = true)
+    @EvalConfigParam(name = "rookHalf", mgEgCombined = true)
     private int rookHalfMgEg;
 
-    @EvalConfigParam(configName = "earlyQueenPenalty")
+    @EvalConfigParam(name = "earlyQueenPenalty")
     private int earlyQueenPenalty;
 
     private long empty;

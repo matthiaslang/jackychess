@@ -19,30 +19,30 @@ import lombok.Getter;
 @EvalValueInterval(min = 0, max = 2000)
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "PawnEG", disableTuning = true)
+    @EvalConfigParam(disableTuning = true)
     @Getter
     private int pawnEG;
-    @EvalConfigParam(configName = "KnightEG", disableTuning = true)
+    @EvalConfigParam(disableTuning = true)
     private int knightEG;
-    @EvalConfigParam(configName = "BishopEG", disableTuning = true)
+    @EvalConfigParam(disableTuning = true)
     private int bishopEG;
-    @EvalConfigParam(configName = "RookEG", disableTuning = true)
+    @EvalConfigParam(disableTuning = true)
     @Getter
     private int rookEG;
-    @EvalConfigParam(configName = "QueenEG", disableTuning = true)
+    @EvalConfigParam(disableTuning = true)
     @Getter
     private int queenEG;
 
-    @EvalConfigParam(configName = "Pawn", mgEgCombined = true)
-    private int pawnMGEG;
-    @EvalConfigParam(configName = "Knight", mgEgCombined = true)
-    private int knightMGEG;
-    @EvalConfigParam(configName = "Bishop", mgEgCombined = true)
-    private int bishopMGEG;
-    @EvalConfigParam(configName = "Rook", mgEgCombined = true)
-    private int rookMGEG;
-    @EvalConfigParam(configName = "Queen", mgEgCombined = true)
-    private int queenMGEG;
+    @EvalConfigParam(mgEgCombined = true)
+    private int pawn;
+    @EvalConfigParam(mgEgCombined = true)
+    private int knight;
+    @EvalConfigParam(mgEgCombined = true)
+    private int bishop;
+    @EvalConfigParam(mgEgCombined = true)
+    private int rook;
+    @EvalConfigParam(mgEgCombined = true)
+    private int queen;
 
     public ParameterizedMaterialEvaluation(boolean forTuning, EvalConfig config) {
     }
@@ -58,11 +58,11 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
         int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
 
-        result.getMgEgScore().add(pawnMGEG * pawnsDiff +
-                knightMGEG * knightsDiff +
-                bishopMGEG * bishopsDiff +
-                rookMGEG * rooksDiff +
-                queenMGEG * queensDiff);
+        result.getMgEgScore().add(pawn * pawnsDiff +
+                knight * knightsDiff +
+                bishop * bishopsDiff +
+                rook * rooksDiff +
+                queen * queensDiff);
     }
 
     public int evalEndGameMaterialOfSide(BoardRepresentation bitBoard, Color color) {

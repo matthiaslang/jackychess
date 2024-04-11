@@ -31,59 +31,59 @@ import lombok.Getter;
 @EvalConfigurable(prefix = "king")
 public class ParameterizedKingEvaluation implements EvalComponent {
 
-    @EvalConfigParam(configName = "kingShelterKingFile", mgEgCombined = true)
-    private Pattern kingShelterKingFileMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern kingShelterKingFile;
 
-    @EvalConfigParam(configName = "kingShelterAdjacentFile", mgEgCombined = true)
-    private Pattern kingShelterAdjacentFileMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern kingShelterAdjacentFile;
 
-    @EvalConfigParam(configName = "safetyShelterKingFile")
+    @EvalConfigParam()
     private MgEgArrayFunction safetyShelterKingFile;
 
-    @EvalConfigParam(configName = "safetyShelterAdjacentFile")
+    @EvalConfigParam()
     private MgEgArrayFunction safetyShelterAdjacentFile;
 
-    @EvalConfigParam(configName = "kingStormBlocked", mgEgCombined = true)
-    private Pattern kingStormBlockedMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern kingStormBlocked;
 
-    @EvalConfigParam(configName = "kingStormNonBlocked", mgEgCombined = true)
-    private Pattern kingStormNonBlockedMgEg;
+    @EvalConfigParam(mgEgCombined = true)
+    private Pattern kingStormNonBlocked;
 
-    @EvalConfigParam(configName = "safetyStormBlocked")
+    @EvalConfigParam()
     private MgEgArrayFunction safetyStormBlocked;
 
-    @EvalConfigParam(configName = "safetyStormNonBlocked")
+    @EvalConfigParam()
     private MgEgArrayFunction safetyStormNonBlocked;
 
-    @EvalConfigParam(configName = "kingPawnFileProximity")
+    @EvalConfigParam()
     private MgEgArrayFunction kingPawnFileProximity;
 
-    @EvalConfigParam(configName = "kingDefenders")
+    @EvalConfigParam()
     private MgEgArrayFunction kingDefenders;
 
-    @EvalConfigParam(configName = "safetySafeQueenCheck", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetySafeQueenCheck;
 
-    @EvalConfigParam(configName = "safetySafeRookCheck", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetySafeRookCheck;
 
-    @EvalConfigParam(configName = "safetySafeBishopCheck", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetySafeBishopCheck;
 
-    @EvalConfigParam(configName = "safetySafeKnightCheck", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetySafeKnightCheck;
 
-    @EvalConfigParam(configName = "safetyAdjustment", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetyAdjustment;
 
-    @EvalConfigParam(configName = "safetyNoEnemyQueens", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetyNoEnemyQueens;
 
-    @EvalConfigParam(configName = "safetyWeakSquares", mgEgCombined = true)
+    @EvalConfigParam(mgEgCombined = true)
     private int safetyWeakSquares;
 
-    @EvalConfigParam(configName = "safetyAttackValue", mgEgCombined = true)
-    private int safetyAttack;
+    @EvalConfigParam(mgEgCombined = true)
+    private int safetyAttackValue;
 
     public ParameterizedKingEvaluation(boolean forTuning, EvalConfig config) {
 
@@ -179,9 +179,9 @@ public class ParameterizedKingEvaluation implements EvalComponent {
 
     private int evalKingShelter(boolean kingFile, int file, int ourDist) {
         if (kingFile) {
-            return kingShelterKingFileMgEg.getRawVal(file, ourDist);
+            return kingShelterKingFile.getRawVal(file, ourDist);
         } else {
-            return kingShelterAdjacentFileMgEg.getRawVal(file, ourDist);
+            return kingShelterAdjacentFile.getRawVal(file, ourDist);
         }
     }
 
@@ -195,9 +195,9 @@ public class ParameterizedKingEvaluation implements EvalComponent {
 
     private int evalKingStorm(boolean blocked, int file, int theirDist) {
         if (blocked) {
-            return kingStormBlockedMgEg.getRawVal(file, theirDist);
+            return kingStormBlocked.getRawVal(file, theirDist);
         } else {
-            return kingStormNonBlockedMgEg.getRawVal(file, theirDist);
+            return kingStormNonBlocked.getRawVal(file, theirDist);
         }
     }
 
@@ -273,7 +273,7 @@ public class ParameterizedKingEvaluation implements EvalComponent {
 
             safety = 0; // todo use king attackers weight as base?? ei -> kingAttackersWeight[US];
 
-            safety += safetyAttack * scaledAttackCounts
+            safety += safetyAttackValue * scaledAttackCounts
                     + safetyWeakSquares * bitCount(weak & kingZone)
                     + safetyNoEnemyQueens * (enemyQueens == 0 ? 1 : 0)
                     + safetySafeQueenCheck * bitCount(queenChecks)

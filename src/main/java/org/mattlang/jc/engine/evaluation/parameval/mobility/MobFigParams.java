@@ -9,13 +9,13 @@ import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 @EvalConfigurable
 public class MobFigParams {
 
-    @EvalConfigParam(configName = "Mob")
+    @EvalConfigParam(name = "Mob")
     public MgEgArrayFunction mobility;
 
-    @EvalConfigParam(configName = "Tropism")
+    @EvalConfigParam(name = "Tropism")
     public MgEgArrayFunction tropism;
 
-    @EvalConfigParam(configName = "KingAttack")
+    @EvalConfigParam(name = "KingAttack")
     @EvalValueInterval(min = 0, max = 50)
     public MgEgArrayFunction kingAtt;
 
