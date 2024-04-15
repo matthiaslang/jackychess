@@ -4,9 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>org.mattlang.jackychess</groupId>
+        <artifactId>parent</artifactId>
+        <version>23.12.7</version>
+    </parent>
+
+    <packaging>jar</packaging>
     <groupId>org.mattlang.jackychess</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>engine</artifactId>
     <version>23.12.7</version>
 
     <profiles>
@@ -71,10 +77,6 @@
         <activateAssertions>true</activateAssertions>
         <activateStatistics>true</activateStatistics>
     </properties>
-    <modules>
-        <module>engine</module>
-    </modules>
-
     <build>
         <plugins>
             <plugin>

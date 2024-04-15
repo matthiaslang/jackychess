@@ -18,8 +18,8 @@ VERSIONLOGFILE=${LOCALTESTPROJFOLDER}/versionlog.md
 
 # copy to our folders where the test programs have access:
 echo "copy to test folders"
-cp -v target/$JARFILE   $LOCALARENAFOLDER
-cp -v target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
+cp -v engine/target/$JARFILE   $LOCALARENAFOLDER
+cp -v engine/target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 
 # copy a windows bat file for the arena test folder with some log settings
 BATFILE=jc-${MVNVERSION}.bat
