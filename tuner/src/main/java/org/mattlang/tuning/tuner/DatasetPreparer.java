@@ -16,11 +16,11 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.tools.LegalMoves;
+import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.util.MoveValidator;
 import org.mattlang.tuning.BitBoardForTuning;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
@@ -165,7 +165,9 @@ public class DatasetPreparer {
     private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
-        MoveList moveList = LegalMoves.generateLegalMoves(board, board.getSiteToMove());
+        MoveValidator moveValidator = new MoveValidator();
+        MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
+
         boolean anyLegalMoves = moveList.size() > 0;
         if (moveDesr.getEnding() == null
                 && !isBookMove(moveDesr)
@@ -187,13 +189,13 @@ public class DatasetPreparer {
     }
 
     private boolean isQuiet(MoveList moveList) {
-        MoveCursor iterator = LegalMoves.createCursor(moveList);
-        while (iterator.hasNext()) {
-            iterator.next();
-            if (iterator.isCapture() || iterator.isPromotion()) {
+        for (int i = 0; i < moveList.size(); i++) {
+            int move = moveList.get(i);
+            if (MoveImpl.isCapture(move) || MoveImpl.isPromotion(move)) {
                 return false;
             }
         }
+
         return true;
     }
 

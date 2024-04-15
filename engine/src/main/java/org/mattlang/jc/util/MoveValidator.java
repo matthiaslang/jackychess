@@ -185,4 +185,26 @@ public class MoveValidator {
         moveBoardIterator.init(movePicker, board, checkChecker);
         return moveBoardIterator;
     }
+
+    /**
+     * Delivers a move list with all legal moves for a position and a side to move.
+     * This uses the PseudoLegalMoveGenerator + iterator + checkchecker to filter all legal moves.
+     *
+     * @param board
+     * @param color
+     * @return
+     */
+    public MoveList generateLegalMoves(BoardRepresentation board, Color color) {
+        MoveList resultList = new MoveList();
+        resultList.reset(color);
+        moveList.reset(color);
+        movegen.generate(board, board.getSiteToMove(), moveList);
+
+        try (MoveBoardIterator iterator = iterateMoves(board, checkChecker)) {
+            while (iterator.doNextValidMove()) {
+                resultList.addMove(iterator.getMoveInt());
+            }
+        }
+        return resultList;
+    }
 }

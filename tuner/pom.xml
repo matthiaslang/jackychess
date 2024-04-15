@@ -4,9 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>org.mattlang.jackychess</groupId>
+        <artifactId>parent</artifactId>
+        <version>23.12.7</version>
+    </parent>
+
+    <packaging>jar</packaging>
     <groupId>org.mattlang.jackychess</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>tuner</artifactId>
     <version>23.12.7</version>
 
     <profiles>
@@ -71,12 +77,6 @@
         <activateAssertions>true</activateAssertions>
         <activateStatistics>true</activateStatistics>
     </properties>
-
-    <modules>
-        <module>engine</module>
-        <module>tuner</module>
-    </modules>
-
     <build>
         <plugins>
             <plugin>
@@ -96,6 +96,19 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.mattlang.jc.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.0</version>
                 <executions>
@@ -103,6 +116,19 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -128,8 +154,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                        <configuration>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.md</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
     </build>
 
@@ -148,6 +197,13 @@
         </plugins>
     </reporting>
     <dependencies>
+        <dependency>
+            <groupId>org.mattlang.jackychess</groupId>
+            <artifactId>engine</artifactId>
+            <version>23.12.7</version>
+        </dependency>
+
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

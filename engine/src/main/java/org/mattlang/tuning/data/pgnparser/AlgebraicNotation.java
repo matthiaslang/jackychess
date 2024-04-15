@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.MoveImpl;
-import org.mattlang.jc.tools.LegalMoves;
+import org.mattlang.jc.util.MoveValidator;
 
 /**
  * Untested so far. Should be used for eigenmann & bratkopec tests to properly compare the expected move which
@@ -28,9 +28,10 @@ public class AlgebraicNotation {
      * @return
      */
     private static Move convertToMove(BoardRepresentation board, Color color, MoveText algNotMove) {
+        MoveValidator moveValidator = new MoveValidator();
 
         List<MoveImpl> allMoves =
-                LegalMoves.generateLegalMoves(board, color).extractList();
+                moveValidator.generateLegalMoves(board, color).extractList();
 
         List<MoveImpl> matching = allMoves.stream()
                 .filter(m -> m.getFigureType() == algNotMove.getFigure().figureCode
