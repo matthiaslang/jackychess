@@ -10,6 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -19,7 +20,6 @@ import org.mattlang.jc.engine.search.IterativeDeepeningListener;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.engine.search.SearchException;
-import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -29,8 +29,8 @@ public class EngineTest {
     @Test
     public void testIterativeDeepening() throws IOException {
 
-        initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(9)));
@@ -42,8 +42,8 @@ public class EngineTest {
 
         System.out.println(move.toStr());
 
-        // with the evaluation function it should yield e7e6:
-        //        assertThat(move.toStr()).isEqualTo("e2e3");
+        // with the evaluation function it should yield:
+        assertThat(move.toStr()).isEqualTo("e2e4");
     }
 
     /**
@@ -152,8 +152,8 @@ public class EngineTest {
     @Test
     public void testIterativeDeepeningPVS() throws IOException {
 
-        initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))
                 .config(c -> c.maxDepth.setValue(8)));
@@ -164,7 +164,7 @@ public class EngineTest {
         engine.getBoard().switchSiteToMove();
         GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
 
-        Move[] bestm =new Move[1];
+        Move[] bestm = new Move[1];
         engine.registerListener(new IterativeDeepeningListener() {
 
             @Override
@@ -179,7 +179,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isEqualTo("e7e5");
+        assertThat(move.toStr()).isEqualTo("d7d5");
     }
 
     /**
@@ -196,9 +196,8 @@ public class EngineTest {
     @Test
     public void testFine70TTCaching() throws IOException {
 
-        initLogging();
-        Caching.CACHING.getTtCache().reset();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(30))
