@@ -16,6 +16,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 
 public class ParameterizedEvaluationTest {
@@ -34,20 +35,18 @@ public class ParameterizedEvaluationTest {
     }
 
     @Test
-    public void testBlockages() {
+    public void testTempo() {
         Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
+
+        int tempoMg = MgEgScore.getMgScore(pe.getAdjustments().getTempo());
 
         BoardRepresentation board = new BitBoard();
 
         // start position should evaluate to one (tempo):
         board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
-        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(1);
+        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(tempoMg);
 
-        // test a blockage:
-
-//        board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/3N4/PPPPPPPP/RNBQKBNR w - - 0 1");
-//        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(370);
     }
 
     @Test
