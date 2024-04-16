@@ -1,7 +1,5 @@
 package org.mattlang.jc.chessTests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.BeforeClass;
@@ -12,8 +10,8 @@ import org.junit.runners.Parameterized;
 import org.mattlang.jc.EvalFunctions;
 import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.TestTools;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.uci.UCI;
 
 /**
  * Eigenmann Rapid Engine Tests Suite.
@@ -159,9 +157,7 @@ public class EigenmannRapidEngineChessIT {
 
     @BeforeClass
     public static void init() throws IOException {
-        System.setProperty("jacky.logging.activate", "true");
-        initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
     }
 
     @Test
