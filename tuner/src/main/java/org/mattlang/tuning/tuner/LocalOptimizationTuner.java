@@ -67,9 +67,11 @@ public class LocalOptimizationTuner {
         System.setProperty("opt.evalParamSet", params.getEvalParamSet());
 
         // set output dir to pst config dir:
-        outputDir = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase());
+        String path = "./engine/src/main/resources/config/";
+
+        outputDir = new File(path + params.getEvalParamSet().toLowerCase());
         File mdFile = new File(
-                "./src/main/resources/config/" + params.getEvalParamSet().toLowerCase() + "/" + params.getName()
+                path + params.getEvalParamSet().toLowerCase() + "/" + params.getName()
                         + ".md");
         boolean continuingTuningRun = mdFile.exists();
 
