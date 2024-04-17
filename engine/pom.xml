@@ -78,6 +78,7 @@
         <activateStatistics>true</activateStatistics>
     </properties>
     <build>
+        <finalName>jackychess-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
