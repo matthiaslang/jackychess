@@ -10,6 +10,7 @@ CURRBRANCH=$(git rev-parse --abbrev-ref HEAD)
 MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 JARFILE=jackychess-${MVNVERSION}.jar
+TUNERJARFILE=tuner-${MVNVERSION}.jar
 
 LOCALARENAFOLDER=../jcversions/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
@@ -20,6 +21,7 @@ VERSIONLOGFILE=${LOCALTESTPROJFOLDER}/versionlog.md
 echo "copy to test folders"
 cp -v engine/target/$JARFILE   $LOCALARENAFOLDER
 cp -v engine/target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
+cp -v tuner/target/$TUNERJARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 
 # copy a windows bat file for the arena test folder with some log settings
 BATFILE=jc-${MVNVERSION}.bat
@@ -102,3 +104,4 @@ fi
 
 # add the created jar to the git repository of the cutechess test project:
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$JARFILE
+git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$TUNERJARFILE
