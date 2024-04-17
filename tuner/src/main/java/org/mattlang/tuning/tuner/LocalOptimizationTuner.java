@@ -13,40 +13,24 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.tools.MarkdownAppender;
-import org.mattlang.tuning.DataSet;
-import org.mattlang.tuning.LocalOptimizer;
-import org.mattlang.tuning.LocalOptimizerK;
-import org.mattlang.tuning.TuningParameter;
+import org.mattlang.tuning.*;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
 
-public class LocalOptimizationTuner {
+public class LocalOptimizationTuner extends AbstractTuner {
 
     private static final Logger LOGGER = Logger.getLogger(LocalOptimizationTuner.class.getSimpleName());
 
-    /**
-     * Params, set to some standard params:
-     */
-    private OptParameters params = OptParameters.builder()
-            .evalParamSet("TUNED001")
-            .adjustK(false)
-            .multiThreading(true)
-            .threadCount(7)
-            .removeDuplicateFens(true)
-            .tunePst(true)
-            .tuneMaterial(true)
-            .build();
     private File outputDir;
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     public LocalOptimizationTuner(String[] args) {
-        this.params = OptParameters.builder().inputFiles(Arrays.asList(args)).build();
+        super(OptParameters.builder().inputFiles(Arrays.asList(args)).build());
     }
 
     public LocalOptimizationTuner(OptParameters params) {
-        this.params = params;
-
+        super(params);
     }
 
     public static void main(String[] args) throws IOException {
@@ -67,12 +51,10 @@ public class LocalOptimizationTuner {
         System.setProperty("opt.evalParamSet", params.getEvalParamSet());
 
         // set output dir to pst config dir:
-        String path = "./engine/src/main/resources/config/";
-
-        outputDir = new File(path + params.getEvalParamSet().toLowerCase());
-        File mdFile = new File(
-                path + params.getEvalParamSet().toLowerCase() + "/" + params.getName()
-                        + ".md");
+        final String path = determineOutputPath();
+        File filepath = new File(path);
+        outputDir = new File(filepath, params.getEvalParamSet().toLowerCase());
+        File mdFile = new File(outputDir, params.getName() + ".md");
         boolean continuingTuningRun = mdFile.exists();
 
         MarkdownAppender markdownAppender = new MarkdownAppender(mdFile);
@@ -83,6 +65,9 @@ public class LocalOptimizationTuner {
 
         ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
+
+        copySourceConfigFile(outputDir);
+
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
         if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {

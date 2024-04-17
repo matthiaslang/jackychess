@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.tuning.AbstractTuner;
 import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.LocalOptimizerK;
 import org.mattlang.tuning.TuningParameter;
@@ -22,33 +23,20 @@ import org.mattlang.tuning.evaluate.ParameterSet;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 import org.mattlang.tuning.tuner.OptParameters;
 
-public class GeneticTuner {
+public class GeneticTuner extends AbstractTuner {
 
     private static final Logger LOGGER = Logger.getLogger(GeneticTuner.class.getSimpleName());
 
-    /**
-     * Params, set to some standard params:
-     */
-    private OptParameters params = OptParameters.builder()
-            .evalParamSet("TUNED001")
-            .adjustK(false)
-            .multiThreading(true)
-            .threadCount(7)
-            .removeDuplicateFens(true)
-            .tunePst(true)
-            .tuneMaterial(true)
-            .build();
     private File outputDir;
 
     public static ExecutorService executorService = Executors.newFixedThreadPool(7);
 
     public GeneticTuner(String[] args) {
-        this.params = OptParameters.builder().inputFiles(Arrays.asList(args)).build();
+        super(OptParameters.builder().inputFiles(Arrays.asList(args)).build());
     }
 
     public GeneticTuner(OptParameters params) {
-        this.params = params;
-
+        super(params);
     }
 
     public static void main(String[] args) throws IOException {
@@ -68,11 +56,10 @@ public class GeneticTuner {
 
         System.setProperty("opt.evalParamSet", params.getEvalParamSet());
 
-        // set output dir to pst config dir:
-        outputDir = new File("./src/main/resources/config/" + params.getEvalParamSet().toLowerCase());
-        File mdFile = new File(
-                "./src/main/resources/config/" + params.getEvalParamSet().toLowerCase() + "/" + params.getName()
-                        + ".md");
+        final String path = determineOutputPath();
+        File filepath = new File(path);
+        outputDir = new File(filepath, params.getEvalParamSet().toLowerCase());
+        File mdFile = new File(outputDir, params.getName() + ".md");
         boolean continuingTuningRun = mdFile.exists();
 
         MarkdownAppender markdownAppender = new MarkdownAppender(mdFile);
@@ -83,6 +70,8 @@ public class GeneticTuner {
 
         ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
+        copySourceConfigFile(outputDir);
+
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
         // start evals for initial population:

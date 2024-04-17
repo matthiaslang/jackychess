@@ -3,6 +3,10 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.mattlang.jc.Factory;
@@ -19,19 +23,33 @@ import lombok.Getter;
  */
 public class EvalConfig {
 
+    public static final String CONFIG_PROPERTIES_FILE = "config.properties";
     private final String configName;
 
     private final PropertyConfig properties;
     @Getter
     private final String configDir;
+    @Getter
+    private final String configFile;
 
     public EvalConfig(String configName) {
         this.configName = configName;
 
         // read in all configuration for all the evaluation components:
         configDir = "/config/" + configName + "/";
+        configFile = configDir + CONFIG_PROPERTIES_FILE;
 
-        properties = PropertyConfig.loadFromResourceFile(configDir + "config.properties");
+        properties = PropertyConfig.loadFromResourceFile(configFile);
+    }
+
+    public void copyConfig(Path target) {
+        InputStream is =
+                PropertyConfig.class.getResourceAsStream(configFile);
+        try {
+            Files.copy(is, target);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public EvalConfig() {

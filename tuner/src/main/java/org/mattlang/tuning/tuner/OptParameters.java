@@ -31,6 +31,8 @@ public class OptParameters {
     private String evalParamSet = "TUNED01";
     private final List<String> inputFiles;
 
+    private String outputdir=null;
+
     private int progressUpdatesInMinutes = ProgressInfo.DEFAULT_UPDATE_MINUTES;
 
     /**
