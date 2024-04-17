@@ -53,7 +53,7 @@ public abstract class AbstractTuner {
         initLogging("/tuningLogging.properties");
     }
 
-    protected DataSet  loadAndPrepareData() throws IOException {
+    protected DataSet loadAndPrepareData() throws IOException {
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(params.getInputFiles());
         dataset.setMultithreaded(params.isMultiThreading());
@@ -86,8 +86,11 @@ public abstract class AbstractTuner {
      * @param outputDir
      */
     protected void copySourceConfigFile(File outputDir) {
+        // check if external output is requested by parameter
         if (params.getOutputdir() != null) {
+
             File configFile = new File(outputDir, EvalConfig.CONFIG_PROPERTIES_FILE);
+            configFile.getParentFile().mkdirs();
             Path targetConfigFile = configFile.toPath();
             new EvalConfig().copyConfig(targetConfigFile);
         }
