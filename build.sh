@@ -10,7 +10,7 @@ CURRBRANCH=$(git rev-parse --abbrev-ref HEAD)
 MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 JARFILE=jackychess-${MVNVERSION}.jar
-TUNERJARFILE=tuner-${MVNVERSION}.jar
+TUNERJARFILE=tuner-${MVNVERSION}-jar-with-dependencies.jar
 
 LOCALARENAFOLDER=../jcversions/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
