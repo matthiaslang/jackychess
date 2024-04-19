@@ -14,7 +14,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.SearchException;
-import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
@@ -70,7 +69,6 @@ public class AsyncEngine {
 
         }
         Factory.setDefaults(searchParams);
-        SearchThreadContexts.CONTEXTS.resetMoveLists();
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {
             Factory.getDefaults().log();

@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.Constants.MAX_THREADS;
 
+import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
+
 public class SearchThreadContexts {
 
     private SearchThreadContext[] contexts = new SearchThreadContext[MAX_THREADS];
@@ -14,9 +16,13 @@ public class SearchThreadContexts {
         }
     }
 
+    /**
+     * Reset all internal data structures.
+     */
     public void reset() {
+        EvalCache.instance.reset();
         for (int i = 0; i < contexts.length; i++) {
-            contexts[i] = new SearchThreadContext();
+            contexts[i].reset();
         }
     }
 
@@ -24,11 +30,4 @@ public class SearchThreadContexts {
         return contexts[num];
     }
 
-    // todo we should do that nicer... currently this is done on each uci go.. only for situations where the movelist param has been changed...
-    public void resetMoveLists() {
-
-        for (int i = 0; i < contexts.length; i++) {
-            contexts[i].resetMoveLists();
-        }
-    }
 }

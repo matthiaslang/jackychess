@@ -42,12 +42,14 @@ public class SearchThreadContext {
     private EvaluateFunction evaluate;
 
     public SearchThreadContext() {
-        resetMoveLists();
+        initMoveLists();
         orderCalculator = new OrderCalculator(this, getEvaluate());
     }
 
+    /**
+     * Resets all state holding data structures like caches, history caches,  etc.
+     */
     public void reset() {
-        resetMoveLists();
         historyHeuristic.reset();
         counterMoveHeuristic.reset();
         killerMoves.reset();
@@ -59,7 +61,7 @@ public class SearchThreadContext {
         return moveIterationPreparers[ply];
     }
 
-    public void resetMoveLists() {
+    public void initMoveLists() {
         for (int i = 0; i < moveIterationPreparers.length; i++) {
             moveIterationPreparers[i] = new StagedMoveIterationPreparer();
         }
