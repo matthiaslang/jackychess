@@ -59,10 +59,12 @@ public class ParamConfiguratorTraverser {
 
             EvalConfigParam evalConfigParam = declaredField.getAnnotation(EvalConfigParam.class);
             if (evalConfigParam != null) {
+                ConfigDefinition configDefinition =
+                        new ConfigDefinition(prefixStackToUse, evalConfigParam, declaredField);
 
-                String fullQualifiedConfigName = prefixStackToUse.getQualifiedName(evalConfigParam);
-                if (configFilter.filter(fullQualifiedConfigName)) {
-                    configureField(eval, declaredField, prefixStackToUse, nestedAccessStack, evalConfigParam,
+                if (configFilter.filter(configDefinition.getFullQualifiedConfigName())) {
+                    configureField(configDefinition, eval, prefixStackToUse, nestedAccessStack,
+                            evalConfigParam,
                             effectiveInterval);
                 }
             }
@@ -78,16 +80,16 @@ public class ParamConfiguratorTraverser {
         }
     }
 
-    private void configureField(Object eval, Field declaredField, PrefixStack prefixes,
+    private void configureField(ConfigDefinition configDefinition, Object eval, PrefixStack prefixes,
             FieldAccessStack fieldAccessStack,
             EvalConfigParam evalConfigParam,
             EvalValueInterval definedInterval) {
 
-        ConfigDefinition configDefinition = new ConfigDefinition(prefixes, evalConfigParam, declaredField);
-
-        log.fine("Configuring " + eval.getClass().getSimpleName() + "." + declaredField.getName()
+        log.fine("Configuring " + eval.getClass().getSimpleName() + "." + configDefinition.getDeclaredFieldName()
                 + ", config key: " + configDefinition.getFullQualifiedConfigName() + " annotation: " + evalConfigParam);
-        if (declaredField.getType() == Integer.class || declaredField.getType() == int.class) {
+        Class<?> type = configDefinition.getDeclaredFieldType();
+
+        if (type == Integer.class || type == int.class) {
             if (evalConfigParam.mgEgCombined()) {
 
                 visitor.visitMgEgIntProperty(new MgEgConfigDefinition(configDefinition), fieldAccessStack,
@@ -95,27 +97,27 @@ public class ParamConfiguratorTraverser {
             } else {
                 visitor.visitIntProperty(configDefinition, fieldAccessStack, definedInterval);
             }
-        } else if (declaredField.getType() == Float.class || declaredField.getType() == float.class) {
+        } else if (type == Float.class || type == float.class) {
             if (evalConfigParam.mgEgCombined()) {
                 throw new IllegalArgumentException("Float values can not be configured as mg eg combined!");
             } else {
                 visitor.visitFloatProperty(configDefinition, fieldAccessStack);
             }
-        } else if (declaredField.getType() == FloatArrayFunction.class) {
+        } else if (type == FloatArrayFunction.class) {
             if (evalConfigParam.mgEgCombined()) {
                 throw new IllegalArgumentException("Float array values can not be configured as mg eg combined!");
             } else {
                 visitor.visitFloatArray(configDefinition, fieldAccessStack);
             }
-        } else if (declaredField.getType() == ArrayFunction.class) {
+        } else if (type == ArrayFunction.class) {
             if (evalConfigParam.mgEgCombined()) {
                 visitor.visitArray(new MgEgConfigDefinition(configDefinition), fieldAccessStack, definedInterval);
             } else {
                 visitor.visitArray(configDefinition, fieldAccessStack, definedInterval);
             }
-        } else if (declaredField.getType() == MgEgArrayFunction.class) {
+        } else if (type == MgEgArrayFunction.class) {
             visitor.visitMgEgArray(new MgEgConfigDefinition(configDefinition), fieldAccessStack, definedInterval);
-        } else if (declaredField.getType() == Pattern.class) {
+        } else if (type == Pattern.class) {
             PatternConfigDefinition patternConfigDefinition =
                     new PatternConfigDefinition(new MgEgConfigDefinition(configDefinition), prefixes);
 

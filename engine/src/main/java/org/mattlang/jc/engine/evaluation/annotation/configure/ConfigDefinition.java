@@ -17,9 +17,11 @@ public class ConfigDefinition {
     private final String fullQualifiedConfigName;
     private final String definedPrefix;
     private final boolean disableTuning;
+    private final Class<?> declaredFieldType;
 
     public ConfigDefinition(PrefixStack prefixes, EvalConfigParam param, Field declaredField) {
         declaredFieldName = declaredField.getName();
+        declaredFieldType = declaredField.getType();
         definedPrefix = param.prefix();
         effectiveConfigName = !"".equals(param.name()) ? param.name() : declaredFieldName;
 
