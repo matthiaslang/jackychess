@@ -3,6 +3,8 @@
 # exit if a command has non-zero exit code
 set -e
 
+MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
 PATH=$PATH:.
 
-java -jar tuner/target/tuner-23.12.8-jar-with-dependencies.jar "$@"
+java -jar tuner/target/tuner-${MVNVERSION}-jar-with-dependencies.jar "$@"
