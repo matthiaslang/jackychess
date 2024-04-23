@@ -1,5 +1,13 @@
 # Versions
 
+### 23.12.8
+
+Refactorings without ELO change:
+
+- split tuner into separate maven module
+- simple tuner command project
+- 
+
 ### 23.12.7
 
 Refactorings:
