@@ -27,8 +27,6 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     @EvalConfigParam(name = "ThreatByRook")
     private MgEgArrayFunction threatByRookMgEg;
 
-    private final boolean active;
-
     @EvalConfigParam(name = "ThreatByKing", mgEgCombined = true)
     private int threatByKingMgEg;
 
@@ -58,16 +56,10 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     private MgEgScore blackThreats = new MgEgScore();
 
     public ParameterizedThreatsEvaluation(boolean forTuning, EvalConfig config) {
-        active = forTuning || config.getBoolProp("threats.active");
-
     }
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        if (!active) {
-            return;
-        }
-
         evalThreads(result, whiteThreats, bitBoard.getBoard(), WHITE);
         evalThreads(result, blackThreats, bitBoard.getBoard(), Color.BLACK);
         result.add(whiteThreats).minus(blackThreats);
@@ -164,7 +156,7 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
             int queenImbalance = bb.getQueensCount() == 1 ? 1 : 0;
 
             int s = Long.numberOfTrailingZeros(bb.getQueens(them.ordinal()));
-            safe = getMobilityArea(bb, us)
+            safe = getMobilityArea(result, bb, us)
                     & ~bb.getPawns(us)
                     & ~stronglyProtected;
 
@@ -179,7 +171,7 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         }
     }
 
-    private long getMobilityArea(BitChessBoard bb, Color us) {
+    private long getMobilityArea(EvalResult result, BitChessBoard bb, Color us) {
         long LowRanks = (us == WHITE ? BB.rank2 | BB.rank3 : BB.rank7 | BB.rank6);
 
         // Find our pawns that are blocked or on the first two ranks
@@ -191,7 +183,8 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
 
         // todo poor mans impl without taking blockers and pawn attacks into account
         return ~(b | bb.getKings(us) | bb.getQueens(
-                us.ordinal()) /*| pos.blockers_for_king(Us) | pe->pawn_attacks(Them)*/);
+                us.ordinal()) | result.getAttacks(us.invert(),
+                FT_PAWN)/*| pos.blockers_for_king(Us) | pe->pawn_attacks(Them)*/);
     }
 
 }
