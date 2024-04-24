@@ -1,12 +1,18 @@
 # Versions
 
+### 23.12.9
+
+- activated threats evaluation: due to a mistake (I am a fool), the threats evaluation was disabled all the time in previous versions.
+  Now that it is really executed it gives an ELO boost of ~50 Elos.
+
+
 ### 23.12.8
 
 Refactorings without ELO change:
 
 - split tuner into separate maven module
 - simple tuner command project
-- 
+
 
 ### 23.12.7
 
