@@ -5,6 +5,11 @@
 - activated threats evaluation: due to a mistake (I am a fool), the threats evaluation was disabled all the time in previous versions.
   Now that it is really executed it gives an ELO boost of ~50 Elos.
 
+compare to 23.12.8:
+Elo difference: 51.6 +/- 24.8, LOS: 100.0 %, DrawRatio: 34.3 %
+
+compare to 23.12:
+Elo difference: 77.0 +/- 12.6, LOS: 100.0 %, DrawRatio: 33.5 %
 
 ### 23.12.8
 
