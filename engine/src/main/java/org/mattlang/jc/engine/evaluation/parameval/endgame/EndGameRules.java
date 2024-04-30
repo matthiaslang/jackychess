@@ -66,8 +66,8 @@ public enum EndGameRules {
      */
     KBN_VS_K(rule("KBN vs K"), new KBNvsKEndgameFunction());
 
-    private MaterialCorrectionRule materialRule;
-    private EndgameFunction endgameFunction;
+    private final MaterialCorrectionRule materialRule;
+    private final EndgameFunction endgameFunction;
 
     EndGameRules(MaterialCorrectionRule materialRule,
             EndgameFunction endgameFunction) {

@@ -18,15 +18,15 @@ public enum CastlingType {
     BLACK_LONG(BLACK, LONG, CASTLING_BLACK_LONG, cBKingTargetPos, cBRookTargetPos),
     BLACK_SHORT(BLACK, SHORT, CASTLING_BLACK_SHORT, gBKingTargetPos, gBRookTargetPos);
 
-    private Color color;
+    private final Color color;
 
-    private RochadeType rochadeType;
+    private final RochadeType rochadeType;
 
-    private byte castlingMoveType;
+    private final byte castlingMoveType;
 
-    private int kingTargetPos;
+    private final int kingTargetPos;
 
-    private int rookTargetPos;
+    private final int rookTargetPos;
 
     CastlingType(Color color, RochadeType rochadeType, byte castlingMoveType, int kingTargetPos, int rookTargetPos) {
         this.color = color;

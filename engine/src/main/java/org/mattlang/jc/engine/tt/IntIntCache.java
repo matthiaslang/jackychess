@@ -39,7 +39,7 @@ public final class IntIntCache {
         return (int) (key & (capacity - 1));
     }
 
-    private final int h1(long key) {
+    private int h1(long key) {
         return (int) ((key >> 32) & (capacity - 1));
     }
 
