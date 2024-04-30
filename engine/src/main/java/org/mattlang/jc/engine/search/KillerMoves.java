@@ -27,8 +27,8 @@ public class KillerMoves {
             return false;
         }
         int[] kmovesList = getOrCreateKillerList(ply);
-        for (int i = 0; i < kmovesList.length; i++) {
-            if (kmovesList[i] == moveInt) {
+        for (int kmove : kmovesList) {
+            if (kmove == moveInt) {
                 return true;
             }
         }
