@@ -152,6 +152,7 @@ public class PatternParameterGroup implements TuningParameterGroup {
         this.getter = orig.getter;
         this.mirrored = orig.mirrored;
         this.subdir = orig.subdir;
+        this.includePositions=orig.includePositions;
         this.pattern = orig.pattern.copy();
 
         for (TuningParameter parameter : orig.parameters) {
