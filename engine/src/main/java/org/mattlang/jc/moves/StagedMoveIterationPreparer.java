@@ -255,10 +255,10 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     }
 
     private int sortToFront(int start) {
-        int currLowest = -1;
+        int currLowest = moveList.getOrder(start);
         int currLowestIndex = start;
-        for (int i = start; i < moveList.size(); i++) {
-            if (moveList.getOrder(i) < currLowest || currLowest == -1) {
+        for (int i = start + 1; i < moveList.size(); i++) {
+            if (moveList.getOrder(i) < currLowest) {
                 currLowest = moveList.getOrder(i);
                 currLowestIndex = i;
             }
