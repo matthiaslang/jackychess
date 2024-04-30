@@ -216,12 +216,12 @@ public class ParameterizedKingEvaluation implements EvalComponent {
         return ourDist;
     }
 
-    int evaluateKings(EvalResult evalResult, BoardRepresentation bitBoard, int color) {
+    private int evaluateKings(EvalResult evalResult, BoardRepresentation bitBoard, int color) {
 
         int US = color;
         int THEM = Color.invert(color);
 
-        int count, safety, eval = 0;
+        int safety, eval = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
         long enemyQueens = bb.getQueens(THEM);
