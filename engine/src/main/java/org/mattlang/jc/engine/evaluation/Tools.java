@@ -99,13 +99,6 @@ public class Tools {
         return rankDistance + fileDistance;
     }
 
-    public static final int colDistance(int sq1, int sq2) {
-        int file1, file2;
-        file1 = sq1 & 7;
-        file2 = sq2 & 7;
-        return Math.abs(file2 - file1);
-    }
-
     public static final int calcKnightDistance(long b1, long b2) {
         int d = 0;
         while ((b1 & b2) == 0) {

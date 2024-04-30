@@ -117,13 +117,13 @@ public class MobilityEvalResult {
         if (!ownPawnOnFile && !oppPawnOnFile) {
             // todo make a field from rookOpen...
             eval += rookOpenMgEg;
-            if (Tools.colDistance(rook, oppKingPos) < 2) {
+            if (Tools.fileDistance(rook, oppKingPos) < 2) {
                 kingAttWeightMgEg += MGEG_ONE;
             }
         } else if (!ownPawnOnFile && oppPawnOnFile) {
             // half open:
             eval += rookHalfMgEg;
-            if (Tools.colDistance(rook, oppKingPos) < 2) {
+            if (Tools.fileDistance(rook, oppKingPos) < 2) {
                 kingAttWeightMgEg += MGEG_TWO;
             }
         }
