@@ -44,9 +44,7 @@ public final class PawnCache {
         entry.whitePassers = result.whitePassers;
         entry.blackPassers = result.blackPassers;
         entry.pkeval = result.pkeval;
-        for (int i = 0; i < 2; i++) {
-            entry.pksafety[i] = result.pksafety[i];
-        }
+        System.arraycopy(result.pksafety, 0, entry.pksafety, 0, 2);
     }
 
     public void reset() {
