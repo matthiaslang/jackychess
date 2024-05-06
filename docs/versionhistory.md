@@ -1,5 +1,15 @@
 # Versions
 
+## 24.04
+
+Official Version since 23.12.
+Estimated Elo strength: ~2800, ~70 Elo stronger than 23.12.
+
+- main ELO improvement comes from threats evaluation. This was already existing, but deactivated all the time by accident. Now it is properly activated ;)
+- several small improvements which gives a few ELOs
+- a lot of refactoring and cleanup of the code (without any ELO improvements)
+
+
 ### 23.12.9
 
 - activated threats evaluation: due to a mistake (I am a fool), the threats evaluation was disabled all the time in previous versions.

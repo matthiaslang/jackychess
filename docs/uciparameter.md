@@ -38,19 +38,6 @@ TT Hash Size in MB
 option name Hash type spin default 128 min 1 max 2048
 ```
 
-### Option TTCacheImpl
-
-internally. Only for development testing
-
-- default value: STANDARD
-
-
-#### Declaration
-
-```
-option name TTCacheImpl type combo default STANDARD var STANDARD
-```
-
 ## Limits
 
 Parameter which limit the search or search time in some way.
@@ -126,22 +113,5 @@ the search algorithm to use.
 
 ```
 option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD
-```
-
-## Common
-
-Common parameter
-
-### Option moveIterationImpl
-
-internally. Only for development testing
-
-- default value: STAGED
-
-
-#### Declaration
-
-```
-option name moveIterationImpl type combo default STAGED var NORMAL var STAGED
 ```
 

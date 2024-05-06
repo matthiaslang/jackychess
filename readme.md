@@ -46,11 +46,12 @@ You should have a few UCI options able to set in the UI then.
 Many thanks to the CCRL team for rating my engine. You can find the details 
 on http://ccrl.chessdom.com/ccrl/404/:          
 
-Here is a quick overview of my estimated rating and the results from the CCRL team (maybe outdated):
+Here is a quick overview of my estimated rating and the results from the CCRL team (the numbers maybe outdated):
 
 | Version | Estimated Rating | CCRL Blitz | 40/15 |
 |---------|------------------|------------|-------|
-| 23.12   | 2760             |        |   |
+| 24.04   | 2800             |            |       |
+| 23.12   | 2760             | 2695       | 2731  |
 | 23.06   | 2680             | 2688       | 2675  |
 | 0.14.3  | 2580             | 2595       | 2601  |
 | 0.13.1  | 2330             | --         | 2397  |
@@ -82,22 +83,22 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 
 The chess engine uses following technics/algorithms 
 
-- Bitboards
-- Move Generator using a magic bitboards  
-- a configurable Evaluation function considering material, mobility and several other simple evaluations
-  - evaluation cache
-  - parameter partially tuned via texel like tuning method
+- bitboards
+- move generator using a magic bitboards  
+- a configurable evaluation function considering material, mobility and several other simple evaluations
+  - evaluation cache and pawn/king cache
+  - most parameters are tuned via the texel tuning method
   - special end game evaluations
-- Negamax with PVS in an iterative deepening algorithm using Alpha Beta Pruning.
-- Aspiration windowing
+- negamax with PVS and alpha beta pruning
+- iterative deepening with aspiration windowing
 - null move pruning and static null move pruning
 - razoring
 - late move reduction
 - staged move generation and separate move generation for quiescence
-- Move sorting by Hash Moves, killer moves, history heuristic, counter moves, captures sorted by SEE
-- Transposition Table using zobrist hashing to cache Scores
+- move sorting by hash moves, killer moves, history heuristic, counter moves; captures sorted by SEE
+- transposition table using zobrist hashing to cache scores
 - quiescence search with pruning, e.g. delta cut off, futility pruning and move count based pruning
-- Multithreading with Lazy SMP
+- multithreading with Lazy SMP
 
 
 ## UCI Parameter
@@ -108,7 +109,7 @@ Find more information under [UCI Parameter](docs/uciparameter.md)
 
 ## Internal Parameters
 
-The engine has a lot of parameters which are mainly for developing and testing purpose and should not changed
+The engine has a lot of parameters which are mainly for developing and testing purpose and should not be changed
 by a regular user.
 
 [Parameter Documentation](docs/internalparameter.md)
@@ -171,7 +172,7 @@ Generate a release version without assertions:
            
 - optimizations on all ends...
 - make evaluation better by considering more aspects
-- more tuning of evaluation parameter
+- more tuning of evaluation parameter and using better tuning data
 - pruning optimization
 - tt cache optimization
 

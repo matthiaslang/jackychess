@@ -15,7 +15,7 @@ public class GenUciParamDocs {
     public void genUciParamDocs() throws IOException {
         UCIOptions all = new ConfigValues().getAllOptions();
 
-        try (FileWriter fw = new FileWriter("docs/uciparameter.md");
+        try (FileWriter fw = new FileWriter("../docs/uciparameter.md");
                 MarkdownWriter bw = new MarkdownWriter(fw)) {
             bw.h1("UCI Options");
 
@@ -26,7 +26,7 @@ public class GenUciParamDocs {
             }
 
         }
-        try (FileWriter fw = new FileWriter("docs/internalparameter.md");
+        try (FileWriter fw = new FileWriter("../docs/internalparameter.md");
                 MarkdownWriter bw = new MarkdownWriter(fw)) {
             bw.h1("internal options of the engine.");
             bw.paragraph(
