@@ -198,16 +198,6 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public void next() {
-        throw new IllegalStateException("use doNextMove!");
-    }
-
-    @Override
-    public boolean hasNext() {
-        throw new IllegalStateException("use doNextMove!");
-    }
-
-    @Override
     public void close() {
         // undo a currently done move on the board
         if (moveDone) {

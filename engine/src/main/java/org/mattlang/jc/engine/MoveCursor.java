@@ -9,7 +9,4 @@ public interface MoveCursor extends Move {
 
     int getOrder();
 
-    void next();
-
-    boolean hasNext();
 }

@@ -7,7 +7,6 @@ import org.mattlang.jc.board.BoardPrinter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.tools.LegalMoves;
@@ -39,8 +38,6 @@ public class LegalMoveGeneratorImplTest {
     }
 
     private MoveImpl getFirstMove(MoveList moveList) {
-        MoveCursor cursor = LegalMoves.createCursor(moveList);
-        cursor.next();
-        return new MoveImpl(cursor.getMoveInt());
+        return new MoveImpl(moveList.get(0));
     }
 }

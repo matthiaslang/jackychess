@@ -3,10 +3,10 @@ package org.mattlang.jc.tools;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class LegalMoves {
 
@@ -29,26 +29,21 @@ public class LegalMoves {
         movegen.generate(board, color, moveList);
 
         MoveList result = new MoveList();
-
+        MoveImpl wrapper = new MoveImpl("a1a1");
         // filter all legal moves
-        MoveCursor iterator = createCursor(moveList);
-        while (iterator.hasNext()) {
-            iterator.next();
+        for (int i = 0; i < moveList.size(); i++) {
+            int moveInt = moveList.get(i);
+            wrapper.fromLongEncoded(moveInt);
 
-            board.domove(iterator);
+            board.domove(wrapper);
             if (!checkChecker.isInChess(board, color)) {
 
-                result.addMove(iterator.getMoveInt());
+                result.addMove(moveInt);
             }
-            board.undo(iterator);
+            board.undo(wrapper);
         }
 
         return result;
     }
 
-    public static final MoveCursor createCursor(MoveList moveList) {
-        LazySortedMoveCursorImpl cursor = new LazySortedMoveCursorImpl();
-        cursor.init(moveList);
-        return cursor;
-    }
 }
