@@ -166,13 +166,13 @@ public class MoveValidator {
         moveList.reset(board.getSiteToMove());
         movegen.generate(board, board.getSiteToMove(), moveList);
 
-        int minOrder = Integer.MAX_VALUE;
+        int maxOrder = Integer.MIN_VALUE;
         int bestMove = 0;
         try (MoveBoardIterator iterator = iterateMoves(board, checkChecker)) {
             while (iterator.doNextValidMove()) {
                 int order = MvvLva.calcMMVLVA(iterator);
-                if (order < minOrder) {
-                    minOrder = order;
+                if (order > maxOrder) {
+                    maxOrder = order;
                     bestMove = iterator.getMoveInt();
                 }
             }
