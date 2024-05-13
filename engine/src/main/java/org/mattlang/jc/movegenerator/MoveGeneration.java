@@ -249,27 +249,22 @@ public final class MoveGeneration {
     }
 
 
-
     public static void genPawnQuietPromotions(BitChessBoard bb, MoveList collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
         long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
 
         if (side == WHITE) {
-            long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
+            long singlePushTargets = BB.wSinglePushTargets(pawns & BB.rank7, empty);
             while (singlePushTargets != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                if (MoveList.isOnLastLine(toIndex)) {
-                    collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
-                }
+                collector.genPawnMove(toIndex - 8, toIndex, (byte) 0);
                 singlePushTargets &= singlePushTargets - 1;
             }
         } else {
-            long singlePushTargets = BB.bSinglePushTargets(pawns, empty);
+            long singlePushTargets = BB.bSinglePushTargets(pawns & BB.rank2, empty);
             while (singlePushTargets != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
-                if (MoveList.isOnLastLine(toIndex)) {
-                    collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
-                }
+                collector.genPawnMove(toIndex + 8, toIndex, (byte) 0);
                 singlePushTargets &= singlePushTargets - 1;
             }
         }
