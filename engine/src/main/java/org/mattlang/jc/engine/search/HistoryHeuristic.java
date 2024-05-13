@@ -35,7 +35,7 @@ public class HistoryHeuristic {
 
     public void update(Color color, MoveCursor move, int depth) {
         int colorIdx = color.ordinal();
-        posHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth;
+        posHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth + depth - 1;
     }
 
     public int calcValue(Move move, Color color) {
@@ -47,7 +47,7 @@ public class HistoryHeuristic {
 
     public void updateBad(Color color, MoveCursor move, int depth) {
         int colorIdx = color.ordinal();
-        badHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth;
+        badHistory[colorIdx][move.getFromIndex()][move.getToIndex()] += depth * depth + depth - 1;
     }
 
 }
