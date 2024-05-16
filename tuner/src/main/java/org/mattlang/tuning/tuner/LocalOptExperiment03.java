@@ -7,34 +7,37 @@ import java.io.IOException;
 public class LocalOptExperiment03 {
 
     public static final String QUIET_LABELED_EPD = "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd";
-    public static final String SF_PGN = "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\results\\tuningdata\\sf\\run20230914_1415\\tournament.pgn";
+    public static final String LICHESS = "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\tuningdata\\lichess-big3-resolved.book";
 
     public static void main(String[] args) throws IOException {
         /**
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
-                .name("sf test")
+                .name("lichess test2")
                 .evalParamSet("CURRENT")
                 .optimizeRecalcOnlyDependendFens(false)
                 .resetParametersBeforeTuning(false)
                 .adjustK(true)
                 .multiThreading(true)
-                .threadCount(5)
+                .threadCount(6)
                 .delta(0.00000001)
-                .stepGranularity( asList(   /*10, 5,  3,*/ 1 ))
+                .stepGranularity( asList(  10, 5,  3, 1 ))
                 .removeDuplicateFens(true)
                 .tunePst(true)
                 .tuneMaterial(false)
-                .tuneAdjustments(false)
-                .tuneMobility(false)
-                .tunePositional(false)
-                .tunePawnEval(false)
-                .tunePassedPawnEval(false)
-                .tuneKingAttack(false)
-                .tuneThreats(false)
+                .tuneAdjustments(true)
+                .tuneMobility(true)
+                .tunePositional(true)
+                .tunePawnEval(true)
+                .tunePassedPawnEval(true)
+                .tuneKingAttack(true)
+                .tuneThreats(true)
+                .tuneComplexity(true)
+                .tuneKingSafety(true)
+                .tuneMobilityTropism(true)
 //                .inputFiles(asList(QUIET_LABELED_EPD))
-                .inputFiles(asList(SF_PGN))
+                .inputFiles(asList(LICHESS))
                 .build();
 
         LocalOptimizationTuner.run(params);
