@@ -7962,3 +7962,1116 @@ Error at start: 0.07318617605455792
 | 1:17:17,926 | 1700  | 1    | 39                 | 199       | 0.07316613371775492 | 0.042915678240241534 | 0.13402061855670103  |
 | 1:22:52,261 | 1800  | 1    | 33                 | 232       | 0.07316162952463326 | 0.04666130329847144  | 0.09880239520958084  |
 | 1:27:23,644 | 1900  | 1    | 18                 | 250       | 0.07316119938976803 | 0.04768262445164982  | 0.06642066420664207  |
+# Tuning Options
+
+| Parameter                    | Value                        |
+|------------------------------|------------------------------|
+| adjustK                      | false                        |
+| delta                        | 1.0E-8                       |
+| evalParamSet                 | CURRENT                      |
+| geneticParams                | null                         |
+| inputFiles                   | [C:\projekte\cygwin_home\mla\jackyChessDockerTesting\tuningdata\lichess-big3-resolved.book]|
+| k                            | 1.43                         |
+| multiThreading               | true                         |
+| name                         | lichess test2                |
+| optimizeRecalcOnlyDependendFens| false                        |
+| outputdir                    | null                         |
+| progressUpdatesInMinutes     | 0                            |
+| removeDuplicateFens          | true                         |
+| resetParametersBeforeTuning  | false                        |
+| shuffleTuningParameter       | false                        |
+| stepGranularity              | [1]                          |
+| threadCount                  | 5                            |
+| tuneAdjustments              | true                         |
+| tuneAdjustmentsFactors       | false                        |
+| tuneComplexity               | true                         |
+| tuneKingAttack               | true                         |
+| tuneKingSafety               | true                         |
+| tuneMaterial                 | false                        |
+| tuneMobility                 | true                         |
+| tuneMobilityTropism          | true                         |
+| tunePassedPawnEval           | true                         |
+| tunePawnEval                 | true                         |
+| tunePositional               | true                         |
+| tunePst                      | true                         |
+| tuneThreats                  | true                         |
+
+
+# Dataset Information
+
+|                |         |
+|----------------|---------|
+| Num Fens       | 6819087 |
+| MATE White     | 2801909 |
+| MATE Black     | 2605257 |
+| Draws          | 1411921 |
+| Duplicate Fens | 0       |
+
+
+## Number of fens by Game Phase
+
+| Phase | Count  | %  |
+|-------|--------|----|
+| 0     | 593109 | 8  |
+| 1     | 923895 | 13 |
+| 2     | 736133 | 10 |
+| 3     | 619828 | 9  |
+| 4     | 561207 | 8  |
+| 5     | 463708 | 6  |
+| 6     | 437031 | 6  |
+| 7     | 530586 | 7  |
+| 8     | 654432 | 9  |
+| 9     | 692383 | 10 |
+| 10    | 606775 | 8  |
+
+
+## Number of fens by having figures
+
+| FigureType | Count   | %   |
+|------------|---------|-----|
+| Bishop     | 4966199 | 72  |
+| Pawn       | 6819087 | 100 |
+| Queen      | 3817373 | 55  |
+| Knight     | 4456890 | 65  |
+| Rook       | 5988879 | 87  |
+
+
+## Number of fens by Material
+
+| Material        | Count  | % |
+|-----------------|--------|---|
+|                 | 33454  | 0 |
+| P               | 76606  | 1 |
+| PP              | 122515 | 1 |
+| PPP             | 132276 | 1 |
+| PPPP            | 103981 | 1 |
+| PPPPP           | 68109  | 0 |
+| PPPPPP          | 32877  | 0 |
+| PPPPPPP         | 8662   | 0 |
+| PPPPPPPP        | 323    | 0 |
+| N               | 12616  | 0 |
+| NP              | 33814  | 0 |
+| NPP             | 55129  | 0 |
+| NPPP            | 68974  | 1 |
+| NPPPP           | 64043  | 0 |
+| NPPPPP          | 49168  | 0 |
+| NPPPPPP         | 28688  | 0 |
+| NPPPPPPP        | 9006   | 0 |
+| NPPPPPPPP       | 209    | 0 |
+| NN              | 530    | 0 |
+| NNP             | 1841   | 0 |
+| NNPP            | 3202   | 0 |
+| NNPPP           | 5025   | 0 |
+| NNPPPP          | 5922   | 0 |
+| NNPPPPP         | 6029   | 0 |
+| NNPPPPPP        | 4408   | 0 |
+| NNPPPPPPP       | 2177   | 0 |
+| NNPPPPPPPP      | 20     | 0 |
+| NNN             | 3      | 0 |
+| NNNP            | 4      | 0 |
+| NNNPP           | 13     | 0 |
+| NNNPPP          | 4      | 0 |
+| NNNPPPP         | 3      | 0 |
+| NNNPPPPP        | 1      | 0 |
+| NNNNPPP         | 2      | 0 |
+| B               | 16616  | 0 |
+| BP              | 51273  | 0 |
+| BPP             | 87515  | 1 |
+| BPPP            | 103420 | 1 |
+| BPPPP           | 100360 | 1 |
+| BPPPPP          | 76023  | 1 |
+| BPPPPPP         | 42486  | 0 |
+| BPPPPPPP        | 11779  | 0 |
+| BPPPPPPPP       | 401    | 0 |
+| BN              | 2812   | 0 |
+| BNP             | 9913   | 0 |
+| BNPP            | 19555  | 0 |
+| BNPPP           | 27490  | 0 |
+| BNPPPP          | 32087  | 0 |
+| BNPPPPP         | 29573  | 0 |
+| BNPPPPPP        | 21544  | 0 |
+| BNPPPPPPP       | 8004   | 0 |
+| BNPPPPPPPP      | 155    | 0 |
+| BNN             | 49     | 0 |
+| BNNP            | 275    | 0 |
+| BNNPP           | 873    | 0 |
+| BNNPPP          | 1789   | 0 |
+| BNNPPPP         | 2884   | 0 |
+| BNNPPPPP        | 3467   | 0 |
+| BNNPPPPPP       | 3189   | 0 |
+| BNNPPPPPPP      | 1840   | 0 |
+| BNNPPPPPPPP     | 14     | 0 |
+| BNNNP           | 1      | 0 |
+| BNNNPPPP        | 1      | 0 |
+| BNNNNNP         | 1      | 0 |
+| BNNNNNPP        | 1      | 0 |
+| BB              | 1971   | 0 |
+| BBP             | 4075   | 0 |
+| BBPP            | 7041   | 0 |
+| BBPPP           | 11143  | 0 |
+| BBPPPP          | 11437  | 0 |
+| BBPPPPP         | 11128  | 0 |
+| BBPPPPPP        | 8216   | 0 |
+| BBPPPPPPP       | 2873   | 0 |
+| BBPPPPPPPP      | 131    | 0 |
+| BBN             | 93     | 0 |
+| BBNP            | 299    | 0 |
+| BBNPP           | 1039   | 0 |
+| BBNPPP          | 2299   | 0 |
+| BBNPPPP         | 3735   | 0 |
+| BBNPPPPP        | 4460   | 0 |
+| BBNPPPPPP       | 4140   | 0 |
+| BBNPPPPPPP      | 2009   | 0 |
+| BBNPPPPPPPP     | 23     | 0 |
+| BBNNP           | 20     | 0 |
+| BBNNPP          | 79     | 0 |
+| BBNNPPP         | 301    | 0 |
+| BBNNPPPP        | 636    | 0 |
+| BBNNPPPPP       | 738    | 0 |
+| BBNNPPPPPP      | 880    | 0 |
+| BBNNPPPPPPP     | 633    | 0 |
+| BBNNPPPPPPPP    | 5      | 0 |
+| BBNNNP          | 3      | 0 |
+| BBBP            | 4      | 0 |
+| BBBPP           | 4      | 0 |
+| BBBPPP          | 3      | 0 |
+| BBBPPPP         | 4      | 0 |
+| BBBNP           | 1      | 0 |
+| BBBNPPP         | 1      | 0 |
+| BBBNNP          | 1      | 0 |
+| BBBBP           | 3      | 0 |
+| BBBBPPP         | 2      | 0 |
+| BBBBPPPP        | 1      | 0 |
+| BBBBNPP         | 1      | 0 |
+| BBBBBPPP        | 1      | 0 |
+| BBBBBBPP        | 1      | 0 |
+| R               | 70970  | 1 |
+| RP              | 192547 | 2 |
+| RPP             | 252064 | 3 |
+| RPPP            | 268348 | 3 |
+| RPPPP           | 221962 | 3 |
+| RPPPPP          | 158007 | 2 |
+| RPPPPPP         | 84534  | 1 |
+| RPPPPPPP        | 22633  | 0 |
+| RPPPPPPPP       | 1060   | 0 |
+| RN              | 14423  | 0 |
+| RNP             | 32920  | 0 |
+| RNPP            | 60144  | 0 |
+| RNPPP           | 96059  | 1 |
+| RNPPPP          | 107436 | 1 |
+| RNPPPPP         | 104563 | 1 |
+| RNPPPPPP        | 69062  | 1 |
+| RNPPPPPPP       | 20732  | 0 |
+| RNPPPPPPPP      | 1028   | 0 |
+| RNN             | 203    | 0 |
+| RNNP            | 1056   | 0 |
+| RNNPP           | 3050   | 0 |
+| RNNPPP          | 6878   | 0 |
+| RNNPPPP         | 11631  | 0 |
+| RNNPPPPP        | 15220  | 0 |
+| RNNPPPPPP       | 12681  | 0 |
+| RNNPPPPPPP      | 5002   | 0 |
+| RNNPPPPPPPP     | 254    | 0 |
+| RNNN            | 1      | 0 |
+| RNNNP           | 4      | 0 |
+| RNNNPP          | 1      | 0 |
+| RNNNPPP         | 5      | 0 |
+| RNNNPPPP        | 2      | 0 |
+| RNNNPPPPP       | 1      | 0 |
+| RNNNNP          | 1      | 0 |
+| RNNNNPP         | 2      | 0 |
+| RB              | 15708  | 0 |
+| RBP             | 44306  | 0 |
+| RBPP            | 82180  | 1 |
+| RBPPP           | 125978 | 1 |
+| RBPPPP          | 151618 | 2 |
+| RBPPPPP         | 144476 | 2 |
+| RBPPPPPP        | 94000  | 1 |
+| RBPPPPPPP       | 27932  | 0 |
+| RBPPPPPPPP      | 1485   | 0 |
+| RBN             | 1368   | 0 |
+| RBNP            | 5362   | 0 |
+| RBNPP           | 15999  | 0 |
+| RBNPPP          | 36004  | 0 |
+| RBNPPPP         | 62303  | 0 |
+| RBNPPPPP        | 79905  | 1 |
+| RBNPPPPPP       | 64804  | 0 |
+| RBNPPPPPPP      | 23491  | 0 |
+| RBNPPPPPPPP     | 1280   | 0 |
+| RBNN            | 34     | 0 |
+| RBNNP           | 233    | 0 |
+| RBNNPP          | 1117   | 0 |
+| RBNNPPP         | 3910   | 0 |
+| RBNNPPPP        | 8980   | 0 |
+| RBNNPPPPP       | 14328  | 0 |
+| RBNNPPPPPP      | 14249  | 0 |
+| RBNNPPPPPPP     | 6298   | 0 |
+| RBNNPPPPPPPP    | 410    | 0 |
+| RBNNNP          | 6      | 0 |
+| RBNNNPP         | 2      | 0 |
+| RBNNNPPP        | 3      | 0 |
+| RBNNNPPPP       | 2      | 0 |
+| RBNNNPPPPP      | 1      | 0 |
+| RBNNNNPP        | 1      | 0 |
+| RBNNNNPPP       | 1      | 0 |
+| RBB             | 763    | 0 |
+| RBBP            | 1433   | 0 |
+| RBBPP           | 4738   | 0 |
+| RBBPPP          | 11059  | 0 |
+| RBBPPPP         | 20282  | 0 |
+| RBBPPPPP        | 26105  | 0 |
+| RBBPPPPPP       | 21218  | 0 |
+| RBBPPPPPPP      | 7519   | 0 |
+| RBBPPPPPPPP     | 453    | 0 |
+| RBBN            | 40     | 0 |
+| RBBNP           | 304    | 0 |
+| RBBNPP          | 1287   | 0 |
+| RBBNPPP         | 4610   | 0 |
+| RBBNPPPP        | 10988  | 0 |
+| RBBNPPPPP       | 18234  | 0 |
+| RBBNPPPPPP      | 17827  | 0 |
+| RBBNPPPPPPP     | 7268   | 0 |
+| RBBNPPPPPPPP    | 402    | 0 |
+| RBBNN           | 2      | 0 |
+| RBBNNP          | 39     | 0 |
+| RBBNNPP         | 168    | 0 |
+| RBBNNPPP        | 789    | 0 |
+| RBBNNPPPP       | 2327   | 0 |
+| RBBNNPPPPP      | 4686   | 0 |
+| RBBNNPPPPPP     | 5215   | 0 |
+| RBBNNPPPPPPP    | 2659   | 0 |
+| RBBNNPPPPPPPP   | 150    | 0 |
+| RBBNNNPPPP      | 1      | 0 |
+| RBBNNNPPPPP     | 1      | 0 |
+| RBBNNNPPPPPP    | 1      | 0 |
+| RBBBP           | 1      | 0 |
+| RBBBPP          | 1      | 0 |
+| RBBBPPP         | 2      | 0 |
+| RBBBNP          | 1      | 0 |
+| RBBBNPP         | 2      | 0 |
+| RBBBNPPP        | 1      | 0 |
+| RBBBBP          | 2      | 0 |
+| RBBBBPP         | 2      | 0 |
+| RR              | 8637   | 0 |
+| RRP             | 22399  | 0 |
+| RRPP            | 43620  | 0 |
+| RRPPP           | 71470  | 1 |
+| RRPPPP          | 91824  | 1 |
+| RRPPPPP         | 99571  | 1 |
+| RRPPPPPP        | 78830  | 1 |
+| RRPPPPPPP       | 35657  | 0 |
+| RRPPPPPPPP      | 4122   | 0 |
+| RRN             | 1368   | 0 |
+| RRNP            | 4107   | 0 |
+| RRNPP           | 11489  | 0 |
+| RRNPPP          | 27864  | 0 |
+| RRNPPPP         | 53679  | 0 |
+| RRNPPPPP        | 83375  | 1 |
+| RRNPPPPPP       | 88799  | 1 |
+| RRNPPPPPPP      | 50063  | 0 |
+| RRNPPPPPPPP     | 7135   | 0 |
+| RRNN            | 35     | 0 |
+| RRNNP           | 186    | 0 |
+| RRNNPP          | 841    | 0 |
+| RRNNPPP         | 3292   | 0 |
+| RRNNPPPP        | 8797   | 0 |
+| RRNNPPPPP       | 17939  | 0 |
+| RRNNPPPPPP      | 24327  | 0 |
+| RRNNPPPPPPP     | 17522  | 0 |
+| RRNNPPPPPPPP    | 3029   | 0 |
+| RRNNNP          | 1      | 0 |
+| RRNNNPP         | 1      | 0 |
+| RRNNNPPPP       | 2      | 0 |
+| RRNNNPPPPPP     | 1      | 0 |
+| RRNNNNPP        | 1      | 0 |
+| RRB             | 1118   | 0 |
+| RRBP            | 5361   | 0 |
+| RRBPP           | 15376  | 0 |
+| RRBPPP          | 38038  | 0 |
+| RRBPPPP         | 74578  | 1 |
+| RRBPPPPP        | 115257 | 1 |
+| RRBPPPPPP       | 120731 | 1 |
+| RRBPPPPPPP      | 65672  | 0 |
+| RRBPPPPPPPP     | 8391   | 0 |
+| RRBN            | 392    | 0 |
+| RRBNP           | 1445   | 0 |
+| RRBNPP          | 4662   | 0 |
+| RRBNPPP         | 16718  | 0 |
+| RRBNPPPP        | 46521  | 0 |
+| RRBNPPPPP       | 96948  | 1 |
+| RRBNPPPPPP      | 136001 | 1 |
+| RRBNPPPPPPP     | 93586  | 1 |
+| RRBNPPPPPPPP    | 14421  | 0 |
+| RRBNN           | 6      | 0 |
+| RRBNNP          | 78     | 0 |
+| RRBNNPP         | 503    | 0 |
+| RRBNNPPP        | 2559   | 0 |
+| RRBNNPPPP       | 9221   | 0 |
+| RRBNNPPPPP      | 24702  | 0 |
+| RRBNNPPPPPP     | 44521  | 0 |
+| RRBNNPPPPPPP    | 37629  | 0 |
+| RRBNNPPPPPPPP   | 6990   | 0 |
+| RRBNNNPP        | 1      | 0 |
+| RRBNNNPPP       | 1      | 0 |
+| RRBNNNPPPP      | 2      | 0 |
+| RRBB            | 221    | 0 |
+| RRBBP           | 336    | 0 |
+| RRBBPP          | 1394   | 0 |
+| RRBBPPP         | 5139   | 0 |
+| RRBBPPPP        | 14214  | 0 |
+| RRBBPPPPP       | 30328  | 0 |
+| RRBBPPPPPP      | 42966  | 0 |
+| RRBBPPPPPPP     | 27875  | 0 |
+| RRBBPPPPPPPP    | 3618   | 0 |
+| RRBBN           | 11     | 0 |
+| RRBBNP          | 90     | 0 |
+| RRBBNPP         | 672    | 0 |
+| RRBBNPPP        | 3055   | 0 |
+| RRBBNPPPP       | 11591  | 0 |
+| RRBBNPPPPP      | 31919  | 0 |
+| RRBBNPPPPPP     | 58179  | 0 |
+| RRBBNPPPPPPP    | 45224  | 0 |
+| RRBBNPPPPPPPP   | 6508   | 0 |
+| RRBBNN          | 1      | 0 |
+| RRBBNNP         | 9      | 0 |
+| RRBBNNPP        | 117    | 0 |
+| RRBBNNPPP       | 673    | 0 |
+| RRBBNNPPPP      | 3139   | 0 |
+| RRBBNNPPPPP     | 10137  | 0 |
+| RRBBNNPPPPPP    | 21645  | 0 |
+| RRBBNNPPPPPPP   | 19947  | 0 |
+| RRBBNNPPPPPPPP  | 3797   | 0 |
+| RRBBNNNPPPPPP   | 1      | 0 |
+| RRBBBPPPPP      | 1      | 0 |
+| RRBBBNPPPP      | 1      | 0 |
+| RRR             | 3      | 0 |
+| RRRP            | 5      | 0 |
+| RRRPP           | 11     | 0 |
+| RRRPPP          | 6      | 0 |
+| RRRPPPP         | 5      | 0 |
+| RRRPPPPP        | 6      | 0 |
+| RRRPPPPPP       | 1      | 0 |
+| RRRN            | 2      | 0 |
+| RRRNP           | 2      | 0 |
+| RRRNPP          | 4      | 0 |
+| RRRNPPP         | 3      | 0 |
+| RRRNPPPP        | 1      | 0 |
+| RRRNPPPPP       | 2      | 0 |
+| RRRNPPPPPP      | 1      | 0 |
+| RRRBP           | 6      | 0 |
+| RRRBPP          | 2      | 0 |
+| RRRBPPP         | 4      | 0 |
+| RRRBPPPP        | 5      | 0 |
+| RRRBPPPPP       | 1      | 0 |
+| RRRBNP          | 1      | 0 |
+| RRRBNPPPP       | 1      | 0 |
+| RRRBNPPPPP      | 1      | 0 |
+| RRRBNPPPPPP     | 1      | 0 |
+| RRRBNNPPPPPP    | 1      | 0 |
+| RRRBBPPPPP      | 1      | 0 |
+| RRRBBPPPPPP     | 1      | 0 |
+| RRRBBNNPPPPPPP  | 1      | 0 |
+| RRRRP           | 1      | 0 |
+| RRRRPP          | 1      | 0 |
+| Q               | 15540  | 0 |
+| QP              | 51155  | 0 |
+| QPP             | 68458  | 1 |
+| QPPP            | 77494  | 1 |
+| QPPPP           | 64778  | 0 |
+| QPPPPP          | 44757  | 0 |
+| QPPPPPP         | 23088  | 0 |
+| QPPPPPPP        | 6359   | 0 |
+| QPPPPPPPP       | 270    | 0 |
+| QN              | 2746   | 0 |
+| QNP             | 6954   | 0 |
+| QNPP            | 13793  | 0 |
+| QNPPP           | 20458  | 0 |
+| QNPPPP          | 25540  | 0 |
+| QNPPPPP         | 24736  | 0 |
+| QNPPPPPP        | 18145  | 0 |
+| QNPPPPPPP       | 6473   | 0 |
+| QNPPPPPPPP      | 245    | 0 |
+| QNN             | 61     | 0 |
+| QNNP            | 296    | 0 |
+| QNNPP           | 697    | 0 |
+| QNNPPP          | 1484   | 0 |
+| QNNPPPP         | 2682   | 0 |
+| QNNPPPPP        | 3733   | 0 |
+| QNNPPPPPP       | 3487   | 0 |
+| QNNPPPPPPP      | 2003   | 0 |
+| QNNPPPPPPPP     | 50     | 0 |
+| QNNNP           | 4      | 0 |
+| QNNNPP          | 5      | 0 |
+| QNNNPPPP        | 1      | 0 |
+| QNNNNP          | 1      | 0 |
+| QB              | 4408   | 0 |
+| QBP             | 11633  | 0 |
+| QBPP            | 21929  | 0 |
+| QBPPP           | 34278  | 0 |
+| QBPPPP          | 40675  | 0 |
+| QBPPPPP         | 36856  | 0 |
+| QBPPPPPP        | 24905  | 0 |
+| QBPPPPPPP       | 8455   | 0 |
+| QBPPPPPPPP      | 396    | 0 |
+| QBN             | 755    | 0 |
+| QBNP            | 1421   | 0 |
+| QBNPP           | 4293   | 0 |
+| QBNPPP          | 8699   | 0 |
+| QBNPPPP         | 14521  | 0 |
+| QBNPPPPP        | 19293  | 0 |
+| QBNPPPPPP       | 17503  | 0 |
+| QBNPPPPPPP      | 7705   | 0 |
+| QBNPPPPPPPP     | 208    | 0 |
+| QBNN            | 13     | 0 |
+| QBNNP           | 79     | 0 |
+| QBNNPP          | 360    | 0 |
+| QBNNPPP         | 899    | 0 |
+| QBNNPPPP        | 1984   | 0 |
+| QBNNPPPPP       | 3177   | 0 |
+| QBNNPPPPPP      | 3491   | 0 |
+| QBNNPPPPPPP     | 2358   | 0 |
+| QBNNPPPPPPPP    | 43     | 0 |
+| QBNNNP          | 1      | 0 |
+| QBB             | 165    | 0 |
+| QBBP            | 500    | 0 |
+| QBBPP           | 1001   | 0 |
+| QBBPPP          | 2524   | 0 |
+| QBBPPPP         | 4818   | 0 |
+| QBBPPPPP        | 6532   | 0 |
+| QBBPPPPPP       | 6361   | 0 |
+| QBBPPPPPPP      | 2767   | 0 |
+| QBBPPPPPPPP     | 121    | 0 |
+| QBBN            | 44     | 0 |
+| QBBNP           | 90     | 0 |
+| QBBNPP          | 301    | 0 |
+| QBBNPPP         | 1125   | 0 |
+| QBBNPPPP        | 2591   | 0 |
+| QBBNPPPPP       | 4205   | 0 |
+| QBBNPPPPPP      | 4813   | 0 |
+| QBBNPPPPPPP     | 2669   | 0 |
+| QBBNPPPPPPPP    | 38     | 0 |
+| QBBNN           | 1      | 0 |
+| QBBNNP          | 9      | 0 |
+| QBBNNPP         | 63     | 0 |
+| QBBNNPPP        | 224    | 0 |
+| QBBNNPPPP       | 535    | 0 |
+| QBBNNPPPPP      | 978    | 0 |
+| QBBNNPPPPPP     | 1352   | 0 |
+| QBBNNPPPPPPP    | 1097   | 0 |
+| QBBNNPPPPPPPP   | 13     | 0 |
+| QBBBPP          | 2      | 0 |
+| QBBBNP          | 1      | 0 |
+| QR              | 8135   | 0 |
+| QRP             | 19397  | 0 |
+| QRPP            | 33772  | 0 |
+| QRPPP           | 56460  | 0 |
+| QRPPPP          | 77376  | 1 |
+| QRPPPPP         | 83151  | 1 |
+| QRPPPPPP        | 60315  | 0 |
+| QRPPPPPPP       | 20569  | 0 |
+| QRPPPPPPPP      | 1368   | 0 |
+| QRN             | 610    | 0 |
+| QRNP            | 2750   | 0 |
+| QRNPP           | 8114   | 0 |
+| QRNPPP          | 22551  | 0 |
+| QRNPPPP         | 45224  | 0 |
+| QRNPPPPP        | 66331  | 0 |
+| QRNPPPPPP       | 62510  | 0 |
+| QRNPPPPPPP      | 25129  | 0 |
+| QRNPPPPPPPP     | 1897   | 0 |
+| QRNN            | 21     | 0 |
+| QRNNP           | 151    | 0 |
+| QRNNPP          | 787    | 0 |
+| QRNNPPP         | 2934   | 0 |
+| QRNNPPPP        | 7800   | 0 |
+| QRNNPPPPP       | 14529  | 0 |
+| QRNNPPPPPP      | 16596  | 0 |
+| QRNNPPPPPPP     | 8776   | 0 |
+| QRNNPPPPPPPP    | 848    | 0 |
+| QRNNN           | 1      | 0 |
+| QRNNNP          | 1      | 0 |
+| QRNNNPPPPP      | 2      | 0 |
+| QRB             | 1022   | 0 |
+| QRBP            | 4388   | 0 |
+| QRBPP           | 12945  | 0 |
+| QRBPPP          | 34504  | 0 |
+| QRBPPPP         | 69752  | 1 |
+| QRBPPPPP        | 97024  | 1 |
+| QRBPPPPPP       | 86071  | 1 |
+| QRBPPPPPPP      | 33524  | 0 |
+| QRBPPPPPPPP     | 2542   | 0 |
+| QRBN            | 107    | 0 |
+| QRBNP           | 951    | 0 |
+| QRBNPP          | 4455   | 0 |
+| QRBNPPP         | 16649  | 0 |
+| QRBNPPPP        | 43838  | 0 |
+| QRBNPPPPP       | 79109  | 1 |
+| QRBNPPPPPP      | 88259  | 1 |
+| QRBNPPPPPPP     | 42053  | 0 |
+| QRBNPPPPPPPP    | 3639   | 0 |
+| QRBNN           | 10     | 0 |
+| QRBNNP          | 90     | 0 |
+| QRBNNPP         | 631    | 0 |
+| QRBNNPPP        | 2988   | 0 |
+| QRBNNPPPP       | 9621   | 0 |
+| QRBNNPPPPP      | 20764  | 0 |
+| QRBNNPPPPPP     | 28260  | 0 |
+| QRBNNPPPPPPP    | 17215  | 0 |
+| QRBNNPPPPPPPP   | 1735   | 0 |
+| QRBNNNPP        | 1      | 0 |
+| QRBNNNPPP       | 2      | 0 |
+| QRBNNNPPPP      | 1      | 0 |
+| QRBNNNPPPPP     | 1      | 0 |
+| QRBB            | 58     | 0 |
+| QRBBP           | 361    | 0 |
+| QRBBPP          | 1403   | 0 |
+| QRBBPPP         | 5452   | 0 |
+| QRBBPPPP        | 15278  | 0 |
+| QRBBPPPPP       | 27067  | 0 |
+| QRBBPPPPPP      | 30000  | 0 |
+| QRBBPPPPPPP     | 13859  | 0 |
+| QRBBPPPPPPPP    | 1160   | 0 |
+| QRBBN           | 12     | 0 |
+| QRBBNP          | 108    | 0 |
+| QRBBNPP         | 715    | 0 |
+| QRBBNPPP        | 3966   | 0 |
+| QRBBNPPPP       | 12792  | 0 |
+| QRBBNPPPPP      | 28466  | 0 |
+| QRBBNPPPPPP     | 38009  | 0 |
+| QRBBNPPPPPPP    | 20590  | 0 |
+| QRBBNPPPPPPPP   | 1634   | 0 |
+| QRBBNN          | 1      | 0 |
+| QRBBNNP         | 17     | 0 |
+| QRBBNNPP        | 167    | 0 |
+| QRBBNNPPP       | 920    | 0 |
+| QRBBNNPPPP      | 3767   | 0 |
+| QRBBNNPPPPP     | 10300  | 0 |
+| QRBBNNPPPPPP    | 16430  | 0 |
+| QRBBNNPPPPPPP   | 11821  | 0 |
+| QRBBNNPPPPPPPP  | 895    | 0 |
+| QRBBNNNPP       | 1      | 0 |
+| QRBBNNNPPPP     | 2      | 0 |
+| QRBBBPPP        | 1      | 0 |
+| QRBBBNPPP       | 1      | 0 |
+| QRR             | 535    | 0 |
+| QRRP            | 1915   | 0 |
+| QRRPP           | 7284   | 0 |
+| QRRPPP          | 22398  | 0 |
+| QRRPPPP         | 49281  | 0 |
+| QRRPPPPP        | 81831  | 1 |
+| QRRPPPPPP       | 93493  | 1 |
+| QRRPPPPPPP      | 58578  | 0 |
+| QRRPPPPPPPP     | 9976   | 0 |
+| QRRN            | 162    | 0 |
+| QRRNP           | 581    | 0 |
+| QRRNPP          | 3045   | 0 |
+| QRRNPPP         | 13209  | 0 |
+| QRRNPPPP        | 39899  | 0 |
+| QRRNPPPPP       | 91339  | 1 |
+| QRRNPPPPPP      | 140852 | 2 |
+| QRRNPPPPPPP     | 115463 | 1 |
+| QRRNPPPPPPPP    | 25549  | 0 |
+| QRRNN           | 5      | 0 |
+| QRRNNP          | 50     | 0 |
+| QRRNNPP         | 376    | 0 |
+| QRRNNPPP        | 2262   | 0 |
+| QRRNNPPPP       | 9353   | 0 |
+| QRRNNPPPPP      | 27216  | 0 |
+| QRRNNPPPPPP     | 54708  | 0 |
+| QRRNNPPPPPPP    | 62012  | 0 |
+| QRRNNPPPPPPPP   | 19238  | 0 |
+| QRRNNNPP        | 1      | 0 |
+| QRRNNNNPPP      | 1      | 0 |
+| QRRB            | 117    | 0 |
+| QRRBP           | 861    | 0 |
+| QRRBPP          | 4531   | 0 |
+| QRRBPPP         | 19234  | 0 |
+| QRRBPPPP        | 58562  | 0 |
+| QRRBPPPPP       | 130154 | 1 |
+| QRRBPPPPPP      | 192878 | 2 |
+| QRRBPPPPPPP     | 151621 | 2 |
+| QRRBPPPPPPPP    | 30336  | 0 |
+| QRRBN           | 28     | 0 |
+| QRRBNP          | 287    | 0 |
+| QRRBNPP         | 2378   | 0 |
+| QRRBNPPP        | 12972  | 0 |
+| QRRBNPPPP       | 51618  | 0 |
+| QRRBNPPPPP      | 152706 | 2 |
+| QRRBNPPPPPP     | 308837 | 4 |
+| QRRBNPPPPPPP    | 323797 | 4 |
+| QRRBNPPPPPPPP   | 81017  | 1 |
+| QRRBNN          | 2      | 0 |
+| QRRBNNP         | 40     | 0 |
+| QRRBNNPP        | 461    | 0 |
+| QRRBNNPPP       | 2993   | 0 |
+| QRRBNNPPPP      | 14792  | 0 |
+| QRRBNNPPPPP     | 55554  | 0 |
+| QRRBNNPPPPPP    | 145142 | 2 |
+| QRRBNNPPPPPPP   | 205470 | 3 |
+| QRRBNNPPPPPPPP  | 68644  | 1 |
+| QRRBNNNNPPP     | 1      | 0 |
+| QRRBB           | 10     | 0 |
+| QRRBBP          | 91     | 0 |
+| QRRBBPP         | 793    | 0 |
+| QRRBBPPP        | 4389   | 0 |
+| QRRBBPPPP       | 17515  | 0 |
+| QRRBBPPPPP      | 51745  | 0 |
+| QRRBBPPPPPP     | 102524 | 1 |
+| QRRBBPPPPPPP    | 100268 | 1 |
+| QRRBBPPPPPPPP   | 23359  | 0 |
+| QRRBBN          | 1      | 0 |
+| QRRBBNP         | 54     | 0 |
+| QRRBBNPP        | 597    | 0 |
+| QRRBBNPPP       | 3975   | 0 |
+| QRRBBNPPPP      | 20278  | 0 |
+| QRRBBNPPPPP     | 77645  | 1 |
+| QRRBBNPPPPPP    | 207543 | 3 |
+| QRRBBNPPPPPPP   | 263394 | 3 |
+| QRRBBNPPPPPPPP  | 71456  | 1 |
+| QRRBBNN         | 1      | 0 |
+| QRRBBNNP        | 12     | 0 |
+| QRRBBNNPP       | 146    | 0 |
+| QRRBBNNPPP      | 1270   | 0 |
+| QRRBBNNPPPP     | 7744   | 0 |
+| QRRBBNNPPPPP    | 35984  | 0 |
+| QRRBBNNPPPPPP   | 123036 | 1 |
+| QRRBBNNPPPPPPP  | 204689 | 3 |
+| QRRBBNNPPPPPPPP | 81615  | 1 |
+| QRRBBNNNPPPPPP  | 1      | 0 |
+| QRRBBNNNPPPPPPP | 1      | 0 |
+| QRRBBNNNNPPPPPP | 2      | 0 |
+| QRRBBBPPP       | 1      | 0 |
+| QRRBBBPPPPP     | 1      | 0 |
+| QRRBBBNNPPPPPP  | 1      | 0 |
+| QRRRP           | 1      | 0 |
+| QRRRPP          | 2      | 0 |
+| QRRRPPPP        | 2      | 0 |
+| QRRRPPPPPPP     | 1      | 0 |
+| QRRRNPPP        | 1      | 0 |
+| QRRRBPP         | 1      | 0 |
+| QRRRBPPPPP      | 2      | 0 |
+| QRRRBPPPPPP     | 2      | 0 |
+| QRRRBNPPPP      | 2      | 0 |
+| QRRRBNPPPPPP    | 2      | 0 |
+| QRRRBNNPPPP     | 2      | 0 |
+| QRRRBBNPPPP     | 1      | 0 |
+| QRRRBBNPPPPP    | 1      | 0 |
+| QRRRBBNNPPPPPPP | 1      | 0 |
+| QQ              | 779    | 0 |
+| QQP             | 1562   | 0 |
+| QQPP            | 1912   | 0 |
+| QQPPP           | 1435   | 0 |
+| QQPPPP          | 699    | 0 |
+| QQPPPPP         | 304    | 0 |
+| QQPPPPPP        | 57     | 0 |
+| QQPPPPPPP       | 2      | 0 |
+| QQN             | 76     | 0 |
+| QQNP            | 201    | 0 |
+| QQNPP           | 202    | 0 |
+| QQNPPP          | 230    | 0 |
+| QQNPPPP         | 141    | 0 |
+| QQNPPPPP        | 53     | 0 |
+| QQNPPPPPP       | 14     | 0 |
+| QQNN            | 1      | 0 |
+| QQNNP           | 1      | 0 |
+| QQNNPP          | 9      | 0 |
+| QQNNPPP         | 12     | 0 |
+| QQNNPPPP        | 8      | 0 |
+| QQNNPPPPP       | 1      | 0 |
+| QQNNPPPPPP      | 1      | 0 |
+| QQB             | 95     | 0 |
+| QQBP            | 379    | 0 |
+| QQBPP           | 452    | 0 |
+| QQBPPP          | 353    | 0 |
+| QQBPPPP         | 228    | 0 |
+| QQBPPPPP        | 85     | 0 |
+| QQBPPPPPP       | 32     | 0 |
+| QQBPPPPPPP      | 5      | 0 |
+| QQBN            | 7      | 0 |
+| QQBNP           | 25     | 0 |
+| QQBNPP          | 50     | 0 |
+| QQBNPPP         | 36     | 0 |
+| QQBNPPPP        | 38     | 0 |
+| QQBNPPPPP       | 18     | 0 |
+| QQBNPPPPPP      | 5      | 0 |
+| QQBNPPPPPPP     | 2      | 0 |
+| QQBNNPP         | 1      | 0 |
+| QQBNNPPP        | 4      | 0 |
+| QQBNNPPPP       | 3      | 0 |
+| QQBNNPPPPP      | 1      | 0 |
+| QQBB            | 2      | 0 |
+| QQBBP           | 3      | 0 |
+| QQBBPP          | 4      | 0 |
+| QQBBPPP         | 29     | 0 |
+| QQBBPPPP        | 19     | 0 |
+| QQBBPPPPP       | 10     | 0 |
+| QQBBPPPPPP      | 5      | 0 |
+| QQBBPPPPPPP     | 1      | 0 |
+| QQBBNP          | 3      | 0 |
+| QQBBNPP         | 2      | 0 |
+| QQBBNPPP        | 5      | 0 |
+| QQBBNPPPP       | 3      | 0 |
+| QQBBNPPPPP      | 3      | 0 |
+| QQBBNNPPPP      | 1      | 0 |
+| QQBBNNPPPPPP    | 1      | 0 |
+| QQR             | 151    | 0 |
+| QQRP            | 294    | 0 |
+| QQRPP           | 421    | 0 |
+| QQRPPP          | 450    | 0 |
+| QQRPPPP         | 386    | 0 |
+| QQRPPPPP        | 165    | 0 |
+| QQRPPPPPP       | 51     | 0 |
+| QQRPPPPPPP      | 3      | 0 |
+| QQRN            | 11     | 0 |
+| QQRNP           | 37     | 0 |
+| QQRNPP          | 56     | 0 |
+| QQRNPPP         | 81     | 0 |
+| QQRNPPPP        | 66     | 0 |
+| QQRNPPPPP       | 47     | 0 |
+| QQRNPPPPPP      | 20     | 0 |
+| QQRNPPPPPPP     | 2      | 0 |
+| QQRNNPP         | 3      | 0 |
+| QQRNNPPP        | 6      | 0 |
+| QQRNNPPPP       | 12     | 0 |
+| QQRNNPPPPP      | 11     | 0 |
+| QQRNNPPPPPP     | 2      | 0 |
+| QQRB            | 16     | 0 |
+| QQRBP           | 53     | 0 |
+| QQRBPP          | 123    | 0 |
+| QQRBPPP         | 220    | 0 |
+| QQRBPPPP        | 184    | 0 |
+| QQRBPPPPP       | 106    | 0 |
+| QQRBPPPPPP      | 28     | 0 |
+| QQRBPPPPPPP     | 5      | 0 |
+| QQRBN           | 1      | 0 |
+| QQRBNP          | 2      | 0 |
+| QQRBNPP         | 16     | 0 |
+| QQRBNPPP        | 43     | 0 |
+| QQRBNPPPP       | 66     | 0 |
+| QQRBNPPPPP      | 50     | 0 |
+| QQRBNPPPPPP     | 10     | 0 |
+| QQRBNPPPPPPP    | 4      | 0 |
+| QQRBNNP         | 1      | 0 |
+| QQRBNNPPP       | 9      | 0 |
+| QQRBNNPPPP      | 9      | 0 |
+| QQRBNNPPPPP     | 9      | 0 |
+| QQRBNNPPPPPP    | 8      | 0 |
+| QQRBBP          | 3      | 0 |
+| QQRBBPP         | 4      | 0 |
+| QQRBBPPP        | 26     | 0 |
+| QQRBBPPPP       | 23     | 0 |
+| QQRBBPPPPP      | 9      | 0 |
+| QQRBBPPPPPP     | 5      | 0 |
+| QQRBBNP         | 1      | 0 |
+| QQRBBNPP        | 2      | 0 |
+| QQRBBNPPP       | 7      | 0 |
+| QQRBBNPPPP      | 9      | 0 |
+| QQRBBNPPPPP     | 14     | 0 |
+| QQRBBNPPPPPP    | 6      | 0 |
+| QQRBBNPPPPPPP   | 4      | 0 |
+| QQRBBNNPPP      | 1      | 0 |
+| QQRBBNNPPPP     | 3      | 0 |
+| QQRBBNNPPPPP    | 3      | 0 |
+| QQRBBNNPPPPPP   | 3      | 0 |
+| QQRBBNNPPPPPPP  | 1      | 0 |
+| QQRR            | 9      | 0 |
+| QQRRP           | 21     | 0 |
+| QQRRPP          | 70     | 0 |
+| QQRRPPP         | 118    | 0 |
+| QQRRPPPP        | 130    | 0 |
+| QQRRPPPPP       | 101    | 0 |
+| QQRRPPPPPP      | 40     | 0 |
+| QQRRPPPPPPP     | 9      | 0 |
+| QQRRNP          | 6      | 0 |
+| QQRRNPP         | 17     | 0 |
+| QQRRNPPP        | 29     | 0 |
+| QQRRNPPPP       | 56     | 0 |
+| QQRRNPPPPP      | 46     | 0 |
+| QQRRNPPPPPP     | 23     | 0 |
+| QQRRNPPPPPPP    | 6      | 0 |
+| QQRRNNPP        | 3      | 0 |
+| QQRRNNPPP       | 2      | 0 |
+| QQRRNNPPPP      | 8      | 0 |
+| QQRRNNPPPPP     | 7      | 0 |
+| QQRRNNPPPPPP    | 6      | 0 |
+| QQRRNNPPPPPPP   | 3      | 0 |
+| QQRRBP          | 10     | 0 |
+| QQRRBPP         | 35     | 0 |
+| QQRRBPPP        | 72     | 0 |
+| QQRRBPPPP       | 68     | 0 |
+| QQRRBPPPPP      | 81     | 0 |
+| QQRRBPPPPPP     | 36     | 0 |
+| QQRRBPPPPPPP    | 6      | 0 |
+| QQRRBNPP        | 6      | 0 |
+| QQRRBNPPP       | 18     | 0 |
+| QQRRBNPPPP      | 47     | 0 |
+| QQRRBNPPPPP     | 71     | 0 |
+| QQRRBNPPPPPP    | 45     | 0 |
+| QQRRBNPPPPPPP   | 17     | 0 |
+| QQRRBNNPP       | 1      | 0 |
+| QQRRBNNPPP      | 7      | 0 |
+| QQRRBNNPPPP     | 2      | 0 |
+| QQRRBNNPPPPP    | 10     | 0 |
+| QQRRBNNPPPPPP   | 24     | 0 |
+| QQRRBNNPPPPPPP  | 11     | 0 |
+| QQRRBBPPP       | 6      | 0 |
+| QQRRBBPPPP      | 15     | 0 |
+| QQRRBBPPPPP     | 12     | 0 |
+| QQRRBBPPPPPP    | 14     | 0 |
+| QQRRBBPPPPPPP   | 3      | 0 |
+| QQRRBBNPP       | 1      | 0 |
+| QQRRBBNPPP      | 3      | 0 |
+| QQRRBBNPPPP     | 14     | 0 |
+| QQRRBBNPPPPP    | 18     | 0 |
+| QQRRBBNPPPPPP   | 19     | 0 |
+| QQRRBBNPPPPPPP  | 8      | 0 |
+| QQRRBBNNPPP     | 3      | 0 |
+| QQRRBBNNPPPP    | 4      | 0 |
+| QQRRBBNNPPPPP   | 4      | 0 |
+| QQRRBBNNPPPPPP  | 7      | 0 |
+| QQRRBBNNPPPPPPP | 13     | 0 |
+| QQRRRPPPP       | 1      | 0 |
+| QQRRRBNNPPP     | 1      | 0 |
+| QQQ             | 1      | 0 |
+| QQQP            | 11     | 0 |
+| QQQPP           | 11     | 0 |
+| QQQPPP          | 9      | 0 |
+| QQQPPPP         | 4      | 0 |
+| QQQNP           | 2      | 0 |
+| QQQNPP          | 1      | 0 |
+| QQQBP           | 2      | 0 |
+| QQQBPP          | 4      | 0 |
+| QQQBPPPP        | 1      | 0 |
+| QQQBPPPPP       | 1      | 0 |
+| QQQBBPPP        | 1      | 0 |
+| QQQRP           | 6      | 0 |
+| QQQRPP          | 2      | 0 |
+| QQQRPPP         | 4      | 0 |
+| QQQRNP          | 3      | 0 |
+| QQQRNPP         | 2      | 0 |
+| QQQRNPPP        | 1      | 0 |
+| QQQRNPPPP       | 1      | 0 |
+| QQQRBPPP        | 1      | 0 |
+| QQQRBPPPP       | 1      | 0 |
+| QQQRBNP         | 1      | 0 |
+| QQQRBNPP        | 3      | 0 |
+| QQQRBNPPP       | 2      | 0 |
+| QQQRRPP         | 1      | 0 |
+| QQQRRPPP        | 1      | 0 |
+| QQQRRBPPP       | 2      | 0 |
+| QQQRRBPPPP      | 1      | 0 |
+| QQQRRBBNNPPPP   | 1      | 0 |
+| QQQRRBBNNPPPPPP | 1      | 0 |
+| QQQQP           | 1      | 0 |
+| QQQQPP          | 1      | 0 |
+| QQQQRP          | 2      | 0 |
+| QQQQRPP         | 2      | 0 |
+| QQQQQP          | 1      | 0 |
+| QQQQQNPP        | 1      | 0 |
+| QQQQQRP         | 1      | 0 |
+| QQQQQRNP        | 1      | 0 |
+| QQQQQRRBNP      | 1      | 0 |
+| QQQQQRRBBNNPP   | 1      | 0 |
+| QQQQQQRNPP      | 1      | 0 |
+| QQQQQQQRP       | 1      | 0 |
+
+
+setting K from Input Tuner Parameter to: 1.43
+
+K: 1.43
+
+## new optimization round
+
+### Optimizing with step 1
+
+Error at start: 0.0731635168056042
+
+| Duration | Round | Step | Params adjustments | Adj total | Curr Error | Overall AdjPerSecond | AdjPerSecond |
+|----------|-------|------|--------------------|-----------|------------|----------------------|--------------|
+| 0:03:44,042 | 100   | 1    | 28                 | 28        | 0.07316088396369469 | 0.12556053811659193  | 0.12556053811659193 |
+| 0:07:16,203 | 200   | 1    | 23                 | 51        | 0.07316028982751177 | 0.11697247706422019  | 0.10849056603773585 |
+| 0:10:50,514 | 300   | 1    | 21                 | 72        | 0.07315975908935585 | 0.11076923076923077  | 0.09813084112149532 |
+| 0:14:26,126 | 400   | 1    | 12                 | 84        | 0.07315781358820934 | 0.09699769053117784  | 0.05581395348837209 |
+| 0:17:42,309 | 500   | 1    | 22                 | 106       | 0.07315689943441002 | 0.09981167608286252  | 0.11224489795918367 |
+| 0:20:56,337 | 600   | 1    | 22                 | 128       | 0.07315572028655498 | 0.10191082802547771  | 0.1134020618556701  |
+| 0:24:43,467 | 700   | 1    | 11                 | 139       | 0.07315542303914212 | 0.09372892784895483  | 0.048458149779735685 |
+| 0:28:39,432 | 800   | 1    | 3                  | 142       | 0.0731553195728882  | 0.08260616637579989  | 0.01276595744680851  |
+| 0:32:15,890 | 900   | 1    | 12                 | 154       | 0.07315488633829831 | 0.07958656330749354  | 0.05555555555555555  |
+| 0:36:20,106 | 1000  | 1    | 14                 | 168       | 0.07315433634145692 | 0.07706422018348624  | 0.05737704918032787  |
+| 0:40:27,798 | 1100  | 1    | 6                  | 174       | 0.07315405923652464 | 0.07169344870210136  | 0.024291497975708502 |
+| 0:44:36,990 | 1200  | 1    | 4                  | 178       | 0.07315386231962925 | 0.06651718983557549  | 0.01606425702811245  |
+| 0:48:35,802 | 1300  | 1    | 12                 | 190       | 0.07315312171382472 | 0.06518010291595197  | 0.05042016806722689  |
+| 0:52:37,094 | 1400  | 1    | 21                 | 211       | 0.07315226070434667 | 0.06683560342096928  | 0.08713692946058091  |
+| 0:56:36,312 | 1500  | 1    | 18                 | 229       | 0.07315177093652322 | 0.06743227326266195  | 0.07531380753138076  |
+| 1:00:39,424 | 1600  | 1    | 8                  | 237       | 0.07315012820435192 | 0.0651277823577906   | 0.03292181069958848  |
+| 1:04:35,567 | 1700  | 1    | 21                 | 258       | 0.07313940954246521 | 0.06658064516129032  | 0.08898305084745763  |
+| 1:08:44,620 | 1800  | 1    | 30                 | 288       | 0.07312905106839357 | 0.06983511154219205  | 0.12048192771084337  |
+| 1:12:44,838 | 1900  | 1    | 20                 | 308       | 0.07312826550291124 | 0.07057745187901009  | 0.08333333333333333  |
+| 1:16:39,215 | 2000  | 1    | 28                 | 336       | 0.07312743534415139 | 0.0730593607305936   | 0.11965811965811966  |
+| 1:20:35,422 | 2100  | 1    | 18                 | 354       | 0.07312643514649207 | 0.07321613236814892  | 0.07627118644067797  |
+| 1:24:13,874 | 2200  | 1    | 10                 | 364       | 0.07312599527047015 | 0.07203641401147833  | 0.045871559633027525 |
+| 1:27:56,570 | 2300  | 1    | 10                 | 374       | 0.07312560950481758 | 0.07088703563305535  | 0.04504504504504504  |
+| 1:31:41,789 | 2400  | 1    | 13                 | 387       | 0.07312513460348785 | 0.07035084530085439  | 0.057777777777777775 |
+| 1:35:38,617 | 2500  | 1    | 1                  | 388       | 0.073125022538798   | 0.06761937957476473  | 0.00423728813559322  |
+| 1:39:00,364 | 2600  | 1    | 7                  | 395       | 0.07312480390284586 | 0.0664983164983165   | 0.03482587064676617  |
+| 1:42:46,781 | 2700  | 1    | 6                  | 401       | 0.07312448511781114 | 0.06503405773597146  | 0.02654867256637168  |
+| 1:46:31,409 | 2800  | 1    | 13                 | 414       | 0.07312419135754658 | 0.06477859489907682  | 0.05803571428571429  |
+| 1:50:23,289 | 2900  | 1    | 3                  | 417       | 0.07312399245433077 | 0.06296240374452665  | 0.012987012987012988 |
+| 1:54:05,587 | 3000  | 1    | 9                  | 426       | 0.07312337087351742 | 0.06223520818115413  | 0.04054054054054054  |
+| 1:57:45,948 | 3100  | 1    | 19                 | 445       | 0.07312289701176104 | 0.0629865534324133   | 0.08636363636363636  |
+| 2:01:27,799 | 3200  | 1    | 16                 | 461       | 0.07312243575986274 | 0.06326334568409496  | 0.07239819004524888  |
+| 2:05:14,884 | 3300  | 1    | 8                  | 469       | 0.07312188683229244 | 0.06241682193239287  | 0.03524229074889868  |
+| 2:08:52,236 | 3400  | 1    | 21                 | 490       | 0.07312059133822128 | 0.06337299534402484  | 0.0967741935483871   |
+| 2:12:38,939 | 3500  | 1    | 20                 | 510       | 0.07310990455110823 | 0.06408645388288514  | 0.08849557522123894  |
+| 2:16:25,477 | 3600  | 1    | 14                 | 524       | 0.07310948179582921 | 0.0640195479535736   | 0.061946902654867256 |
+| 2:20:07,515 | 3700  | 1    | 19                 | 543       | 0.0731091133304136  | 0.0645890329487332   | 0.08558558558558559  |
+| 2:23:52,417 | 3800  | 1    | 13                 | 556       | 0.07310846968352308 | 0.06441149212233549  | 0.05803571428571429  |
+| 2:27:19,900 | 3900  | 1    | 7                  | 563       | 0.0731081300851341  | 0.06369498812082815  | 0.033816425120772944 |
+| 2:30:50,436 | 4000  | 1    | 10                 | 573       | 0.0731076957342568  | 0.06331491712707182  | 0.047619047619047616 |
+| 2:34:18,792 | 4100  | 1    | 11                 | 584       | 0.07310742846232239 | 0.06308057895873839  | 0.052884615384615384 |
+| 2:37:52,810 | 4200  | 1    | 10                 | 594       | 0.07310700584859538 | 0.06271114864864864  | 0.04672897196261682  |
+| 2:41:16,139 | 4300  | 1    | 9                  | 603       | 0.0731067760514305  | 0.062319140140553946 | 0.04433497536945813  |
+| 2:45:04,273 | 4400  | 1    | 7                  | 610       | 0.07310659563327822 | 0.061591276252019385 | 0.03070175438596491  |
+| 2:48:45,252 | 4500  | 1    | 6                  | 616       | 0.07310643268040493 | 0.06083950617283951  | 0.02727272727272727  |
+| 2:52:27,266 | 4600  | 1    | 4                  | 620       | 0.07310627750031894 | 0.059920749975838405 | 0.018018018018018018 |
+| 2:56:09,387 | 4700  | 1    | 3                  | 623       | 0.07310603995342115 | 0.05894597407512537  | 0.013513513513513514 |
+| 2:59:45,702 | 4800  | 1    | 13                 | 636       | 0.07310569763872339 | 0.05897079276773296  | 0.06018518518518518  |
+| 3:03:22,364 | 4900  | 1    | 13                 | 649       | 0.07310545075486126 | 0.058989274677331394 | 0.06018518518518518  |
+| 3:07:14,165 | 5000  | 1    | 2                  | 651       | 0.07310540683402768 | 0.05794908314046644  | 0.008658008658008658 |
+| 3:10:57,128 | 5100  | 1    | 12                 | 663       | 0.07310496493846501 | 0.05786855197695732  | 0.05405405405405406  |
+| 3:14:37,166 | 5200  | 1    | 23                 | 686       | 0.07309921853620846 | 0.05874796608717993  | 0.10454545454545454  |
+| 3:18:09,994 | 5300  | 1    | 11                 | 697       | 0.07309885110207406 | 0.05862562032130541  | 0.05188679245283019  |
+| 3:21:45,911 | 5400  | 1    | 13                 | 710       | 0.07309857034907793 | 0.05865344898802148  | 0.06046511627906977  |
+| 3:25:21,717 | 5500  | 1    | 11                 | 721       | 0.0730983883943735  | 0.05851797743689636  | 0.05116279069767442  |
+| 3:28:45,186 | 5600  | 1    | 1                  | 722       | 0.07309836210105254 | 0.057644710578842316 | 0.0049261083743842365 |
+| 3:32:08,542 | 5700  | 1    | 6                  | 728       | 0.07309824777011383 | 0.05719673161533627  | 0.029556650246305417  |
+| 3:35:38,278 | 5800  | 1    | 2                  | 730       | 0.07309818472309138 | 0.056422940176225074 | 0.009569377990430622  |
+| 3:39:08,699 | 5900  | 1    | 5                  | 735       | 0.07309810286450065 | 0.05590203833282629  | 0.023809523809523808  |
+| 3:42:26,245 | 6000  | 1    | 4                  | 739       | 0.07309802235348928 | 0.05537239622358759  | 0.02030456852791878   |
+| 3:46:05,825 | 6100  | 1    | 7                  | 746       | 0.07309790588031845 | 0.05499447106524143  | 0.0319634703196347    |
+| 3:49:48,689 | 6200  | 1    | 4                  | 750       | 0.07309785182992208 | 0.054395126196692775 | 0.018018018018018018  |
+| 3:53:34,248 | 6300  | 1    | 2                  | 752       | 0.07309781815349518 | 0.053660625089196515 | 0.008888888888888889  |
+| 3:57:16,192 | 6400  | 1    | 5                  | 757       | 0.07309750510682546 | 0.053175049171115485 | 0.02262443438914027   |
+| 4:00:53,411 | 6500  | 1    | 12                 | 769       | 0.07309720367505411 | 0.05320694665467377  | 0.055299539170506916  |
+| 4:04:29,927 | 6600  | 1    | 8                  | 777       | 0.07309702702694651 | 0.0529688458654305   | 0.037037037037037035  |
+| 4:08:08,930 | 6700  | 1    | 6                  | 783       | 0.07309684944135324 | 0.05259269210102096  | 0.0273972602739726    |
+| 4:11:46,634 | 6800  | 1    | 6                  | 789       | 0.07309668419473507 | 0.05223090162849199  | 0.027649769585253458  |
+| 4:15:26,599 | 6900  | 1    | 16                 | 805       | 0.07309466973410544 | 0.052525120709904734 | 0.0730593607305936    |
+| 4:19:04,940 | 7000  | 1    | 11                 | 816       | 0.07309438997588123 | 0.05249613998970664  | 0.05045871559633028   |
+| 4:22:44,713 | 7100  | 1    | 12                 | 828       | 0.0730940976882487  | 0.05252473991372748  | 0.0547945205479452    |
+| 4:26:23,944 | 7200  | 1    | 8                  | 836       | 0.07309392809420517 | 0.05230557467309016  | 0.0365296803652968    |
+| 4:29:48,548 | 7300  | 1    | 0                  | 836       | 0.07309392809420517 | 0.051643192488262914 | 0.0                   |
+| 4:33:12,957 | 7400  | 1    | 1                  | 837       | 0.07309391124253106 | 0.0510614934114202   | 0.004901960784313725  |
+| 4:36:42,318 | 7500  | 1    | 2                  | 839       | 0.07309385617859092 | 0.05053607999036261  | 0.009569377990430622  |
+| 4:40:16,549 | 7600  | 1    | 1                  | 840       | 0.0730938443533809  | 0.04995242626070409  | 0.004672897196261682  |
+| 4:43:34,818 | 7700  | 1    | 2                  | 842       | 0.07309382055613647 | 0.04948865640061126  | 0.010101010101010102  |
+| 4:47:18,965 | 7800  | 1    | 2                  | 844       | 0.07309378718326351 | 0.04896159647290869  | 0.008928571428571428  |
+| 4:51:04,338 | 7900  | 1    | 0                  | 844       | 0.07309378718326351 | 0.048327989005955106 | 0.0                   |
+| 4:54:47,373 | 8000  | 1    | 2                  | 846       | 0.07309374127433574 | 0.0478317408265958   | 0.008968609865470852  |
+| 4:58:31,077 | 8100  | 1    | 2                  | 848       | 0.07309363692407175 | 0.04734520685612194  | 0.008968609865470852  |
+| 5:02:10,544 | 8200  | 1    | 9                  | 857       | 0.07309340489144171 | 0.04726971869829013  | 0.0410958904109589    |
+| 5:05:45,062 | 8300  | 1    | 11                 | 868       | 0.07309318410691425 | 0.047317924116877456 | 0.0514018691588785    |
+| 5:09:22,533 | 8400  | 1    | 7                  | 875       | 0.07309302698309379 | 0.04713931688395647  | 0.03225806451612903   |
+| 5:13:26,347 | 8500  | 1    | 5                  | 880       | 0.07309285342014568 | 0.04679357651813251  | 0.0205761316872428    |
+| 5:17:27,126 | 8600  | 1    | 11                 | 891       | 0.07309253264491927 | 0.04677902031816034  | 0.04583333333333333   |
+| 5:21:31,553 | 8700  | 1    | 5                  | 896       | 0.07309245446404462 | 0.046446529469700897 | 0.020491803278688523  |
+| 5:25:38,319 | 8800  | 1    | 2                  | 898       | 0.07309242873777845 | 0.0459617156310779   | 0.008130081300813009  |
+| 5:29:41,736 | 8900  | 1    | 4                  | 902       | 0.07309234645343027 | 0.045599312471563624 | 0.01646090534979424   |
+| 5:33:30,823 | 9000  | 1    | 1                  | 903       | 0.07309233563012708 | 0.04512743628185907  | 0.004366812227074236  |
+| 5:37:10,387 | 9100  | 1    | 0                  | 903       | 0.07309233563012708 | 0.04463667820069204  | 0.0                   |
+| 5:40:57,579 | 9200  | 1    | 2                  | 905       | 0.0730922993332369  | 0.04423913574815467  | 0.00881057268722467   |
+| 5:44:49,794 | 9300  | 1    | 1                  | 906       | 0.0730922884619689  | 0.04379138672724636  | 0.004310344827586207  |
+| 5:48:27,415 | 9400  | 1    | 1                  | 907       | 0.07309224678509009 | 0.043382599129478165 | 0.004608294930875576  |
+| 5:52:33,240 | 9500  | 1    | 2                  | 909       | 0.07309219193528747 | 0.04297262799602893  | 0.00816326530612245   |
+| 5:56:39,991 | 9600  | 1    | 1                  | 910       | 0.07309218092375692 | 0.042525351651946354 | 0.0040650406504065045 |
+| 6:00:45,900 | 9700  | 1    | 1                  | 911       | 0.07309216698939802 | 0.042088242088242085 | 0.004081632653061225  |
+| 6:04:49,551 | 9800  | 1    | 2                  | 913       | 0.07309209682653982 | 0.04171044817031386  | 0.00823045267489712   |
+| 6:08:52,040 | 9900  | 1    | 3                  | 916       | 0.07309205452687607 | 0.04138990556233338  | 0.012396694214876033  |
+| 6:12:45,224 | 10000 | 1    | 9                  | 925       | 0.07309185340786471 | 0.041359266711379385 | 0.03862660944206009   |
+| 6:16:50,521 | 10100 | 1    | 1                  | 926       | 0.07309183522360874 | 0.04095532950022114  | 0.004081632653061225  |
+| 6:20:55,589 | 10200 | 1    | 0                  | 926       | 0.07309183522360874 | 0.04051629840297528  | 0.0                   |
+| 6:25:00,764 | 10300 | 1    | 5                  | 931       | 0.07309175908890918 | 0.040303030303030306 | 0.02040816326530612   |
+| 6:29:02,160 | 10400 | 1    | 3                  | 934       | 0.07309169505668514 | 0.04001370919372804  | 0.012448132780082987  |
+| 6:33:05,121 | 10500 | 1    | 4                  | 938       | 0.07309162417499007 | 0.03977104091583634  | 0.01652892561983471   |
+| 6:37:06,920 | 10600 | 1    | 4                  | 942       | 0.07309156968591528 | 0.03953664064467389  | 0.016597510373443983  |
+| 6:41:03,246 | 10700 | 1    | 1                  | 943       | 0.07309155013915339 | 0.039188796076964634 | 0.00423728813559322   |
+| 6:44:36,697 | 10800 | 1    | 0                  | 943       | 0.07309155013915339 | 0.03884494974460372  | 0.0                   |
+| 6:48:25,830 | 10900 | 1    | 0                  | 943       | 0.07309155013915339 | 0.0384819424607223   | 0.0                   |
+| 6:52:19,787 | 11000 | 1    | 1                  | 944       | 0.07309154006329707 | 0.038158373418489024 | 0.004291845493562232  |
+| 6:55:58,134 | 11100 | 1    | 0                  | 944       | 0.07309154006329707 | 0.037823543553169324 | 0.0                   |
+| 7:00:02,705 | 11200 | 1    | 1                  | 945       | 0.07309152752886418 | 0.03749702404571066  | 0.004098360655737705  |
+| 7:04:07,122 | 11300 | 1    | 1                  | 946       | 0.07309149758784834 | 0.037175305536998465 | 0.004098360655737705  |
+| 7:08:14,103 | 11400 | 1    | 0                  | 946       | 0.07309149758784834 | 0.03681793414805013  | 0.0                   |
+| 7:12:18,438 | 11500 | 1    | 1                  | 947       | 0.07309148072636867 | 0.03651013956357468  | 0.004098360655737705  |
+| 7:16:24,163 | 11600 | 1    | 0                  | 947       | 0.07309148072636867 | 0.03616712496180874  | 0.0                   |
+| 7:20:30,165 | 11700 | 1    | 1                  | 948       | 0.07309146873082521 | 0.0358683314415437   | 0.0040650406504065045 |
+| 7:24:36,288 | 11800 | 1    | 1                  | 949       | 0.07309145780562787 | 0.03557504873294347  | 0.0040650406504065045 |
+| 7:28:42,260 | 11900 | 1    | 0                  | 949       | 0.07309145780562787 | 0.03524998142782854  | 0.0                   |
+| 7:32:46,590 | 12000 | 1    | 1                  | 950       | 0.07309144201059163 | 0.03497018331738202  | 0.004098360655737705  |
+| 7:36:51,260 | 12100 | 1    | 0                  | 950       | 0.07309144201059163 | 0.03465761920396921  | 0.0                   |
+| 7:40:55,189 | 12200 | 1    | 1                  | 951       | 0.07309142695866662 | 0.0343879949376243   | 0.00411522633744856   |
+| 7:45:00,358 | 12300 | 1    | 0                  | 951       | 0.07309142695866662 | 0.034086021505376346 | 0.0                   |
+| 7:49:05,640 | 12400 | 1    | 0                  | 951       | 0.07309142695866662 | 0.03378930538283887  | 0.0                   |
+| 7:52:34,571 | 12500 | 1    | 0                  | 951       | 0.07309142695866662 | 0.03354024123580447  | 0.0                   |
+| 7:56:20,118 | 12600 | 1    | 0                  | 951       | 0.07309142695866662 | 0.03327501749475158  | 0.0                   |
+| 8:00:14,598 | 12700 | 1    | 0                  | 951       | 0.07309142695866662 | 0.033004789338516    | 0.0                   |
+| 8:03:54,552 | 12800 | 1    | 0                  | 951       | 0.07309142695866662 | 0.03275470138458359  | 0.0                   |
+| 8:08:02,295 | 12900 | 1    | 1                  | 952       | 0.07309140636708067 | 0.032511440475377365 | 0.004048582995951417  |
+| 8:12:05,407 | 13000 | 1    | 2                  | 954       | 0.07309135958166478 | 0.03231160033869602  | 0.00823045267489712   |
+| 8:16:12,589 | 13100 | 1    | 0                  | 954       | 0.07309135958166478 | 0.03204353083434099  | 0.0                   |
+| 8:20:18,937 | 13200 | 1    | 0                  | 954       | 0.07309135958166478 | 0.03178093144113532  | 0.0                   |
+| 8:24:26,065 | 13300 | 1    | 0                  | 954       | 0.07309135958166478 | 0.03152051807308531  | 0.0                   |
+| 8:28:31,471 | 13400 | 1    | 2                  | 956       | 0.07309133028532735 | 0.031332961882599715 | 0.00816326530612245   |
+| 8:32:34,582 | 13500 | 1    | 3                  | 959       | 0.07309129074660728 | 0.031182935553098784 | 0.012345679012345678  |
+| 8:36:41,978 | 13600 | 1    | 0                  | 959       | 0.07309129074660728 | 0.030934485984323086 | 0.0                   |
+| 8:40:47,487 | 13700 | 1    | 2                  | 961       | 0.07309126825830933 | 0.030754952475437643 | 0.00816326530612245   |
+| 8:44:52,656 | 13800 | 1    | 1                  | 962       | 0.07309125484645065 | 0.03054744061983996  | 0.004081632653061225  |
+| 8:48:59,187 | 13900 | 1    | 2                  | 964       | 0.07309123355110077 | 0.030372727559154353 | 0.008130081300813009  |
+| 8:53:05,348 | 14000 | 1    | 4                  | 968       | 0.07309116210142051 | 0.03026418633734563  | 0.016260162601626018  |
+| 8:57:12,172 | 14100 | 1    | 1                  | 969       | 0.07309115160717022 | 0.030063291139240507 | 0.0040650406504065045 |
+| 9:00:45,872 | 14200 | 1    | 0                  | 969       | 0.07309115160717022 | 0.029865926953305595 | 0.0                   |
+| 9:04:26,223 | 14300 | 1    | 0                  | 969       | 0.07309115160717022 | 0.029663870691238596 | 0.0                   |
+| 9:08:24,798 | 14400 | 1    | 0                  | 969       | 0.07309115160717022 | 0.029449307075127645 | 0.0                   |
+| 9:12:01,014 | 14500 | 1    | 0                  | 969       | 0.07309115160717022 | 0.029257246376811593 | 0.0                   |
+| 9:16:06,209 | 14600 | 1    | 2                  | 971       | 0.0730911254489231  | 0.02910148054906192  | 0.00816326530612245   |
+| 9:20:13,194 | 14700 | 1    | 0                  | 971       | 0.0730911254489231  | 0.028887632761134086 | 0.0                   |
+| 9:24:19,075 | 14800 | 1    | 0                  | 971       | 0.0730911254489231  | 0.02867775185327387  | 0.0                   |
+| 9:28:24,586 | 14900 | 1    | 0                  | 971       | 0.0730911254489231  | 0.028471733520994604 | 0.0                   |
+| 9:32:31,951 | 15000 | 1    | 0                  | 971       | 0.0730911254489231  | 0.02826700823847923  | 0.0                   |
+| 9:36:39,562 | 15100 | 1    | 0                  | 971       | 0.0730911254489231  | 0.028064394924708806 | 0.0                   |
+| 9:40:45,123 | 15200 | 1    | 0                  | 971       | 0.0730911254489231  | 0.0278662648873583   | 0.0                   |
+| 9:44:50,924 | 15300 | 1    | 0                  | 971       | 0.0730911254489231  | 0.02767170133941294  | 0.0                   |
+| 9:48:56,260 | 15400 | 1    | 1                  | 972       | 0.07309111372632514 | 0.02750735793525017  | 0.004081632653061225  |
+| 9:53:03,809 | 15500 | 1    | 0                  | 972       | 0.07309111372632514 | 0.02731641514206222  | 0.0                   |
+| 9:57:11,740 | 15600 | 1    | 0                  | 972       | 0.07309111372632514 | 0.027127347827300384 | 0.0                   |
+| 10:01:17,825 | 15700 | 1    | 0                  | 972       | 0.07309111372632514 | 0.026942373257199878 | 0.0                   |
+| 10:05:23,993 | 15800 | 1    | 0                  | 972       | 0.07309111372632514 | 0.026759904192935606 | 0.0                   |
+| 10:09:07,431 | 15900 | 1    | 0                  | 972       | 0.07309111372632514 | 0.02659589022354776  | 0.0                   |
+| 10:12:40,599 | 16000 | 1    | 0                  | 972       | 0.07309111372632514 | 0.0264417845484222   | 0.0                   |
+| 10:16:40,684 | 16100 | 1    | 0                  | 972       | 0.07309111372632514 | 0.02627027027027027  | 0.0                   |
+| 10:20:17,650 | 16200 | 1    | 0                  | 972       | 0.07309111372632514 | 0.02611709702555284  | 0.0                   |
+| 10:24:20,505 | 16300 | 1    | 0                  | 972       | 0.07309111372632514 | 0.02594767752269087  | 0.0                   |
+| 10:28:28,166 | 16400 | 1    | 0                  | 972       | 0.07309111372632514 | 0.025777023443301156 | 0.0                   |
+| 10:32:34,674 | 16500 | 1    | 1                  | 973       | 0.07309108655613518 | 0.02563629656953154  | 0.0040650406504065045 |
+| 10:36:42,010 | 16600 | 1    | 0                  | 973       | 0.07309108655613518 | 0.025470537420486376 | 0.0                   |
+| 10:40:49,229 | 16700 | 1    | 0                  | 973       | 0.07309108655613518 | 0.025306249837447007 | 0.0                   |
+| 10:44:55,053 | 16800 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02514536761855537  | 0.0                   |
+| 10:49:01,903 | 16900 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02498651806579184  | 0.0                   |
+| 10:53:09,053 | 17000 | 1    | 0                  | 973       | 0.07309108655613518 | 0.0248283957232897   | 0.0                   |
+| 10:57:16,294 | 17100 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02467288771680698  | 0.0                   |
+| 11:01:23,144 | 17200 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02451931557593932  | 0.0                   |
+| 11:05:29,453 | 17300 | 1    | 0                  | 973       | 0.07309108655613518 | 0.024368253650229158 | 0.0                   |
+| 11:09:35,669 | 17400 | 1    | 0                  | 973       | 0.07309108655613518 | 0.0242190416925949   | 0.0                   |
+| 11:13:43,463 | 17500 | 1    | 0                  | 973       | 0.07309108655613518 | 0.024070454939019863 | 0.0                   |
+| 11:17:28,238 | 17600 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02393721708325133  | 0.0                   |
+| 11:21:04,521 | 17700 | 1    | 0                  | 973       | 0.07309108655613518 | 0.023810689115113547 | 0.0                   |
+| 11:25:03,273 | 17800 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02367223803615308  | 0.0                   |
+| 11:28:45,487 | 17900 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02354506957047792  | 0.0                   |
+| 11:32:37,626 | 18000 | 1    | 0                  | 973       | 0.07309108655613518 | 0.0234136246601054   | 0.0                   |
+| 11:36:43,944 | 18100 | 1    | 0                  | 973       | 0.07309108655613518 | 0.023275841446786117 | 0.0                   |
+| 11:40:50,320 | 18200 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02313912009512485  | 0.0                   |
+| 11:44:57,086 | 18300 | 1    | 0                  | 973       | 0.07309108655613518 | 0.023003995555240325 | 0.0                   |
+| 11:49:04,504 | 18400 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02287044001504325  | 0.0                   |
+| 11:53:11,516 | 18500 | 1    | 0                  | 973       | 0.07309108655613518 | 0.02273842630459676  | 0.0                   |
+| 11:57:18,756 | 18600 | 1    | 0                  | 973       | 0.07309108655613518 | 0.022607927877689483 | 0.0                   |
+| 12:01:25,302 | 18700 | 1    | 0                  | 973       | 0.07309108655613518 | 0.022478918794039505 | 0.0                   |
