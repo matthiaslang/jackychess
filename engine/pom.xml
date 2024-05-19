@@ -78,7 +78,6 @@
         <activateStatistics>true</activateStatistics>
     </properties>
     <build>
-        <finalName>jackychess-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -95,19 +94,36 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.mattlang.jc.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <finalName>jackychess-${version}</finalName>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <mainClass>org.mattlang.jc.Main</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
 
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
