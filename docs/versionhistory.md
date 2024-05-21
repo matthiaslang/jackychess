@@ -1,5 +1,11 @@
 # Versions
 
+### 24.05
+
+- retuned all evaluation parameters with a new test data set (lichess-big3-resolved.book).
+  Amazingly this brings a boost of 30-40 Elos.
+
+
 ## 24.04
 
 Official Version since 23.12.
