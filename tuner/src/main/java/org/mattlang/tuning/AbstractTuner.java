@@ -44,9 +44,20 @@ public abstract class AbstractTuner {
         final String path = determineOutputPath();
         File filepath = new File(path);
         outputDir = new File(filepath, params.getEvalParamSet().toLowerCase());
+        outputDir.mkdirs();
         File mdFile = new File(outputDir, params.getName() + ".md");
         continuingTuningRun = mdFile.exists();
         markdownAppender = new MarkdownAppender(mdFile);
+
+        if (continuingTuningRun) {
+            markdownAppender.append(w -> {
+                w.paragraph("continuing tuning run");
+            });
+        } else {
+            markdownAppender.append(w -> {
+                w.paragraph("# Tuning Run");
+            });
+        }
 
         System.setProperty(LOGGING_ACTIVATE, "true");
         System.setProperty(LOGGING_DIR, ".");

@@ -17,6 +17,10 @@ import org.mattlang.jc.command.commands.JCTCommand;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        parseCommandFromArgs(args).ifPresent(c -> c.executeCommand());
+    }
+
+    public static Optional<JCTCommand> parseCommandFromArgs(String[] args) {
         CommandMain main = new CommandMain();
         List<JCTCommand> commands = new ArrayList<>();
         CommandTune tune = new CommandTune();
@@ -40,7 +44,7 @@ public class Main {
             if (main.isHelp()) {
                 jc.usage();
             } else if (optMatch.isPresent()) {
-                optMatch.get().executeCommand();
+                return optMatch;
             } else {
                 System.err.println("Invalid command: " + cmd);
                 jc.usage();
@@ -49,5 +53,6 @@ public class Main {
             System.err.println(e.getLocalizedMessage());
             jc.usage();
         }
+        return Optional.empty();
     }
 }
