@@ -280,9 +280,9 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         moveList.scoreQuietMoves(orderCalculator, currStartPos);
     }
 
-    private int createCaptureSortOrders(int currStartPos) {
+    private void createCaptureSortOrders(int currStartPos) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        return moveList.scoreCaptureMoves(orderCalculator, currStartPos);
+        moveList.scoreCaptureMoves(orderCalculator, currStartPos);
     }
 
     public MoveBoardIterator iterateMoves() {
