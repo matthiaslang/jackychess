@@ -1,5 +1,11 @@
 # Versions
 
+### not named yet
+
+- removed move ordering by pst: in retests this has not shown any effect. In contray - removing it seem to
+  give a few more Elo.
+
+
 ### 24.05
 
 - retuned all evaluation parameters with a new test data set (lichess-big3-resolved.book).

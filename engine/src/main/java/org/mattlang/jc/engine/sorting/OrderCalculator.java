@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
@@ -127,8 +126,8 @@ public final class OrderCalculator {
             }
         }
         int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
-        int pstDelta = calcPstDelta(m);
-        return -mvvLva * 1000 + pstDelta + QUIET;
+
+        return -mvvLva * 1000 + QUIET;
     }
 
     public int calcOrderForCaptures(MoveImpl m) {
@@ -147,9 +146,7 @@ public final class OrderCalculator {
         }
     }
 
-    private int calcPstDelta(Move m) {
-        return evaluateFunction.calcPstDelta(color, m);
-    }
+
 
     /**
      * Returns an counter move for this position or 0.
