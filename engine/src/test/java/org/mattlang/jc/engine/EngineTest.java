@@ -179,7 +179,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isEqualTo("e7e5");
+        assertThat(move.toStr()).isEqualTo("b8c6");
     }
 
     /**
@@ -200,7 +200,7 @@ public class EngineTest {
 
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(18000000))
-                .config(c -> c.maxDepth.setValue(30))
+                .config(c -> c.maxDepth.setValue(31))
                 //                .config(c->c.aspiration.setValue(false))
                 .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
         // now starting engine:
