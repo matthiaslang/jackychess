@@ -14,7 +14,7 @@ public class LocalOptExperiment03 {
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
-                .name("lichess test2")
+                .name("lichess test3")
                 .evalParamSet("CURRENT")
                 .optimizeRecalcOnlyDependendFens(false)
                 .resetParametersBeforeTuning(false)
@@ -22,7 +22,7 @@ public class LocalOptExperiment03 {
                 .k(1.43)
                 .multiThreading(true)
                 .threadCount(5)
-                .delta(0.00000001)
+                .delta(0.000000001)
                 .stepGranularity( asList(   1 ))
                 .removeDuplicateFens(true)
                 .tunePst(true)
