@@ -196,19 +196,4 @@ public final class Pattern {
         return new Pattern(patternBlack);
     }
 
-    /**
-     * Extracts the mg scores from this combined Pattern.
-     * Note that it needs to be ensured that this is a Pattern containing combined (mg/eg) scores, otherwise
-     * this will return wrong data.
-     *
-     * @return a new Pattern containing only the mg part of this combined pattern.
-     */
-    public Pattern extractMg() {
-        int[] patternMg = new int[64];
-        for (int i = 0; i < 64; i++) {
-            patternMg[i] = MgEgScore.getMgScore(this.patternBlack[i]);
-        }
-        return new Pattern(patternMg);
-    }
-
 }
