@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
@@ -204,11 +203,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         }
 
         return score;
-    }
-
-    @Override
-    public int calcPstDelta(Color color, Move m) {
-        return pstEvaluation.calcPstDelta(color, m);
     }
 
     @Override
