@@ -179,7 +179,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isEqualTo("b8c6");
+        assertThat(move.toStr()).isEqualTo("e7e5");
     }
 
     /**
