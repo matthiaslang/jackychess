@@ -1,5 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
+import static java.lang.System.arraycopy;
 import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
@@ -419,5 +420,10 @@ public class BitChessBoard {
 
     public static String createMask(long mask, String title) {
         return title + "\n" + toStr(mask);
+    }
+
+    public void copyFrom(BitChessBoard bitChessBoard) {
+        arraycopy(bitChessBoard.colorBB, 0, this.colorBB, 0, bitChessBoard.colorBB.length);
+        arraycopy(bitChessBoard.pieceBB, 0, this.pieceBB, 0, bitChessBoard.pieceBB.length);
     }
 }
