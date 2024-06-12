@@ -25,6 +25,7 @@ public class Perft {
 
     private boolean debug = false;
 
+    int allNodes=0;
     int nodes = 0;
     int captures = 0;
     int ep = 0;
@@ -42,6 +43,7 @@ public class Perft {
     }
 
     public void perftReset() {
+        allNodes = 0;
         nodes = 0;
         captures = 0;
         ep = 0;
@@ -57,7 +59,7 @@ public class Perft {
         long stop = System.currentTimeMillis();
         long duration = stop - start;
         if (duration != 0) {
-            long nodesPerSecond = (long) nodes * 1000 / duration;
+            long nodesPerSecond = (long) allNodes * 1000 / duration;
             System.out.println("Nodes/s = " + nodesPerSecond);
         }
         SoftAssertions softly = new SoftAssertions();
@@ -76,7 +78,7 @@ public class Perft {
         long stop = System.currentTimeMillis();
         long duration = stop - start;
         if (duration != 0) {
-            long nodesPerSecond = (long) nodes * 1000 / duration;
+            long nodesPerSecond = (long) allNodes * 1000 / duration;
             System.out.println("Nodes/s = " + nodesPerSecond);
         }
         SoftAssertions softly = new SoftAssertions();
@@ -100,11 +102,9 @@ public class Perft {
             Color color,
             int depth) {
 
+        allNodes++;
         if (depth == 0) {
             nodes++;
-            if (debug == true) {
-                System.out.println(board.toUniCodeStr());
-            }
             return;
         }
         StagedMoveIterationPreparer moveIterationPreparer = SearchThreadContexts.CONTEXTS.getContext(0).getMoveIterationPreparer(depth);
