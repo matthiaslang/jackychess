@@ -5,7 +5,6 @@ import static org.mattlang.tuning.evaluate.ParamUtils.exchangeParam;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
@@ -34,19 +33,12 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
      * callback to be called after an value update of a pst value. This can be used to do any arbitrary initialisation
      * work in the evaluation after a pst value has been changed.
      */
-    private final Consumer<ParameterizedEvaluation> afterUpdateCallback;
-
-    public ArrayFunctionParameterGroup(String propertyName,
-            ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedEvaluation, ArrayFunction> getter, IntIntervall intervall) {
-        this(propertyName, parameterizedEvaluation, getter, intervall, e -> {
-        });
-    }
+    private final ArrayFunctionUpdate afterUpdateCallback;
 
     public ArrayFunctionParameterGroup(String propertyName,
             ParameterizedEvaluation parameterizedEvaluation,
             Function<ParameterizedEvaluation, ArrayFunction> getter, IntIntervall intervall,
-            Consumer<ParameterizedEvaluation> afterUpdateCallback) {
+            ArrayFunctionUpdate afterUpdateCallback) {
         this.propertyName = propertyName;
         this.getter = getter;
         this.function = getter.apply(parameterizedEvaluation).copy();
@@ -100,7 +92,7 @@ public class ArrayFunctionParameterGroup implements TuningParameterGroup {
 
     public void setVal(ParameterizedEvaluation evaluation, int pos, int val) {
         getter.apply(evaluation).setVal(pos, val);
-        afterUpdateCallback.accept(evaluation);
+        afterUpdateCallback.update(evaluation, pos, val);
     }
 
 }

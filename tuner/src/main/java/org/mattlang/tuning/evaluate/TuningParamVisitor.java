@@ -82,13 +82,13 @@ public class TuningParamVisitor implements EvalConfigVisitor {
                     evaluation,
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).functionMg,
                     deriveInterval(intIntervall),
-                    e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedVals()));
+                    (e, pos, value) -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedValue(pos)));
 
             groups.add(new ArrayFunctionParameterGroup(configDefinition.getFullQualifiedPropNameEg(),
                     evaluation,
                     e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).functionEg,
                     deriveInterval(intIntervall),
-                    e -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedVals()));
+                    (e, pos, value) -> ((MgEgArrayFunction) fieldAccessStack.get(e)).updateCombinedValue(pos)));
         }
     }
 
