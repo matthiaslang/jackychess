@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
@@ -49,7 +48,6 @@ public final class OrderCalculator {
     final private KillerMoves killerMoves;
     final private CounterMoveHeuristic counterMoveHeuristic;
 
-    final private EvaluateFunction evaluateFunction;
     private Color color;
 
     private int ply;
@@ -62,12 +60,11 @@ public final class OrderCalculator {
 
     private int captureMargin = 0;
 
-    public OrderCalculator(SearchThreadContext stc, EvaluateFunction evaluateFunction) {
+    public OrderCalculator(SearchThreadContext stc) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
         this.useMvvLva = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
-        this.evaluateFunction = evaluateFunction;
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
