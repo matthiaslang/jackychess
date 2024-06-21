@@ -24,7 +24,7 @@ public class FenEntry {
      */
     private int lastEval = NO_EVAL;
 
-    private BitSet dependingParams = new BitSet();
+    private BitSet dependingParams = null;
 
     public FenEntry(String fen, BoardRepresentation board, Ending ending) {
         //        this.fen = fen;
@@ -43,12 +43,19 @@ public class FenEntry {
     }
 
     public void addDependingParameter(TuningParameter param) {
-        dependingParams.set(param.getParamNo());
+        getDependingParams().set(param.getParamNo());
     }
 
     public void resetIfDepending(int paramNo) {
-        if (dependingParams.get(paramNo)) {
+        if (getDependingParams().get(paramNo)) {
             lastEval = NO_EVAL;
         }
+    }
+
+    public BitSet getDependingParams() {
+        if (dependingParams == null) {
+            dependingParams = new BitSet();
+        }
+        return dependingParams;
     }
 }
