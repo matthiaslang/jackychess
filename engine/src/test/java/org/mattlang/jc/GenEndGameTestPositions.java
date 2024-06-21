@@ -93,7 +93,7 @@ public class GenEndGameTestPositions {
                     rangeTo = 64 - 16;
                 }
                 int index = randomIndex(rangeFrom, rangeTo);
-                while (board.getPos(index) != Figure.EMPTY) {
+                while (board.getFigure(index) != Figure.EMPTY) {
                     index = randomIndex(rangeFrom, rangeTo);
                 }
                 board.setPos(index, figure);

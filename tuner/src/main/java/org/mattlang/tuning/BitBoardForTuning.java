@@ -93,11 +93,6 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public Figure getPos(int i) {
-        return Figure.getFigureByCode(board.get(i));
-    }
-
-    @Override
     public Figure getFigurePos(int row, int col) {
         return Figure.getFigureByCode(board.get((7 - row) * 8 + col));
     }

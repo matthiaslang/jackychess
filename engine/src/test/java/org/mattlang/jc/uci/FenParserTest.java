@@ -38,7 +38,7 @@ public class FenParserTest {
         p.setPosition("position fen 4k2q/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1q g7h8n", board);
         System.out.println(board.toUniCodeStr());
 
-        assertThat(board.getPos(IndexConversion.parsePos("h8"))).isEqualTo(Figure.W_Knight);
+        assertThat(board.getFigure(IndexConversion.parsePos("h8"))).isEqualTo(Figure.W_Knight);
 
     }
 

@@ -19,8 +19,6 @@ public interface BoardRepresentation {
 
     char getPos(int row, int col);
 
-    Figure getPos(int i);
-
     Figure getFigurePos(int row, int col);
 
     void clearPosition();
@@ -33,9 +31,9 @@ public interface BoardRepresentation {
 
     Color getSiteToMove();
 
-    Figure getFigure(int i);
+    Figure getFigure(int pos);
 
-    byte getFigureCode(int i);
+    byte getFigureCode(int pos);
 
     BoardRepresentation copy();
 

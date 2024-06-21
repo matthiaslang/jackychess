@@ -78,7 +78,7 @@ public class Blind {
         if (weightCapFig > weightFig || weightFig == MVVLVA_BISHOP && weightCapFig == MVVLVA_KNIGHT)
             return true;
 
-        Figure fig = board.getPos(sq_fr);
+        Figure fig = board.getFigure(sq_fr);
         /* Make the first capture, so that X-ray defender show up*/
         board.setPos(sq_fr, Figure.EMPTY);
 
