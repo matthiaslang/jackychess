@@ -45,38 +45,14 @@ public class DatasetPreparer {
             List<PgnGame> games = parser.parse(file);
 
             return prepareGames(games);
-        } else if (file.getName().endsWith(".epd")) {
+        } else if (file.getName().endsWith(".epd") || file.getName().endsWith(".book")) {
             return prepareFromEpd(file);
-        } else if (file.getName().endsWith(".book")) {
-            return prepareFromBook(file);
         } else {
             throw new RuntimeException("can only parse pgn or epd files!");
         }
     }
 
     private DataSet prepareFromEpd(File file) {
-        DataSet dataSet = new DataSet(params);
-
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-
-            LOGGER.info("preparing Data now...");
-
-            stream.forEach(line -> {
-                try {
-                    parseFen(dataSet, line);
-                } catch (RuntimeException re) {
-                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line);
-                    //                    throw re;
-                }
-            });
-            return dataSet;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private DataSet prepareFromBook(File file) {
         DataSet dataSet = new DataSet(params);
 
         try (Stream<String> stream = Files.lines(file.toPath())) {
@@ -124,13 +100,13 @@ public class DatasetPreparer {
         } else if (line.contains("pgn=1.0")) {
             ending = Ending.MATE_BLACK;
             line = line.replace("pgn=1.0", "");
-        } else if (line.contains("[1.0]")){
+        } else if (line.contains("[1.0]")) {
             line = line.replace("[1.0]", "");
             ending = Ending.MATE_WHITE;
-        } else if (line.contains("[0.5]")){
+        } else if (line.contains("[0.5]")) {
             line = line.replace("[0.5]", "");
             ending = Ending.DRAW;
-        } else if (line.contains("[0.0]")){
+        } else if (line.contains("[0.0]")) {
             line = line.replace("[0.0]", "");
             ending = Ending.MATE_BLACK;
         } else {
