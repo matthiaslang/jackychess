@@ -46,6 +46,10 @@ public class ParameterSet {
 
         ConfigFilter configFilter = new ConfigFilter();
 
+        if (optParams.getTuneParams() != null && !"".equals(optParams.getTuneParams().trim())) {
+            configFilter.addFilter(optParams.getTuneParams());
+        }
+
         if (optParams.isTunePawnEval()) {
             configFilter.addFilter("pawn\\..*");
         }

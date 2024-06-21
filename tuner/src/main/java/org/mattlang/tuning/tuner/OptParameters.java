@@ -73,6 +73,8 @@ public class OptParameters {
     private boolean tuneKingSafety = true;
     private boolean tuneComplexity = true;
 
+    private String tuneParams=null;
+
     private boolean removeDuplicateFens = true;
 
     private int threadCount = 7;
