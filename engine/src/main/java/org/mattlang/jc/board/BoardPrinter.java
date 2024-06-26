@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.util.FenComposer;
 
 public class BoardPrinter {
 
@@ -18,6 +19,9 @@ public class BoardPrinter {
 
         StringBuilder all = new StringBuilder();
 
+        FenComposer fenComposer=new FenComposer();
+        fenComposer.createFenFromBoard(board);
+        all.append(fenComposer.createFenStr() + "\n");
         // two variants, since the unicode characters are weird on some consoles...
         String s1 = toStr((row, col) -> board.getPos(row, col));
         //        String s2 =  toStr((row,col) -> board.getFigurePos(row,col).figureCharUnicode);
