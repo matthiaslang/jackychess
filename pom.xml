@@ -75,6 +75,7 @@
     <modules>
         <module>engine</module>
         <module>tuner</module>
+        <module>tools</module>
     </modules>
 
     <build>
