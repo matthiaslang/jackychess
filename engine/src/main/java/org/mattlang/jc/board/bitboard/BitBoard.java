@@ -294,16 +294,12 @@ public final class BitBoard implements BoardRepresentation {
 
         // check double pawn move. here we need to mark an possible en passant follow up move:
         // be careful: we must not set the en passant option by undoing a double pawn move:
-        if (figType == FT_PAWN) {
-            if (isWhiteFigure && to - from == 16) {
-                setEnPassantOption((from + to) / 2);
-            } else if (!isWhiteFigure && from - to == 16) {
-                setEnPassantOption((from + to) / 2);
-            }
+        if (figType == FT_PAWN && Math.abs(to - from) == 16) {
+            setEnPassantOption((from + to) / 2);
         }
     }
 
-    private void zobristMoveUpdate(byte figType, int from, int to, byte figCode, byte capturedFigure){
+    private void zobristMoveUpdate(byte figType, int from, int to, byte figCode, byte capturedFigure) {
         zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
         zobristHash = Zobrist.addFig(zobristHash, to, figCode);
         if (capturedFigure != 0) {
