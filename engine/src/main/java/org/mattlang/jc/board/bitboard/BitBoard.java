@@ -263,21 +263,21 @@ public final class BitBoard implements BoardRepresentation {
                 if (isWhiteFigure) {
                     if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(WHITE_LONG);
+                        castlingRights.removeRight(WHITE_LONG);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(WHITE_SHORT);
+                        castlingRights.removeRight(WHITE_SHORT);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     }
                 } else {
                     if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(BLACK_LONG);
+                        castlingRights.removeRight(BLACK_LONG);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(BLACK_SHORT);
+                        castlingRights.removeRight(BLACK_SHORT);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     }
                 }
@@ -315,15 +315,15 @@ public final class BitBoard implements BoardRepresentation {
 
     private void removeWhiteCastlingRights() {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.retain(WHITE_SHORT);
-        castlingRights.retain(WHITE_LONG);
+        castlingRights.removeRight(WHITE_SHORT);
+        castlingRights.removeRight(WHITE_LONG);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
     private void removeBlackCastlingRights() {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.retain(BLACK_SHORT);
-        castlingRights.retain(BLACK_LONG);
+        castlingRights.removeRight(BLACK_SHORT);
+        castlingRights.removeRight(BLACK_LONG);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 

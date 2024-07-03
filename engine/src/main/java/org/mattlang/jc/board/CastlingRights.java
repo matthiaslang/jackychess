@@ -26,7 +26,7 @@ public class CastlingRights {
         castlingRights |= castlingType.getCastlingBitMask();
     }
 
-    public void retain(CastlingType castlingType) {
+    public void removeRight(CastlingType castlingType) {
         castlingRights &= 0xFF - castlingType.getCastlingBitMask();
     }
 

@@ -16,13 +16,13 @@ public class CastlingRightsTest {
         assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
         assertThat(rights.isAllowed(BLACK_LONG)).isTrue();
 
-        rights.retain(WHITE_SHORT);
+        rights.removeRight(WHITE_SHORT);
         assertThat(rights.isAllowed(WHITE_SHORT)).isFalse();
         assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
         assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
         assertThat(rights.isAllowed(BLACK_LONG)).isTrue();
 
-        rights.retain(BLACK_LONG);
+        rights.removeRight(BLACK_LONG);
         assertThat(rights.isAllowed(WHITE_SHORT)).isFalse();
         assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
         assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
