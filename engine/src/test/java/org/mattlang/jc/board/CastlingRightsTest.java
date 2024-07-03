@@ -1,10 +1,7 @@
 package org.mattlang.jc.board;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.board.CastlingType.*;
 
 import org.junit.Test;
 
@@ -14,27 +11,27 @@ public class CastlingRightsTest {
     public void testCastlingRights() {
         CastlingRights rights = new CastlingRights();
 
-        assertThat(rights.isAllowed(WHITE, SHORT)).isTrue();
-        assertThat(rights.isAllowed(BLACK, SHORT)).isTrue();
-        assertThat(rights.isAllowed(WHITE, LONG)).isTrue();
-        assertThat(rights.isAllowed(BLACK, LONG)).isTrue();
+        assertThat(rights.isAllowed(WHITE_SHORT)).isTrue();
+        assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
+        assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
+        assertThat(rights.isAllowed(BLACK_LONG)).isTrue();
 
-        rights.retain(WHITE, SHORT);
-        assertThat(rights.isAllowed(WHITE, SHORT)).isFalse();
-        assertThat(rights.isAllowed(BLACK, SHORT)).isTrue();
-        assertThat(rights.isAllowed(WHITE, LONG)).isTrue();
-        assertThat(rights.isAllowed(BLACK, LONG)).isTrue();
+        rights.retain(WHITE_SHORT);
+        assertThat(rights.isAllowed(WHITE_SHORT)).isFalse();
+        assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
+        assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
+        assertThat(rights.isAllowed(BLACK_LONG)).isTrue();
 
-        rights.retain(BLACK, LONG);
-        assertThat(rights.isAllowed(WHITE, SHORT)).isFalse();
-        assertThat(rights.isAllowed(BLACK, SHORT)).isTrue();
-        assertThat(rights.isAllowed(WHITE, LONG)).isTrue();
-        assertThat(rights.isAllowed(BLACK, LONG)).isFalse();
+        rights.retain(BLACK_LONG);
+        assertThat(rights.isAllowed(WHITE_SHORT)).isFalse();
+        assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
+        assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
+        assertThat(rights.isAllowed(BLACK_LONG)).isFalse();
 
-        rights.setAllowed(BLACK, LONG);
-        assertThat(rights.isAllowed(WHITE, SHORT)).isFalse();
-        assertThat(rights.isAllowed(BLACK, SHORT)).isTrue();
-        assertThat(rights.isAllowed(WHITE, LONG)).isTrue();
-        assertThat(rights.isAllowed(BLACK, LONG)).isTrue();
+        rights.setAllowed(BLACK_LONG);
+        assertThat(rights.isAllowed(WHITE_SHORT)).isFalse();
+        assertThat(rights.isAllowed(BLACK_SHORT)).isTrue();
+        assertThat(rights.isAllowed(WHITE_LONG)).isTrue();
+        assertThat(rights.isAllowed(BLACK_LONG)).isTrue();
     }
 }

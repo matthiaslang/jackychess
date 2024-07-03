@@ -1,7 +1,5 @@
 package org.mattlang.jc.board;
 
-import static org.mattlang.jc.board.RochadeType.SHORT;
-
 import java.util.Objects;
 
 public class CastlingRights {
@@ -16,37 +14,20 @@ public class CastlingRights {
         this.castlingRights = castlingRights;
     }
 
-    public boolean isAllowed(Color color, RochadeType type) {
-        return isAllowed(castlingRights, color, type);
+    public boolean isAllowed(CastlingType castlingType) {
+        return isAllowed(castlingRights, castlingType);
     }
 
-    public static boolean isAllowed(byte castlingRights, Color color, RochadeType type) {
-        int allowedMask = createMask(color, type);
-        return (castlingRights & allowedMask) != 0;
-    }
-
-    public void setAllowed(Color color, RochadeType type) {
-        int mask = createMask(color, type);
-        castlingRights |= mask;
+    public static boolean isAllowed(byte castlingRights, CastlingType castlingType) {
+        return (castlingRights & castlingType.getCastlingBitMask()) != 0;
     }
 
     public void setAllowed(CastlingType castlingType) {
-        int mask = createMask(castlingType.getColor(), castlingType.getRochadeType());
-        castlingRights |= mask;
+        castlingRights |= castlingType.getCastlingBitMask();
     }
 
-    public void retain(Color color, RochadeType type) {
-        int mask = createMask(color, type);
-        castlingRights &= 0xFF - mask;
-    }
-
-    private static byte createMask(Color color, RochadeType type) {
-        int idx = type == SHORT ? 0 : 1;
-        if (color == Color.BLACK) {
-            idx += 2;
-        }
-        byte allowedMask = (byte) (1 << idx);
-        return allowedMask;
+    public void retain(CastlingType castlingType) {
+        castlingRights &= 0xFF - castlingType.getCastlingBitMask();
     }
 
     public byte getRights() {

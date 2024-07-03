@@ -58,7 +58,7 @@ public interface BoardRepresentation {
 
     void setEnPassantOption(int enPassantOption);
 
-    boolean isCastlingAllowed(Color color, RochadeType type);
+    boolean isCastlingAllowed(CastlingType castlingType);
 
     void setCastlingAllowed(CastlingType castlingType, CastlingMove castlingMove);
 

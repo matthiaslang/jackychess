@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.board.RochadeType;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
@@ -35,8 +34,6 @@ public final class CastlingMove {
 
     private final CastlingDef def;
 
-    private final byte type;
-
     private final byte kingFrom;
 
     private final byte kingTo;
@@ -45,9 +42,8 @@ public final class CastlingMove {
 
     private final byte rookTo;
 
-    public CastlingMove(CastlingDef def, byte type, int kingFrom, int kingTo, int rookFrom, int rookTo) {
+    public CastlingMove(CastlingDef def, int kingFrom, int kingTo, int rookFrom, int rookTo) {
         this.def = requireNonNull(def);
-        this.type = type;
         this.kingFrom = (byte) kingFrom;
         this.kingTo = (byte) kingTo;
         this.rookFrom = (byte) rookFrom;
@@ -55,34 +51,34 @@ public final class CastlingMove {
     }
 
     public static CastlingMove createCastlingMove(CastlingType castlingType, int kingFrom, int rookFrom) {
-        CastlingDef defintion = createDef(castlingType.getColor(), castlingType.getRochadeType(),
-                castlingType.getCastlingMoveType(), kingFrom, castlingType.getKingTargetPos(), rookFrom,
+        CastlingDef defintion = createDef(castlingType,
+                 kingFrom, castlingType.getKingTargetPos(), rookFrom,
                 castlingType.getRookTargetPos());
-        return new CastlingMove(defintion, castlingType.getCastlingMoveType(), kingFrom,
+        return new CastlingMove(defintion, kingFrom,
                 castlingType.getKingTargetPos(), rookFrom, castlingType.getRookTargetPos());
     }
 
-    public static CastlingMove createCastlingMove(Color side, RochadeType rochadeType, byte type, int kingFrom,
+    public static CastlingMove createCastlingMove(CastlingType castlingType, int kingFrom,
             int kingTo, int rookFrom, int rookTo) {
-        CastlingDef defintion = createDef(side, rochadeType, type, kingFrom, kingTo, rookFrom, rookTo);
-        return new CastlingMove(defintion, type, kingFrom, kingTo, rookFrom, rookTo);
+        CastlingDef defintion = createDef(castlingType, kingFrom, kingTo, rookFrom, rookTo);
+        return new CastlingMove(defintion, kingFrom, kingTo, rookFrom, rookTo);
     }
 
-    private static CastlingDef createDef(Color side, RochadeType rochadeType, byte type, int kingFrom, int kingTo,
+    private static CastlingDef createDef(CastlingType castlingType,int kingFrom, int kingTo,
             int rookFrom, int rookTo) {
         int minField = min(kingFrom, kingTo, rookFrom, rookTo);
         int maxField = max(kingFrom, kingTo, rookFrom, rookTo);
 
         int[] fieldPos = rangeClosed(minField, maxField).toArray();
 
-        long emptyMask=0L;
+        long emptyMask = 0L;
         Figure[] fieldPosFigs = new Figure[fieldPos.length];
         for (int i = 0; i < fieldPosFigs.length; i++) {
             int pos = fieldPos[i];
             if (pos == kingFrom) {
-                fieldPosFigs[i] = side == Color.WHITE ? Figure.W_King : Figure.B_King;
+                fieldPosFigs[i] = castlingType.getColor() == Color.WHITE ? Figure.W_King : Figure.B_King;
             } else if (pos == rookFrom) {
-                fieldPosFigs[i] = side == Color.WHITE ? Figure.W_Rook : Figure.B_Rook;
+                fieldPosFigs[i] = castlingType.getColor() == Color.WHITE ? Figure.W_Rook : Figure.B_Rook;
             } else {
                 fieldPosFigs[i] = Figure.EMPTY;
                 emptyMask |= 1L << pos;
@@ -96,8 +92,8 @@ public final class CastlingMove {
         long rookFromMask = 1L << rookFrom;
         long kingFromMask = 1L << kingFrom;
 
-
-        return new CastlingDef(side, rochadeType, fieldPos, fieldPosFigs, fieldCheckTst, rookFromMask, kingFromMask, emptyMask);
+        return new CastlingDef(castlingType, fieldPos, fieldPosFigs, fieldCheckTst, rookFromMask, kingFromMask,
+                emptyMask);
     }
 
     private static int min(int... vals) {
@@ -127,12 +123,16 @@ public final class CastlingMove {
         if (o == null || getClass() != o.getClass())
             return false;
         CastlingMove that = (CastlingMove) o;
-        return type == that.type && kingFrom == that.kingFrom && kingTo == that.kingTo && rookFrom == that.rookFrom
+        return kingFrom == that.kingFrom && kingTo == that.kingTo && rookFrom == that.rookFrom
                 && rookTo == that.rookTo && def.equals(that.def);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(def, type, kingFrom, kingTo, rookFrom, rookTo);
+        return Objects.hash(def, kingFrom, kingTo, rookFrom, rookTo);
+    }
+
+    public byte getType() {
+        return def.getCastlingType().getCastlingMoveType();
     }
 }

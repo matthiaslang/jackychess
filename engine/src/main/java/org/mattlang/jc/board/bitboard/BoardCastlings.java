@@ -1,9 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
+import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
@@ -12,7 +9,6 @@ import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
 
 /**
  * Contains the move-relevant classes for castlings.
@@ -24,20 +20,19 @@ public final class BoardCastlings {
      * The castling moves for regular chess are statically predefined, since they are used most often.
      * (This saves memory especially during tuning, to reuse the instances for all tuning positions).
      */
-    public static final CastlingMove CASTLING_MOVE_WHITE_LONG = createCastlingMove(WHITE, LONG,
-            MoveImpl.CASTLING_WHITE_LONG, 4, 2, 0, 3);
-    public static final CastlingMove CASTLING_MOVE_WHITE_SHORT = createCastlingMove(WHITE, SHORT,
-            CASTLING_WHITE_SHORT, 4, 6, 7, 5);
-    public static final CastlingMove CASTLING_MOVE_BLACK_SHORT = createCastlingMove(BLACK, SHORT,
-            CASTLING_BLACK_SHORT, 60, 62, 63, 61);
-    public static final CastlingMove CASTLING_MOVE_BLACK_LONG = createCastlingMove(BLACK, LONG,
-            MoveImpl.CASTLING_BLACK_LONG, 60, 58, 56, 59);
+    public static final CastlingMove CASTLING_MOVE_WHITE_LONG = createCastlingMove(WHITE_LONG,
+            4, 2, 0, 3);
+    public static final CastlingMove CASTLING_MOVE_WHITE_SHORT = createCastlingMove(WHITE_SHORT,
+            4, 6, 7, 5);
+    public static final CastlingMove CASTLING_MOVE_BLACK_SHORT = createCastlingMove(BLACK_SHORT,
+            60, 62, 63, 61);
+    public static final CastlingMove CASTLING_MOVE_BLACK_LONG = createCastlingMove(BLACK_LONG,
+            60, 58, 56, 59);
     private final BoardRepresentation board;
 
     public BoardCastlings(BoardRepresentation board) {
         this.board = board;
     }
-
 
     private CastlingMove castlingWhiteLong = CASTLING_MOVE_WHITE_LONG;
 
@@ -46,8 +41,6 @@ public final class BoardCastlings {
     private CastlingMove castlingBlackShort = CASTLING_MOVE_BLACK_SHORT;
 
     private CastlingMove castlingBlackLong = CASTLING_MOVE_BLACK_LONG;
-
-
 
     public void generateCastlingMoves(Color side, MoveList collector) {
         switch (side) {

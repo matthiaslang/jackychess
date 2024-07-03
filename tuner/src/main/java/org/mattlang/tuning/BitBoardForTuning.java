@@ -192,8 +192,8 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public boolean isCastlingAllowed(Color color, RochadeType type) {
-        return CastlingRights.isAllowed(castlingRights, color, type);
+    public boolean isCastlingAllowed(CastlingType castlingType) {
+        return CastlingRights.isAllowed(castlingRights, castlingType);
     }
 
     @Override

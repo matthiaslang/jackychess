@@ -2,11 +2,10 @@ package org.mattlang.jc.board.bitboard;
 
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
+import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.RochadeType.LONG;
-import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
@@ -264,21 +263,21 @@ public final class BitBoard implements BoardRepresentation {
                 if (isWhiteFigure) {
                     if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(WHITE, LONG);
+                        castlingRights.retain(WHITE_LONG);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(WHITE, SHORT);
+                        castlingRights.retain(WHITE_SHORT);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     }
                 } else {
                     if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(BLACK, LONG);
+                        castlingRights.retain(BLACK_LONG);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.retain(BLACK, SHORT);
+                        castlingRights.retain(BLACK_SHORT);
                         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
                     }
                 }
@@ -316,15 +315,15 @@ public final class BitBoard implements BoardRepresentation {
 
     private void removeWhiteCastlingRights() {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.retain(WHITE, SHORT);
-        castlingRights.retain(WHITE, LONG);
+        castlingRights.retain(WHITE_SHORT);
+        castlingRights.retain(WHITE_LONG);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
     private void removeBlackCastlingRights() {
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-        castlingRights.retain(BLACK, SHORT);
-        castlingRights.retain(BLACK, LONG);
+        castlingRights.retain(BLACK_SHORT);
+        castlingRights.retain(BLACK_LONG);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
     }
 
@@ -424,8 +423,8 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     @Override
-    public boolean isCastlingAllowed(Color color, RochadeType type) {
-        return castlingRights.isAllowed(color, type);
+    public boolean isCastlingAllowed(CastlingType castlingType) {
+        return castlingRights.isAllowed(castlingType);
     }
 
     @Override
@@ -723,6 +722,7 @@ public final class BitBoard implements BoardRepresentation {
 
     /**
      * For an en passant move this returns the position of the captured pawn.
+     *
      * @param move
      * @return
      */

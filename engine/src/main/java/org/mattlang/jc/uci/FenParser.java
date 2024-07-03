@@ -71,13 +71,13 @@ public class FenParser {
         IndexConversion.MoveFromTo movePos = IndexConversion.parseMoveStr(moveStr);
         Figure fig = board.getFigure(movePos.getFrom());
 
-        if ("e1g1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE, SHORT)) {
+        if ("e1g1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE_SHORT)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteShort());
-        } else if ("e1c1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE, LONG)) {
+        } else if ("e1c1".equals(moveStr) && fig == W_King && board.isCastlingAllowed(WHITE_LONG)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingWhiteLong());
-        } else if ("e8g8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK, SHORT)) {
+        } else if ("e8g8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK_SHORT)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackShort());
-        } else if ("e8c8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK, LONG)) {
+        } else if ("e8c8".equals(moveStr) && fig == B_King && board.isCastlingAllowed(BLACK_LONG)) {
             return MoveImpl.createCastling(board.getBoardCastlings().getCastlingBlackLong());
         } else if (FenConstants.isCastlingShort(moveStr)) {
             switch (board.getSiteToMove()) {

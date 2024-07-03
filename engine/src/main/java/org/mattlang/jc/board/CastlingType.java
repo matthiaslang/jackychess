@@ -28,12 +28,15 @@ public enum CastlingType {
 
     private final int rookTargetPos;
 
+    private final byte castlingBitMask;
+
     CastlingType(Color color, RochadeType rochadeType, byte castlingMoveType, int kingTargetPos, int rookTargetPos) {
         this.color = color;
         this.rochadeType = rochadeType;
         this.castlingMoveType = castlingMoveType;
         this.kingTargetPos = kingTargetPos;
         this.rookTargetPos = rookTargetPos;
+        this.castlingBitMask = createMask(color, rochadeType);
     }
 
     public static CastlingType of(Color color, RochadeType rochadeType) {
@@ -43,5 +46,14 @@ public enum CastlingType {
             }
         }
         throw new IllegalStateException("no matching castling type!");
+    }
+
+    private static byte createMask(Color color, RochadeType type) {
+        int idx = type == SHORT ? 0 : 1;
+        if (color == Color.BLACK) {
+            idx += 2;
+        }
+        byte allowedMask = (byte) (1 << idx);
+        return allowedMask;
     }
 }
