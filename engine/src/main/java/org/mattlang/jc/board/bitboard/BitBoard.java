@@ -288,26 +288,28 @@ public final class BitBoard implements BoardRepresentation {
 
         byte figCode = (byte) (figType | (isWhiteFigure ? WHITE.code : BLACK.code));
 
-        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
-        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
-        if (capturedFigure != 0) {
-            hashRemoveFig(to, capturedFigure);
-        }
+        zobristMoveUpdate(figType, from, to, figCode, capturedFigure);
 
         resetEnPassant();
 
         // check double pawn move. here we need to mark an possible en passant follow up move:
         // be careful: we must not set the en passant option by undoing a double pawn move:
         if (figType == FT_PAWN) {
-            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, from, figCode);
-            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, to, figCode);
-
             if (isWhiteFigure && to - from == 16) {
                 setEnPassantOption((from + to) / 2);
             } else if (!isWhiteFigure && from - to == 16) {
                 setEnPassantOption((from + to) / 2);
             }
-        } else if (figType == FT_KING) {
+        }
+    }
+
+    private void zobristMoveUpdate(byte figType, int from, int to, byte figCode, byte capturedFigure){
+        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
+        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
+        if (capturedFigure != 0) {
+            hashRemoveFig(to, capturedFigure);
+        }
+        if (figType == FT_PAWN || figType == FT_KING) {
             pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, from, figCode);
             pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, to, figCode);
         }
