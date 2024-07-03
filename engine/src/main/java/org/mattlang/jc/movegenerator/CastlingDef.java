@@ -5,15 +5,14 @@ import java.util.Objects;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
-import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public final class CastlingDef {
 
-    private int[] fieldPos;
-    private Figure[] fieldPosFigures;
     private int[] fieldCheckTst;
 
     private final long rookFromMask;
@@ -23,11 +22,9 @@ public final class CastlingDef {
     @Getter
     private final CastlingType castlingType;
 
-    public CastlingDef(CastlingType castlingType, int[] fieldPos, Figure[] fieldPosFigures,
+    public CastlingDef(CastlingType castlingType,
             int[] fieldCheckTst, long rookFromMask, long kingFromMask, long emptyMask) {
         this.castlingType = castlingType;
-        this.fieldPos = fieldPos;
-        this.fieldPosFigures = fieldPosFigures;
         this.fieldCheckTst = fieldCheckTst;
 
         this.rookFromMask = rookFromMask;
@@ -74,17 +71,12 @@ public final class CastlingDef {
         if (o == null || getClass() != o.getClass())
             return false;
         CastlingDef that = (CastlingDef) o;
-        return castlingType == that.castlingType && Arrays.equals(fieldPos, that.fieldPos)
-                && Arrays.equals(fieldPosFigures, that.fieldPosFigures) && Arrays.equals(fieldCheckTst,
-                that.fieldCheckTst);
+        return rookFromMask == that.rookFromMask && kingFromMask == that.kingFromMask && emptyMask == that.emptyMask
+                && Objects.deepEquals(fieldCheckTst, that.fieldCheckTst) && castlingType == that.castlingType;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(castlingType);
-        result = 31 * result + Arrays.hashCode(fieldPos);
-        result = 31 * result + Arrays.hashCode(fieldPosFigures);
-        result = 31 * result + Arrays.hashCode(fieldCheckTst);
-        return result;
+        return Objects.hash(Arrays.hashCode(fieldCheckTst), rookFromMask, kingFromMask, emptyMask, castlingType);
     }
 }

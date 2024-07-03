@@ -2,11 +2,9 @@ package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
 public class CastlingMoveTest {
@@ -14,26 +12,18 @@ public class CastlingMoveTest {
     // the standard castling definitions
     private CastlingDef castlingLWhite = new CastlingDef(
             WHITE_LONG,
-            new int[] { 0, 1, 2, 3, 4 },
-            new Figure[] { W_Rook, EMPTY, EMPTY, EMPTY, W_King },
             new int[] { 2, 3, 4 }, 1L << 0, 1L << 4, 1L << 1 | 1L << 2 | 1L << 3);
 
     private CastlingDef castlingSWhite = new CastlingDef(
             WHITE_SHORT,
-            new int[] { 4, 5, 6, 7 },
-            new Figure[] { W_King, EMPTY, EMPTY, W_Rook },
-            new int[] { 4, 5, 6 }, 1L << 7, 1L << 4, 1L << 5 | 1L << 7);
+            new int[] { 4, 5, 6 }, 1L << 7, 1L << 4, 1L << 5 | 1L << 6);
 
     private CastlingDef castlingSBlack = new CastlingDef(
             BLACK_SHORT,
-            new int[] { 60, 61, 62, 63 },
-            new Figure[] { B_King, EMPTY, EMPTY, B_Rook },
             new int[] { 60, 61, 62 }, 1L << 63, 1L << 60, 1L << 61 | 1L << 62);
 
     private CastlingDef castlingLBlack = new CastlingDef(
             BLACK_LONG,
-            new int[] { 56, 57, 58, 59, 60 },
-            new Figure[] { B_Rook, EMPTY, EMPTY, EMPTY, B_King },
             new int[] { 58, 59, 60 }, 1L << 56, 1L << 60, 1L << 57 | 1L << 58 | 1L << 59);
 
     private final CastlingMove castlingWhiteLong = new CastlingMove(castlingLWhite,

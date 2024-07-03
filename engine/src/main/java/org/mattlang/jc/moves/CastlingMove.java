@@ -6,13 +6,13 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.Objects;
 
 import org.mattlang.jc.board.CastlingType;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @Getter
 public final class CastlingMove {
 
@@ -52,7 +52,7 @@ public final class CastlingMove {
 
     public static CastlingMove createCastlingMove(CastlingType castlingType, int kingFrom, int rookFrom) {
         CastlingDef defintion = createDef(castlingType,
-                 kingFrom, castlingType.getKingTargetPos(), rookFrom,
+                kingFrom, castlingType.getKingTargetPos(), rookFrom,
                 castlingType.getRookTargetPos());
         return new CastlingMove(defintion, kingFrom,
                 castlingType.getKingTargetPos(), rookFrom, castlingType.getRookTargetPos());
@@ -64,23 +64,14 @@ public final class CastlingMove {
         return new CastlingMove(defintion, kingFrom, kingTo, rookFrom, rookTo);
     }
 
-    private static CastlingDef createDef(CastlingType castlingType,int kingFrom, int kingTo,
+    private static CastlingDef createDef(CastlingType castlingType, int kingFrom, int kingTo,
             int rookFrom, int rookTo) {
         int minField = min(kingFrom, kingTo, rookFrom, rookTo);
         int maxField = max(kingFrom, kingTo, rookFrom, rookTo);
 
-        int[] fieldPos = rangeClosed(minField, maxField).toArray();
-
         long emptyMask = 0L;
-        Figure[] fieldPosFigs = new Figure[fieldPos.length];
-        for (int i = 0; i < fieldPosFigs.length; i++) {
-            int pos = fieldPos[i];
-            if (pos == kingFrom) {
-                fieldPosFigs[i] = castlingType.getColor() == Color.WHITE ? Figure.W_King : Figure.B_King;
-            } else if (pos == rookFrom) {
-                fieldPosFigs[i] = castlingType.getColor() == Color.WHITE ? Figure.W_Rook : Figure.B_Rook;
-            } else {
-                fieldPosFigs[i] = Figure.EMPTY;
+        for (int pos = minField; pos <= maxField; pos++) {
+            if (pos != kingFrom && pos != rookFrom) {
                 emptyMask |= 1L << pos;
             }
         }
@@ -92,7 +83,7 @@ public final class CastlingMove {
         long rookFromMask = 1L << rookFrom;
         long kingFromMask = 1L << kingFrom;
 
-        return new CastlingDef(castlingType, fieldPos, fieldPosFigs, fieldCheckTst, rookFromMask, kingFromMask,
+        return new CastlingDef(castlingType, fieldCheckTst, rookFromMask, kingFromMask,
                 emptyMask);
     }
 
