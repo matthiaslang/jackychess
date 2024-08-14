@@ -47,4 +47,20 @@ public class MoveImplTest {
         System.out.println(l);
         System.out.println(ll);
     }
+
+    @Test
+    public void testBitshiftling(){
+        testLongEncoding(500, 234);
+        testLongEncoding(500, -234);
+        testLongEncoding(-500, 234);
+        testLongEncoding(-500, -234);
+    }
+
+    public void testLongEncoding(int x, int y){
+        long l = (((long)x) << 32) | (y & 0xffffffffL);
+        int xx = (int)(l >> 32);
+        int yy = (int)l;
+        assertThat(xx).isEqualTo(x);
+        assertThat(yy).isEqualTo(y);
+    }
 }
