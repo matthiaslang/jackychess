@@ -149,7 +149,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         final int mateValue = KING_WEIGHT - ply;
 
         statistics.nodesVisited++;
-        boolean not_pv = abs(beta - alpha) <= 1;
+        final boolean not_pv = abs(beta - alpha) <= 1;
 
         /**************************************************************************
          * MATE DISTANCE PRUNING, a minor improvement that helps to shave off some *
@@ -168,8 +168,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 return alpha;
             }
         }
-
-        boolean areWeInCheck = searchContext.isInCheck(color);
 
         if (depth == 0) {
             return quiesce(ply + 1, -1, color, alpha, beta);
@@ -203,7 +201,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         boolean applyFutilityPruning = false;
 
-        boolean pruneable = not_pv && !areWeInCheck;
+        final boolean areWeInCheck = searchContext.isInCheck(color);
+
+        final boolean pruneable = not_pv && !areWeInCheck;
 
         if (pruneable) {
 
