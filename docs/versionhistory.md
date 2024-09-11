@@ -1,6 +1,9 @@
 # Versions
 
-### 24.06
+## 24.06
+
+Official Version since 24.04
+Estimated Elo strength: ~2840, ~40 Elo stronger than 24.04.
 
 - removed move ordering by pst: in retests this has not shown any effect. In contray - removing it seem to
   give a few more Elo.

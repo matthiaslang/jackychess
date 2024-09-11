@@ -48,23 +48,24 @@ on http://ccrl.chessdom.com/ccrl/404/:
 
 Here is a quick overview of my estimated rating and the results from the CCRL team (the numbers maybe outdated):
 
-| Version | Estimated Rating | CCRL Blitz | 40/15 |
-|---------|------------------|------------|-------|
-| 24.04   | 2800             |            |       |
-| 23.12   | 2760             | 2695       | 2731  |
-| 23.06   | 2680             | 2688       | 2675  |
-| 0.14.3  | 2580             | 2595       | 2601  |
-| 0.13.1  | 2330             | --         | 2397  |
-| 0.13.0  | 2330             | 2388       | --    |
-| 0.12.0  | 2180             | 2284       | --    |
-| 0.10.0  | 2000             | 2119       | --    |
-| 0.9.14  | --               | 1453       | --    |
+| Version | Estimated Rating | CCRL Blitz | 40/15 | 40/2 FRC |
+|---------|------------------|------------|-------|----------|
+| 24.06   | 2840             |            |       |          |
+| 24.04   | 2800             | 2794       | 2781  | 2764     |
+| 23.12   | 2760             | 2695       | 2731  |          |
+| 23.06   | 2680             | 2688       | 2675  |          |
+| 0.14.3  | 2580             | 2595       | 2601  |          |
+| 0.13.1  | 2330             | --         | 2397  |          |
+| 0.13.0  | 2330             | 2388       | --    |          |
+| 0.12.0  | 2180             | 2284       | --    |          |
+| 0.10.0  | 2000             | 2119       | --    |          |
+| 0.9.14  | --               | 1453       | --    |          |
 
 ## Copyright
 
 
                 Jacky Chess 
-    Copyright (C) 2023  Matthias Lang
+    Copyright (C) 2024  Matthias Lang
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -84,7 +85,7 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 The chess engine uses following technics/algorithms 
 
 - bitboards
-- move generator using a magic bitboards  
+- move generator using magic bitboards  
 - a configurable evaluation function considering material, mobility and several other simple evaluations
   - evaluation cache and pawn/king cache
   - most parameters are tuned via the texel tuning method
