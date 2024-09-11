@@ -12,7 +12,6 @@ import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
@@ -221,27 +220,4 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         return kingAtt < SAFETYTABLE.length ? SAFETYTABLE[kingAtt] : 500;
     }
 
-    /**
-     * Getter for MobFigParams by figure type.
-     * Makes tuning code easier.
-     *
-     * @param type
-     * @return
-     */
-    public MobFigParams getMobFigParams(FigureType type) {
-        switch (type) {
-        case Knight:
-            return paramsKnight;
-        case Bishop:
-            return paramsBishop;
-        case Rook:
-            return paramsRook;
-        case Queen:
-            return paramsQueen;
-        case King:
-            return paramsKing;
-        default:
-            throw new IllegalArgumentException("no MobFigParams for " + type);
-        }
-    }
 }

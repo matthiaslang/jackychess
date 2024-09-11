@@ -5,8 +5,6 @@ import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodCapture;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.isGoodPromotion;
 import static org.mattlang.jc.moves.MoveImpl.*;
 import static org.mattlang.util.Assertions.assertFieldNum;
 import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
@@ -129,18 +127,13 @@ public final class MoveList {
      * @param start
      * @return
      */
-    public int scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
-        int goodOnes = 0;
+    public void scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
         for (int i = start; i < size; i++) {
             int moveInt = moves[i];
             moveWrapper.fromLongEncoded(moveInt);
             int orderVal = orderCalculator.calcOrderForCaptures(moveWrapper);
             this.order[i] = orderVal;
-            if (isGoodCapture(orderVal) || isGoodPromotion(orderVal)) {
-                goodOnes++;
-            }
         }
-        return goodOnes;
     }
 
     public void scoreQuietMoves(OrderCalculator orderCalculator, int start) {

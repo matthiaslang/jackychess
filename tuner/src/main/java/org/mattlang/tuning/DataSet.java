@@ -14,7 +14,9 @@ import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
+import org.mattlang.jc.engine.evaluation.PinnedCalc;
 import org.mattlang.jc.material.Material;
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
@@ -246,6 +248,8 @@ public class DataSet {
         writeStatsNumberOfFensByHavingFigures(w);
 
         writeNumberOfFensByMaterial(w);
+
+        writeNumberOfFensByPinnedPieces(w);
     }
 
     private void writeStatsNumberOfFensByGamePhase(MarkdownWriter w) throws IOException {
@@ -300,6 +304,58 @@ public class DataSet {
         MarkdownTable table = new MarkdownTable().header("Material", "Count", "%");
         for (Map.Entry<Material, Long> entry : countsByPhase.entrySet()) {
             table.row(entry.getKey().toString(), entry.getValue(), entry.getValue() * 100 / fens.size());
+        }
+        w.writeTable(table);
+    }
+
+    private void writeNumberOfFensByPinnedPieces(MarkdownWriter w) throws IOException {
+        w.h2("Number of fens by Pinned Pieces");
+        // stats about mid/end game:
+        //        TreeMap<Material, Long> countsByPhase = fens.stream()
+        //                .map(f -> f.getBoard().getMaterial())
+        //                .collect(groupingBy(identity(), TreeMap::new, counting()));
+        TreeMap<Byte, Long> pinnedByFigureType = new TreeMap<>();
+        TreeMap<Byte, Long> discoveredByFigureType = new TreeMap<>();
+        for (FenEntry fen : fens) {
+            PinnedCalc pinnedCalc=new PinnedCalc();
+            BitChessBoard bb = fen.getBoard().getBoard();
+            pinnedCalc.calcPinnedDiscoveredAndChecking(bb);
+            if (pinnedCalc.getPinnedPieces() != 0) {
+                long piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(BitChessBoard.nWhite);
+                while (piece != 0) {
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    piece &= piece - 1;
+                }
+                piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(BitChessBoard.nBlack);
+                while (piece != 0) {
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    piece &= piece - 1;
+                }
+            }
+
+            if (pinnedCalc.getDiscoveredPieces() != 0) {
+                long piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(BitChessBoard.nWhite);
+                while (piece != 0) {
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    piece &= piece - 1;
+                }
+                piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(BitChessBoard.nBlack);
+                while (piece != 0) {
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    piece &= piece - 1;
+                }
+            }
+        }
+
+        MarkdownTable table = new MarkdownTable().header("Figure Type", "Pinned Count", "%");
+        for (Map.Entry<Byte, Long> entry : pinnedByFigureType.entrySet()) {
+            table.row(FigureType.values()[entry.getKey()], entry.getValue(), entry.getValue() * 100 / fens.size());
+        }
+        w.writeTable(table);
+
+        table = new MarkdownTable().header("Figure Type", "Discovered Count", "%");
+        for (Map.Entry<Byte, Long> entry : discoveredByFigureType.entrySet()) {
+            table.row(FigureType.values()[entry.getKey()], entry.getValue(), entry.getValue() * 100 / fens.size());
         }
         w.writeTable(table);
     }

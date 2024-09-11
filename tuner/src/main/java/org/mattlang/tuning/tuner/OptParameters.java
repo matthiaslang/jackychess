@@ -43,6 +43,11 @@ public class OptParameters {
     private boolean multiThreading = true;
 
     private boolean adjustK = false;
+    /**
+     * the K to use.
+     */
+    private Double k;
+
 
     private boolean tuneMaterial = true;
 

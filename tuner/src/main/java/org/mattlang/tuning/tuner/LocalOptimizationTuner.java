@@ -34,8 +34,6 @@ public class LocalOptimizationTuner extends AbstractTuner {
         tuner.run();
     }
 
-
-
     private void run() throws IOException {
 
         initRun();
@@ -43,7 +41,9 @@ public class LocalOptimizationTuner extends AbstractTuner {
         ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
 
-        copySourceConfigFile(outputDir);
+        if (!continuingTuningRun) {
+            copySourceConfigFile(outputDir);
+        }
 
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
@@ -65,6 +65,10 @@ public class LocalOptimizationTuner extends AbstractTuner {
             dataset.writeLogInfos(w);
         });
 
+        if (params.isAdjustK() && params.getK() != null) {
+            throw new IllegalArgumentException("Parameter adjustK and K both set does not make sense!");
+        }
+
         if (params.isAdjustK()) {
             LOGGER.info("Minimize Scaling K...");
             LocalOptimizerK optimizerK = new LocalOptimizerK(params);
@@ -72,13 +76,15 @@ public class LocalOptimizationTuner extends AbstractTuner {
             LOGGER.info("Scaling finished: K=" + k);
             dataset.setK(k);
 
-            markdownAppender.append(w -> {
-                w.paragraph("K adjusted to: " + k);
-            });
+            markdownAppender.append(w -> w.paragraph("K adjusted to: " + k));
         } else {
-            markdownAppender.append(w -> {
-                w.paragraph("K: " + dataset.getK());
-            });
+            if (params.getK() != null) {
+                dataset.setK(params.getK());
+                markdownAppender.append(w -> {
+                    w.paragraph("setting K from Input Tuner Parameter to: " + dataset.getK());
+                });
+            }
+            markdownAppender.append(w -> w.paragraph("K: " + dataset.getK()));
         }
 
         LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);
@@ -95,6 +101,5 @@ public class LocalOptimizationTuner extends AbstractTuner {
         executorService.shutdown();
 
     }
-
 
 }

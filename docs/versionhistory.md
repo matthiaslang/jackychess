@@ -1,5 +1,17 @@
 # Versions
 
+### 24.06
+
+- removed move ordering by pst: in retests this has not shown any effect. In contray - removing it seem to
+  give a few more Elo.
+- retuned again with lichess-big3-resolved.book data and smaller delta (0.000000001). This gives again some Elos (~8)
+
+### 24.05
+
+- retuned all evaluation parameters with a new test data set (lichess-big3-resolved.book).
+  Amazingly this brings a boost of 30-40 Elos.
+
+
 ## 24.04
 
 Official Version since 23.12.

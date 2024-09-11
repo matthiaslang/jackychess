@@ -19,24 +19,9 @@ public final class MgEgArrayFunction {
 
     private final int[] combinedMgEg;
 
-    public MgEgArrayFunction(EvalConfig config, String propBaseName) {
-        this(config, propBaseName, "MG", "EG");
-    }
-
-    public MgEgArrayFunction(EvalConfig config, String propBaseName, String mgPostfix, String egPostFix) {
-        propertyMg = propBaseName + mgPostfix;
-        functionMg = config.parseArray(propertyMg);
-
-        propertyEg = propBaseName + egPostFix;
-        functionEg = config.parseArray(propertyEg);
-
-        combinedMgEg = ArrayFunction.combineArr(functionMg, functionEg);
-
-    }
-
-    public MgEgArrayFunction(EvalConfig config,  String propertyMg, String propertyEg) {
-        this.propertyMg=propertyMg;
-        this.propertyEg=propertyEg;
+    public MgEgArrayFunction(EvalConfig config, String propertyMg, String propertyEg) {
+        this.propertyMg = propertyMg;
+        this.propertyEg = propertyEg;
         functionMg = config.parseArray(propertyMg);
         functionEg = config.parseArray(propertyEg);
         combinedMgEg = ArrayFunction.combineArr(functionMg, functionEg);
