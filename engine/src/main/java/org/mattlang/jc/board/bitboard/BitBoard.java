@@ -128,18 +128,18 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     private void hashAddFig(int pos, byte figureCode) {
-        zobristHash = Zobrist.addFig(zobristHash, pos, figureCode);
+        zobristHash = Zobrist.updateFig(zobristHash, pos, figureCode);
         material.add(figureCode);
         if (isKingOrPawn(figureCode)) {
-            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, pos, figureCode);
+            pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, pos, figureCode);
         }
     }
 
     private void hashRemoveFig(int pos, byte oldFigure) {
-        zobristHash = Zobrist.removeFig(zobristHash, pos, oldFigure);
+        zobristHash = Zobrist.updateFig(zobristHash, pos, oldFigure);
         material.subtract(oldFigure);
         if (isKingOrPawn(oldFigure)) {
-            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, pos, oldFigure);
+            pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, pos, oldFigure);
         }
     }
 
@@ -300,14 +300,14 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     private void zobristMoveUpdate(byte figType, int from, int to, byte figCode, byte capturedFigure) {
-        zobristHash = Zobrist.removeFig(zobristHash, from, figCode);
-        zobristHash = Zobrist.addFig(zobristHash, to, figCode);
+        zobristHash = Zobrist.updateFig(zobristHash, from, figCode);
+        zobristHash = Zobrist.updateFig(zobristHash, to, figCode);
         if (capturedFigure != 0) {
             hashRemoveFig(to, capturedFigure);
         }
         if (figType == FT_PAWN || figType == FT_KING) {
-            pawnKingZobristHash = Zobrist.removeFig(pawnKingZobristHash, from, figCode);
-            pawnKingZobristHash = Zobrist.addFig(pawnKingZobristHash, to, figCode);
+            pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, from, figCode);
+            pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, to, figCode);
         }
     }
 

@@ -9,7 +9,7 @@ import java.util.Random;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureConstants;
 
-public class Zobrist {
+public final class Zobrist {
 
     // max field pos: 64 board files + 1 "virtual" für en passten unset (-1)
     private static final int MAXPOS = NUM_BOARD_FIELDS + 1;
@@ -50,7 +50,7 @@ public class Zobrist {
         for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
             byte fig = board.getFigureCode(i);
             if (fig != FigureConstants.FT_EMPTY) {
-                h = addFig(h, i, fig);
+                h = updateFig(h, i, fig);
             }
         }
         h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
@@ -67,7 +67,7 @@ public class Zobrist {
         for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
             byte fig = board.getFigureCode(i);
             if (isKingOrPawn(fig)) {
-                h = addFig(h, i, fig);
+                h = updateFig(h, i, fig);
             }
         }
         return h;
@@ -78,28 +78,19 @@ public class Zobrist {
         return figureType == FT_PAWN || figureType == FT_KING;
     }
 
-    public static long addFig(long h, int i, byte fig) {
-        h ^= rnd[i][fig];
-        return h;
-    }
-
-    public static long removeFig(long h, int i, byte fig) {
-        h ^= rnd[i][fig];
-        return h;
+    public static long updateFig(long h, int i, byte fig) {
+        return h ^ rnd[i][fig];
     }
 
     public static long updateEnPassant(long h, int enPassantMoveTargetPos) {
-        h ^= rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
-        return h;
+        return h ^ rnd[enPassantMoveTargetPos + 1][ENPASSANT_MOVE_TARGET_POS_IDX];
     }
 
     public static long updateCastling(long h, byte castlingRights) {
-        h ^= rndCastling[castlingRights];
-        return h;
+        return h ^ rndCastling[castlingRights];
     }
 
     public static long colorFlip(long h) {
-        h ^= colorFlip;
-        return h;
+        return h ^ colorFlip;
     }
 }
