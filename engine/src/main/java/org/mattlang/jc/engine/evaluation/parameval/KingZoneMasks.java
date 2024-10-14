@@ -1,10 +1,10 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.bitboard.BB.*;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.board.Tools;
 
 /**
  * Calculation of king zone mask used in evaluation.

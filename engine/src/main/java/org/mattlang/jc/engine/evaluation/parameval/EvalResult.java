@@ -7,9 +7,9 @@ import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
 import java.util.Arrays;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 import lombok.Getter;

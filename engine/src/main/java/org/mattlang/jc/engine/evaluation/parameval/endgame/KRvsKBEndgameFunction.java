@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.engine.evaluation.Tools.push_to_edge;
+import static org.mattlang.jc.board.Tools.push_to_edge;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;

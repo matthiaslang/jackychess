@@ -1,15 +1,15 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.BB.CenterFiles;
+import static org.mattlang.jc.board.BB.soutOne;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.board.bitboard.BB.CenterFiles;
-import static org.mattlang.jc.board.bitboard.BB.soutOne;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 
 public class ParameterizedSpaceEvaluation implements EvalComponent {

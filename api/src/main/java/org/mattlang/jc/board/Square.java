@@ -1,4 +1,4 @@
-package org.mattlang.jc.board.bitboard;
+package org.mattlang.jc.board;
 
 /**
  * all squares numbered starting with 0 as enums:

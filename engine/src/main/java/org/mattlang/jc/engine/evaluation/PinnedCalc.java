@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static org.mattlang.jc.board.BB.IN_BETWEEN;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BB.IN_BETWEEN;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 

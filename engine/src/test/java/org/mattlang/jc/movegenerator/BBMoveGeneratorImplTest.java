@@ -1,9 +1,9 @@
 package org.mattlang.jc.movegenerator;
 
-import static org.mattlang.jc.board.bitboard.BB.soutOne;
+import static org.mattlang.jc.board.BB.soutOne;
 
 import org.junit.Test;
-import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.BB;
 
 public class BBMoveGeneratorImplTest {
 

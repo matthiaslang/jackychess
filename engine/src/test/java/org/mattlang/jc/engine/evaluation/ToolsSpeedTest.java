@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mattlang.SlowTests;
 import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.board.Tools;
 
 @Category(SlowTests.class)
 public class ToolsSpeedTest {

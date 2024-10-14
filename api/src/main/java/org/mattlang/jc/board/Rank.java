@@ -1,4 +1,4 @@
-package org.mattlang.jc.board.bitboard;
+package org.mattlang.jc.board;
 
 public enum Rank {
     RANK_1(BB.rank1),

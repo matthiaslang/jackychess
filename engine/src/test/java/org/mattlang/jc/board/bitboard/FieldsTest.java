@@ -1,6 +1,7 @@
 package org.mattlang.jc.board.bitboard;
 
 import org.junit.Test;
+import org.mattlang.jc.board.BB;
 
 public class FieldsTest {
 

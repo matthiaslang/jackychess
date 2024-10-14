@@ -13,7 +13,6 @@ import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 

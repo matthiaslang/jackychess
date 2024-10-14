@@ -1,4 +1,4 @@
-package org.mattlang.jc.board.bitboard;
+package org.mattlang.jc.board;
 
 public enum File {
     FILE_A(BB.A),

@@ -7,9 +7,9 @@ import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;

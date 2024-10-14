@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.board.Tools.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;

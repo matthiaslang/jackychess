@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.board.Tools;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;

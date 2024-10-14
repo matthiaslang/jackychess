@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.board.bitboard.Rank.RANK_7;
-import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.board.Rank.RANK_7;
+import static org.mattlang.jc.board.Tools.*;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.material.Material;

@@ -10,10 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.board.FigureType;
-import org.mattlang.jc.board.IndexConversion;
+import org.mattlang.jc.board.*;
 
 /**
  * The chess board as bit board implementation.

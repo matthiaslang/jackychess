@@ -1,17 +1,17 @@
 package org.mattlang.jc.engine.evaluation.parameval.mobility;
 
 import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.Tools;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;

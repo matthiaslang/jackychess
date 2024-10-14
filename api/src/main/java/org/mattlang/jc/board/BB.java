@@ -1,12 +1,8 @@
-package org.mattlang.jc.board.bitboard;
+package org.mattlang.jc.board;
 
 import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.Arrays;
-
-import org.mattlang.jc.board.BoardPrinterUtil;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.Tools;
 
 import lombok.Getter;
 

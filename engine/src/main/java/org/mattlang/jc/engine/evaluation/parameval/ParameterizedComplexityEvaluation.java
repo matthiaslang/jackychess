@@ -3,10 +3,10 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.lang.Long.bitCount;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedWhitePawns;
 
 import org.mattlang.jc.board.BoardRepresentation;

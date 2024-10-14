@@ -1,17 +1,17 @@
 
 package org.mattlang.jc.movegenerator;
 
+import static org.mattlang.jc.board.BB.getKingAttacs;
+import static org.mattlang.jc.board.BB.getKnightAttacs;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BB.getKingAttacs;
-import static org.mattlang.jc.board.bitboard.BB.getKnightAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.MoveList;
 

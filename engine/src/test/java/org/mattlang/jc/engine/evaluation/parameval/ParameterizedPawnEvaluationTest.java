@@ -1,15 +1,15 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.getPawnNeighbours;
 
 import org.assertj.core.presentation.Representation;
 import org.assertj.core.presentation.StandardRepresentation;
 import org.junit.Test;
-import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class ParameterizedPawnEvaluationTest {

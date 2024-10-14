@@ -11,7 +11,6 @@ import java.util.Objects;
 
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.material.Material;

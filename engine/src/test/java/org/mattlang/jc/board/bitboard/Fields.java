@@ -1,7 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.board.*;
 
 import lombok.Getter;
 

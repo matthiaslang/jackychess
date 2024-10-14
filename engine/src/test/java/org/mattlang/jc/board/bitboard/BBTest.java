@@ -1,14 +1,13 @@
 package org.mattlang.jc.board.bitboard;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult.BLACK_KNIGHT_STARTPOS;
 
 import org.junit.Test;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.evaluation.Tools;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 
 public class BBTest {

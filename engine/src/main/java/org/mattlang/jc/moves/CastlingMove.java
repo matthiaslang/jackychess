@@ -5,8 +5,8 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import java.util.Objects;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.CastlingType;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
 import lombok.Getter;

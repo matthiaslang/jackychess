@@ -3,10 +3,10 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
-import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
+import static org.mattlang.jc.board.Tools.fileOf;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;

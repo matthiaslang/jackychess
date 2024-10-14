@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.board.bitboard.Rank.*;
-import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.board.Rank.*;
+import static org.mattlang.jc.board.Tools.*;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;

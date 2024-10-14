@@ -1,8 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
-import static org.mattlang.jc.engine.evaluation.Tools.rankOf;
+import static org.mattlang.jc.board.Tools.fileOf;
+import static org.mattlang.jc.board.Tools.rankOf;
 import static org.mattlang.jc.moves.MoveImpl.createCastling;
 
 import java.util.List;

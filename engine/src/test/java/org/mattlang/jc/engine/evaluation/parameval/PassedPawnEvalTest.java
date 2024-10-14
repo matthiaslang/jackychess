@@ -6,7 +6,7 @@ import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.engine.evaluation.parameval.PassedPawnEval.onlyPawnsOrOneNightOrBishop;
 
 import org.junit.Test;
-import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;

@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;

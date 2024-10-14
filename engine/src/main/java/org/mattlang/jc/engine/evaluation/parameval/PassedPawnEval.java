@@ -5,13 +5,13 @@ import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_ROOK;
-import static org.mattlang.jc.engine.evaluation.Tools.*;
+import static org.mattlang.jc.board.Tools.*;
 import static org.mattlang.jc.material.Material.*;
 
+import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BB;
+import org.mattlang.jc.board.Tools;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
-import org.mattlang.jc.engine.evaluation.Tools;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;

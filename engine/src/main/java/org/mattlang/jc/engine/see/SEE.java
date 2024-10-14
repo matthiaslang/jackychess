@@ -1,7 +1,7 @@
 package org.mattlang.jc.engine.see;
 
+import static org.mattlang.jc.board.BB.least_significant_square_bb;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BB.least_significant_square_bb;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 
