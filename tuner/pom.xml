@@ -178,6 +178,16 @@
     <dependencies>
         <dependency>
             <groupId>org.mattlang.jackychess</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mattlang.jackychess</groupId>
+            <artifactId>hce</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mattlang.jackychess</groupId>
             <artifactId>engine</artifactId>
             <version>${project.version}</version>
         </dependency>

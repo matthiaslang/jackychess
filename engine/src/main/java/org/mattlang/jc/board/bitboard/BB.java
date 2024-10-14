@@ -4,7 +4,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 
 import java.util.Arrays;
 
-import org.mattlang.jc.board.BoardPrinter;
+import org.mattlang.jc.board.BoardPrinterUtil;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.Tools;
 
@@ -384,7 +384,7 @@ public class BB {
     }
 
     public static String toStrBoard(long bb) {
-        return BoardPrinter.toStr((row, col) -> {
+        return BoardPrinterUtil.toStr((row, col) -> {
             int pos = (7 - row) * 8 + col;
             return isBitSet(bb, pos) ? 'X' : '.';
         });

@@ -1,5 +1,6 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.BoardPrinterUtil.toStr;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
 import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
@@ -55,33 +56,6 @@ public class BoardPrinter {
         return all.toString();
     }
 
-    public static String toStr(BiFunction<Integer, Integer, Character> posFunction) {
-        StringBuilder b = new StringBuilder();
-        int rowNo = 8;
-        for (int row = 0; row < 8; row++) {
-            addSeparator(b);
-            b.append(rowNo);
-
-            rowNo--;
-            for (int col = 0; col < 8; col++) {
-                b.append("| ");
-                b.append(posFunction.apply(row, col));
-                b.append(" ");
-            }
-            b.append("|\n");
-        }
-        addSeparator(b);
-        b.append("   a   b   c   d   e   f   g   h  \n");
-        return b.toString();
-    }
-
-    private static void addSeparator(StringBuilder b) {
-        b.append(" ");
-        for (int i = 0; i < 8; i++) {
-            b.append("+---");
-        }
-        b.append("+\n");
-    }
 
     public static void printSmallBoard(BoardRepresentation board) {
         System.out.println(toSmallBoardStr(board));
