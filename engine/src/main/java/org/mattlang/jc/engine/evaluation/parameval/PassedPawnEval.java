@@ -1,10 +1,10 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Math.min;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_ROOK;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.engine.evaluation.Tools.*;
 import static org.mattlang.jc.material.Material.*;
 

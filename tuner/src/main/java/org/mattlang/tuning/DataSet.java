@@ -4,7 +4,7 @@ import static java.lang.Math.pow;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.tuning.tuner.LocalOptimizationTuner.executorService;
 
 import java.io.IOException;
@@ -321,12 +321,12 @@ public class DataSet {
             BitChessBoard bb = fen.getBoard().getBoard();
             pinnedCalc.calcPinnedDiscoveredAndChecking(bb);
             if (pinnedCalc.getPinnedPieces() != 0) {
-                long piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(BitChessBoard.nWhite);
+                long piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
                     pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
-                piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(BitChessBoard.nBlack);
+                piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
                     pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
@@ -334,12 +334,12 @@ public class DataSet {
             }
 
             if (pinnedCalc.getDiscoveredPieces() != 0) {
-                long piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(BitChessBoard.nWhite);
+                long piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
                     discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
-                piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(BitChessBoard.nBlack);
+                piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
                     discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;

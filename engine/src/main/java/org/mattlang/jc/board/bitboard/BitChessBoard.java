@@ -2,8 +2,7 @@ package org.mattlang.jc.board.bitboard;
 
 import static java.lang.System.arraycopy;
 import static java.util.stream.Collectors.joining;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
 
 import java.util.ArrayList;
@@ -33,9 +32,6 @@ public class BitChessBoard {
      * contains the bit masks for each piece type indexed by their figure type. 0 index is empty and unused.
      */
     private long[] pieceBB = new long[FT_ALL];
-
-    public static final int nWhite = Color.WHITE.ordinal();     // any white piece
-    public static final int nBlack = Color.BLACK.ordinal();     // any black piece
 
     public BitChessBoard() {
     }

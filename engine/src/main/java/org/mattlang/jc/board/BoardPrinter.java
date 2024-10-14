@@ -1,8 +1,8 @@
 package org.mattlang.jc.board;
 
 import static org.mattlang.jc.board.BoardPrinterUtil.toStr;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 
 import java.util.ArrayList;
 import java.util.function.BiFunction;
@@ -20,7 +20,7 @@ public class BoardPrinter {
 
         StringBuilder all = new StringBuilder();
 
-        FenComposer fenComposer=new FenComposer();
+        FenComposer fenComposer = new FenComposer();
         fenComposer.createFenFromBoard(board);
         all.append(fenComposer.createFenStr() + "\n");
         // two variants, since the unicode characters are weird on some consoles...
@@ -48,14 +48,12 @@ public class BoardPrinter {
         tabs.add(BitChessBoard.createMask(board.getBoard().getColorMask(nWhite), "W"));
         tabs.add(BitChessBoard.createMask(board.getBoard().getColorMask(nBlack), "B"));
 
-
         all.append(BitChessBoard.formatAsTabs(tabs, "          "));
         all.append("\n");
 
         all.append(board.getBoard().toLogStr());
         return all.toString();
     }
-
 
     public static void printSmallBoard(BoardRepresentation board) {
         System.out.println(toSmallBoardStr(board));

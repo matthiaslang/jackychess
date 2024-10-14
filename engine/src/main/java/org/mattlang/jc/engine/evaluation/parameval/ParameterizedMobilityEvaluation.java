@@ -1,10 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;

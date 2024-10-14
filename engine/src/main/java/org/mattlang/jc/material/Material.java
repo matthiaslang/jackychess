@@ -1,7 +1,7 @@
 package org.mattlang.jc.material;
 
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.Color.nWhite;
 
 import java.util.Arrays;
 import java.util.Objects;

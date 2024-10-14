@@ -1,11 +1,9 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.bitboard.BB.*;
 
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.Tools;
 
 /**
@@ -19,8 +17,8 @@ public class KingZoneMasks {
     static {
         for (int i = 0; i < 64; i++) {
             long kingMask = 1L << i;
-            kingZoneMasks[BitChessBoard.nWhite][i] = createKingZoneMask(i, kingMask, WHITE);
-            kingZoneMasks[BitChessBoard.nBlack][i] = createKingZoneMask(i, kingMask, BLACK);
+            kingZoneMasks[nWhite][i] = createKingZoneMask(i, kingMask, WHITE);
+            kingZoneMasks[nBlack][i] = createKingZoneMask(i, kingMask, BLACK);
         }
     }
 

@@ -1,6 +1,8 @@
 package org.mattlang.jc.board.bitboard;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult.BLACK_KNIGHT_STARTPOS;
 
@@ -103,8 +105,8 @@ public class BBTest {
         board.setFenPosition("position fen K7/8/p7/8/8/7P/8/r6k w - - 1 56 ");
         board.println();
 
-        long wpawns = board.getBoard().getPawns(BitChessBoard.nWhite);
-        long brooks = board.getBoard().getRooks(BitChessBoard.nBlack);
+        long wpawns = board.getBoard().getPawns(nWhite);
+        long brooks = board.getBoard().getRooks(nBlack);
         System.out.println(BB.toStrBoard(wpawns));
 
         long wpawnsByFields = BB.H3;

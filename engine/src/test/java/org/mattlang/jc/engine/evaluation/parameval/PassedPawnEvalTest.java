@@ -1,14 +1,13 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.engine.evaluation.parameval.PassedPawnEval.onlyPawnsOrOneNightOrBishop;
 
 import org.junit.Test;
 import org.mattlang.jc.board.bitboard.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.material.Material;
@@ -170,7 +169,7 @@ public class PassedPawnEvalTest {
         ppe.setPassedKingMulti(new FloatArrayFunction(new float[] { 0, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f }));
 
         long whitePawns = board.getBoard().getPawns(nWhite);
-        long blackPawns = board.getBoard().getPawns(BitChessBoard.nBlack);
+        long blackPawns = board.getBoard().getPawns(nBlack);
         long whitePassers = BB.wFrontFill(whitePawns) & ~BB.bFrontFill(blackPawns) & whitePawns;
         long blackPassers = BB.bFrontFill(blackPawns) & ~BB.wFrontFill(whitePawns) & blackPawns;
 

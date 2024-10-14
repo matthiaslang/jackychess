@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
@@ -99,7 +98,7 @@ public final class EvalResult {
 
         long capturesEast = wPawns & BB.bPawnWestAttacks(bPieces);
         long capturesWest = wPawns & BB.bPawnEastAttacks(bPieces);
-        updateAttacks(capturesEast | capturesWest, FT_PAWN, BitChessBoard.nWhite);
+        updateAttacks(capturesEast | capturesWest, FT_PAWN, nWhite);
 
         long bPawns = bb.getPieceSet(FT_PAWN, BLACK);
         long wPieces = bb.getColorMask(WHITE);
@@ -107,7 +106,7 @@ public final class EvalResult {
         capturesEast = bPawns & BB.wPawnWestAttacks(wPieces);
         capturesWest = bPawns & BB.wPawnEastAttacks(wPieces);
 
-        updateAttacks(capturesEast | capturesWest, FT_PAWN, BitChessBoard.nBlack);
+        updateAttacks(capturesEast | capturesWest, FT_PAWN, nBlack);
 
     }
 

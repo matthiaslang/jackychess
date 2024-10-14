@@ -1,8 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.engine.evaluation.Tools.fileOf;
 
@@ -137,8 +136,8 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     }
 
     private void calcPassers(BitChessBoard bb) {
-        long whitePawns = bb.getPawns(BitChessBoard.nWhite);
-        long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+        long whitePawns = bb.getPawns(nWhite);
+        long blackPawns = bb.getPawns(nBlack);
         whitePassers = wPassedPawns(whitePawns, blackPawns);
         blackPassers = bPassedPawns(blackPawns, whitePawns);
     }
@@ -147,8 +146,8 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
         int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
-        long whitePawns = bb.getPawns(BitChessBoard.nWhite);
-        long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+        long whitePawns = bb.getPawns(nWhite);
+        long blackPawns = bb.getPawns(nBlack);
 
         long blackPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, WHITE);
         long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
@@ -236,8 +235,8 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
         int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
-        long whitePawns = bb.getPawns(BitChessBoard.nWhite);
-        long blackPawns = bb.getPawns(BitChessBoard.nBlack);
+        long whitePawns = bb.getPawns(nWhite);
+        long blackPawns = bb.getPawns(nBlack);
 
         long blackPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, WHITE);
         long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
@@ -327,7 +326,7 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
 
         long kingMask = bb.getPieceSet(FT_KING, BLACK);
 
-        long pawnsMask = bb.getPawns(BitChessBoard.nBlack);
+        long pawnsMask = bb.getPawns(nBlack);
 
         /* king on kingside F-H: */
         if ((kingMask & BB.FGH_File) != 0) {
@@ -351,7 +350,7 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
 
         long kingMask = bb.getPieceSet(FT_KING, WHITE);
 
-        long pawnsMask = bb.getPawns(BitChessBoard.nWhite);
+        long pawnsMask = bb.getPawns(nWhite);
 
         /* king on kingside F-H: */
         if ((kingMask & BB.FGH_File) != 0) {

@@ -4,6 +4,8 @@ import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.util.logging.Level.FINE;
 import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
@@ -20,7 +22,6 @@ import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BB;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.evaluation.Weights;
@@ -765,9 +766,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      * @return
      */
     private static boolean noPawnPromotions(BoardRepresentation board) {
-        return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(BitChessBoard.nWhite) & BB.rank7) == 0
+        return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(nWhite) & BB.rank7) == 0
                 || board.getSiteToMove() == Color.BLACK
-                && (board.getBoard().getPawns(BitChessBoard.nBlack) & BB.rank2) == 0;
+                && (board.getBoard().getPawns(nBlack) & BB.rank2) == 0;
     }
 
     public void setIsWorker(boolean isWorker) {

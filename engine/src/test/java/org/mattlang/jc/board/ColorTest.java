@@ -1,9 +1,7 @@
 package org.mattlang.jc.board;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.Color.invert;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.Color.*;
 
 import org.junit.Test;
 

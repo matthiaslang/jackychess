@@ -3,11 +3,8 @@ package org.mattlang.jc.board.bitboard;
 import static java.lang.Character.isDigit;
 import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 import java.util.Objects;

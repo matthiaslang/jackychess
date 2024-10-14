@@ -3,12 +3,13 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.lang.Long.bitCount;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.BB.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedWhitePawns;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
@@ -81,8 +82,8 @@ public class ParameterizedComplexityEvaluation implements EvalComponent {
 
         int eval = 0;
 
-        long white = board.getBoard().getColorMask(BitChessBoard.nWhite);
-        long black = board.getBoard().getColorMask(BitChessBoard.nBlack);
+        long white = board.getBoard().getColorMask(nWhite);
+        long black = board.getBoard().getColorMask(nBlack);
 
         long knights = board.getBoard().getPieceSet(FT_KNIGHT);
         long rooks = board.getBoard().getPieceSet(FT_ROOK);

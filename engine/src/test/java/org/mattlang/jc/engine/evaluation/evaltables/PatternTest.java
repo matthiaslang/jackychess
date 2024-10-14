@@ -1,10 +1,7 @@
 package org.mattlang.jc.engine.evaluation.evaltables;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
+import static org.mattlang.jc.board.Color.*;
 
 import java.io.ByteArrayInputStream;
 

@@ -1,14 +1,11 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.board.bitboard.BB.CenterFiles;
 import static org.mattlang.jc.board.bitboard.BB.soutOne;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nBlack;
-import static org.mattlang.jc.board.bitboard.BitChessBoard.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
