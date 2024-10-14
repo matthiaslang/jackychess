@@ -73,6 +73,8 @@
     </properties>
 
     <modules>
+        <module>api</module>
+        <module>hce</module>
         <module>engine</module>
         <module>tuner</module>
         <module>tools</module>
