@@ -13,7 +13,9 @@ import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.board.bitboard.BoardCastlings;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.moves.CastlingMove;
 
 /**
  * Bitboard move generation used in staged move generation.
@@ -80,8 +82,30 @@ public final class MoveGeneration {
         long quietMoves = getKingAttacs(king) & empty;
         collector.genQuietMoves(FT_KING, king, quietMoves);
 
-        board.getBoardCastlings().generateCastlingMoves(side, collector);
+        generateCastlingMoves(board, board.getBoardCastlings(), side, collector);
     }
+
+
+    private static void generateCastlingMoves(BoardRepresentation board, BoardCastlings boardCastlings, Color side, MoveList collector) {
+        switch (side) {
+        case WHITE:
+            addCheckCastling(board, boardCastlings.getCastlingWhiteLong(), collector);
+            addCheckCastling(board, boardCastlings.getCastlingWhiteShort(), collector);
+
+            break;
+        case BLACK:
+            addCheckCastling(board, boardCastlings.getCastlingBlackShort(), collector);
+            addCheckCastling(board, boardCastlings.getCastlingBlackLong(), collector);
+            break;
+        }
+    }
+
+    private static void addCheckCastling(BoardRepresentation board,CastlingMove castlingMove,MoveList collector) {
+        if (castlingMove.getDef().check(board)) {
+            collector.addCastlingMove(castlingMove);
+        }
+    }
+
 
     public static void generateAttacks(BoardRepresentation board, Color side, MoveList collector) {
 

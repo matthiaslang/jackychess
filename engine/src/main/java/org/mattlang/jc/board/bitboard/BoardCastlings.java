@@ -6,8 +6,6 @@ import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.CastlingMove;
 
 /**
@@ -41,27 +39,6 @@ public final class BoardCastlings {
     private CastlingMove castlingBlackShort = CASTLING_MOVE_BLACK_SHORT;
 
     private CastlingMove castlingBlackLong = CASTLING_MOVE_BLACK_LONG;
-
-    public void generateCastlingMoves(Color side, MoveList collector) {
-        switch (side) {
-        case WHITE:
-            if (castlingWhiteLong.getDef().check(board)) {
-                collector.addCastlingMove(castlingWhiteLong);
-            }
-            if (castlingWhiteShort.getDef().check(board)) {
-                collector.addCastlingMove(castlingWhiteShort);
-            }
-            break;
-        case BLACK:
-            if (castlingBlackShort.getDef().check(board)) {
-                collector.addCastlingMove(castlingBlackShort);
-            }
-            if (castlingBlackLong.getDef().check(board)) {
-                collector.addCastlingMove(castlingBlackLong);
-            }
-            break;
-        }
-    }
 
     public CastlingMove getCastlingMove(byte type) {
         switch (type) {
