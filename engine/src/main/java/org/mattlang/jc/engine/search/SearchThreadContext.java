@@ -4,7 +4,6 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.engine.EvaluateFunction;
-import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
@@ -34,7 +33,8 @@ public class SearchThreadContext {
     @Getter
     private KillerMoves killerMoves = new KillerMoves();
 
-    private PawnCache pawnCache = new PawnCache(13);
+    @Getter
+    private SearchThreadContextCache cache = new SearchThreadContextCache();
 
     @Getter
     private OrderCalculator orderCalculator;
@@ -53,7 +53,7 @@ public class SearchThreadContext {
         historyHeuristic.reset();
         counterMoveHeuristic.reset();
         killerMoves.reset();
-        pawnCache.reset();
+        cache.reset();
         orderCalculator = new OrderCalculator(this);
     }
 
@@ -75,7 +75,7 @@ public class SearchThreadContext {
     public EvaluateFunction getEvaluate() {
         if (evaluate == null) {
             evaluate = Factory.getDefaults().evaluateFunction.create();
-            evaluate.setPawnCache(pawnCache);
+            evaluate.associateThreadCache(cache);
         }
         return evaluate;
     }

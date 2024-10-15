@@ -5,7 +5,7 @@ import java.util.List;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.engine.evaluation.parameval.PawnCache;
+import org.mattlang.jc.engine.search.SearchThreadContextCache;
 import org.mattlang.tuning.TuneableEvaluateFunction;
 import org.mattlang.tuning.TuningParameter;
 import org.mattlang.tuning.tuner.OptParameters;
@@ -35,8 +35,8 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     @Override
-    public void setPawnCache(PawnCache pawnCache) {
-
+    public void associateThreadCache(SearchThreadContextCache cache) {
+        // not used
     }
 
     @Override

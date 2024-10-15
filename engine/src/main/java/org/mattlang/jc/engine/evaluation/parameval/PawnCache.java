@@ -1,9 +1,11 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import org.mattlang.jc.engine.search.ContextCache;
+
 /**
  * A thread safe tt cache with an int as payload and an int storing the zobrist key (partial).
  */
-public final class PawnCache {
+public final class PawnCache implements ContextCache {
 
     public static final PawnCache EMPTY_CACHE = new PawnCache(0);
 
@@ -47,6 +49,7 @@ public final class PawnCache {
         System.arraycopy(result.pksafety, 0, entry.pksafety, 0, 2);
     }
 
+    @Override
     public void reset() {
         for (int i = 0; i < capacity; i++) {
             entries[i].reset();

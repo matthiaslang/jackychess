@@ -9,6 +9,7 @@ import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
+import org.mattlang.jc.engine.search.SearchThreadContextCache;
 import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
@@ -27,6 +28,7 @@ import lombok.Setter;
 @EvalConfigurable
 public class ParameterizedEvaluation implements EvaluateFunction {
 
+    public static final String PAWN_CACHE_KEY = "pawnCache";
     @Getter
     private ParameterizedMaterialEvaluation matEvaluation;
 
@@ -206,8 +208,12 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     }
 
     @Override
-    public void setPawnCache(PawnCache pawnCache) {
-        this.pawnCache = pawnCache;
+    public void associateThreadCache(SearchThreadContextCache cache) {
+        pawnCache = (PawnCache) cache.getCacheObject(PAWN_CACHE_KEY);
+        if (pawnCache == null) {
+            pawnCache = new PawnCache(13);
+            cache.setCacheObject(PAWN_CACHE_KEY, pawnCache);
+        }
     }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
