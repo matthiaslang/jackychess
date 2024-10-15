@@ -2,7 +2,6 @@ package org.mattlang.jc.board.bitboard;
 
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.move.MoveConstants.*;
-import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
@@ -18,13 +17,13 @@ public final class BoardCastlings {
      * The castling moves for regular chess are statically predefined, since they are used most often.
      * (This saves memory especially during tuning, to reuse the instances for all tuning positions).
      */
-    public static final CastlingMove CASTLING_MOVE_WHITE_LONG = createCastlingMove(WHITE_LONG,
+    public static final CastlingMove CASTLING_MOVE_WHITE_LONG = CastlingMove.createCastlingMove(WHITE_LONG,
             4, 2, 0, 3);
-    public static final CastlingMove CASTLING_MOVE_WHITE_SHORT = createCastlingMove(WHITE_SHORT,
+    public static final CastlingMove CASTLING_MOVE_WHITE_SHORT = CastlingMove.createCastlingMove(WHITE_SHORT,
             4, 6, 7, 5);
-    public static final CastlingMove CASTLING_MOVE_BLACK_SHORT = createCastlingMove(BLACK_SHORT,
+    public static final CastlingMove CASTLING_MOVE_BLACK_SHORT = CastlingMove.createCastlingMove(BLACK_SHORT,
             60, 62, 63, 61);
-    public static final CastlingMove CASTLING_MOVE_BLACK_LONG = createCastlingMove(BLACK_LONG,
+    public static final CastlingMove CASTLING_MOVE_BLACK_LONG = CastlingMove.createCastlingMove(BLACK_LONG,
             60, 58, 56, 59);
     private final BoardRepresentation board;
 
