@@ -1,11 +1,11 @@
 package org.mattlang.jc.board;
 
+import static org.mattlang.jc.board.CastlingFields.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
-import static org.mattlang.jc.moves.CastlingMove.*;
-import static org.mattlang.jc.moves.MoveImpl.*;
+import static org.mattlang.jc.move.MoveConstants.*;
 
 import lombok.Getter;
 

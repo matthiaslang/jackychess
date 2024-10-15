@@ -1,6 +1,7 @@
 package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.CastlingFields.*;
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
@@ -58,17 +59,17 @@ public class CastlingMoveTest {
 
     @Test
     public void testTargets() {
-        assertThat(CastlingMove.gWKingTargetPos).isEqualTo(6);
-        assertThat(CastlingMove.gWRookTargetPos).isEqualTo(5);
+        assertThat(gWKingTargetPos).isEqualTo(6);
+        assertThat(gWRookTargetPos).isEqualTo(5);
 
-        assertThat(CastlingMove.cWKingTargetPos).isEqualTo(2);
-        assertThat(CastlingMove.cWRookTargetPos).isEqualTo(3);
+        assertThat(cWKingTargetPos).isEqualTo(2);
+        assertThat(cWRookTargetPos).isEqualTo(3);
 
-        assertThat(CastlingMove.gBKingTargetPos).isEqualTo(62);
-        assertThat(CastlingMove.gBRookTargetPos).isEqualTo(61);
+        assertThat(gBKingTargetPos).isEqualTo(62);
+        assertThat(gBRookTargetPos).isEqualTo(61);
 
-        assertThat(CastlingMove.cBKingTargetPos).isEqualTo(58);
-        assertThat(CastlingMove.cBRookTargetPos).isEqualTo(59);
+        assertThat(cBKingTargetPos).isEqualTo(58);
+        assertThat(cBRookTargetPos).isEqualTo(59);
 
         assertThat(createCastlingMove(BLACK_LONG, 60, 58, 56, 59))
                 .isEqualTo(castlingBlackLong);

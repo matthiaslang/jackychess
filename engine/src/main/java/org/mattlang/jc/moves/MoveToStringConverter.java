@@ -2,8 +2,8 @@ package org.mattlang.jc.moves;
 
 import static org.mattlang.jc.board.IndexConversion.convert;
 import static org.mattlang.jc.engine.sorting.MovePicker.mapDebugOrderStr;
-import static org.mattlang.jc.moves.MoveImpl.CASTLING_BLACK_LONG;
-import static org.mattlang.jc.moves.MoveImpl.CASTLING_WHITE_LONG;
+import static org.mattlang.jc.move.MoveConstants.CASTLING_BLACK_LONG;
+import static org.mattlang.jc.move.MoveConstants.CASTLING_WHITE_LONG;
 
 import java.util.ArrayList;
 

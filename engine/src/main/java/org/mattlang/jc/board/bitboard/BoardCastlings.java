@@ -1,8 +1,8 @@
 package org.mattlang.jc.board.bitboard;
 
 import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.move.MoveConstants.*;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
-import static org.mattlang.jc.moves.MoveImpl.*;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
