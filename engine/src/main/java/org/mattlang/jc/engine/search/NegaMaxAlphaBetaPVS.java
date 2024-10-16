@@ -7,8 +7,7 @@ import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.Weights.PATT_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
@@ -47,8 +46,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
-    public static final int VALUE_TB_WIN_IN_MAX_PLY = KING_WEIGHT - 2 * MAX_PLY;
-    public static final int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
+
     private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 

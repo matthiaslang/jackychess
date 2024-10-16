@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.PhaseCalculator.scaleByPhase;
 
 import java.util.Arrays;
 
@@ -11,6 +10,7 @@ import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
 import lombok.Getter;
 
@@ -81,7 +81,7 @@ public final class EvalResult {
      * @return
      */
     public int calcCompleteScore(BoardRepresentation bitBoard) {
-        int score = (int) scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore()) + result;
+        int score = (int) PhaseCalculator.scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore()) + result;
         return score;
     }
 

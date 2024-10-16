@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.functions;
 
-import org.mattlang.jc.engine.evaluation.parameval.ConfigParseException;
+import org.mattlang.jc.util.ConfigParseException;
 
 public class FunctionParser {
 

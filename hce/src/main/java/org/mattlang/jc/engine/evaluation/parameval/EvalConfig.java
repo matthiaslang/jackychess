@@ -9,11 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FunctionParser;
+import org.mattlang.jc.util.ConfigParseException;
 import org.mattlang.jc.util.PropertyConfig;
 
 import lombok.Getter;
@@ -53,7 +53,7 @@ public class EvalConfig {
     }
 
     public EvalConfig() {
-        this(Factory.getDefaults().getConfig().evaluateParamSet.getValue().name().toLowerCase());
+        this("current");
     }
 
     public int getPosIntProp(String propName) {

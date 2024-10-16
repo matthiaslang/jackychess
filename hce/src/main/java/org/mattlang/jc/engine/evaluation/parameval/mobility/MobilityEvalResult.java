@@ -6,7 +6,6 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks.getKingZoneMask;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.Color;
@@ -16,13 +15,14 @@ import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation;
 
 import lombok.Getter;
 
 @EvalConfigurable(prefix = "positional")
-@EvalValueInterval(min = 0, max=100)
+@EvalValueInterval(min = 0, max = 100)
 @Getter
 public class MobilityEvalResult {
 
@@ -35,7 +35,6 @@ public class MobilityEvalResult {
     public static final long BLACK_KNIGHT_STARTPOS = B8 | G8;
 
     public int eval;
-
 
     public int kingAttCount;
     /**
@@ -55,7 +54,6 @@ public class MobilityEvalResult {
     @EvalConfigParam(name = "rookOpen", mgEgCombined = true)
     private int rookOpenMgEg;
 
-
     /**
      * combined value for mg+eg;
      */
@@ -73,7 +71,6 @@ public class MobilityEvalResult {
     private int oppKingPos;
     private long ownPawns;
     private long oppPawns;
-
 
     public MobilityEvalResult(boolean forTuning, EvalConfig config) {
     }
@@ -152,7 +149,6 @@ public class MobilityEvalResult {
         }
     }
 
-
     public void setEarlyQueenPenalty(int earlyQueenPenalty) {
         this.earlyQueenPenalty = earlyQueenPenalty;
     }
@@ -167,7 +163,7 @@ public class MobilityEvalResult {
 
         long oppKingMask = bb.getPieceSet(FT_KING, xside);
         oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
-        oppKingZone = getKingZoneMask(xside.ordinal(), oppKingPos);
+        oppKingZone = KingZoneMasks.getKingZoneMask(xside.ordinal(), oppKingPos);
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
         long oppPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, side);
@@ -188,8 +184,6 @@ public class MobilityEvalResult {
     private int getTropism(int sq1, int sq2) {
         return 14 - Tools.manhattanDistance(sq1, sq2);
     }
-
-
 
     /******************************************************************************
      *                             Pattern detection                               *

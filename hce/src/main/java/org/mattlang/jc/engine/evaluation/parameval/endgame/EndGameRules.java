@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
-import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.rule;
-
 import java.util.Objects;
 
 import org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule;
@@ -19,52 +17,52 @@ public enum EndGameRules {
     /**
      * King, Knight,Knight vs King Pawn.
      */
-    KNN_VS_KP(rule("KNN vs KP"), new KNNvsKPEndgameFunction()),
+    KNN_VS_KP(MaterialCorrectionRule.rule("KNN vs KP"), new KNNvsKPEndgameFunction()),
 
     /**
      * King, Queen vs King Rook.
      */
-    KQ_VS_KR(rule("KQ vs KR"), new KQvsKREndgameFunction()),
+    KQ_VS_KR(MaterialCorrectionRule.rule("KQ vs KR"), new KQvsKREndgameFunction()),
 
     /**
      * King, Queen vs King Pawn.
      */
-    KQ_VS_KP(rule("KQ vs KP"), new KQvsKPEndgameFunction()),
+    KQ_VS_KP(MaterialCorrectionRule.rule("KQ vs KP"), new KQvsKPEndgameFunction()),
 
     /**
      * King, Rook vs King Bishop.
      */
-    KR_VS_KP(rule("KR vs KP"), new KRvsKPEndgameFunction()),
+    KR_VS_KP(MaterialCorrectionRule.rule("KR vs KP"), new KRvsKPEndgameFunction()),
 
     /**
      * King, Rook vs King Bishop.
      */
-    KR_VS_KB(rule("KR vs KB"), new KRvsKBEndgameFunction()),
+    KR_VS_KB(MaterialCorrectionRule.rule("KR vs KB"), new KRvsKBEndgameFunction()),
 
     /**
      * King, Rook vs King Knight.
      */
-    KR_VS_KN(rule("KR vs KN"), new KRvsKNEndgameFunction()),
+    KR_VS_KN(MaterialCorrectionRule.rule("KR vs KN"), new KRvsKNEndgameFunction()),
 
     /**
      * King, Queen (and more) against blank King.
      */
-    KQ_VS_K(rule("KQ* vs K"), new KxKEndgameFunction()),
+    KQ_VS_K(MaterialCorrectionRule.rule("KQ* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, Rook (and more) against blank King.
      */
-    KR_VS_K(rule("KR* vs K"), new KxKEndgameFunction()),
+    KR_VS_K(MaterialCorrectionRule.rule("KR* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, two Bishops (and more) against blank King.
      */
-    KBB_VS_K(rule("KBB* vs K"), new KxKEndgameFunction()),
+    KBB_VS_K(MaterialCorrectionRule.rule("KBB* vs K"), new KxKEndgameFunction()),
 
     /**
      * King, Bishop and Knight against blank King.
      */
-    KBN_VS_K(rule("KBN vs K"), new KBNvsKEndgameFunction());
+    KBN_VS_K(MaterialCorrectionRule.rule("KBN vs K"), new KBNvsKEndgameFunction());
 
     private final MaterialCorrectionRule materialRule;
     private final EndgameFunction endgameFunction;

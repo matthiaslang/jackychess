@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.evaluation.parameval.endgame;
 
 import static org.mattlang.jc.board.Tools.*;
+import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_WIN_IN_MAX_PLY;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
-import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 
 /**
  * Endgame Function which handles KX vs K. This function is used to evaluate positions with
@@ -43,7 +43,7 @@ public class KxKEndgameFunction implements EndgameFunction {
                 || (bb.getBishopsCount(stronger) > 0 && bb.getKnightsCount(stronger) > 0)
                 || ((bb.getBishops(stronger) & ~DarkSquares) != 0
                 && (bb.getBishops(stronger) & DarkSquares) != 0))
-            result = Math.min(result + VALUE_KNOWN_WIN, NegaMaxAlphaBetaPVS.VALUE_TB_WIN_IN_MAX_PLY - 1);
+            result = Math.min(result + VALUE_KNOWN_WIN, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
         //
         //        int result =  pos.non_pawn_material(strongSide)

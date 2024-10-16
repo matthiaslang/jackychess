@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import org.mattlang.jc.util.ConfigParseException;
+
 public enum ReductionRule {
 
     HALFRESULT("reduce half"),

@@ -12,8 +12,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.engine.evaluation.parameval.ConfigParseException;
-
 /**
  * Utilitly class to load properties from a property file.
  *

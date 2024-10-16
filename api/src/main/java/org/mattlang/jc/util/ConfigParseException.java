@@ -1,4 +1,4 @@
-package org.mattlang.jc.engine.evaluation.parameval;
+package org.mattlang.jc.util;
 
 public class ConfigParseException extends RuntimeException {
 

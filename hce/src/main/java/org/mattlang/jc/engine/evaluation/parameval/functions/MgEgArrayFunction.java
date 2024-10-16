@@ -1,8 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval.functions;
 
-import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.createMgEgScore;
-
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 
 import lombok.Getter;
 
@@ -35,7 +34,7 @@ public final class MgEgArrayFunction {
     }
 
     public void updateCombinedValue(int pos) {
-        combinedMgEg[pos] = createMgEgScore(functionMg.calc(pos), functionEg.calc(pos));
+        combinedMgEg[pos] = MgEgScore.createMgEgScore(functionMg.calc(pos), functionEg.calc(pos));
     }
 
 }
