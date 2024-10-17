@@ -11,7 +11,6 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
@@ -28,8 +27,13 @@ public class FenParser {
     public static final int FEN_INDEX_MOVES_BY_FEN = 8;
 
     public GameState setPosition(String positionStr, BoardRepresentation board) {
+        return setPosition(positionStr, board, false);
+    }
+
+    public GameState setPosition(String positionStr, BoardRepresentation board, boolean isChess960) {
         if (!positionStr.startsWith("position")) {
-            throw new IllegalStateException("Error Parsing fen position string: Not starting with 'position':" + positionStr);
+            throw new IllegalStateException(
+                    "Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
         String[] splitted = positionStr.split(" ");
         String fen = splitted[1];
@@ -46,6 +50,8 @@ public class FenParser {
             String enpassant = splitted[FEN_INDEX_ENPASSANT];
             String noHalfMoves = splitted[FEN_INDEX_NO_HALFMOVES];
             String nextMoveNum = splitted[FEN_INDEX_NEXT_MOVENUM];
+
+            board.setChess960(isChess960);
 
             setPosition(board, figures, siteToMove, rochade, enpassant, noHalfMoves, nextMoveNum);
 
@@ -138,7 +144,8 @@ public class FenParser {
     }
 
     /**
-     * frc castling encoded variant, where from ==to == king move for special castlings where the position of the king doesn´t
+     * frc castling encoded variant, where from ==to == king move for special castlings where the position of the king
+     * doesn´t
      * change on castling.
      * cutechess seem to use this encoding on frc (sometimes, not always...).
      *
@@ -177,9 +184,10 @@ public class FenParser {
         return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
     }
 
-    private void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade, String enpassant,
-                              String noHalfMoves,
-                              String nextMoveNum) {
+    private void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade,
+            String enpassant,
+            String noHalfMoves,
+            String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         board.clearPosition();
         String[] rows = figures.split("/");
@@ -187,7 +195,7 @@ public class FenParser {
         // todo parse and set rest of fen string...
 
         if (siteToMove == null || siteToMove.trim().length() == 0) {
-            return ;
+            return;
         }
 
         if (!"-".equals(enpassant)) {
@@ -195,7 +203,6 @@ public class FenParser {
             board.setEnPassantOption(enpassantOpt);
         }
         board.clearCastlingRights();
-        board.setChess960(Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue());
 
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {

@@ -11,7 +11,7 @@ import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
-import static org.mattlang.jc.moves.MoveToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 import java.util.List;

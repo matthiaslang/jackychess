@@ -5,7 +5,6 @@ import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 import java.util.Objects;
 
@@ -127,7 +126,7 @@ public final class BitBoard implements BoardRepresentation {
     private void hashAddFig(int pos, byte figureCode) {
         zobristHash = Zobrist.updateFig(zobristHash, pos, figureCode);
         material.add(figureCode);
-        if (isKingOrPawn(figureCode)) {
+        if (Zobrist.isKingOrPawn(figureCode)) {
             pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, pos, figureCode);
         }
     }
@@ -135,7 +134,7 @@ public final class BitBoard implements BoardRepresentation {
     private void hashRemoveFig(int pos, byte oldFigure) {
         zobristHash = Zobrist.updateFig(zobristHash, pos, oldFigure);
         material.subtract(oldFigure);
-        if (isKingOrPawn(oldFigure)) {
+        if (Zobrist.isKingOrPawn(oldFigure)) {
             pawnKingZobristHash = Zobrist.updateFig(pawnKingZobristHash, pos, oldFigure);
         }
     }

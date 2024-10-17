@@ -164,7 +164,8 @@ public class UciProcessor {
         try {
             FenParser fenParser = new FenParser();
             BoardRepresentation board = Factory.getDefaults().boards.create();
-            return fenParser.setPosition(positionStr, board);
+            boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
+            return fenParser.setPosition(positionStr, board, isChess960);
         } catch (RuntimeException re) {
             throw new RuntimeException("Error parsing UCI postion: " + positionStr, re);
         }
