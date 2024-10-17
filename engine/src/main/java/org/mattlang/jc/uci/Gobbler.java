@@ -1,6 +1,7 @@
 package org.mattlang.jc.uci;
 
 import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.util.Logging.GOBBLER_LOGNAME;
 
 import java.io.*;
 import java.util.Optional;
@@ -14,7 +15,6 @@ import java.util.logging.Logger;
  */
 public class Gobbler {
 
-    public static final String GOBBLER_LOGNAME = "Gobbler";
     Logger logger = Logger.getLogger(GOBBLER_LOGNAME);
 
     private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
@@ -33,12 +33,9 @@ public class Gobbler {
         this.name = name;
     }
 
-
-
-
     /**
      * put a uci command .
-
+     *
      * @param cmd
      */
     public void putCommand(String cmd) {

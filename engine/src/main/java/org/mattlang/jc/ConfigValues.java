@@ -25,18 +25,21 @@ public class ConfigValues {
 
     public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
-            3, MAX_PLY-1, MAX_PLY-1);
+            3, MAX_PLY - 1, MAX_PLY - 1);
 
     public final UCISpinOption maxQuiescence =
             limits.createSpinOpt("quiescence",
                     "the maximum search depth in quiescence",
-                    0, MAX_PLY-1, MAX_PLY-1);
+                    0, MAX_PLY - 1, MAX_PLY - 1);
 
     public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
             "the maximum search threads when multi threading search is activated",
             1, MAX_THREADS, 1);
 
-    /** to inform the gui that we support chess960. There is no other uci support from our side necessary, since the board representation and fen parser itself is "compatible" with frc by itself. */
+    /**
+     * to inform the gui that we support chess960. There is no other uci support from our side necessary, since the
+     * board representation and fen parser itself is "compatible" with frc by itself.
+     */
     public final UCICheckOption uciChess960 = variants.createCheckOpt("UCI_Chess960",
             "indicates support for Chess960",
             false);
@@ -47,8 +50,6 @@ public class ConfigValues {
     public final UCISpinOption hash = caching.createSpinOpt("Hash",
             "TT Hash Size in MB",
             1, 2048, 128);
-
-
 
     public final UCICheckOption useTTCache = internal.createCheckOpt("useTTCache",
             "Flag, if the tt cache to store scores should be activated",
@@ -64,16 +65,6 @@ public class ConfigValues {
     public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",
             "should principal variation search be used",
             true);
-
-    public final UCIComboOption<EvalFunctions> evluateFunctions =
-            search.createComboOpt("evaluateFunction",
-                    "the evaluation function to use. Only for development testing",
-                    EvalFunctions.class, EvalFunctions.PARAMETERIZED);
-
-    public final UCIComboOption<EvalParameterSet> evaluateParamSet =
-            search.createComboOpt("evalParamSet",
-                    "the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing",
-                    EvalParameterSet.class, EvalParameterSet.CURRENT);
 
     public final UCIGroup moveOrder =
             allOptions.createInternalGroup("Move Order", "Parameter influencing the move order in alpha beta search");
@@ -99,8 +90,6 @@ public class ConfigValues {
     public final UCICheckOption internalIterativeDeepening = internal.createCheckOpt("iid",
             "should internal iterative deepening be activated?",
             true);
-
-
 
     public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",

@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -170,7 +171,7 @@ public class UciProcessor {
     }
 
     private void identifyYourself() {
-        String version = Factory.getAppProps().getProperty("version");
+        String version = AppConfiguration.getAppProps().getProperty("version");
         UCI.instance.putCommand("id name JackyChess " + version);
         UCI.instance.putCommand("id author Matthias Lang");
 

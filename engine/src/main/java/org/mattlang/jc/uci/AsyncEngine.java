@@ -59,7 +59,6 @@ public class AsyncEngine {
 
         // init the search parameters, eval functions, etc:
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
-        searchParams.evaluateFunction.set(options.evluateFunctions.getValue().getSupplier());
         searchParams.setConfig(options);
         // if we have special "go" parameters, then override thinktime:
         if (!goParams.infinite) {

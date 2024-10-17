@@ -2,7 +2,10 @@ package org.mattlang.jc;
 
 import static java.util.logging.Level.INFO;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.util.PropertyConfig;
@@ -29,6 +32,11 @@ public class AppConfiguration {
 
     private PropertyConfig properties = new PropertyConfig();
 
+    /**
+     * static app properties containing build information.
+     */
+    private static Properties appProps = loadAppProps();
+
     public AppConfiguration() {
         String configFile = System.getProperty(CONFIG_FILE);
         if (configFile != null) {
@@ -45,4 +53,19 @@ public class AppConfiguration {
         return properties.getOptBoolProp(propName, defaultVal);
     }
 
+
+    private static Properties loadAppProps() {
+        InputStream in = AppConfiguration.class.getResourceAsStream("/app.properties");
+        appProps = new Properties();
+        try {
+            appProps.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return appProps;
+    }
+
+    public static Properties getAppProps() {
+        return appProps;
+    }
 }

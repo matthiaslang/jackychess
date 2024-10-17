@@ -12,9 +12,8 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.EvaluateFunctionFactory;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.uci.UCIGroup;
@@ -30,15 +29,13 @@ public class SearchParameter {
 
     public final Impl<BoardRepresentation> boards = new Impl<>(this, BitBoard::new);
 
-    public final Impl<EvaluateFunction> evaluateFunction = new Impl<>(this, () -> new ParameterizedEvaluation());
-
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
     public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
-                + " Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+                + " Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
         for (Map.Entry<UCIGroup, List<UCIOption>> entry : config.getAllOptions().getOptionsByGroup().entrySet()) {
             UCIGroup group = entry.getKey();
             List<UCIOption> opts = entry.getValue();
@@ -60,7 +57,7 @@ public class SearchParameter {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
             LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
-            LOGGER.info("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+            LOGGER.info("Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
             LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
             for (UCIOption option : config.getAllOptions().getAllOptions()) {
                 LOGGER.info(option.getName() + ": " + option.getValue());
@@ -74,7 +71,7 @@ public class SearchParameter {
         b.append("\n");
         b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         b.append("\n");
-        b.append("Evaluation: " + evaluateFunction.instance().getClass().getSimpleName());
+        b.append("Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
         b.append("\n");
         b.append("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         b.append("\n");
