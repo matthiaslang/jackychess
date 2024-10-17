@@ -2,13 +2,10 @@ package org.mattlang.jc.engine.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.mattlang.jc.EvalParameterSet;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -24,19 +21,12 @@ public class ParameterizedEvaluationTest {
     @Test
     public void configParseTest() {
 
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
-        // try load all existing parametersets:
-        for (EvalParameterSet paramSet : Arrays.asList(EvalParameterSet.CURRENT/*, EvalParameterSet.TUNED01*/)) {
-            Factory.getDefaults().getConfig().evaluateParamSet.setValue(paramSet);
-            pe = new ParameterizedEvaluation();
-        }
     }
 
     @Test
     public void testTempo() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
         int tempoMg = MgEgScore.getMgScore(pe.getAdjustments().getTempo());
@@ -51,7 +41,6 @@ public class ParameterizedEvaluationTest {
 
     @Test
     public void testBackwardPawn() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
         ParameterizedEvaluation pe = new ParameterizedEvaluation();
 
         //        pe.getPawnEvaluation().setBackwardedPawnPenaltyMgEg(10000);
@@ -70,7 +59,6 @@ public class ParameterizedEvaluationTest {
 
     //    @Test
     public void testPerformance() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
 
         // get an evaluation for tuning: no caching activated:
         ParameterizedEvaluation pe = ParameterizedEvaluation.createForTuning();

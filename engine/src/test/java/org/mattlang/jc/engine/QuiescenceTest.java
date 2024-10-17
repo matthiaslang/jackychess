@@ -1,7 +1,6 @@
 package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 
@@ -11,19 +10,19 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 public class QuiescenceTest {
-
 
     @Test
     public void testQuiescenceExample() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c->c.maxDepth.setValue(2))
-                .config(c->c.maxQuiescence.setValue(5))
+                .config(c -> c.maxDepth.setValue(2))
+                .config(c -> c.maxQuiescence.setValue(5))
         );
         // now starting engine:
         Engine engine = new Engine();

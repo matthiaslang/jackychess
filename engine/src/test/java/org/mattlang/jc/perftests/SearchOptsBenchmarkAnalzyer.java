@@ -1,7 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -12,6 +10,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks to analyze sort order changes during development.
@@ -30,13 +29,12 @@ public class SearchOptsBenchmarkAnalzyer {
     @Ignore
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
-//       positions.addAll(EpdParsing.convertTests(BratKoKopecIT.bratkoKopec));
+        //       positions.addAll(EpdParsing.convertTests(BratKoKopecIT.bratkoKopec));
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
-
 
         runner.benchmarkSingleExecute(
                 everythingOff()
@@ -51,14 +49,14 @@ public class SearchOptsBenchmarkAnalzyer {
                         .config(c -> c.razoring.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
 
-        int nodesVisited=0;
+        int nodesVisited = 0;
         for (BenchmarkResults result : runner.getResults()) {
-            nodesVisited+=((BenchmarkIterativeResults)result).getNodesVisited();
+            nodesVisited += ((BenchmarkIterativeResults) result).getNodesVisited();
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
         }
         System.out.println("nodes visited " + nodesVisited);
 
-//        runner.writeCsvReport("target/searchOptsBenchmark2.csv");
+        //        runner.writeCsvReport("target/searchOptsBenchmark2.csv");
 
     }
 
@@ -66,8 +64,6 @@ public class SearchOptsBenchmarkAnalzyer {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

@@ -1,6 +1,6 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
+import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 

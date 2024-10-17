@@ -2,7 +2,6 @@ package org.mattlang.jc.perftests;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
-import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -11,11 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mattlang.jc.*;
+import org.mattlang.jc.EngineBenchmarksRunner;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
+import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks to analyze sorting by history, capture history...
@@ -34,13 +37,12 @@ public class SearchOptsBenchmark3 {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
-
 
         runner.benchmarkSingleExecute("noHistory   ",
                 everythingOff()
@@ -48,7 +50,7 @@ public class SearchOptsBenchmark3 {
                         .config(c -> c.useKillerMoves.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useHistoryHeuristic.setValue(false))
-//                        .config(c -> c.useCaptureHeuristic.setValue(false))
+                        //                        .config(c -> c.useCaptureHeuristic.setValue(false))
                         .config(c -> c.aspiration.setValue(true))
                         .config(c -> c.useNullMoves.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
@@ -70,26 +72,25 @@ public class SearchOptsBenchmark3 {
                         .config(c -> c.useKillerMoves.setValue(true))
                         .config(c -> c.useMvvLvaSorting.setValue(true))
                         .config(c -> c.useHistoryHeuristic.setValue(true))
-//                        .config(c -> c.useCaptureHeuristic.setValue(false))
+                        //                        .config(c -> c.useCaptureHeuristic.setValue(false))
                         .config(c -> c.aspiration.setValue(true))
                         .config(c -> c.useNullMoves.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
 
-
         Map<String, Integer> nodesByTest = runner.getResults()
                 .stream()
-                .collect(groupingBy(r -> r.getName(),   LinkedHashMap::new,summingInt(r -> r.getNodesVisited())));
+                .collect(groupingBy(r -> r.getName(), LinkedHashMap::new, summingInt(r -> r.getNodesVisited())));
 
         System.out.println("----------------------------------------------------------------");
-        DecimalFormat  formatter = new DecimalFormat("###.###");
-        nodesByTest.forEach((name,count) ->{
+        DecimalFormat formatter = new DecimalFormat("###.###");
+        nodesByTest.forEach((name, count) -> {
             System.out.println(name + "\t: " + formatter.format(count));
         });
         System.out.println("----------------------------------------------------------------");
 
-//        for (BenchmarkResults result : runner.getResults()) {
-//            System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
-//        }
+        //        for (BenchmarkResults result : runner.getResults()) {
+        //            System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
+        //        }
 
         runner.writeCsvReport("target/searchOptsBenchmark.csv");
 
@@ -99,8 +100,6 @@ public class SearchOptsBenchmark3 {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

@@ -2,7 +2,6 @@ package org.mattlang.jc.perftests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Benchmarks.benchmark;
-import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,6 +16,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * PerfTests for zobrist hashing.
@@ -37,7 +37,7 @@ public class ZobristPerfTests2 {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         StopWatch ttMeasure = benchmark(

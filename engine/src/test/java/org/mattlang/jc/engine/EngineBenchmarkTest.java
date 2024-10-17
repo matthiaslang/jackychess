@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.Test;
@@ -13,17 +11,17 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 public class EngineBenchmarkTest {
 
-
     @Test
     public void benchmark() throws IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
-        
-        StopWatch watchNormal= Benchmarks.benchmark("Normal iterat deep",
-                () ->{
+
+        StopWatch watchNormal = Benchmarks.benchmark("Normal iterat deep",
+                () -> {
                     Factory.setDefaults(Factory.createStable()
                             .config(c -> {
                                 c.timeout.setValue(600000);
@@ -40,13 +38,13 @@ public class EngineBenchmarkTest {
 
                 });
 
-        StopWatch watchOpt= Benchmarks.benchmark("optimized",
-                () ->{
+        StopWatch watchOpt = Benchmarks.benchmark("optimized",
+                () -> {
                     Factory.setDefaults(Factory.createStable()
-                            .config(c ->c.timeout.setValue(600000))
+                            .config(c -> c.timeout.setValue(600000))
                             .searchMethod.set(() -> new IterativeDeepeningPVS())
-//                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
-//                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
+                            //                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
+                            //                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
 
                             .config(c -> c.maxDepth.setValue(7)));
                     // now starting engine:
@@ -59,18 +57,18 @@ public class EngineBenchmarkTest {
 
                 });
 
-        System.out.println("normal: "+ watchNormal.toString());
-        System.out.println("optimized: "+ watchOpt.toString());
+        System.out.println("normal: " + watchNormal.toString());
+        System.out.println("optimized: " + watchOpt.toString());
 
     }
 
     @Test
     public void benchmarkMiddleGame() throws IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
-        StopWatch watchNormal= Benchmarks.benchmark("Normal iterat deep",
-                () ->{
+        StopWatch watchNormal = Benchmarks.benchmark("Normal iterat deep",
+                () -> {
                     Factory.setDefaults(Factory.createStable()
                             .config(c -> {
                                 c.timeout.setValue(600000);
@@ -78,17 +76,19 @@ public class EngineBenchmarkTest {
                             }));
                     // now starting engine:
                     Engine engine = new Engine(new BitBoard());
-                    engine.getBoard().setFenPosition("position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
+                    engine.getBoard()
+                            .setFenPosition(
+                                    "position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
                     Move move = engine.go();
 
                     System.out.println(move.toStr());
 
                 });
 
-        StopWatch watchOpt= Benchmarks.benchmark("optimized",
-                () ->{
+        StopWatch watchOpt = Benchmarks.benchmark("optimized",
+                () -> {
                     Factory.setDefaults(Factory.createStable()
-                            .config(c ->c.timeout.setValue(600000))
+                            .config(c -> c.timeout.setValue(600000))
                             .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
                             //                            .evaluateFunction.set(MaterialNegaMaxEvalOpt::new)
                             //                            .legalMoveGenerator.set(LegalMoveGeneratorImpl4::new)
@@ -96,15 +96,17 @@ public class EngineBenchmarkTest {
                             .config(c -> c.maxDepth.setValue(7)));
                     // now starting engine:
                     Engine engine = new Engine(new BitBoard());
-                    engine.getBoard().setFenPosition("position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
+                    engine.getBoard()
+                            .setFenPosition(
+                                    "position fen r3k1nr/pp3ppp/n1p3q1/3p4/3Pp3/2N3P1/PPPPQP1P/R1B1K2R b KQkq - 0 14");
                     Move move = engine.go();
 
                     System.out.println(move.toStr());
 
                 });
 
-        System.out.println("normal: "+ watchNormal.toString());
-        System.out.println("optimized: "+ watchOpt.toString());
+        System.out.println("normal: " + watchNormal.toString());
+        System.out.println("optimized: " + watchOpt.toString());
 
     }
 

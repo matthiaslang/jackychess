@@ -2,7 +2,7 @@ package org.mattlang.tuning;
 
 import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
 import static org.mattlang.jc.AppConfiguration.LOGGING_DIR;
-import static org.mattlang.jc.Main.initLogging;
+import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,13 +1,12 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks to measure speed of move generation with bitboard and with old mailbox generation.
@@ -26,7 +25,7 @@ public class BitBoardNegaMaxBenchmark {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner();
@@ -40,12 +39,11 @@ public class BitBoardNegaMaxBenchmark {
                         .boards.set(() -> new BitBoard())
                         .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
-
         // normal with all opts
         runner.benchmarkExecute(allOptsOn());
 
         // normal with all opts and bitboards
-        runner.benchmarkExecute(allOptsOn()  .boards.set(() -> new BitBoard())
+        runner.benchmarkExecute(allOptsOn().boards.set(() -> new BitBoard())
                 .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
         for (BenchmarkResults result : runner.getResults()) {
@@ -70,6 +68,7 @@ public class BitBoardNegaMaxBenchmark {
 
         return searchParameter;
     }
+
     private SearchParameter allOptsOn() {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))

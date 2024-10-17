@@ -1,19 +1,15 @@
 package org.mattlang.jc.problemanalyzing;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
 
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.EvalFunctions;
-import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.play.EndStatus;
@@ -21,6 +17,7 @@ import org.mattlang.jc.play.GameStatusResult;
 import org.mattlang.jc.play.Playing;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 public class QueenAndKingVsKing_EndgameTest {
 
@@ -29,13 +26,13 @@ public class QueenAndKingVsKing_EndgameTest {
     @Test
     public void queen_and_king_vs_king() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.maxQuiescence.setValue(50))
                 .config(c -> c.useTTCache.setValue(false))
-//                .config(c -> c.evluateFunctions.setValue(MINIMAL_PST))
+                //                .config(c -> c.evluateFunctions.setValue(MINIMAL_PST))
                 .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
         Engine engine = new Engine();
@@ -62,13 +59,10 @@ public class QueenAndKingVsKing_EndgameTest {
     @Test
     public void queen_and_king_vs_kingAnalyze() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.timeout.setValue(600)));
         // now starting engine:
 
@@ -79,17 +73,13 @@ public class QueenAndKingVsKing_EndgameTest {
         Factory.setDefaults(Factory.createDefaultParameter());
     }
 
-
     @Test
     public void queen_and_king_vs_kingGivesRemis() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
 
@@ -104,6 +94,5 @@ public class QueenAndKingVsKing_EndgameTest {
         assertThat(status.getEndStatus()).isEqualTo(EndStatus.MATT);
 
     }
-
 
 }

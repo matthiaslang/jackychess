@@ -1,7 +1,5 @@
 package org.mattlang.jc.uci;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -13,12 +11,13 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.util.Logging;
 
 public class AsyncEngineTest {
 
     @Test
     public void start() throws ExecutionException, InterruptedException, IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();
@@ -37,7 +36,7 @@ public class AsyncEngineTest {
 
     @Test
     public void stopShortlyAfterStart() throws ExecutionException, InterruptedException, IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();
@@ -58,7 +57,7 @@ public class AsyncEngineTest {
 
     @Test
     public void stopShortlyAfterStart2() throws ExecutionException, InterruptedException, IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();
@@ -82,7 +81,7 @@ public class AsyncEngineTest {
     @Test
     public void stopShortlyAfterStartAndThenRestart()
             throws ExecutionException, InterruptedException, IOException, TimeoutException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();
@@ -118,7 +117,7 @@ public class AsyncEngineTest {
 
     @Test
     public void simultaneouslyStarts() throws ExecutionException, InterruptedException, IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         BoardRepresentation board = Factory.getDefaults().boards.create();
         board.setStartPosition();

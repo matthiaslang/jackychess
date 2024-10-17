@@ -1,13 +1,15 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.*;
+import org.mattlang.jc.BenchmarkResults;
+import org.mattlang.jc.EngineBenchmarksRunner;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks different search options and measure their cut off rate, searched nodes rate, etc.
@@ -26,7 +28,7 @@ public class SearchOptsBenchmark {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner();
@@ -110,8 +112,6 @@ public class SearchOptsBenchmark {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

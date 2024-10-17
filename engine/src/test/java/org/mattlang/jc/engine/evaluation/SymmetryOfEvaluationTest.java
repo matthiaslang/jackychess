@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mattlang.jc.EvalParameterSet;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -55,7 +53,7 @@ public class SymmetryOfEvaluationTest {
      */
     @Test
     public void testSymmetry() {
-        Factory.getDefaults().getConfig().evaluateParamSet.setValue(EvalParameterSet.CURRENT);
+
 //        System.setProperty("tempoMg", "0");
 //        System.setProperty("tempoEg", "0");
 

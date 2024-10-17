@@ -1,23 +1,19 @@
 package org.mattlang.jc.problemanalyzing;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.EvalFunctions;
-import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.SearchMethod;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 public class QueenAndKingVsKing2_EndgameTest {
 
@@ -26,16 +22,12 @@ public class QueenAndKingVsKing2_EndgameTest {
     @Test
     public void queen_and_king_vs_king() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.useTTCache.setValue(false))
-//                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
-
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
+                //                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
 
                 .config(c -> c.timeout.setValue(6000000)));
         // now starting engine:

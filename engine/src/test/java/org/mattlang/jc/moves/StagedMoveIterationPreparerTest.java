@@ -1,7 +1,6 @@
 package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
 import static org.mattlang.jc.moves.TestTools.getAllMoves;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 public class StagedMoveIterationPreparerTest {
 
@@ -27,7 +27,7 @@ public class StagedMoveIterationPreparerTest {
 
         SearchThreadContext stc = new SearchThreadContext();
         stc.getKillerMoves().addKiller(10048001, 1);
-        stc.getKillerMoves().addKiller( 19485185, 1);
+        stc.getKillerMoves().addKiller(19485185, 1);
         int parentMove = 4711;
         stc.getCounterMoveHeuristic().addCounterMove(Color.WHITE.ordinal(), parentMove, 1589889);
 
@@ -158,7 +158,6 @@ public class StagedMoveIterationPreparerTest {
 
     }
 
-
     @Test
     public void testStagingWithOnlyBadCaptures() {
 
@@ -199,7 +198,7 @@ public class StagedMoveIterationPreparerTest {
         board.setFenPosition("position fen 1r2k3/P7/1Qp5/4K3/8/8/8/8 w - - 0 0 ");
         System.out.println(board.toUniCodeStr());
 
-        int hashMove =1095930369;
+        int hashMove = 1095930369;
         RegularMoveIterationPreparer preparer = new RegularMoveIterationPreparer();
         preparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
         List<Tuple> movesRegular = getAllMoves(preparer);
@@ -214,13 +213,13 @@ public class StagedMoveIterationPreparerTest {
         assertThat(moves).hasSameSizeAs(movesRegular);
 
         // should have same order of the moves
-        assertThat(moves.stream().map(m->m.order).collect(Collectors.toList())).isEqualTo(movesRegular.stream().map(m->m.order).collect(
-                Collectors.toList()));
+        assertThat(moves.stream().map(m -> m.order).collect(Collectors.toList())).isEqualTo(
+                movesRegular.stream().map(m -> m.order).collect(
+                        Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
         assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
     }
-
 
     @Test
     public void testStagingWithQuiescence() {
@@ -268,7 +267,7 @@ public class StagedMoveIterationPreparerTest {
     @Test
     public void testRegular() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))
@@ -291,7 +290,7 @@ public class StagedMoveIterationPreparerTest {
     @Test
     public void testStaged() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
                 .config(c -> c.timeout.setValue(60000))

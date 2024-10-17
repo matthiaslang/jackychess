@@ -2,20 +2,18 @@ package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
-import static org.mattlang.jc.Main.initLogging;
+import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.search.IterativeDeepeningListener;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
@@ -65,12 +63,12 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
-                //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
+
+
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.maxDepth.setValue(11))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
+                );
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -93,12 +91,12 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+
                 //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.useTTCache.setValue(true))
                 .config(c -> c.maxDepth.setValue(11))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
+                );
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard()
@@ -128,13 +126,13 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+
                 .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
                 .config(c -> c.hash.setValue(512))
                 .config(c -> c.timeout.setValue(36000000))
                 .config(c -> c.maxDepth.setValue(11))
                 .config(c -> c.maxThreads.setValue(4))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
+                );
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -202,7 +200,7 @@ public class EngineTest {
                 .config(c -> c.timeout.setValue(18000000))
                 .config(c -> c.maxDepth.setValue(31))
                 //                .config(c->c.aspiration.setValue(false))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
+                );
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
@@ -223,7 +221,7 @@ public class EngineTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createStable()
-                .evaluateFunction.set(() -> new ParameterizedEvaluation())
+
                 .config(c -> c.timeout.setValue(2000))
                 .config(c -> c.maxDepth.setValue(20))
                 .config(c -> c.useLateMoveReductions.setValue(true))
@@ -233,7 +231,7 @@ public class EngineTest {
                 .config(c -> c.staticNullMove.setValue(true))
                 .config(c -> c.futilityPruning.setValue(true))
                 //                .config(c->c.aspiration.setValue(false))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT)));
+                );
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard()

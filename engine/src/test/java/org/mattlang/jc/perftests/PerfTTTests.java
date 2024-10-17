@@ -1,6 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import java.io.IOException;
@@ -16,6 +15,7 @@ import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * PerfTests
@@ -26,9 +26,9 @@ public class PerfTTTests {
 
     @Test
     public void ttTest() throws IOException {
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
-        
+
         testCache(new TTCache(), 5);
     }
 
@@ -40,13 +40,14 @@ public class PerfTTTests {
         testCacheWithPosition(board, ttCache, depth);
 
         // do one opening move (knigth) which should not change the tt aging:
-        board.domove(new MoveImpl(FigureConstants.FT_KNIGHT, parsePos("b1"), parsePos("c3"), (byte)0));
+        board.domove(new MoveImpl(FigureConstants.FT_KNIGHT, parsePos("b1"), parsePos("c3"), (byte) 0));
 
         ttCache.updateAging(board);
         testCacheWithPosition(board, ttCache, depth);
 
         // now a completely different middle game position : bk 1 position:
-        GameState gameState = board.setFenPosition("position fen 1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -  0 0");
+        GameState gameState =
+                board.setFenPosition("position fen 1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -  0 0");
 
         ttCache.updateAging(board);
         testCacheWithPosition(board, ttCache, depth);

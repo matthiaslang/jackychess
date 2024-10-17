@@ -1,7 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -11,6 +9,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks to analyze pvs search and null move.
@@ -29,26 +28,26 @@ public class SearchOptsBenchmark2 {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
 
         // all opts deactivated
-//        runner.benchmarkSingleExecute(everythingOff());
+        //        runner.benchmarkSingleExecute(everythingOff());
 
         // everything off, but cache:
-//        runner.benchmarkSingleExecute(
-//                everythingOff()
-//                        .config(c -> c.useTTCache.setValue(true)));
+        //        runner.benchmarkSingleExecute(
+        //                everythingOff()
+        //                        .config(c -> c.useTTCache.setValue(true)));
 
         // pv sorting, pv search with cache
-//        runner.benchmarkSingleExecute(
-//                everythingOff()
-//                        .config(c -> c.usePvSorting.setValue(true))
-//                        .config(c -> c.activatePvsSearch.setValue(true))
-//                        .config(c -> c.useTTCache.setValue(true)));
+        //        runner.benchmarkSingleExecute(
+        //                everythingOff()
+        //                        .config(c -> c.usePvSorting.setValue(true))
+        //                        .config(c -> c.activatePvsSearch.setValue(true))
+        //                        .config(c -> c.useTTCache.setValue(true)));
 
         // everything on + cache, except pv search and sort:
         runner.benchmarkSingleExecute(
@@ -86,7 +85,6 @@ public class SearchOptsBenchmark2 {
                         .config(c -> c.useHistoryHeuristic.setValue(true))
                         .config(c -> c.useNullMoves.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
-
 
         runner.benchmarkSingleExecute(
                 everythingOff()
@@ -133,7 +131,7 @@ public class SearchOptsBenchmark2 {
                         .config(c -> c.deltaCutoff.setValue(true))
                         .config(c -> c.razoring.setValue(true))
                         .config(c -> c.useTTCache.setValue(true)));
-        
+
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
         }
@@ -146,8 +144,6 @@ public class SearchOptsBenchmark2 {
         SearchParameter searchParameter = Factory.createStable()
                 .config(c -> c.timeout.setValue(TIMEOUT))
                 .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c -> c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.maxDepth.setValue(MAX_DEPTH))
                 .config(c -> c.useTTCache.setValue(false))
                 .config(c -> c.useKillerMoves.setValue(false))

@@ -1,7 +1,7 @@
 package org.mattlang.jc.problemanalyzing;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.Main.initLogging;
+import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 
@@ -34,10 +34,11 @@ public class PattChosenTest {
         initLogging();
         UCI.instance.attachStreams();
         Factory.setDefaults(Factory.createDefaultParameter()
-        .config(c->c.maxDepth.setValue(3)));
+                .config(c -> c.maxDepth.setValue(3)));
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState = engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
+        GameState gameState =
+                engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
         System.out.println(engine.getBoard().toUniCodeStr());
         Move move = engine.go(gameState, new GameContext());
 
@@ -48,7 +49,6 @@ public class PattChosenTest {
         MoveList whiteMoves = LegalMoves.generateLegalMoves(engine.getBoard(), Color.BLACK);
         // so black should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);
-
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }

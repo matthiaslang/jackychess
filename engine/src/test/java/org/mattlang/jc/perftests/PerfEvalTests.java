@@ -7,8 +7,9 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.EvaluateFunctionFactory;
 import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 
 /**
  * PerfTests to evaluate each position. Used to measure eval optimizations.
@@ -16,7 +17,7 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 @Category(SlowTests.class)
 public class PerfEvalTests {
 
-    private final ParameterizedEvaluation evaluation=new ParameterizedEvaluation();
+    private final EvaluateFunction evaluation = EvaluateFunctionFactory.createConfiguredEvaluateFunction();
 
     private boolean debug = false;
     private PerftConsumer perftEvaluator = new PerftConsumer() {
@@ -39,8 +40,6 @@ public class PerfEvalTests {
         perft.perftInitialPosition();
 
     }
-
-
 
     @Test
     public void position2() {

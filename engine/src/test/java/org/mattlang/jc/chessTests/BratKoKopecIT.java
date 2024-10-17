@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mattlang.jc.EvalFunctions;
-import org.mattlang.jc.EvalParameterSet;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.engine.Engine;
@@ -21,7 +19,6 @@ import org.mattlang.jc.engine.Engine;
 @Category(ChessTests.class)
 @RunWith(Parameterized.class)
 public class BratKoKopecIT {
-
 
     public static final String bratkoKopec =
             "1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - - bm Qd1+; id \"BK.01\";\n" +
@@ -49,7 +46,6 @@ public class BratKoKopecIT {
                     "r1bqk2r/pp2bppp/2p5/3pP3/P2Q1P2/2N1B3/1PP3PP/R4RK1 b kq - bm f6; id \"BK.23\";\n" +
                     "r2qnrnk/p2b2b1/1p1p2pp/2pPpp2/1PP1P3/PRNBB3/3QNPPP/5RK1 w - - bm f4; id \"BK.24\";";
 
-
     @Parameterized.Parameters(name = "{index}: {2}")
     public static Iterable<String[]> getEPDTests() {
         return EpdParsing.getEPDTests(bratkoKopec);
@@ -74,8 +70,6 @@ public class BratKoKopecIT {
     public void testStable() {
         // create engine
         Factory.setDefaults(Factory.createStable()
-                .config(c->c.evluateFunctions.setValue(EvalFunctions.PARAMETERIZED))
-                .config(c->c.evaluateParamSet.setValue(EvalParameterSet.CURRENT))
                 .config(c -> c.timeout.setValue(99999999))
                 .config(c -> c.maxDepth.setValue(25))
 

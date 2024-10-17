@@ -1,7 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.Main.initLogging;
-
 import java.io.IOException;
 
 import org.junit.Test;
@@ -11,6 +9,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.Logging;
 
 /**
  * benchmarks different move ordering options to measure their performance.
@@ -29,7 +28,7 @@ public class AspirationWindowBenchmark {
     @Test
     public void compareSpeed() throws IOException {
 
-        initLogging();
+        Logging.initLogging();
         UCI.instance.attachStreams();
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner();
@@ -39,7 +38,6 @@ public class AspirationWindowBenchmark {
                 everythingOn()
                         .config(c -> c.activatePvsSearch.setValue(false))
                         .config(c -> c.aspiration.setValue(false)));
-
 
         // only pv search:
         runner.benchmarkExecute(
