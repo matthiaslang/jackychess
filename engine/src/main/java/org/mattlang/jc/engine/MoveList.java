@@ -17,7 +17,6 @@ import java.util.List;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.CastlingMove;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -92,58 +91,6 @@ public final class MoveList {
         addMove(createCastlingMove(castlingMove));
     }
 
-    private MoveImpl moveWrapper = new MoveImpl("a1a2");
-
-    /**
-     * scores all moves in the movelist  with usage of a order calculator.
-     * The ordercalculator can produce a order number for each move which is then used as search criteria.
-     * with the lowest order for the best moves.
-     *
-     * @param orderCalculator
-     */
-    public void scoreMoves(OrderCalculator orderCalculator) {
-        scoreMoves(orderCalculator, 0);
-    }
-
-    /**
-     * scores all moves in the movelist  with usage of a order calculator.
-     * The ordercalculator can produce a order number for each move which is then used as search criteria.
-     * with the lowest order for the best moves.
-     *
-     * @param orderCalculator
-     */
-    public void scoreMoves(OrderCalculator orderCalculator, int start) {
-        for (int i = start; i < size; i++) {
-            int moveInt = moves[i];
-            moveWrapper.fromLongEncoded(moveInt);
-            order[i] = orderCalculator.calcOrder(moveWrapper, moveInt);
-        }
-    }
-
-    /**
-     * Scores capture moves and returns the number of "good" captures.
-     *
-     * @param orderCalculator
-     * @param start
-     * @return
-     */
-    public void scoreCaptureMoves(OrderCalculator orderCalculator, int start) {
-        for (int i = start; i < size; i++) {
-            int moveInt = moves[i];
-            moveWrapper.fromLongEncoded(moveInt);
-            int orderVal = orderCalculator.calcOrderForCaptures(moveWrapper);
-            this.order[i] = orderVal;
-        }
-    }
-
-    public void scoreQuietMoves(OrderCalculator orderCalculator, int start) {
-        for (int i = start; i < size; i++) {
-            int moveInt = moves[i];
-            moveWrapper.fromLongEncoded(moveInt);
-            order[i] = orderCalculator.calcOrderForQuiets(moveWrapper);
-        }
-    }
-
     public int size() {
         return size;
     }
@@ -154,6 +101,10 @@ public final class MoveList {
 
     public int getOrder(int i) {
         return order[i];
+    }
+
+    public void setOrder(int i, int orderVal) {
+        order[i] = orderVal;
     }
 
     public void reset(Color sideToMove) {

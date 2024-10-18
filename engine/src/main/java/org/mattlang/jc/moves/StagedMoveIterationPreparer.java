@@ -272,17 +272,17 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
     private void createSortOrders(int currStartPos) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        moveList.scoreMoves(orderCalculator, currStartPos);
+        orderCalculator.scoreMoves(moveList, currStartPos);
     }
 
     private void createQuietSortOrders(int currStartPos) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        moveList.scoreQuietMoves(orderCalculator, currStartPos);
+        orderCalculator.scoreQuietMoves(moveList, currStartPos);
     }
 
     private void createCaptureSortOrders(int currStartPos) {
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        moveList.scoreCaptureMoves(orderCalculator, currStartPos);
+        orderCalculator.scoreCaptureMoves(moveList, currStartPos);
     }
 
     public MoveBoardIterator iterateMoves() {

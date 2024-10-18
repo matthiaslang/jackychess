@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.CounterMoveHeuristic;
 import org.mattlang.jc.engine.search.HistoryHeuristic;
 import org.mattlang.jc.engine.search.KillerMoves;
@@ -95,7 +96,7 @@ public final class OrderCalculator {
      * @param m
      * @return
      */
-    public int calcOrder(MoveImpl m, int moveInt) {
+    private int calcOrder(MoveImpl m, int moveInt) {
         if (hashMove == moveInt) {
             return HASHMOVE_SCORE;
         } else if (m.isCapture()) {
@@ -111,7 +112,7 @@ public final class OrderCalculator {
         }
     }
 
-    public int calcOrderForQuiets(MoveImpl m) {
+    private int calcOrderForQuiets(MoveImpl m) {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else {
@@ -127,7 +128,7 @@ public final class OrderCalculator {
         return -mvvLva * 1000 + QUIET;
     }
 
-    public int calcOrderForCaptures(MoveImpl m) {
+    private int calcOrderForCaptures(MoveImpl m) {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else if (m.isCapture()) {
@@ -143,7 +144,57 @@ public final class OrderCalculator {
         }
     }
 
+    private MoveImpl moveWrapper = new MoveImpl("a1a2");
 
+    /**
+     * scores all moves in the movelist  with usage of a order calculator.
+     * The ordercalculator can produce a order number for each move which is then used as search criteria.
+     * with the lowest order for the best moves.
+     *
+     * @param moveList
+     */
+    public void scoreMoves(MoveList moveList) {
+        scoreMoves(moveList, 0);
+    }
+
+    /**
+     * scores all moves in the movelist  with usage of a order calculator.
+     * The ordercalculator can produce a order number for each move which is then used as search criteria.
+     * with the lowest order for the best moves.
+     *
+     * @param moveList
+     */
+    public void scoreMoves(MoveList moveList, int start) {
+        for (int i = start; i < moveList.size(); i++) {
+            int moveInt = moveList.get(i);
+            moveWrapper.fromLongEncoded(moveInt);
+            moveList.setOrder(i, calcOrder(moveWrapper, moveInt));
+        }
+    }
+
+    /**
+     * Scores capture moves and returns the number of "good" captures.
+     *
+     * @param moveList
+     * @param start
+     * @return
+     */
+    public void scoreCaptureMoves(MoveList moveList, int start) {
+        for (int i = start; i < moveList.size(); i++) {
+            int moveInt = moveList.get(i);
+            moveWrapper.fromLongEncoded(moveInt);
+            int orderVal = calcOrderForCaptures(moveWrapper);
+            moveList.setOrder(i, orderVal);
+        }
+    }
+
+    public void scoreQuietMoves(MoveList moveList, int start) {
+        for (int i = start; i < moveList.size(); i++) {
+            int moveInt = moveList.get(i);
+            moveWrapper.fromLongEncoded(moveInt);
+            moveList.setOrder(i, calcOrderForQuiets(moveWrapper));
+        }
+    }
 
     /**
      * Returns an counter move for this position or 0.
@@ -187,10 +238,11 @@ public final class OrderCalculator {
      * So, is it either a hash move, good capture, killer, counter, or a move with move history statistics?
      *
      * This is used, to prune "non relevant" moves with certain criterias.
+     *
      * @param order
      * @return
      */
-    public static boolean isRelevantMove(int order){
-        return  order < HISTORY_UPPER;
+    public static boolean isRelevantMove(int order) {
+        return order < HISTORY_UPPER;
     }
 }

@@ -37,7 +37,7 @@ public class RegularMoveIterationPreparer {
 
         generator.generate(mode, orderCalculator, board, color, moveList);
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, 0);
-        moveList.scoreMoves(orderCalculator);
+        orderCalculator.scoreMoves(moveList);
 
     }
 
@@ -49,7 +49,7 @@ public class RegularMoveIterationPreparer {
 
         generator.generate(mode, orderCalculator, board, color, moveList);
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        moveList.scoreMoves(orderCalculator);
+        orderCalculator.scoreMoves(moveList);
 
     }
 
