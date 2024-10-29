@@ -193,6 +193,11 @@
         </dependency>
         <dependency>
             <groupId>org.mattlang.jackychess</groupId>
+            <artifactId>pgnparser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mattlang.jackychess</groupId>
             <artifactId>tools</artifactId>
             <version>${project.version}</version>
         </dependency>
