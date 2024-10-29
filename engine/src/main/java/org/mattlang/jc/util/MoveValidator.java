@@ -15,7 +15,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.engine.sorting.MovePicker;
+import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
 import org.mattlang.jc.engine.sorting.MvvLva;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
@@ -36,7 +36,7 @@ public class MoveValidator {
 
     private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
-    private MovePicker movePicker = new MovePicker();
+    private MoveIteratorImpl moveIterator = new MoveIteratorImpl();
 
     private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
@@ -181,8 +181,8 @@ public class MoveValidator {
     }
 
     private MoveBoardIterator iterateMoves(BoardRepresentation board, CheckChecker checkChecker) {
-        movePicker.init(moveList, 0);
-        moveBoardIterator.init(movePicker, board, checkChecker);
+        moveIterator.init(moveList, 0);
+        moveBoardIterator.init(moveIterator, board, checkChecker);
         return moveBoardIterator;
     }
 

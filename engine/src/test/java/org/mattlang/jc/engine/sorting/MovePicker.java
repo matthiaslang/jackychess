@@ -1,9 +1,7 @@
 package org.mattlang.jc.engine.sorting;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.engine.MoveList;
@@ -91,38 +89,6 @@ public final class MovePicker implements MoveIterator {
         LOGGER.info("move list order: " + moves);
     }
 
-    private List<String> createMoveDebugOrders(ArrayList<Integer> moveOrders) {
-        return moveOrders.stream()
-                .map(o -> mapDebugOrderStr(o))
-                .collect(Collectors.toList());
-    }
-
-    public static String mapDebugOrderStr(Integer o) {
-        int oi = o.intValue();
-        if (oi == OrderCalculator.HASHMOVE_SCORE) {
-            return "1.HASH";
-        }
-        if (OrderCalculator.isGoodCapture(oi)) {
-            return "2.GOOD CAP";
-        }
-        if (OrderCalculator.isGoodPromotion(oi)) {
-            return "3.GOOD PROM";
-        }
-        if (OrderCalculator.isKillerMove(oi)) {
-            return "4.KILLER";
-        }
-        if (OrderCalculator.isCounterMove(oi)) {
-            return "5.COUNTER";
-        }
-        if (OrderCalculator.isHistory(oi)) {
-            return "6.HISTORY";
-        }
-        if (OrderCalculator.isBadCapture(oi)) {
-            return "8.BAD CAP";
-        }
-        return "7.QUIET";
-    }
-
     public boolean hasNext() {
         return size > 0;
     }
@@ -171,7 +137,5 @@ public final class MovePicker implements MoveIterator {
             moveList.swap(start, currLowestIndex);
         }
     }
-
-
 
 }
