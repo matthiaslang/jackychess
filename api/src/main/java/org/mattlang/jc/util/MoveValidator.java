@@ -1,8 +1,5 @@
 package org.mattlang.jc.util;
 
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,7 +11,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
 import org.mattlang.jc.engine.sorting.MvvLva;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
@@ -44,38 +40,6 @@ public class MoveValidator {
      * reused movelist.
      */
     private MoveList moveList = new MoveList();
-
-    public void validate(GameState gameState, NegaMaxResult rslt) {
-        if (LOGGER.isLoggable(Level.WARNING)) {
-            BoardRepresentation board = gameState.getBoard().copy();
-
-            Color who2Move = gameState.getWho2Move();
-            for (Move move : rslt.pvList.getPvMoves()) {
-
-                boolean legal = isLegalMove(board, move, who2Move);
-
-                if (legal) {
-                    board.domove(move);
-                } else {
-                    LOGGER.warning(
-                            "depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
-                                    + rslt.toLogString());
-                    break;
-
-                }
-                who2Move = who2Move.invert();
-            }
-        }
-
-        // test the best move itself:
-        if (LOGGER.isLoggable(SEVERE)) {
-            BoardRepresentation board = gameState.getBoard().copy();
-            boolean legal = isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
-            if (!legal) {
-                LOGGER.log(SEVERE, fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
-            }
-        }
-    }
 
     public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
         return isLegalMove(board, move.getMoveInt(), who2Move);

@@ -2,15 +2,20 @@ package org.mattlang.jc.engine.search;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
+import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.UCILogger;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -270,7 +275,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             lastCurrMove = rslt.savedMove.getMoveInt();
             printRoundInfo(gameContext, gameState, rslt, watch, negaMaxAlphaBeta);
             callListener(rslt.savedMove);
-            moveValidator.validate(gameState, rslt);
+            validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...
             // we need to further analyze this situation.
@@ -332,4 +337,35 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         }
     }
 
+    public void validate(GameState gameState, NegaMaxResult rslt) {
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            BoardRepresentation board = gameState.getBoard().copy();
+
+            Color who2Move = gameState.getWho2Move();
+            for (Move move : rslt.pvList.getPvMoves()) {
+
+                boolean legal = moveValidator.isLegalMove(board, move, who2Move);
+
+                if (legal) {
+                    board.domove(move);
+                } else {
+                    LOGGER.warning(
+                            "depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
+                                    + rslt.toLogString());
+                    break;
+
+                }
+                who2Move = who2Move.invert();
+            }
+        }
+
+        // test the best move itself:
+        if (LOGGER.isLoggable(SEVERE)) {
+            BoardRepresentation board = gameState.getBoard().copy();
+            boolean legal = moveValidator.isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
+            if (!legal) {
+                LOGGER.log(SEVERE, fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
+            }
+        }
+    }
 }

@@ -35,7 +35,7 @@ public class RegularMoveIterationPreparer {
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
-        generator.generate(mode, orderCalculator, board, color, moveList);
+        generator.generate(mode, board, color, moveList);
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, 0);
         orderCalculator.scoreMoves(moveList);
 
@@ -47,7 +47,7 @@ public class RegularMoveIterationPreparer {
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
-        generator.generate(mode, orderCalculator, board, color, moveList);
+        generator.generate(mode, board, color, moveList);
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
         orderCalculator.scoreMoves(moveList);
 

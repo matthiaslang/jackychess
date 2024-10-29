@@ -239,7 +239,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case PREPARE_STAGE_QUIESCENCE_REST:
                 stage++;
                 start = moveList.size();
-                generator.generate(GenMode.QUIESCENCE, orderCalculator, board, color, moveList);
+                generator.generate(GenMode.QUIESCENCE, board, color, moveList);
                 createSortOrders(start);
                 if (movelistPos < moveList.size()) {
                     theNextMove = sortToFront(movelistPos);
