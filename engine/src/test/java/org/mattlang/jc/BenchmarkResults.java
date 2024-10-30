@@ -2,7 +2,7 @@ package org.mattlang.jc;
 
 import java.util.Map;
 
-import org.mattlang.jc.engine.EvaluateFunctionFactory;
+import org.mattlang.jc.engine.EvalFunctionConfigurator;
 
 import lombok.Getter;
 
@@ -51,7 +51,7 @@ public class BenchmarkResults<T> {
         }
         ConfigValues config = Factory.getDefaults().getConfig();
         this.depth = config.maxDepth.getValue();
-        this.evaluateFunction = EvaluateFunctionFactory.determineEvaluationFunctionName();
+        this.evaluateFunction = EvalFunctionConfigurator.determineEvaluationFunctionName();
         this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
         this.useTTCache = config.useTTCache.getValue();
         this.useKillerMoves = config.useKillerMoves.getValue();

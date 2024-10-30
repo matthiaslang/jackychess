@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.EvaluateFunctionFactory;
+import org.mattlang.jc.engine.EvalFunctionConfigurator;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
@@ -35,7 +35,7 @@ public class SearchParameter {
 
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
-                + " Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
+                + " Evaluation: " + EvalFunctionConfigurator.determineEvaluationFunctionName());
         for (Map.Entry<UCIGroup, List<UCIOption>> entry : config.getAllOptions().getOptionsByGroup().entrySet()) {
             UCIGroup group = entry.getKey();
             List<UCIOption> opts = entry.getValue();
@@ -57,7 +57,7 @@ public class SearchParameter {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("Board: " + boards.instance().getClass().getSimpleName());
             LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
-            LOGGER.info("Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
+            LOGGER.info("Evaluation: " + EvalFunctionConfigurator.determineEvaluationFunctionName());
             LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
             for (UCIOption option : config.getAllOptions().getAllOptions()) {
                 LOGGER.info(option.getName() + ": " + option.getValue());
@@ -71,7 +71,7 @@ public class SearchParameter {
         b.append("\n");
         b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         b.append("\n");
-        b.append("Evaluation: " + EvaluateFunctionFactory.determineEvaluationFunctionName());
+        b.append("Evaluation: " + EvalFunctionConfigurator.determineEvaluationFunctionName());
         b.append("\n");
         b.append("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         b.append("\n");
