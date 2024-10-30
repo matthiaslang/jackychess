@@ -15,8 +15,8 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
+import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -40,7 +40,7 @@ public class SearchOptsBenchmark3 {
         Logging.initLogging();
         UCI.instance.attachStreams();
 
-        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
+        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
 

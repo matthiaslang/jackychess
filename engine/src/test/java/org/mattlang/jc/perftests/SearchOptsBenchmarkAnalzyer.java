@@ -7,8 +7,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
+import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -32,7 +32,7 @@ public class SearchOptsBenchmarkAnalzyer {
         Logging.initLogging();
         UCI.instance.attachStreams();
 
-        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
+        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
         //       positions.addAll(EpdParsing.convertTests(BratKoKopecIT.bratkoKopec));
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
 

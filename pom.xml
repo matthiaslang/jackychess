@@ -74,6 +74,7 @@
 
     <modules>
         <module>api</module>
+        <module>chesstest</module>
         <module>hce</module>
         <module>engine</module>
         <module>tuner</module>

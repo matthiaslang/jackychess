@@ -11,8 +11,8 @@ import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT;
 import org.mattlang.jc.chessTests.EpdParsing;
+import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 
@@ -63,7 +63,7 @@ public class ParameterizedEvaluationTest {
         // get an evaluation for tuning: no caching activated:
         ParameterizedEvaluation pe = ParameterizedEvaluation.createForTuning();
 
-        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChessIT.eret);
+        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
 
         List<BoardRepresentation> boards = positions.stream()
                 .map(p -> {

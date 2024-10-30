@@ -6,8 +6,8 @@ import java.util.List;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.BratKoKopecIT;
 import org.mattlang.jc.chessTests.EpdParsing;
+import org.mattlang.jc.chesstests.BratKoKopec;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.openjdk.jmh.annotations.*;
 
@@ -23,6 +23,7 @@ public class BenchmarkTryout {
         public BoardRepresentation board = new BitBoard();
 
         public List<BoardRepresentation> boards = new ArrayList<BoardRepresentation>();
+
         {
             pe.setCaching(false);
 
@@ -31,7 +32,7 @@ public class BenchmarkTryout {
             boards.add(board);
             // add the brat co test positions:
             for (int i = 0; i < 10000; i++) {
-                for (String[] epdTest : EpdParsing.getEPDTests(BratKoKopecIT.bratkoKopec)) {
+                for (String[] epdTest : EpdParsing.getEPDTests(BratKoKopec.BRATKO_KOPEC)) {
                     BoardRepresentation board = new BitBoard();
                     board.setFenPosition("position fen " + epdTest[0] + " 0 0");
                     boards.add(board);
@@ -43,9 +44,9 @@ public class BenchmarkTryout {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     public int measureEvaluation(Constants constants) {
-        int val=0;
+        int val = 0;
         for (BoardRepresentation board : constants.boards) {
-            val+= constants.pe.eval(board, Color.WHITE);
+            val += constants.pe.eval(board, Color.WHITE);
         }
         return val;
     }
