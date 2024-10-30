@@ -12,8 +12,8 @@ import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
+import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.FenFlip;
 
@@ -24,7 +24,7 @@ public class SymmetryOfEvaluationTest {
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Iterable<TestPosition> getEPDTests() {
-        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+        List<TestPosition> positions = EpdParser.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
         return positions;
     }
 

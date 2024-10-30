@@ -2,11 +2,6 @@ package org.mattlang.jc.chessTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -21,33 +16,6 @@ import org.mattlang.tuning.data.pgnparser.TextPosition;
  */
 
 public class EpdParsing {
-
-    public static List<String[]> getEPDTests(String rawEpds) {
-        List<String> epds = Arrays.asList(rawEpds.split("\n"));
-        return epds.stream().map(epd -> splitEpd(epd)).collect(Collectors.toList());
-    }
-
-    public static List<TestPosition> convertTests(String rawEpds) {
-        return getEPDTests(rawEpds).stream()
-                .map(arr -> new TestPosition(arr[0], arr[1], arr[2]))
-                .collect(Collectors.toList());
-    }
-
-    private static String[] splitEpd(String epd) {
-        String[] split = epd.split("bm ");
-        if (split.length != 2) {
-            split = epd.split("am ");
-        }
-        if (split.length != 2) {
-            System.out.println(epd);
-        }
-        String position = split[0];
-        String cmdPart = split[1];
-        String[] cmds = cmdPart.split(";");
-        String expectedBestMove = cmds[0];
-        String testName = cmds[1];
-        return new String[] { position, expectedBestMove, testName };
-    }
 
     public static void testPosition(Engine engine, String position, String expectedBestMove) {
         System.out.println(position + " " + expectedBestMove);

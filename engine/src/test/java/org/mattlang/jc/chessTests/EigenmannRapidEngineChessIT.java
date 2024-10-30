@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
+import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.Engine;
 
 /**
@@ -24,7 +25,7 @@ public class EigenmannRapidEngineChessIT {
 
     @Parameterized.Parameters(name = "{index}: {2}")
     public static Iterable<String[]> getEPDTests() {
-        return EpdParsing.getEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+        return EpdParser.getEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
 
     }
 

@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Test;
 import org.mattlang.jc.*;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chessTests.EpdParsing;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
+import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -31,7 +31,7 @@ public class SearchOptsBenchmark2 {
         Logging.initLogging();
         UCI.instance.attachStreams();
 
-        List<TestPosition> positions = EpdParsing.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+        List<TestPosition> positions = EpdParser.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
 
         // all opts deactivated

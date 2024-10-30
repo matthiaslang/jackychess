@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
+import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.Engine;
 
 /**
@@ -24,7 +25,7 @@ public class BratKoKopecIT {
 
     @Parameterized.Parameters(name = "{index}: {2}")
     public static Iterable<String[]> getEPDTests() {
-        return EpdParsing.getEPDTests(BRATKO_KOPEC);
+        return EpdParser.getEPDTests(BRATKO_KOPEC);
     }
 
     private String position;
