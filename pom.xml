@@ -70,6 +70,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <activateAssertions>true</activateAssertions>
         <activateStatistics>true</activateStatistics>
+        <jc.vm.version>11</jc.vm.version>
     </properties>
 
     <modules>
@@ -95,8 +96,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${jc.vm.version}</source>
+                    <target>${jc.vm.version}</target>
                 </configuration>
             </plugin>
 
