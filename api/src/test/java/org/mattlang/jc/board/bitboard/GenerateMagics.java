@@ -81,7 +81,7 @@ public class GenerateMagics {
     public static void main(String[] args) throws IOException {
         int square;
 
-        File outFile = new File("src/main/java/org/mattlang/jc/board/bitboard/MagicValues.java");
+        File outFile = new File("api/src/main/java/org/mattlang/jc/board/bitboard/MagicValues.java");
         try (FileOutputStream fos = new FileOutputStream(outFile); PrintStream ps = new PrintStream(fos)) {
             calc(ps);
         }
