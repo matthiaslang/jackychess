@@ -2,8 +2,6 @@ package org.mattlang.jc.moves;
 
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
-import static org.mattlang.jc.move.MoveConstants.CASTLING_BLACK_LONG;
-import static org.mattlang.jc.move.MoveConstants.CASTLING_WHITE_LONG;
 import static org.mattlang.util.Assertions.*;
 
 import java.util.Objects;
@@ -72,6 +70,10 @@ public final class MoveImpl implements Move {
     public static final byte PAWN_PROMOTION_B_ROOK = 8;
     public static final byte PAWN_PROMOTION_B_QUEEN = 9;
 
+    public static final byte CASTLING_WHITE_LONG = 10;
+    public static final byte CASTLING_WHITE_SHORT = 11;
+    public static final byte CASTLING_BLACK_SHORT = 12;
+    public static final byte CASTLING_BLACK_LONG = 13;
 
     public static final byte ENPASSANT_MOVE = 14;
 
