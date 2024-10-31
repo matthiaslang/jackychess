@@ -1,19 +1,16 @@
-package org.mattlang.jc.perftests;
+package org.mattlang.jc.perft;
 
 import static org.mattlang.jc.board.Color.WHITE;
 
+import java.util.Objects;
+
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
-import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +20,18 @@ import lombok.Setter;
  */
 public class Perft {
 
+
+    PerftIteratorSupplier simpleSupplier=new PerftIteratorSupplier() {
+
+        @Override
+        public MoveBoardIterator supplyIterator(int depth, BoardRepresentation board, Color color) {
+            return null;
+        }
+    };
+
     private boolean debug = false;
 
-    int allNodes=0;
+    int allNodes = 0;
     int nodes = 0;
     int captures = 0;
     int ep = 0;
@@ -38,7 +44,10 @@ public class Perft {
     @Setter
     PerftConsumer visitor;
 
-    public Perft() {
+    private final PerftIteratorSupplier perftIteratorSupplier;
+
+    public Perft(PerftIteratorSupplier perftIteratorSupplier) {
+        this.perftIteratorSupplier = Objects.requireNonNull(perftIteratorSupplier);
         perftReset();
     }
 
@@ -93,7 +102,7 @@ public class Perft {
             int depth) {
 
         CheckChecker checkChecker = new BBCheckCheckerImpl();
-        perft( board, checkChecker, color, depth);
+        perft(board, checkChecker, color, depth);
     }
 
     public void perft(
@@ -107,13 +116,8 @@ public class Perft {
             nodes++;
             return;
         }
-        StagedMoveIterationPreparer moveIterationPreparer = SearchThreadContexts.CONTEXTS.getContext(0).getMoveIterationPreparer(depth);
-        moveIterationPreparer.prepare(SearchThreadContexts.CONTEXTS.getContext(0), GenMode.NORMAL,
-                board, color, 0, 0, 0);
 
-
-        try (MoveBoardIterator iterator = moveIterationPreparer.iterateMoves()) {
-
+        try (MoveBoardIterator iterator = perftIteratorSupplier.supplyIterator(depth, board, color)) {
 
             while (iterator.doNextValidMove()) {
 
@@ -143,7 +147,6 @@ public class Perft {
     }
 
     public void perftInitialPosition() {
-        Factory.setDefaults(Factory.createStable());
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         assertPerft(board, WHITE, 1, 20, 0, 0, 0, 0);
@@ -160,7 +163,6 @@ public class Perft {
     }
 
     public void position2() {
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
@@ -179,7 +181,6 @@ public class Perft {
     }
 
     public void position3() {
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
@@ -200,9 +201,7 @@ public class Perft {
         assertPerft(board, WHITE, 7, 178633661, 14519036, 294874, 0, 140024);
     }
 
-    @Test
     public void position4() {
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");

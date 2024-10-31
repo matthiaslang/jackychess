@@ -1,5 +1,7 @@
 package org.mattlang.jc.perftests;
 
+import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -9,6 +11,8 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.perft.Perft;
+import org.mattlang.jc.perft.PerftConsumer;
 
 /**
  * PerfTests to validate the boards.isValid method.
@@ -42,7 +46,7 @@ public class PerfIsValidTests {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor(validtMoveTester);
 
         perft.perftInitialPosition();
@@ -51,7 +55,7 @@ public class PerfIsValidTests {
 
     @Test
     public void position2() {
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor(validtMoveTester);
 
         perft.position2();
@@ -60,7 +64,7 @@ public class PerfIsValidTests {
 
     @Test
     public void position3() {
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor(validtMoveTester);
 
         perft.position3();
@@ -68,7 +72,7 @@ public class PerfIsValidTests {
 
     @Test
     public void position4() {
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor(validtMoveTester);
 
         perft.position4();

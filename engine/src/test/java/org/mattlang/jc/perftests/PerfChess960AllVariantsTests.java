@@ -1,6 +1,7 @@
 package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import org.junit.runners.Parameterized;
 import org.mattlang.SlowTests;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.perft.Perft;
 
 import lombok.AllArgsConstructor;
 
@@ -101,7 +103,7 @@ public class PerfChess960AllVariantsTests {
     @Test
     public void testCombination() {
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();

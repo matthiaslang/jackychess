@@ -3,6 +3,7 @@ package org.mattlang.jc.perftests;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Benchmarks.benchmark;
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import org.junit.experimental.categories.Category;
 import org.mattlang.SlowTests;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.perft.Perft;
 import org.mattlang.jc.zobrist.Zobrist;
 
 /**
@@ -73,7 +75,7 @@ public class ZobristPerfTests {
                 () -> {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
-                    Perft perft = new Perft();
+                    Perft perft = new Perft(DEFAULT_SUPPLIER);
                     perft.setVisitor((visitedBoard, c, d, cursor) -> {
                         int hash = visitedBoard.hashCode();
                         i[0] = hash;
@@ -87,7 +89,7 @@ public class ZobristPerfTests {
                 () -> {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
-                    Perft perft = new Perft();
+                    Perft perft = new Perft(DEFAULT_SUPPLIER);
                     perft.setVisitor((visitedBoard, c, d, cursor) -> {
                         long zobristHash = visitedBoard.getZobristHash();
                         l[0] = zobristHash;
@@ -124,7 +126,7 @@ public class ZobristPerfTests {
 
     private void assertNoCollisions(BitBoard board, int depth) {
         HashMap<Long, Set<String>> collisionMap = new HashMap<>();
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor((visitedBoard, c, d, cursor) -> {
 
             // check pawn zobrist hash : incremental must be equal to calculated one:

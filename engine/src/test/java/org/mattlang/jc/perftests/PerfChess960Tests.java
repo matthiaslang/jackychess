@@ -1,6 +1,7 @@
 package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,8 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.perft.Perft;
+import org.mattlang.jc.perft.PerftConsumer;
 
 /**
  * PerfTests for fischer random chess.
@@ -25,7 +28,7 @@ public class PerfChess960Tests {
     @Test
     public void pos1() {
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
@@ -45,7 +48,7 @@ public class PerfChess960Tests {
 
         // bbrnk1qr/1pppppp1/p4n1p/8/P2P2N1/8/1PP1PPPP/BBR1NKQR w HC - 1 9 ;D1 21 ;D2 481 ;D3 11213 ;D4 279993 ;D5 7015419 ;D6 187564853
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         perft.setVisitor(new PerftConsumer() {
 
             @Override
@@ -72,7 +75,7 @@ public class PerfChess960Tests {
 
         // q1brnknr/pp1pp1p1/8/2p2p1p/5b2/P4N2/1PPPP1PP/QBBRK1NR w hd - 0 9 ;D1 22 ;D2 675 ;D3 15778 ;D4 473994 ;D5 12077228 ;D6 368479752
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
@@ -92,7 +95,7 @@ public class PerfChess960Tests {
 
         // qbbrkn1r/pppppp1p/8/6p1/2P1Pn1P/6N1/PP1P1PP1/QBBRKNR1 w GDd - 3 9 ;D1 20 ;D2 532 ;D3 11581 ;D4 303586 ;D5 7512432 ;D6 202967948
 
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
         Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
@@ -118,7 +121,7 @@ public class PerfChess960Tests {
                 PerfChess960AllVariantsTests.loadAllChess960Perfts();
 
         for (PerfChess960AllVariantsTests.Chess960Perft chess960Perft : chess960Perfts) {
-            Perft perft = new Perft();
+            Perft perft = new Perft(DEFAULT_SUPPLIER);
             Factory.setDefaults(Factory.createStable());
 
             BitBoard board = new BitBoard();

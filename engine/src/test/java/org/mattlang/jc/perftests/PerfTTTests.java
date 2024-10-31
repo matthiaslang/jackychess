@@ -1,6 +1,7 @@
 package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.board.IndexConversion.parsePos;
+import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.perft.Perft;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -55,7 +57,7 @@ public class PerfTTTests {
 
     public void testCacheWithPosition(BitBoard board, TTCache ttCache, int depth) {
         StopWatch fillWatch = new StopWatch();
-        Perft perft = new Perft();
+        Perft perft = new Perft(DEFAULT_SUPPLIER);
 
         int[] count = new int[1];
         int[] hits = new int[1];

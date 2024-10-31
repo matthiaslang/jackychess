@@ -1,4 +1,4 @@
-package org.mattlang.jc.perftests;
+package org.mattlang.jc.perft;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
