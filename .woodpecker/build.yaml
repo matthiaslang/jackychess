@@ -1,0 +1,21 @@
+when:
+  - event: push
+    branch: [master, develop, feature/*]
+
+steps:
+  - name: build
+    image: maven:3.9.9-eclipse-temurin-17
+    commands:
+      - echo "building project"
+      - mvn clean package
+#      - mvn install -DskipTests
+#  - name: unit tests
+#    image: maven:3.9.9-eclipse-temurin-17
+#    commands:
+#      - echo "unit tests"
+#      - mvn surefire:test
+#  - name: integration tests
+#    image: maven:3.9.9-eclipse-temurin-17
+#    commands:
+#      - echo "integration tests"
+#      - mvn failsafe:integration-tests
