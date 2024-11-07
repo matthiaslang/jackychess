@@ -6,6 +6,7 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.MoveIterator;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
@@ -15,8 +16,9 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     private MoveIterator moveIterator;
     private BoardRepresentation board;
 
-    private CheckChecker checkChecker;
-    Color siteToMove;
+    private static CheckChecker checkChecker = new BBCheckCheckerImpl();
+
+    private Color siteToMove;
 
     private boolean moveDone = false;
 
@@ -30,19 +32,17 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     public MoveBoardIterator() {
     }
 
-    public MoveBoardIterator(MoveIterator moveIterator, BoardRepresentation board, CheckChecker checkChecker) {
+    public MoveBoardIterator(MoveIterator moveIterator, BoardRepresentation board) {
         this.moveIterator = moveIterator;
         this.board = board;
         siteToMove = board.getSiteToMove();
-        this.checkChecker = checkChecker;
         nextStepped = false;
     }
 
-    public void init(MoveIterator moveIterator, BoardRepresentation board, CheckChecker checkChecker) {
+    public void init(MoveIterator moveIterator, BoardRepresentation board) {
         this.moveIterator = moveIterator;
         this.board = board;
         siteToMove = board.getSiteToMove();
-        this.checkChecker = checkChecker;
         moveDone = false;
         nextStepped = false;
     }

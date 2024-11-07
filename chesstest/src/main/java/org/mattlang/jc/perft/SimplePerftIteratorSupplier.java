@@ -4,10 +4,8 @@ import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
@@ -17,7 +15,8 @@ import org.mattlang.jc.moves.MoveBoardIterator;
  * It is simply based on movelists and board iterators using one stage for move generation.
  *
  * It therefore may have a different speed than the staged move generation which is used in the engine.
- * This supplier makes therefore only sense to test other aspects than real perft testing the real staged move generation.
+ * This supplier makes therefore only sense to test other aspects than real perft testing the real staged move
+ * generation.
  */
 public class SimplePerftIteratorSupplier implements PerftIteratorSupplier {
 
@@ -26,7 +25,6 @@ public class SimplePerftIteratorSupplier implements PerftIteratorSupplier {
     private MoveBoardIterator[] moveBoardIterators = new MoveBoardIterator[MAX_PLY_INDEX];
 
     private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
-    private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     public static final SimplePerftIteratorSupplier SIMPLE_PERFT_ITERATOR_SUPPLIER = new SimplePerftIteratorSupplier();
 
@@ -46,7 +44,7 @@ public class SimplePerftIteratorSupplier implements PerftIteratorSupplier {
         generator.generate(GenMode.NORMAL, board, color, moveList);
 
         iterators[depth].init(moveList, 0);
-        moveBoardIterators[depth].init(iterators[depth], board, checkChecker);
+        moveBoardIterators[depth].init(iterators[depth], board);
         return moveBoardIterators[depth];
     }
 }
