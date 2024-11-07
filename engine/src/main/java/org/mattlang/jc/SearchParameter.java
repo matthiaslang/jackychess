@@ -9,11 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -26,8 +24,6 @@ public class SearchParameter {
     private ConfigValues config = new ConfigValues();
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
-
-    public final Impl<CheckChecker> checkChecker = new Impl<>(this, BBCheckCheckerImpl::new);
 
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
@@ -54,7 +50,6 @@ public class SearchParameter {
             LOGGER.info("Board: " + Configurator.determineBoardImplName());
             LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
             LOGGER.info("Evaluation: " + Configurator.determineEvalImplName());
-            LOGGER.info("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
             for (UCIOption option : config.getAllOptions().getAllOptions()) {
                 LOGGER.info(option.getName() + ": " + option.getValue());
             }
@@ -68,8 +63,6 @@ public class SearchParameter {
         b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
         b.append("\n");
         b.append("Evaluation: " + Configurator.determineEvalImplName());
-        b.append("\n");
-        b.append("Check Checker: " + checkChecker.instance().getClass().getSimpleName());
         b.append("\n");
         for (UCIOption option : config.getAllOptions().getAllOptions()) {
             b.append(option.getName() + ": " + option.getValue());

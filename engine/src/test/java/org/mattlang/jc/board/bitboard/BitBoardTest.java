@@ -9,9 +9,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -36,14 +34,12 @@ public class BitBoardTest {
 
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
 
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
-
         // positive check, that all legal moves are "valid" moves:
         MoveList moveList = new MoveList();
         moveList.reset(Color.WHITE);
         movegen.generate(board, Color.WHITE, moveList);
 
-        try (MoveBoardIterator iterator = iterateMoves(moveList, board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {
                 assertThat(board.isvalidmove(Color.WHITE, iterator.getMoveInt())).isTrue();
             }
@@ -52,7 +48,7 @@ public class BitBoardTest {
         moveList.reset(Color.BLACK);
         movegen.generate(board, Color.BLACK, moveList);
 
-        try (MoveBoardIterator iterator = iterateMoves(moveList, board, checkChecker)) {
+        try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {
                 assertThat(board.isvalidmove(Color.BLACK, iterator.getMoveInt())).isTrue();
             }

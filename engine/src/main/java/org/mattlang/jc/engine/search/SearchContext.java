@@ -11,6 +11,7 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
+import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
@@ -25,7 +26,7 @@ import lombok.Getter;
 
 public final class SearchContext {
 
-    private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
+    private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
 

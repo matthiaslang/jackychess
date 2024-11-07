@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MovePicker;
 
@@ -36,11 +35,11 @@ public class TestTools {
         return moves;
     }
 
-    public static MoveBoardIterator iterateMoves(MoveList moveList, BoardRepresentation board, CheckChecker checkChecker) {
+    public static MoveBoardIterator iterateMoves(MoveList moveList, BoardRepresentation board) {
         MovePicker movePicker = new MovePicker();
         movePicker.init(moveList, 0);
         MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
-        moveBoardIterator.init(movePicker, board, checkChecker);
+        moveBoardIterator.init(movePicker, board);
         return moveBoardIterator;
     }
 }

@@ -5,10 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MoveIterator;
@@ -69,8 +67,6 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_QUIESCENCE_REST };
 
     private MoveList moveList = new MoveList();
-
-    private CheckChecker checkChecker = Factory.getDefaults().checkChecker.instance();
 
     private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
 
@@ -286,7 +282,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     }
 
     public MoveBoardIterator iterateMoves() {
-        moveBoardIterator.init(this, board, checkChecker);
+        moveBoardIterator.init(this, board);
         return moveBoardIterator;
     }
 
