@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
-import org.mattlang.jc.engine.EvalFunctionConfigurator;
+import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
@@ -74,7 +74,7 @@ public class SearchThreadContext {
      */
     public EvaluateFunction getEvaluate() {
         if (evaluate == null) {
-            evaluate = EvalFunctionConfigurator.createConfiguredEvaluateFunction();
+            evaluate = Configurator.createConfiguredEvaluateFunction();
             evaluate.associateThreadCache(cache);
         }
         return evaluate;

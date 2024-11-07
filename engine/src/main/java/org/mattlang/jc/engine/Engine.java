@@ -11,7 +11,7 @@ import org.mattlang.jc.uci.GameContext;
 
 public class Engine {
 
-    private BoardRepresentation board = Factory.getDefaults().boards.create();
+    private BoardRepresentation board = Configurator.createBoard();
 
     private IterativeDeepeningSearch searchMethod = Factory.getDefaults().searchMethod.create();
 

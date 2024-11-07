@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mattlang.jc.*;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
 import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.uci.UCI;
@@ -150,7 +149,7 @@ public class SearchOptsBenchmark2 {
                 .config(c -> c.useHistoryHeuristic.setValue(false))
                 .config(c -> c.useMvvLvaSorting.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
-                .boards.set(() -> new BitBoard());
+                ;
 
         return searchParameter;
     }

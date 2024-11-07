@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.*;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -36,14 +35,13 @@ public class BitBoardNegaMaxBenchmark {
         // now with new bitboard
         runner.benchmarkExecute(
                 normalParams()
-                        .boards.set(() -> new BitBoard())
                         .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
         // normal with all opts
         runner.benchmarkExecute(allOptsOn());
 
         // normal with all opts and bitboards
-        runner.benchmarkExecute(allOptsOn().boards.set(() -> new BitBoard())
+        runner.benchmarkExecute(allOptsOn()
                 .config(c -> c.searchAlgorithm.setValue(SearchAlgorithms.SINGLETHREAD)));
 
         for (BenchmarkResults result : runner.getResults()) {
@@ -64,7 +62,7 @@ public class BitBoardNegaMaxBenchmark {
                 .config(c -> c.useHistoryHeuristic.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
                 .config(c -> c.useMvvLvaSorting.setValue(false))
-                .boards.set(() -> new BitBoard());
+                ;
 
         return searchParameter;
     }
@@ -79,7 +77,7 @@ public class BitBoardNegaMaxBenchmark {
                 .config(c -> c.aspiration.setValue(true))
                 .config(c -> c.useHistoryHeuristic.setValue(true))
                 .config(c -> c.useMvvLvaSorting.setValue(true))
-                .boards.set(() -> new BitBoard());
+                ;
 
         return searchParameter;
     }

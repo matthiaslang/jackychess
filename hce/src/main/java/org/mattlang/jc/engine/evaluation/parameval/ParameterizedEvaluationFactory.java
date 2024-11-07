@@ -6,7 +6,7 @@ import org.mattlang.jc.engine.EvaluateFunctionFactory;
 public class ParameterizedEvaluationFactory implements EvaluateFunctionFactory {
 
     @Override
-    public String getEvalName() {
+    public String getEvalImplName() {
         return "Parameterized HCE Evaluation";
     }
 

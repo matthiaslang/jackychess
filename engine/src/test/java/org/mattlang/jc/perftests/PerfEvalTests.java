@@ -9,7 +9,7 @@ import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.EvalFunctionConfigurator;
+import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.perft.Perft;
@@ -21,7 +21,7 @@ import org.mattlang.jc.perft.PerftConsumer;
 @Category(SlowTests.class)
 public class PerfEvalTests {
 
-    private final EvaluateFunction evaluation = EvalFunctionConfigurator.createConfiguredEvaluateFunction();
+    private final EvaluateFunction evaluation = Configurator.createConfiguredEvaluateFunction();
 
     private boolean debug = false;
     private PerftConsumer perftEvaluator = new PerftConsumer() {

@@ -7,7 +7,6 @@ import org.mattlang.jc.BenchmarkResults;
 import org.mattlang.jc.EngineBenchmarksRunner;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -74,7 +73,7 @@ public class AspirationWindowBenchmark {
                 .config(c -> c.useKillerMoves.setValue(true))
                 .config(c -> c.useHistoryHeuristic.setValue(true))
                 .config(c -> c.useMvvLvaSorting.setValue(true))
-                .boards.set(() -> new BitBoard());
+                ;
 
         return searchParameter;
     }

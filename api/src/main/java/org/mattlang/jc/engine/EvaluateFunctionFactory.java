@@ -6,7 +6,7 @@ package org.mattlang.jc.engine;
  */
 public interface EvaluateFunctionFactory {
 
-    String getEvalName();
+    String getEvalImplName();
 
     /**
      * Creates a new instance of an evaluation factory implementation.

@@ -12,7 +12,6 @@ import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -44,7 +43,6 @@ public class ZobristPerfTests2 {
                 "iterative deepening alpha beta TT zobrist",
                 () -> {
                     Factory.setDefaults(Factory.createStable()
-                            .boards.set(() -> new BitBoard())
                             .config(c -> c.timeout.setValue(TIMEOUT))
                             .config(c -> c.activatePvsSearch.setValue(true))
                             .config(c -> c.maxDepth.setValue(MAX_DEPTH))
@@ -67,8 +65,8 @@ public class ZobristPerfTests2 {
                             .config(c -> c.timeout.setValue(TIMEOUT))
                             .config(c -> c.activatePvsSearch.setValue(true))
                             .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                            .config(c -> c.useTTCache.setValue(false))
-                            .boards.set(() -> new BitBoard()));
+                            .config(c -> c.useTTCache.setValue(false)))
+                           ;
 
                     // now starting engine:
                     Engine engine = new Engine();

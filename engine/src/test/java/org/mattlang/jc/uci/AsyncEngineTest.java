@@ -7,10 +7,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.util.Logging;
 
 public class AsyncEngineTest {
@@ -19,7 +19,7 @@ public class AsyncEngineTest {
     public void start() throws ExecutionException, InterruptedException, IOException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 
@@ -38,7 +38,7 @@ public class AsyncEngineTest {
     public void stopShortlyAfterStart() throws ExecutionException, InterruptedException, IOException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 
@@ -59,7 +59,7 @@ public class AsyncEngineTest {
     public void stopShortlyAfterStart2() throws ExecutionException, InterruptedException, IOException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 
@@ -83,7 +83,7 @@ public class AsyncEngineTest {
             throws ExecutionException, InterruptedException, IOException, TimeoutException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 
@@ -100,7 +100,7 @@ public class AsyncEngineTest {
         System.out.println(move.toStr());
 
         // now restart directly with next "go":
-        board = Factory.getDefaults().boards.create();
+        board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 
@@ -119,7 +119,7 @@ public class AsyncEngineTest {
     public void simultaneouslyStarts() throws ExecutionException, InterruptedException, IOException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         board.setStartPosition();
         board.switchSiteToMove();
 

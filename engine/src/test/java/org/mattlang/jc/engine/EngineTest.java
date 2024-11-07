@@ -284,7 +284,7 @@ public class EngineTest {
     public void testCheckSituation() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
 
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         FenParser parser = new FenParser();
         GameState gameState =
                 parser.setPosition("position fen 1nbqkbnr/r3P3/7P/pB3N2/P7/8/1PP3PP/RNBQ1RK1 b k - 2 17 ", board);
@@ -305,7 +305,7 @@ public class EngineTest {
     public void testFRCIssue() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
 
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         FenParser parser = new FenParser();
         GameState gameState =
                 parser.setPosition(
@@ -328,7 +328,7 @@ public class EngineTest {
     public void testFRCIssue2() throws IOException {
         UCI.instance.attachStreams(System.in, System.out);
 
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         FenParser parser = new FenParser();
         GameState gameState =
                 parser.setPosition(
@@ -350,7 +350,7 @@ public class EngineTest {
     @Test
     public void testCheckSituation2() {
 
-        BoardRepresentation board = Factory.getDefaults().boards.create();
+        BoardRepresentation board = Configurator.createBoard();
         FenParser parser = new FenParser();
         GameState gameState = parser.setPosition("position fen kp6/1p6/8/6r1/8/Q7/8/4K3 b - - 2 17 ", board);
 

@@ -13,6 +13,7 @@ import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
 
@@ -164,7 +165,7 @@ public class UciProcessor {
     private GameState setPosition(String positionStr) {
         try {
             FenParser fenParser = new FenParser();
-            BoardRepresentation board = Factory.getDefaults().boards.create();
+            BoardRepresentation board = Configurator.createBoard();
             boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
             return fenParser.setPosition(positionStr, board, isChess960);
         } catch (RuntimeException re) {

@@ -14,7 +14,6 @@ import org.mattlang.jc.EngineBenchmarksRunner;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestPosition;
-import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
 import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.uci.UCI;
@@ -106,7 +105,7 @@ public class SearchOptsBenchmark3 {
                 .config(c -> c.useHistoryHeuristic.setValue(false))
                 .config(c -> c.useMvvLvaSorting.setValue(false))
                 .config(c -> c.aspiration.setValue(false))
-                .boards.set(() -> new BitBoard());
+               ;
 
         return searchParameter;
     }
