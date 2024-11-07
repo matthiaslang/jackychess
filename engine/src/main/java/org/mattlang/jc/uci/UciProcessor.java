@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -97,7 +98,7 @@ public class UciProcessor {
 
         UCI.instance.quit();
         finished = true;
-        AsyncEngine.executorService.shutdownNow();
+        JCExecutors.EXECUTOR_SERVICE.shutdownNow();
         System.exit(0);
     }
 

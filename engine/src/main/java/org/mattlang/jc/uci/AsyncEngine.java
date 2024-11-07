@@ -1,14 +1,17 @@
 package org.mattlang.jc.uci;
 
 import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.Constants.MAX_THREADS;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -25,7 +28,6 @@ public class AsyncEngine {
      */
     private Future<Move> future;
 
-    public static ExecutorService executorService = Executors.newFixedThreadPool(2 * MAX_THREADS);
 
     private MoveValidator moveValidator = new MoveValidator();
 
@@ -76,7 +78,7 @@ public class AsyncEngine {
 
         // start the engine in a separate thread, delivering the result in a future
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
-        Future<Move> newFuture = executorService.submit(() -> {
+        Future<Move> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 // acquire the semaphore, but do not wait endless in case the JVM or Thread gets interrupted
                 semaphore.tryAcquire(5, TimeUnit.SECONDS);

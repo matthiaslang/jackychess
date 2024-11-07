@@ -10,11 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.StatisticsCollector;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.uci.AsyncEngine;
 import org.mattlang.jc.uci.GameContext;
 
 public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch, StatisticsCollector {
@@ -65,7 +65,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
             int maxDepth) {
         GameState copiedGame = gameState.copy();
         IterativeDeepeningPVS worker = new IterativeDeepeningPVS(workerNumber);
-        Future<IterativeSearchResult> result = AsyncEngine.executorService.submit(() -> {
+        Future<IterativeSearchResult> result = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 return worker.iterativeSearch(copiedGame, gameContext, maxDepth);
             } catch (Exception e) {
