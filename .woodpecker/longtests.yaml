@@ -1,0 +1,12 @@
+when:
+  - event: push
+    branch: [master, develop, feature/*]
+
+steps:
+  - name: integration tests
+    image: maven:3.9.9-eclipse-temurin-17
+    commands:
+      - echo "integration tests"
+      - mvn clean package -PallTests surefire-report:report-only
+depends_on:
+  - build

@@ -68,7 +68,10 @@
                     </plugin>
                 </plugins>
             </build>
-
+            <properties>
+                <activateAssertions>false</activateAssertions>
+                <activateStatistics>false</activateStatistics>
+            </properties>
         </profile>
     </profiles>
 
