@@ -23,6 +23,8 @@ import org.mattlang.jc.engine.Engine;
 @RunWith(Parameterized.class)
 public class EigenmannRapidEngineChessIT {
 
+    public static final int CHESS_SUITE_TEST_TIMEOUT = 1000 * 15;
+
     @Parameterized.Parameters(name = "{index}: {2}")
     public static Iterable<String[]> getEPDTests() {
         return EpdParser.getEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
@@ -48,7 +50,7 @@ public class EigenmannRapidEngineChessIT {
     public void testWithDefaultConfig() {
         // create engine
         Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(99999999))
+                .config(c -> c.timeout.setValue(CHESS_SUITE_TEST_TIMEOUT))
                 .config(c -> c.maxDepth.setValue(25))
 
         );

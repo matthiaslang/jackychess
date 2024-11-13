@@ -1,0 +1,14 @@
+when:
+  - event: push
+    branch: [master, develop, feature/*]
+
+steps:
+  - name: chess suite tests
+    image: maven:3.9.9-eclipse-temurin-17
+    commands:
+      - echo "chess suite tests"
+      - mvn clean test-compile failsafe:integration-test
+    failure: ignore
+depends_on:
+  - build
+  - longtests

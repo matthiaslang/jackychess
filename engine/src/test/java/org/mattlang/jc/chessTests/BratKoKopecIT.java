@@ -47,7 +47,7 @@ public class BratKoKopecIT {
     public void testStable() {
         // create engine
         Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(99999999))
+                .config(c -> c.timeout.setValue(EigenmannRapidEngineChessIT.CHESS_SUITE_TEST_TIMEOUT))
                 .config(c -> c.maxDepth.setValue(25))
 
         );
