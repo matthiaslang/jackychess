@@ -13,4 +13,4 @@ steps:
     image: maven:3.9.9-eclipse-temurin-17
     commands:
       - echo "unit tests"
-      - mvn surefire:test  -Dmaven.repo.local=/woodpecker/.m2
+      - mvn surefire:test -B -Dmaven.repo.local=/woodpecker/.m2

@@ -102,7 +102,7 @@
                 <version>2.3</version>
 
                 <configuration>
-                    <finalName>jackychess-${version}</finalName>
+                    <finalName>jackychess-${project.version}</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>

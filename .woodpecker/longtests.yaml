@@ -7,6 +7,6 @@ steps:
     image: maven:3.9.9-eclipse-temurin-17
     commands:
       - echo "integration tests"
-      - mvn clean package -PallTests surefire-report:report-only
+      - mvn clean test-compile surefire:test surefire-report:report-only -B -PallTests
 depends_on:
   - build
