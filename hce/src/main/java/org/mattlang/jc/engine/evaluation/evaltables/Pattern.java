@@ -100,7 +100,7 @@ public final class Pattern {
         patternWhite[FLIP[pos]] = value;
     }
 
-    public int dotProduct(long bb, int[] weights) {
+    private static int dotProduct(long bb, int[] weights) {
         int accu = 0;
         while (bb != 0) {
             final int pos = Long.numberOfTrailingZeros(bb);

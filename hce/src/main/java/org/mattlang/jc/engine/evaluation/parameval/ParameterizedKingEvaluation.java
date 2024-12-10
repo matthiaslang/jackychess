@@ -88,8 +88,8 @@ public class ParameterizedKingEvaluation implements EvalComponent {
     public void eval(EvalResult result, BoardRepresentation bitBoard) {
 
         if (result.getPawnEntry() != null) {
+            result.pkeval = result.getPawnEntry().pkeval;
             for (int i = 0; i < 2; i++) {
-                result.pkeval = result.getPawnEntry().pkeval;
                 result.pksafety[i] = result.getPawnEntry().pksafety[i];
             }
 
