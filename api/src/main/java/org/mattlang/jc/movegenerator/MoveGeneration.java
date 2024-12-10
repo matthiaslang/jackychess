@@ -85,8 +85,8 @@ public final class MoveGeneration {
         generateCastlingMoves(board, board.getBoardCastlings(), side, collector);
     }
 
-
-    private static void generateCastlingMoves(BoardRepresentation board, BoardCastlings boardCastlings, Color side, MoveList collector) {
+    private static void generateCastlingMoves(BoardRepresentation board, BoardCastlings boardCastlings, Color side,
+            MoveList collector) {
         switch (side) {
         case WHITE:
             addCheckCastling(board, boardCastlings.getCastlingWhiteLong(), collector);
@@ -100,12 +100,11 @@ public final class MoveGeneration {
         }
     }
 
-    private static void addCheckCastling(BoardRepresentation board,CastlingMove castlingMove,MoveList collector) {
+    private static void addCheckCastling(BoardRepresentation board, CastlingMove castlingMove, MoveList collector) {
         if (castlingMove.getDef().check(board)) {
             collector.addCastlingMove(castlingMove);
         }
     }
-
 
     public static void generateAttacks(BoardRepresentation board, Color side, MoveList collector) {
 
@@ -187,20 +186,10 @@ public final class MoveGeneration {
                 long epMask = 1L << bitBoard.getEnPassantMoveTargetPos();
 
                 capturesEast = pawns & BB.bPawnWestAttacks(epMask);
-
-                while (capturesEast != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex + 9);
-                    capturesEast &= capturesEast - 1;
-                }
+                genEnPassants(collector, capturesEast, 9);
 
                 capturesWest = pawns & BB.bPawnEastAttacks(epMask);
-
-                while (capturesWest != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex + 7);
-                    capturesWest &= capturesWest - 1;
-                }
+                genEnPassants(collector, capturesWest, 7);
 
             }
 
@@ -217,21 +206,20 @@ public final class MoveGeneration {
                 long epMask = 1L << bitBoard.getEnPassantMoveTargetPos();
 
                 capturesEast = pawns & BB.wPawnWestAttacks(epMask);
-
-                while (capturesEast != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesEast);
-                    collector.genEnPassant(fromIndex, fromIndex - 7);
-                    capturesEast &= capturesEast - 1;
-                }
+                genEnPassants(collector, capturesEast, -7);
 
                 capturesWest = pawns & BB.wPawnEastAttacks(epMask);
+                genEnPassants(collector, capturesWest, -9);
 
-                while (capturesWest != 0) {
-                    final int fromIndex = Long.numberOfTrailingZeros(capturesWest);
-                    collector.genEnPassant(fromIndex, fromIndex - 9);
-                    capturesWest &= capturesWest - 1;
-                }
             }
+        }
+    }
+
+    private static void genEnPassants(MoveList collector, long enPassantCaptureMask, int toOffset) {
+        while (enPassantCaptureMask != 0) {
+            final int fromIndex = Long.numberOfTrailingZeros(enPassantCaptureMask);
+            collector.genEnPassant(fromIndex, fromIndex + toOffset);
+            enPassantCaptureMask &= enPassantCaptureMask - 1;
         }
     }
 
@@ -271,7 +259,6 @@ public final class MoveGeneration {
             captures &= captures - 1;
         }
     }
-
 
     public static void genPawnQuietPromotions(BitChessBoard bb, MoveList collector, Color side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
