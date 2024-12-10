@@ -161,29 +161,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
         result.countFigureMobilityVals(paramsKing, king, kingAttack);
 
-        //        result.blockedPieces(bb, side);
     }
 
-    /**
-     * Creates opponents pawn attacs.
-     *
-     * @param bb
-     * @param side
-     * @return
-     */
-    public static long createOpponentPawnAttacs(BitChessBoard bb, Color side) {
-        long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
-
-        if (side == WHITE) {
-            long capturesEast = BB.bPawnWestAttacks(otherPawns);
-            long capturesWest = BB.bPawnEastAttacks(otherPawns);
-            return capturesEast | capturesWest;
-        } else {
-            long capturesEast = BB.wPawnWestAttacks(otherPawns);
-            long capturesWest = BB.wPawnEastAttacks(otherPawns);
-            return capturesEast | capturesWest;
-        }
-    }
 
     @Override
     public void eval(EvalResult result, BoardRepresentation bitBoard) {

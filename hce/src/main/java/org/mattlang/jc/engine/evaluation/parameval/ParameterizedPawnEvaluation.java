@@ -1,7 +1,9 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
-import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.BB.flipVertical;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.Tools.fileOf;
 
@@ -143,14 +145,18 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     }
 
     private int evalWhitePawns(BoardRepresentation bitBoard) {
-        int result = 0;
-
         BitChessBoard bb = bitBoard.getBoard();
         long whitePawns = bb.getPawns(nWhite);
         long blackPawns = bb.getPawns(nBlack);
 
-        long blackPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, WHITE);
-        long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
+        return evalWhitePerspectivePawns(whitePawns, blackPawns, whitePassers);
+    }
+
+    private int evalWhitePerspectivePawns(long whitePawns, long blackPawns, long whitePassers) {
+        int result = 0;
+
+        long blackPawnAttacs = createBlackPawnAttacs(blackPawns);
+        long whitePawnAttacs = createWhitePawnAttacs(whitePawns);
 
         long protectedWhitePawns = whitePawns & whitePawnAttacs;
 
@@ -231,127 +237,45 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
         return result;
     }
 
+    public static long createBlackPawnAttacs(long blackPawns) {
+        long capturesEast = BB.bPawnWestAttacks(blackPawns);
+        long capturesWest = BB.bPawnEastAttacks(blackPawns);
+        return capturesEast | capturesWest;
+    }
+
+    public static long createWhitePawnAttacs(long whitePawns) {
+        long capturesEast = BB.wPawnWestAttacks(whitePawns);
+        long capturesWest = BB.wPawnEastAttacks(whitePawns);
+        return capturesEast | capturesWest;
+    }
+
     private int evalBlackPawns(BoardRepresentation bitBoard) {
-        int result = 0;
 
         BitChessBoard bb = bitBoard.getBoard();
         long whitePawns = bb.getPawns(nWhite);
         long blackPawns = bb.getPawns(nBlack);
 
-        long blackPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, WHITE);
-        long whitePawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, BLACK);
-
-        long protectedBlackPawns = blackPawns & blackPawnAttacs;
-
-        long blackDirectNeighbours = getPawnNeighbours(blackPawns);
-
-        long blackNeighboursFrontFilled = BB.bFrontFill(blackDirectNeighbours);
-
-        long blackAdvanceAttackedPawns = BB.soutOne(blackPawns) & whitePawnAttacs;
-
-        long blockedBlackPawns = calcBlockedBlackPawns(blackPawns, whitePawns);
-
-        //        long attackedWhitePawns = whitePawns & blackPawnAttacs;
-        //        long attackedBlackPawns = blackPawns & whitePawnAttacs;
-
-        //        long whiteProtectedPassers = protectedWhitePawns & whitePassers;
-        //        long blackProtectedPassers = protectedBlackPawns & blackPassers;
-
-        long pawns = blackPawns;
-        while (pawns != 0) {
-            final int pawn = Long.numberOfTrailingZeros(pawns);
-            long pawnMask = 1L << pawn;
-            long pawnFrontFilled = BB.bFrontFill(pawnMask);
-
-            boolean isAttacked = (pawnMask & whitePawnAttacs) != 0;
-            boolean isPasser = (blackPassers & pawnMask) != 0;
-            boolean isWeak = (pawnFrontFilled & whitePawnAttacs) != 0;
-            boolean isProtected = (pawnMask & protectedBlackPawns) != 0;
-            boolean isBlocked = (blockedBlackPawns & pawnMask) != 0;
-            boolean isDoubled = Long.bitCount(pawnFrontFilled & blackPawns) > 1;
-            boolean hasDirectNeighbour = (blackDirectNeighbours & pawnMask) != 0;
-            boolean isSupported = hasDirectNeighbour;
-            boolean isIsolated = ((BB.ADJACENT_FILES[fileOf(pawn)] & blackPawns) == 0);
-            boolean hasNeighbour = !isIsolated;
-            boolean isBehindNeighbours = hasNeighbour && (blackNeighboursFrontFilled & pawnMask) == 0;
-
-            // backward pawn: behind its neighbours and cannot be safely advanced:
-            boolean isBackward =
-                    !isBlocked && isBehindNeighbours && ((BB.soutOne(pawnMask) & blackAdvanceAttackedPawns) != 0);
-
-            if (isBackward) {
-                result -= backwardedPawnPenalty;
-            }
-
-            if (isIsolated) {
-                result -= isolatedPawnPenalty;
-            }
-
-            if (isDoubled) {
-                result -= doublePawnPenalty;
-            }
-            if (isAttacked) {
-                result -= attackedPawnPenalty;
-            }
-
-            if (isBlocked) {
-                result += blockedPawn.getValBlack(pawn);
-            }
-            if (isProtected) {
-                result += protectedPawn.getValBlack(pawn);
-            }
-            if (hasDirectNeighbour) {
-                result += neighbourPawn.getValBlack(pawn);
-            }
-
-            if (isWeak) {
-                result += weakPawn.getValBlack(pawn);
-            } else if (isPasser) {
-                if ((isProtected || isSupported)) {
-                    result += protectedPasser.getValBlack(pawn);
-                } else {
-                    result += passedPawn.getValBlack(pawn);
-                }
-            }
-
-            pawns &= pawns - 1;
-
-        }
-
-        return result;
+        return evalWhitePerspectivePawns(flipVertical(blackPawns), flipVertical(whitePawns), flipVertical(blackPassers));
     }
 
     private int calcBlackKingShield(BitChessBoard bb) {
-        int result = 0;
 
-        long kingMask = bb.getPieceSet(FT_KING, BLACK);
-
-        long pawnsMask = bb.getPawns(nBlack);
-
-        /* king on kingside F-H: */
-        if ((kingMask & BB.FGH_File) != 0) {
-            int shieldCountOnRank2 = bitCount(pawnsMask & BB.FGH_on_rank7);
-            int shieldCountOnRank3 = bitCount(pawnsMask & BB.FGH_on_rank6);
-
-            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
-        } else if ((kingMask & BB.ABC_File) != 0) {
-            int shieldCountOnRank2 = bitCount(pawnsMask & BB.ABC_on_rank7);
-            int shieldCountOnRank3 = bitCount(pawnsMask & BB.ABC_on_rank6);
-
-            result += shieldCountOnRank2 * pawnShield2 + shieldCountOnRank3 * pawnShield3;
-        }
-
-        return result;
+        long kingMask = flipVertical(bb.getPieceSet(FT_KING, nBlack));
+        long pawnsMask = flipVertical(bb.getPawns(nBlack));
+        return calcWhitePerspectiveKingShield(kingMask, pawnsMask);
     }
 
     private int calcWhiteKingShield(BitChessBoard bb) {
 
-        int result = 0;
-
-        long kingMask = bb.getPieceSet(FT_KING, WHITE);
-
+        long kingMask = bb.getPieceSet(FT_KING, nWhite);
         long pawnsMask = bb.getPawns(nWhite);
+        return calcWhitePerspectiveKingShield(kingMask, pawnsMask);
 
+    }
+
+    private int calcWhitePerspectiveKingShield(long kingMask, long pawnsMask) {
+
+        int result = 0;
         /* king on kingside F-H: */
         if ((kingMask & BB.FGH_File) != 0) {
             int shieldCountOnRank2 = bitCount(pawnsMask & BB.FGH_on_rank2);
@@ -395,16 +319,5 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
      */
     public static long calcBlockedWhitePawns(long whitePawns, long blackPawns) {
         return whitePawns & BB.soutOne(blackPawns);
-    }
-
-    /**
-     * calc blocked (rammed) black pawns.
-     *
-     * @param blackPawns
-     * @param whitePawns
-     * @return
-     */
-    public static long calcBlockedBlackPawns(long blackPawns, long whitePawns) {
-        return blackPawns & BB.nortOne(whitePawns);
     }
 }

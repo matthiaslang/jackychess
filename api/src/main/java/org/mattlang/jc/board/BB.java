@@ -147,15 +147,11 @@ public class BB {
     public static final long ABC_File = A | B | C;
     public static final long ABC_on_rank2 = ABC_File & rank2;
     public static final long ABC_on_rank3 = ABC_File & rank3;
-    public static final long ABC_on_rank7 = ABC_File & rank7;
-    public static final long ABC_on_rank6 = ABC_File & rank6;
 
     public static final long FGH_File = F | G | H;
 
     public static final long FGH_on_rank2 = FGH_File & rank2;
     public static final long FGH_on_rank3 = FGH_File & rank3;
-    public static final long FGH_on_rank7 = FGH_File & rank7;
-    public static final long FGH_on_rank6 = FGH_File & rank6;
 
     public static final long CenterFiles = C | D | E | F;
 

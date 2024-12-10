@@ -17,7 +17,6 @@ import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
-import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation;
 
 import lombok.Getter;
 
@@ -162,11 +161,33 @@ public class MobilityEvalResult {
         oppKingZone = KingZoneMasks.getKingZoneMask(xside.ordinal(), oppKingPos);
 
         // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
-        long oppPawnAttacs = ParameterizedMobilityEvaluation.createOpponentPawnAttacs(bb, side);
+        long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
         noOppPawnAttacs = ~oppPawnAttacs;
 
         ownPawns = bb.getPieceSet(FT_PAWN, side);
         oppPawns = bb.getPieceSet(FT_PAWN, xside);
+    }
+
+
+    /**
+     * Creates opponents pawn attacs.
+     *
+     * @param bb
+     * @param side
+     * @return
+     */
+    private static long createOpponentPawnAttacs(BitChessBoard bb, Color side) {
+        long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
+
+        if (side == WHITE) {
+            long capturesEast = BB.bPawnWestAttacks(otherPawns);
+            long capturesWest = BB.bPawnEastAttacks(otherPawns);
+            return capturesEast | capturesWest;
+        } else {
+            long capturesEast = BB.wPawnWestAttacks(otherPawns);
+            long capturesWest = BB.wPawnEastAttacks(otherPawns);
+            return capturesEast | capturesWest;
+        }
     }
 
     /**
