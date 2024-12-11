@@ -88,7 +88,7 @@ public abstract class AbstractTuner {
     }
 
     protected String determineOutputPath() {
-        return params.getOutputdir() != null ? params.getOutputdir() : "./engine/src/main/resources/config/";
+        return params.getOutputdir() != null ? params.getOutputdir() : "./hce/src/main/resources/config/";
     }
 
     /**
