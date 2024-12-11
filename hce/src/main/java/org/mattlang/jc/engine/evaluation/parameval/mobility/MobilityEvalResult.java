@@ -60,6 +60,7 @@ public class MobilityEvalResult {
     private int rookHalfMgEg;
 
     @EvalConfigParam(name = "earlyQueenPenalty")
+    @EvalValueInterval(min = -50, max = 50)
     private int earlyQueenPenalty;
 
     private long empty;
