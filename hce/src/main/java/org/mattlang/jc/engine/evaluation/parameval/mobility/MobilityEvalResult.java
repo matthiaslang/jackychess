@@ -41,7 +41,7 @@ public class MobilityEvalResult {
      */
     public int kingAttWeightMgEg;
     public int positionalThemes;
-    public int blockages;
+
 
     private final int MGEG_ONE = MgEgScore.createMgEgScore(1, 1);
     private final int MGEG_TWO = MgEgScore.createMgEgScore(2, 2);
@@ -79,7 +79,6 @@ public class MobilityEvalResult {
         kingAttCount = 0;
         kingAttWeightMgEg = 0;
         positionalThemes = 0;
-        blockages = 0;
     }
 
     public void countFigureMobilityVals(MobFigParams params, int figPos, long attacks) {
