@@ -12,6 +12,7 @@ import java.util.Map;
 import org.mattlang.jc.tools.MarkdownTable;
 import org.mattlang.jc.tools.MarkdownWriter;
 import org.mattlang.tuning.ProgressInfo;
+import org.mattlang.tuning.evaluate.ParameterSet;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -91,7 +92,7 @@ public class OptParameters {
 
     private GeneticParams geneticParams = GeneticParams.builder().build();
 
-    public void writeMarkdownInfos(MarkdownWriter mdWriter)
+    public void writeMarkdownInfos(MarkdownWriter mdWriter, ParameterSet parameterSet)
             throws IOException {
         mdWriter.h1("Tuning Options");
 
@@ -102,6 +103,14 @@ public class OptParameters {
 
         mdWriter.writeTable(mtable);
 
+        mdWriter.h1("Parameter overview");
+        mtable = new MarkdownTable();
+        mtable.header("Parameter", "Value");
+
+        mtable.row("Num of Parameter Groups", parameterSet.getGroups().size());
+        mtable.row("Num of Parameters", parameterSet.getParams().size());
+
+        mdWriter.writeTable(mtable);
     }
 
     private void writeParams(MarkdownTable mtable, String subParam, Object paramObj) {

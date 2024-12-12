@@ -36,7 +36,7 @@ public class ProgressInfo {
         stopWatch.start();
 
         progressTable =
-                new MarkdownTable().header("Duration", "Round", "Step", "Params adjustments", "Adj total", "Curr Error"
+                new MarkdownTable().header("Duration", "Param Iteration", "Round", "Step", "Params adjustments", "Adj total", "Curr Error"
                         , "Overall AdjPerSecond", "AdjPerSecond");
 
         markdownAppender.append(w -> {
@@ -44,36 +44,38 @@ public class ProgressInfo {
         });
     }
 
-    public void progressInfo(ParameterSet parameterSet, int step, double bestE, int round, int numParamAdjusted) {
-        int adjOfProgressInterval = numParamAdjusted - lastParamsAdjusted;
+    public void progressInfo(ParameterSet parameterSet, int step, ProgressParams progress) {
+        int adjOfProgressInterval = progress.numParamAdjusted - lastParamsAdjusted;
 
         long secondsOfProgressInterval = (stopWatch.getCurrDuration() - lastTime) / 1000;
         if (secondsOfProgressInterval > 0) {
 
             adjPerSecond = ((double) adjOfProgressInterval) / secondsOfProgressInterval;
         }
-        lastParamsAdjusted = numParamAdjusted;
+        lastParamsAdjusted = progress.numParamAdjusted;
         lastTime = stopWatch.getCurrDuration();
 
         long seconds = stopWatch.getCurrDuration() / 1000;
         if (seconds > 0) {
-            overallAdjPerSecond = ((double) numParamAdjusted) / seconds;
+            overallAdjPerSecond = ((double) progress.numParamAdjusted) / seconds;
         }
 
         String progressInfoTxt =
-                stopWatch.getFormattedCurrDuration() + ": round " + round +
+                stopWatch.getFormattedCurrDuration()
+                        + ": paramIteration " + progress.paramIterationRound
+                        + ": round " + progress.round +
                         ", step " + step +
                         ", params adjustments: " + adjOfProgressInterval
-                        + ", total: " + numParamAdjusted
-                        + "; curr Error= " + bestE
+                        + ", total: " + progress.numParamAdjusted
+                        + "; curr Error= " + progress.bestE
                         + ", overall paramsAdjPerSecond= " + overallAdjPerSecond
                         + ", paramsAdjPerSecond= " + adjPerSecond;
         LOGGER.info(progressInfoTxt);
         parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {
-            progressTable.row(stopWatch.getFormattedCurrDuration(), round
-                    , step, adjOfProgressInterval, numParamAdjusted, bestE, overallAdjPerSecond, adjPerSecond);
+            progressTable.row(stopWatch.getFormattedCurrDuration(), progress.paramIterationRound, progress.round
+                    , step, adjOfProgressInterval, progress.numParamAdjusted, progress.bestE, overallAdjPerSecond, adjPerSecond);
             progressTable.writeRows(w);
         });
     }

@@ -27,6 +27,7 @@ public class ParameterSet {
     /**
      * all parameter groups.
      */
+    @Getter
     private ArrayList<TuningParameterGroup> groups = new ArrayList<>();
 
     /**

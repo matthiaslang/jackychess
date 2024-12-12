@@ -61,8 +61,10 @@ public class LocalOptimizationTuner extends AbstractTuner {
 
         // write or append the general infos for this run
         markdownAppender.append(w -> {
-            params.writeMarkdownInfos(w);
-            dataset.writeLogInfos(w);
+            params.writeMarkdownInfos(w, parameterSet);
+            if (!continuingTuningRun) {
+                dataset.writeLogInfos(w);
+            }
         });
 
         if (params.isAdjustK() && params.getK() != null) {
@@ -92,7 +94,7 @@ public class LocalOptimizationTuner extends AbstractTuner {
         LOGGER.info("Initial Parameter values:\n" + parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
 
-        LOGGER.info("Opimizing...");
+        LOGGER.info("Optimizing...");
         ParameterSet optimizedParams = optimizer.optimize(parameterSet, evaluate, dataset);
 
         LOGGER.info("Optimized Parameter values:\n" + parameterSet.collectParamDescr());

@@ -72,8 +72,10 @@ public class GeneticTuner extends AbstractTuner {
 
         // write or append the general infos for this run
         markdownAppender.append(w -> {
-            params.writeMarkdownInfos(w);
-            dataset.writeLogInfos(w);
+            params.writeMarkdownInfos(w, parameterSet);
+            if (!continuingTuningRun) {
+                dataset.writeLogInfos(w);
+            }
         });
 
         if (params.isAdjustK()) {
@@ -98,7 +100,7 @@ public class GeneticTuner extends AbstractTuner {
         LOGGER.info("Initial Parameter values:\n" + parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
 
-        LOGGER.info("Opimizing...");
+        LOGGER.info("Optimizing...");
         ParameterSet optimizedParams = optimizer.runAlgorithm(parameterSet, startConfigs);
 
         LOGGER.info("Optimized Parameter values:\n" + optimizedParams.collectParamDescr());

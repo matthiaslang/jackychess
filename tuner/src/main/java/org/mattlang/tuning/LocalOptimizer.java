@@ -66,30 +66,31 @@ public class LocalOptimizer implements Optimizer {
 
     private void optimize(ParameterSet parameterSet, int step) {
 
+        ProgressParams progress = new ProgressParams();
+
         // init bestE value: also important for dependend fen optimization that we have a precalculated error value
         // for each fen:
-        double bestE = e(parameterSet);
-        LOGGER.info("Error at start: " + bestE);
+        progress.bestE= e(parameterSet);
 
-        final double errorAtStart = bestE;
+        LOGGER.info("Error at start: " + progress.bestE);
+
+        final double errorAtStart = progress.bestE;
         markdownAppender.append(w -> w.paragraph("Error at start: " + errorAtStart));
-
-        int round = 0;
-        int numParamAdjusted = 0;
 
         ProgressInfo progressInfo = new ProgressInfo(optParameters, outputDir, markdownAppender);
 
-        boolean improved = true;
-        while (improved) {
-            improved = false;
+        while (progress.improved) {
+            progress.improved = false;
             if (shuffle) {
                 Collections.shuffle(parameterSet.getParams(), random);
             }
 
+            progress.paramIterationRound++;
+
             for (TuningParameter param : parameterSet.getParams()) {
-                round++;
-                if (round % 100 == 0 && progressInfo.isEnoughTimeElapsed()) {
-                    progressInfo.progressInfo(parameterSet, step, bestE, round, numParamAdjusted);
+                progress.round++;
+                if (progress.round % 100 == 0 && progressInfo.isEnoughTimeElapsed()) {
+                    progressInfo.progressInfo(parameterSet, step, progress);
                 }
 
                 // if we are within bounds do a step change
@@ -97,19 +98,19 @@ public class LocalOptimizer implements Optimizer {
 
                     change(param, step);
                     double newE = e(parameterSet);
-                    if (newE < bestE - delta) {
-                        bestE = newE;
-                        improved = true;
-                        numParamAdjusted++;
+                    if (newE < progress.bestE - delta) {
+                        progress.bestE = newE;
+                        progress.improved = true;
+                        progress.numParamAdjusted++;
                         param.incAdjCounter();
                     } else if (param.isChangePossible(-2 * step)) {
                         // otherwise try the step in the different direction (if allowed):
                         change(param, -2 * step);
                         newE = e(parameterSet);
-                        if (newE < bestE - delta) {
-                            bestE = newE;
-                            improved = true;
-                            numParamAdjusted++;
+                        if (newE < progress.bestE - delta) {
+                            progress.bestE = newE;
+                            progress.improved = true;
+                            progress.numParamAdjusted++;
                             param.incAdjCounter();
                         } else {
                             // reset change:

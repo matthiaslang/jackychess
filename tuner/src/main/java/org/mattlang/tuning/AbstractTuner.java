@@ -68,11 +68,16 @@ public abstract class AbstractTuner {
         LOGGER.info("Load & Prepare Data...");
         DataSet dataset = loadDataset(params.getInputFiles());
         dataset.setMultithreaded(params.isMultiThreading());
-        dataset.logInfos();
+        // log dataset statistics + infos only for the first run, not for continuing runs:
+        if (!continuingTuningRun) {
+            dataset.logInfos();
+        }
         if (params.isRemoveDuplicateFens()) {
             dataset.removeDuplidateFens();
-            LOGGER.info("Statistics after removing duplicates:");
-            dataset.logInfos();
+            if (!continuingTuningRun) {
+                LOGGER.info("Statistics after removing duplicates:");
+                dataset.logInfos();
+            }
         }
         return dataset;
     }
