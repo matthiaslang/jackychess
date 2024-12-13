@@ -51,11 +51,11 @@ public abstract class AbstractTuner {
 
         if (continuingTuningRun) {
             markdownAppender.append(w -> {
-                w.paragraph("continuing tuning run");
+                w.h1("continuing tuning run");
             });
         } else {
             markdownAppender.append(w -> {
-                w.paragraph("# Tuning Run");
+                w.h1("Tuning Run");
             });
         }
 
