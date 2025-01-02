@@ -1,7 +1,15 @@
-# Jacky Chess
+
+<div align="center">
+<img src="docs/logos/jacky_chess_logo_01.png" width="400">
+<h3>Jacky Chess</h3>
 
 A simple UCI chess engine written in Java named after my dog "Jacky"!
-                                                  
+<br>
+<br>
+</div>
+                              
+## Overview
+
 The engine is written from scratch as an educational project to learn chess programming.
 It started as a simple proof of concept experiment within a weekend, but is now derived to a stable playing UCI engine.
 
@@ -50,8 +58,8 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 
 | Version | Estimated Rating | CCRL Blitz | 40/15 | 40/2 FRC |
 |---------|------------------|------------|-------|----------|
-| 24.06   | 2840             |            |       |          |
-| 24.04   | 2800             | 2794       | 2781  | 2764     |
+| 24.06   | 2840             | 2794       | 2847  |          |
+| 24.04   | 2800             | 2792       | 2781  | 2764     |
 | 23.12   | 2760             | 2695       | 2731  |          |
 | 23.06   | 2680             | 2688       | 2675  |          |
 | 0.14.3  | 2580             | 2595       | 2601  |          |
