@@ -80,7 +80,7 @@ public class ParameterizedKingEvaluation implements EvalComponent {
     @EvalConfigParam(mgEgCombined = true)
     private int safetyAttackValue;
 
-    public ParameterizedKingEvaluation(boolean forTuning, EvalConfig config) {
+    public ParameterizedKingEvaluation() {
 
     }
 

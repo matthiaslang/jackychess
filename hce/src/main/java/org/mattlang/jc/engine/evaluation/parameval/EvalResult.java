@@ -126,6 +126,11 @@ public final class EvalResult {
         return doubleAttacks[color];
     }
 
+    public EvalResult add(int score) {
+        mgEgScore.add(score);
+        return this;
+    }
+
     public EvalResult add(MgEgScore score) {
         mgEgScore.add(score);
         return this;

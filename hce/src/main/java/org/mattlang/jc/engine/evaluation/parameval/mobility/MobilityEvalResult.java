@@ -14,7 +14,6 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
-import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 
@@ -72,7 +71,7 @@ public class MobilityEvalResult {
     private long ownPawns;
     private long oppPawns;
 
-    public MobilityEvalResult(boolean forTuning, EvalConfig config) {
+    public MobilityEvalResult() {
     }
 
     public void clear() {

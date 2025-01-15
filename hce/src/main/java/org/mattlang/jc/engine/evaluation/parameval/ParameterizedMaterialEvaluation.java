@@ -44,7 +44,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     @EvalConfigParam(mgEgCombined = true)
     private int queen;
 
-    public ParameterizedMaterialEvaluation(boolean forTuning, EvalConfig config) {
+    public ParameterizedMaterialEvaluation() {
     }
 
     @Override

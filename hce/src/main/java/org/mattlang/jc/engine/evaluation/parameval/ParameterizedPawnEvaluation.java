@@ -87,7 +87,7 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     private final boolean forTuning;
     private boolean caching;
 
-    public ParameterizedPawnEvaluation(boolean forTuning, boolean caching, EvalConfig config) {
+    public ParameterizedPawnEvaluation(boolean forTuning, boolean caching) {
         this.forTuning = forTuning;
         this.caching = caching;
 

@@ -44,7 +44,7 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     @EvalConfigParam(name = "kingMG", disableTuning = true)
     private Pattern kingDeltaScoring;
 
-    public ParameterizedPstEvaluation(String subPath) {
+    public ParameterizedPstEvaluation() {
 
     }
 

@@ -41,7 +41,7 @@ public class ParameterizedComplexityEvaluation implements EvalComponent {
     @EvalConfigParam
     private int complexityAdjustmentEG;
 
-    public ParameterizedComplexityEvaluation(boolean forTuning, EvalConfig config) {
+    public ParameterizedComplexityEvaluation() {
 
     }
 

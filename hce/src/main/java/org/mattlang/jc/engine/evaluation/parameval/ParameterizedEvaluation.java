@@ -30,34 +30,34 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     public static final String PAWN_CACHE_KEY = "pawnCache";
     @Getter
-    private ParameterizedMaterialEvaluation matEvaluation;
+    private final ParameterizedMaterialEvaluation matEvaluation;
 
     @Getter
-    private ParameterizedPstEvaluation pstEvaluation;
+    private final ParameterizedPstEvaluation pstEvaluation;
 
     @Getter
-    private ParameterizedMobilityEvaluation mobEvaluation;
+    private final ParameterizedMobilityEvaluation mobEvaluation;
 
     @Getter
-    private ParameterizedKingEvaluation kingEvaluation;
+    private final ParameterizedKingEvaluation kingEvaluation;
 
     @Getter
-    private ParameterizedPawnEvaluation pawnEvaluation;
+    private final ParameterizedPawnEvaluation pawnEvaluation;
 
     @Getter
-    private ParameterizedThreatsEvaluation threatsEvaluation;
+    private final ParameterizedThreatsEvaluation threatsEvaluation;
 
     @Getter
-    private ParameterizedComplexityEvaluation complexityEvaluation;
+    private final ParameterizedComplexityEvaluation complexityEvaluation;
 
-    private ParameterizedSpaceEvaluation spaceEvaluation;
+    private final ParameterizedSpaceEvaluation spaceEvaluation;
 
-    ParameterizedMaterialCorrectionEvaluation matCorrection;
+    private final ParameterizedMaterialCorrectionEvaluation matCorrection;
 
     @Getter
-    ParameterizedAdjustmentsEvaluation adjustments;
+    private final ParameterizedAdjustmentsEvaluation adjustments;
 
-    private EvalResult result = new EvalResult();
+    private final EvalResult result = new EvalResult();
 
     @Getter
     @Setter
@@ -95,21 +95,21 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         EvalConfigurator configurator = new EvalConfigurator(config);
 
-        matEvaluation = new ParameterizedMaterialEvaluation(forTuning, config);
-        pstEvaluation = new ParameterizedPstEvaluation(config.getConfigDir() + "pst/");
+        matEvaluation = new ParameterizedMaterialEvaluation();
+        pstEvaluation = new ParameterizedPstEvaluation();
 
-        mobEvaluation = new ParameterizedMobilityEvaluation(forTuning, config);
-        pawnEvaluation = new ParameterizedPawnEvaluation(forTuning, caching, config);
+        mobEvaluation = new ParameterizedMobilityEvaluation();
+        pawnEvaluation = new ParameterizedPawnEvaluation(forTuning, caching);
 
         matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
-        adjustments = new ParameterizedAdjustmentsEvaluation(config);
+        adjustments = new ParameterizedAdjustmentsEvaluation();
 
-        threatsEvaluation = new ParameterizedThreatsEvaluation(forTuning, config);
+        threatsEvaluation = new ParameterizedThreatsEvaluation();
 
         spaceEvaluation = new ParameterizedSpaceEvaluation();
 
-        kingEvaluation = new ParameterizedKingEvaluation(forTuning, config);
-        complexityEvaluation = new ParameterizedComplexityEvaluation(forTuning, config);
+        kingEvaluation = new ParameterizedKingEvaluation();
+        complexityEvaluation = new ParameterizedComplexityEvaluation();
 
         configurator.configure(this);
     }

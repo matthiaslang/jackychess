@@ -37,7 +37,7 @@ public class ParameterizedAdjustmentsEvaluation {
     @EvalConfigParam
     public MgEgArrayFunction rookAdj;
 
-    public ParameterizedAdjustmentsEvaluation(EvalConfig config) {
+    public ParameterizedAdjustmentsEvaluation() {
     }
 
     public int adjust(BitChessBoard bb, Color who2Move) {
