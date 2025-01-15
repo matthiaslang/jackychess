@@ -1,8 +1,5 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
@@ -217,8 +214,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     }
 
     private EndGameRules matchesRule(BoardRepresentation board, int materialScore) {
-        long figs = board.getBoard().getColorMask(nWhite) | board.getBoard()
-                .getColorMask(nBlack);
+        long figs = board.getBoard().getPieces();
         if (Long.bitCount(figs) <= 5) {
             Material matWeaker = new Material();
             Material matStronger = new Material();

@@ -113,7 +113,7 @@ public class ParameterizedKingEvaluation implements EvalComponent {
         long myPawns = bb.getPawns(US);
         long enemyPawns = bb.getPawns(THEM);
 
-        int kingSq = Long.numberOfTrailingZeros(bb.getKings(US));
+        int kingSq = board.getKingPos(US);
 
         // Evaluate based on the number of files between our King and the nearest
         // file-wise pawn. If there is no pawn, kingPawnFileDistance() returns the
@@ -223,7 +223,7 @@ public class ParameterizedKingEvaluation implements EvalComponent {
 
         long defenders = bb.getPawns(US) | bb.getKnights(US) | bb.getBishops(US);
 
-        int kingSq = Long.numberOfTrailingZeros(bb.getKings(US));
+        int kingSq = bitBoard.getKingPos(US);
 
         long kingZone = getKingZoneMask(US, kingSq);
 
