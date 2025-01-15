@@ -16,16 +16,16 @@ public class FenComposer {
 
     // position fen 8/8/8/3qk3/8/4K3/8/8 w - - 0 1 moves e3e2
 
-    private static final String fen = "position startpos";
-    private static final String fenfen = "position fen";
+    private static final String POSITION_STARTPOS = "position startpos";
+    private static final String POSITION_FEN = "position fen";
 
-    private String preStr = fen;
+    private String preStr = POSITION_STARTPOS;
 
     private ArrayList<String> moves = new ArrayList<>();
 
     public void clear() {
         moves.clear();
-        preStr = fen;
+        preStr = POSITION_STARTPOS;
     }
 
     public void add(String move) {
@@ -58,7 +58,7 @@ public class FenComposer {
     public void createFenFromBoard(BoardRepresentation board,
             Color who2Move, int noHalfMoves, int nextMoveNum) {
         clear();
-        preStr = fenfen + " " + buildFenPosition(board) + " " + colorFen(who2Move) + " " + rochade(board) + " "
+        preStr = POSITION_FEN + " " + buildFenPosition(board) + " " + colorFen(who2Move) + " " + rochade(board) + " "
                 + enpassant(board) + " " + noHalfMoves + " " + nextMoveNum;
     }
 
@@ -96,7 +96,7 @@ public class FenComposer {
     }
 
     public void createFenFromBoard(BoardRepresentation board) {
-        createFenFromBoard(board, Color.WHITE, 0, 0);
+        createFenFromBoard(board, board.getSiteToMove(), 0, 0);
     }
 
     public static String buildFenPosition(BoardRepresentation board) {
