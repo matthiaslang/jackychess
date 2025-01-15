@@ -102,7 +102,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         MobilityEvalResult result = side == WHITE ? wResult : bResult;
         result.init(side, bb);
 
-        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
+        long bishopBB = ourBishopBB;
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
 
@@ -114,7 +115,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             bishopBB &= bishopBB - 1;
         }
 
-        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        final long ourKnightBB = bb.getPieceSet(FT_KNIGHT, side);
+        long knightBB = ourKnightBB;
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
             long knightAttack = BB.getKnightAttacs(knight);
@@ -140,6 +142,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
 
         long queenBB = bb.getPieceSet(FT_QUEEN, side);
+        result.evalEarlyDevelopedQueen(queenBB, ourBishopBB, ourKnightBB, side);
         while (queenBB != 0) {
             final int queen = Long.numberOfTrailingZeros(queenBB);
 
@@ -147,8 +150,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
             result.countFigureMobilityVals(paramsQueen, queen, attacks);
-
-            result.evalEarlyDevelopedQueen(queenBB, bishopBB, knightBB, side);
 
             queenBB &= queenBB - 1;
         }
@@ -187,7 +188,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
                 .addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
                         getEgScore(bResult.kingAttWeightMgEg)));
 
-        result.result += (wResult.positionalThemes - bResult.positionalThemes);
+//        result.result += (wResult.positionalThemes - bResult.positionalThemes);
     }
 
     public static int getSafetyValue(int kingAtt) {
