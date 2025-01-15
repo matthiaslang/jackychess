@@ -3939,3 +3939,177 @@ Error at start: 0.07308196724623602
 | 2:05:05,548 | 2400  | 1    | 11                 | 255       | 0.07307669324168063 | 0.03397734843437708  | 0.041044776119402986 |
 | 2:09:40,883 | 2500  | 1    | 3                  | 258       | 0.07307667260671799 | 0.033161953727506424 | 0.01090909090909091  |
 | 2:13:58,200 | 2600  | 1    | 8                  | 266       | 0.07307662875873018 | 0.03309280915650659  | 0.0311284046692607   |
+# continuing tuning run
+
+# Tuning Options
+
+| Parameter                    | Value                        |
+|------------------------------|------------------------------|
+| adjustK                      | false                        |
+| delta                        | 1.0E-9                       |
+| evalParamSet                 | CURRENT                      |
+| geneticParams                | null                         |
+| inputFiles                   | [C:\projekte\cygwin_home\mla\jackyChessDockerTesting\tuningdata\lichess-big3-resolved.book]|
+| k                            | 1.43                         |
+| multiThreading               | true                         |
+| name                         | lichess test3                |
+| optimizeRecalcOnlyDependendFens| false                        |
+| outputdir                    | null                         |
+| progressUpdatesInMinutes     | 0                            |
+| removeDuplicateFens          | true                         |
+| resetParametersBeforeTuning  | false                        |
+| shuffleTuningParameter       | false                        |
+| stepGranularity              | [1]                          |
+| threadCount                  | 5                            |
+| tuneAdjustments              | false                        |
+| tuneAdjustmentsFactors       | false                        |
+| tuneComplexity               | false                        |
+| tuneKingAttack               | false                        |
+| tuneKingSafety               | false                        |
+| tuneMaterial                 | false                        |
+| tuneMobility                 | false                        |
+| tuneMobilityTropism          | false                        |
+| tuneParams                   | null                         |
+| tunePassedPawnEval           | false                        |
+| tunePawnEval                 | false                        |
+| tunePositional               | true                         |
+| tunePst                      | false                        |
+| tuneThreats                  | false                        |
+
+
+# Parameter overview
+
+| Parameter               | Value |
+|-------------------------|-------|
+| Num of Parameter Groups | 6     |
+| Num of Parameters       | 10    |
+
+
+setting K from Input Tuner Parameter to: 1.43
+
+K: 1.43
+
+## new optimization round
+
+### Optimizing with step 1
+
+Error at start: 0.07308067386864858
+
+| Duration | Param Iteration | Round | Step | Params adjustments | Adj total | Curr Error | Overall AdjPerSecond | AdjPerSecond |
+|----------|-----------------|-------|------|--------------------|-----------|------------|----------------------|--------------|
+# continuing tuning run
+
+# Tuning Options
+
+| Parameter                    | Value                        |
+|------------------------------|------------------------------|
+| adjustK                      | false                        |
+| delta                        | 1.0E-9                       |
+| evalParamSet                 | CURRENT                      |
+| geneticParams                | null                         |
+| inputFiles                   | [C:\projekte\cygwin_home\mla\jackyChessDockerTesting\tuningdata\lichess-big3-resolved.book]|
+| k                            | 1.43                         |
+| multiThreading               | true                         |
+| name                         | lichess test3                |
+| optimizeRecalcOnlyDependendFens| false                        |
+| outputdir                    | null                         |
+| progressUpdatesInMinutes     | 0                            |
+| removeDuplicateFens          | true                         |
+| resetParametersBeforeTuning  | false                        |
+| shuffleTuningParameter       | false                        |
+| stepGranularity              | [1]                          |
+| threadCount                  | 5                            |
+| tuneAdjustments              | false                        |
+| tuneAdjustmentsFactors       | false                        |
+| tuneComplexity               | false                        |
+| tuneKingAttack               | false                        |
+| tuneKingSafety               | false                        |
+| tuneMaterial                 | false                        |
+| tuneMobility                 | false                        |
+| tuneMobilityTropism          | false                        |
+| tuneParams                   | null                         |
+| tunePassedPawnEval           | false                        |
+| tunePawnEval                 | false                        |
+| tunePositional               | true                         |
+| tunePst                      | false                        |
+| tuneThreats                  | false                        |
+
+
+# Parameter overview
+
+| Parameter               | Value |
+|-------------------------|-------|
+| Num of Parameter Groups | 6     |
+| Num of Parameters       | 10    |
+
+
+setting K from Input Tuner Parameter to: 1.43
+
+K: 1.43
+
+## new optimization round
+
+### Optimizing with step 1
+
+Error at start: 0.07308067386864858
+
+| Duration | Param Iteration | Round | Step | Params adjustments | Adj total | Curr Error | Overall AdjPerSecond | AdjPerSecond |
+|----------|-----------------|-------|------|--------------------|-----------|------------|----------------------|--------------|
+# continuing tuning run
+
+# Tuning Options
+
+| Parameter                    | Value                        |
+|------------------------------|------------------------------|
+| adjustK                      | false                        |
+| delta                        | 1.0E-9                       |
+| evalParamSet                 | CURRENT                      |
+| geneticParams                | null                         |
+| inputFiles                   | [C:\projekte\cygwin_home\mla\jackyChessDockerTesting\tuningdata\lichess-big3-resolved.book]|
+| k                            | 1.43                         |
+| multiThreading               | true                         |
+| name                         | lichess test3                |
+| optimizeRecalcOnlyDependendFens| false                        |
+| outputdir                    | null                         |
+| progressUpdatesInMinutes     | 0                            |
+| removeDuplicateFens          | true                         |
+| resetParametersBeforeTuning  | false                        |
+| shuffleTuningParameter       | false                        |
+| stepGranularity              | [1]                          |
+| threadCount                  | 5                            |
+| tuneAdjustments              | false                        |
+| tuneAdjustmentsFactors       | false                        |
+| tuneComplexity               | false                        |
+| tuneKingAttack               | false                        |
+| tuneKingSafety               | false                        |
+| tuneMaterial                 | false                        |
+| tuneMobility                 | false                        |
+| tuneMobilityTropism          | false                        |
+| tuneParams                   | null                         |
+| tunePassedPawnEval           | false                        |
+| tunePawnEval                 | false                        |
+| tunePositional               | true                         |
+| tunePst                      | false                        |
+| tuneThreats                  | false                        |
+
+
+# Parameter overview
+
+| Parameter               | Value |
+|-------------------------|-------|
+| Num of Parameter Groups | 6     |
+| Num of Parameters       | 10    |
+
+
+setting K from Input Tuner Parameter to: 1.43
+
+K: 1.43
+
+## new optimization round
+
+### Optimizing with step 1
+
+Error at start: 0.07307617845431574
+
+| Duration | Param Iteration | Round | Step | Params adjustments | Adj total | Curr Error | Overall AdjPerSecond | AdjPerSecond |
+|----------|-----------------|-------|------|--------------------|-----------|------------|----------------------|--------------|
