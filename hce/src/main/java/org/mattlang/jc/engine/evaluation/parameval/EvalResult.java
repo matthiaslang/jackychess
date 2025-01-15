@@ -40,11 +40,6 @@ public final class EvalResult {
     private MgEgScore mgEgScore = new MgEgScore();
 
     /**
-     * summed up score which is not tapered.
-     */
-    public int result;
-
-    /**
      * all attacke per figure type; (index 0 unused, + "all" attacks on index FT_ALL).
      */
     private final long[][] attacks = new long[2][MAX_ATT_INDEX];
@@ -57,7 +52,6 @@ public final class EvalResult {
 
     public void clear() {
         mgEgScore.clear();
-        result = 0;
 
         for (int i = 0; i < 2; i++) {
             doubleAttacks[i] = 0;
@@ -81,7 +75,7 @@ public final class EvalResult {
      * @return
      */
     public int calcCompleteScore(BoardRepresentation bitBoard) {
-        int score = (int) PhaseCalculator.scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore()) + result;
+        int score = (int) PhaseCalculator.scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore());
         return score;
     }
 
@@ -133,11 +127,6 @@ public final class EvalResult {
 
     public EvalResult add(MgEgScore score) {
         mgEgScore.add(score);
-        return this;
-    }
-
-    public EvalResult minus(MgEgScore score) {
-        mgEgScore.subtract(score);
         return this;
     }
 

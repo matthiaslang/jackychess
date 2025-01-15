@@ -96,7 +96,4 @@ public final class MgEgScore {
         this.score += mgEgScore.score;
     }
 
-    public void subtract(MgEgScore mgEgScore) {
-        this.score -= mgEgScore.score;
-    }
 }

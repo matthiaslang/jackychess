@@ -6,7 +6,6 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.createMgEgScore;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.Color;
@@ -16,6 +15,7 @@ import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
 import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
+import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 
 import lombok.Getter;
 
@@ -39,10 +39,11 @@ public class MobilityEvalResult {
      * mg/eg combined king attack weight.
      */
     public int kingAttWeightMgEg;
+    public int positionalThemes;
 
 
-    private final int MGEG_ONE = createMgEgScore(1, 1);
-    private final int MGEG_TWO = createMgEgScore(2, 2);
+    private final int MGEG_ONE = MgEgScore.createMgEgScore(1, 1);
+    private final int MGEG_TWO = MgEgScore.createMgEgScore(2, 2);
 
     // parameters:
     /**
@@ -77,6 +78,7 @@ public class MobilityEvalResult {
         eval = 0;
         kingAttCount = 0;
         kingAttWeightMgEg = 0;
+        positionalThemes = 0;
     }
 
     public void countFigureMobilityVals(MobFigParams params, int figPos, long attacks) {
@@ -132,13 +134,14 @@ public class MobilityEvalResult {
         if (earlyQueenPenalty != 0) {
             if ((side == WHITE && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
 
-                eval+= createMgEgScore(
+                positionalThemes -=
                         (bitCount(WHITE_BISHOPS_STARTPOS & bishopBB) + bitCount(WHITE_KNIGHT_STARTPOS & knightBB))
-                                * earlyQueenPenalty, 0);
+                                * earlyQueenPenalty;
             } else if ((side == BLACK && (queenBB & BLACK_QUEEN_DEVELOPED_MASK) != 0)) {
-                eval-= createMgEgScore(
+
+                positionalThemes -=
                         (bitCount(BLACK_BISHOPS_STARTPOS & bishopBB) + bitCount(BLACK_KNIGHT_STARTPOS & knightBB))
-                                * earlyQueenPenalty, 0);
+                                * earlyQueenPenalty;
             }
 
         }

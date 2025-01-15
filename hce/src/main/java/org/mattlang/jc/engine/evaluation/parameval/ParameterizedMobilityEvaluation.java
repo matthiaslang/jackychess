@@ -188,7 +188,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
                 .addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
                         getEgScore(bResult.kingAttWeightMgEg)));
 
-//        result.result += (wResult.positionalThemes - bResult.positionalThemes);
+        result.add(MgEgScore.createMgEgScore(wResult.positionalThemes - bResult.positionalThemes, 0));
     }
 
     public static int getSafetyValue(int kingAtt) {
