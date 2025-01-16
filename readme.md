@@ -41,7 +41,7 @@ However, it should run under any newer Java version. It is mainly tested with Ja
 
 
  - You need a Java JRE Environment, at least Java 11 to run the engine.
- - You need an UCI Gui Client to register the engine for usage. The chess engine should work with any UCI chess client.
+ - You need an UCI compatible chess gui to register the engine for usage. The chess engine should work with any UCI chess gui.
 It was mainly tested with [Arena](http://www.playwitharena.de/) and with [cutechess](https://github.com/cutechess/cutechess)
 and works fine with these clients. However - any UCI compliant UI should work.
 
@@ -73,7 +73,7 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 
 
                 Jacky Chess 
-    Copyright (C) 2024  Matthias Lang
+    Copyright (C) 2025  Matthias Lang
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -178,12 +178,12 @@ code. It is possible to set those variables during maven build to override the v
 This is used to add assertions to test versions, but to exclude the complete assertion code from release versions.
 
 
-## todo 
+## todo and future plans
            
 - optimizations on all ends...
 - make evaluation better by considering more aspects
 - more tuning of evaluation parameter and using better tuning data
 - pruning optimization
-- tt cache optimization
+- alternative version with nnue?
 
 

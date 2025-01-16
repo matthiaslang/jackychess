@@ -102,28 +102,6 @@ should principal variation search be used
 
 > You can set a value via Property opt.activatePvsSearch
 
-### Option evaluateFunction
-
-the evaluation function to use. Only for development testing
-
-- default value: PARAMETERIZED
-
-
-#### Declaration
-
-> You can set a value via Property opt.evaluateFunction
-
-### Option evalParamSet
-
-the evaluation parameter set used when evaluateFunction is set to Parameterized. Only for development testing
-
-- default value: CURRENT
-
-
-#### Declaration
-
-> You can set a value via Property opt.evalParamSet
-
 ## Pruning
 
 Parameter influencing the pruning during alpha beta search
