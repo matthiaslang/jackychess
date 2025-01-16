@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.mattlang.jackychess</groupId>
         <artifactId>parent</artifactId>
-        <version>24.06EQ01</version>
+        <version>25.01</version>
     </parent>
 
     <packaging>jar</packaging>
     <groupId>org.mattlang.jackychess</groupId>
     <artifactId>pgnparser</artifactId>
-    <version>24.06EQ01</version>
+    <version>25.01</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

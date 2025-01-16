@@ -1,5 +1,14 @@
 # Versions
 
+## 25.01
+
+- Restructured the project and split into more maven modules to better separate tuning/test and engine code
+- fixed Early Queen evaluation, no elo gain though
+- 
+
+
+No changes in playing strength.
+
 ## 24.06
 
 Official Version since 24.04
