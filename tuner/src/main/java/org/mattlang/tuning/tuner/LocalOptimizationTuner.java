@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.StopWatch;
 import org.mattlang.tuning.*;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
@@ -57,7 +58,13 @@ public class LocalOptimizationTuner extends AbstractTuner {
         }
 
         LOGGER.info("Load & Prepare Data...");
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         DataSet dataset = loadAndPrepareData();
+        stopWatch.stop();
+
+        LOGGER.info("Prepare Data took " + stopWatch.getFormattedDuration());
 
         // write or append the general infos for this run
         markdownAppender.append(w -> {
