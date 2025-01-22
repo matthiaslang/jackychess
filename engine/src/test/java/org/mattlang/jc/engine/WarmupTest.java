@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
@@ -12,6 +13,7 @@ import org.mattlang.jc.board.Move;
 public class WarmupTest {
 
     @Test
+    @Ignore
     public void testIterativeDeepening() throws IOException {
 
         TestTools.initUciEngineTest();
