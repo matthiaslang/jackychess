@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -16,8 +17,6 @@ import org.mattlang.jc.play.EndStatus;
 import org.mattlang.jc.play.GameStatusResult;
 import org.mattlang.jc.play.Playing;
 import org.mattlang.jc.uci.GameContext;
-import org.mattlang.jc.uci.UCI;
-import org.mattlang.jc.util.Logging;
 
 public class QueenAndKingVsKing_EndgameTest {
 
@@ -26,8 +25,8 @@ public class QueenAndKingVsKing_EndgameTest {
     @Test
     public void queen_and_king_vs_king() throws IOException {
 
-        Logging.initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.maxQuiescence.setValue(50))
@@ -59,8 +58,8 @@ public class QueenAndKingVsKing_EndgameTest {
     @Test
     public void queen_and_king_vs_kingAnalyze() throws IOException {
 
-        Logging.initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.timeout.setValue(600)));
@@ -76,8 +75,8 @@ public class QueenAndKingVsKing_EndgameTest {
     @Test
     public void queen_and_king_vs_kingGivesRemis() throws IOException {
 
-        Logging.initLogging();
-        UCI.instance.attachStreams();
+        TestTools.initUciEngineTest();
+
         Factory.setDefaults(Factory.createDefaultParameter()
                 .config(c -> c.maxDepth.setValue(maxDepth))
                 .config(c -> c.timeout.setValue(2000)));
