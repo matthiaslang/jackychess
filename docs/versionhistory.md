@@ -1,5 +1,9 @@
 # Versions
 
+##
+
+- fixed bug when parsing unknown go directives....
+
 ## 25.01
 
 - Restructured the project and split into more maven modules to better separate tuning/test and engine code

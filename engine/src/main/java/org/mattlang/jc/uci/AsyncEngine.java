@@ -1,14 +1,5 @@
 package org.mattlang.jc.uci;
 
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.JCExecutors;
@@ -19,8 +10,21 @@ import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.util.MoveValidator;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+
 public class AsyncEngine {
 
+    /**
+     * Timeout value used in infinite mode: use one year as milliseconds as time out.
+     */
+    public static final int INFINITE_TIMEOUT = Integer.MAX_VALUE;
     Logger logger = Logger.getLogger("ASYNC");
 
     /**
@@ -54,7 +58,7 @@ public class AsyncEngine {
     }
 
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options,
-            GameContext gameContext) {
+                                         GameContext gameContext) {
         // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
         bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState));
@@ -68,6 +72,9 @@ public class AsyncEngine {
                     TimeCalc.determineCalculationTime(gameState, goParams);
             searchParams.getConfig().timeout.setValue((int) timeToUse);
 
+        } else {
+            // in infinite mode set a maximal high timeout
+            searchParams.getConfig().timeout.setValue(INFINITE_TIMEOUT);
         }
         Factory.setDefaults(searchParams);
         // log parameters only once for a game:

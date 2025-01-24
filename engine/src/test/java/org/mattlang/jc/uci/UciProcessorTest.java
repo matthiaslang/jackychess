@@ -1,8 +1,8 @@
 package org.mattlang.jc.uci;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UciProcessorTest {
 
@@ -39,9 +39,17 @@ public class UciProcessorTest {
     }
 
     @Test
-    public void goParameterParsing2() {
+    public void goInfiniteParameterParsing1() {
         UciProcessor ucip = new UciProcessor();
         GoParameter goParams = ucip.parseGoParams("go infinite");
+        assertThat(goParams.infinite).isTrue();
+    }
+
+    @Test
+    public void goParameterInfiniteParsing2() {
+        UciProcessor ucip = new UciProcessor();
+        // test overread unknown directive showeval:
+        GoParameter goParams = ucip.parseGoParams("go showeval infinite");
         assertThat(goParams.infinite).isTrue();
     }
 }

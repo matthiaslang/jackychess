@@ -1,12 +1,5 @@
 package org.mattlang.jc.uci;
 
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.uci.UciKeyWords.*;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
-
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
@@ -17,6 +10,13 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.uci.UciKeyWords.*;
 
 public class UciProcessor {
 
@@ -115,39 +115,35 @@ public class UciProcessor {
             if (CMD_GO.equals(tok)) {
                 // overread
                 x++;
-            }
-            if (INFINITE.equals(tok)) {
+            } else if (INFINITE.equals(tok)) {
                 param.infinite = true;
                 x++;
-            }
-            if (WTIME.equals(tok)) {
+            } else if (WTIME.equals(tok)) {
                 x++;
                 param.wtime = Long.parseLong(result[x]);
                 x++;
-            }
-            if (BTIME.equals(tok)) {
+            } else if (BTIME.equals(tok)) {
                 x++;
                 param.btime = Long.parseLong(result[x]);
                 x++;
-            }
-            if (WINC.equals(tok)) {
+            } else if (WINC.equals(tok)) {
                 x++;
                 param.winc = Long.parseLong(result[x]);
                 x++;
-            }
-            if (BINC.equals(tok)) {
+            } else if (BINC.equals(tok)) {
                 x++;
                 param.binc = Long.parseLong(result[x]);
                 x++;
-            }
-            if (MOVESTOGO.equals(tok)) {
+            } else if (MOVESTOGO.equals(tok)) {
                 x++;
                 param.movestogo = Long.parseLong(result[x]);
                 x++;
-            }
-            if (MOVETIME.equals(tok)) {
+            } else if (MOVETIME.equals(tok)) {
                 x++;
                 param.movetime = Long.parseLong(result[x]);
+                x++;
+            } else {
+                // overread unknown token to not endless parse in loop
                 x++;
             }
         }
@@ -183,4 +179,9 @@ public class UciProcessor {
     public ConfigValues getConfigValues() {
         return configValues;
     }
+
+    // analyse:
+    // position startpos moves usw..
+    // go showeval infinite
+    // oder "go infinite" ohne showeval
 }
