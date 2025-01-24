@@ -5,49 +5,99 @@
 
 A simple UCI chess engine written in Java named after my dog "Jacky"!
 <br>
+play at [jackychessbot](https://lichess.org/@/jackychessbot)
+<br>
 <br>
 </div>
                               
 ## Overview
 
 The engine is written from scratch as an educational project to learn chess programming.
-It started as a simple proof of concept experiment within a weekend, but is now derived to a stable playing UCI engine.
+It started as a simple proof of concept experiment on a weekend, but is now derived to a stable playing UCI engine.
 
-I got a lot of inspiration from other resources in the web, mainly the great https://www.chessprogramming.org/ wiki
-and several open source engines, just to name a few of them: cpw, stockfish, fruit, chess22k.
+I got a lot of inspiration from other resources in the web, mainly
+
+- the great https://www.chessprogramming.org/ wiki: This was really the starting point once I stumbled upon this great website. It describes in all details how chess engines work and all related algorithms, optimizations, etc. Its a great source of inspiration when you try to create your own chess engine or if you want to understand how chess engines work
+- cpw: an educational chess engine which is very simple, but therefore easy to understand
+- stockfish: one of the top engines. Therefore rather complex but you get a lot of ideas from the source
+- fruit: one of the revolutionary engines at its release time and inspiration for many following engines with an easy understandable source code
+- chess22k: implemented in java it helped me of how to deal with some java specific problems
+- laser: another interesting engine with good source code documentation
+- https://github.com/asdfjkl/neural_network_chess: great book explaining NNUE. Probably my next big thing...
+
+
                       
 ## Features
                                  
 - regular Chess
 - Fischer Random Chess (Chess960)
-- Multithreading
+- Multithreading support
 
 ## Goals of the engine
 
-- educational purpose: main focus is to learn about chess programming
+- educational purpose: main focus is to learn about chess programming and the aim was to create an engine playing better than myself... (well.. that was eventually easy...)
 - the code is (hopefully) simple and clear since the main purpose is to understand the algorithms.
-- the code should be flexible: it uses interfaces and configurations to exchange different implementations for testing.
-- the evaluation function is configurable to switch parameters for experimentation
-- having fun to program it :)
-
-## Requirements
-                                   
-## Building
-
-At least Java 11 & maven to compile the engine.
-However, it should run under any newer Java version. It is mainly tested with Java 11 under Linux.
+- the code should be flexible: it uses interfaces and configurations to exchange different implementations for testing. Its split into several modules for reusage.
+- the evaluation function is configurable to switch parameters for experimentation and to easy tune it via the texel method
+- having fun to program it and play with it :)
            
 ## Usage
 
+You need a Java JRE Environment installed on your computer. At least Java 11 is required, any newer Java Environment should work.
 
- - You need a Java JRE Environment, at least Java 11 to run the engine.
- - You need an UCI compatible chess gui to register the engine for usage. The chess engine should work with any UCI chess gui.
-It was mainly tested with [Arena](http://www.playwitharena.de/) and with [cutechess](https://github.com/cutechess/cutechess)
+Since this is only a UCI engine you need an UCI compatible chess gui to register the engine for usage. The chess engine should work fine with any UCI chess gui.
+It was mainly tested with [Arena](http://www.playwitharena.de/), with [Shredder 13](https://www.shredderchess.com/) and with [cutechess](https://github.com/cutechess/cutechess)
 and works fine with these clients. However - any UCI compliant UI should work.
 
 Simply add the engine to your preferred UCI Gui Client, and then you should be ready to use it. Most clients should be fine
-to select the jar file directly.
-You should have a few UCI options able to set in the UI then.
+to select the jar file directly. Some other clients may need special configuration. Please refer to the user manual of your chess gui.
+
+Here is described how to add the engine to the Chess Guis which I use:
+
+### Arena
+
+In [Arena](http://www.playwitharena.de/) you can simply select the jar file directly in the Dialog to add a new engine. Arena recognizes the engine
+as java application itself and knows how to deal with it.
+
+### Shredder
+
+Its not possible to install a java uci engine in Shredder directly via the user interface. You need to manually
+create a new *.eng file under c:\<your user>\AppData\Local\ShredderChess\GUI13\Engines folder or copy one of the existing.
+
+The file must contain the following rows, you need of course adjust the paths to your needs:
+
+      [ENGINE]
+      Name=Jacky Chess 24.06
+      Author=Matthias Lang
+      Filename=<path to your java installation folder>\java.exe
+      Parameter=-jar <path to where you copied the jacky chess jar file to>\jackychess-24.06.jar
+
+
+### Cute Chess
+
+You can configure the engine under Cute Chess via the user interface. Create a new engine and in the dialog you need to enter:
+
+- Name: the descriptive name you give the engine
+- Command: java -jar jackychess-24.06.jar
+- Working Directory: the directory where the jar file is saved
+- Protocol: UCI
+
+
+
+
+
+## UCI Parameter
+
+The engine has some UCI parameter which can be set either by the user interface or via configuration. Usually all 
+chess guis have the option to set these parameters via the user interface.
+
+Find more information under [UCI Parameter](docs/uciparameter.md)
+
+
+## Lichess
+
+You can play against the engine at lichess under [jackychessbot](https://lichess.org/@/jackychessbot)
+
 
 ## CCRL Rating
 
@@ -110,27 +160,26 @@ The chess engine uses following technics/algorithms
 - multithreading with Lazy SMP
 
 
-## UCI Parameter
 
-The engine has some UCI parameter which can be set either by the user interface or via configuration.
-
-Find more information under [UCI Parameter](docs/uciparameter.md)
 
 ## Internal Parameters
 
-The engine has a lot of parameters which are mainly for developing and testing purpose and should not be changed
+The engine has several parameters which are mainly for developing and testing purpose and should not be changed
 by a regular user.
 
 [Parameter Documentation](docs/internalparameter.md)
 
 
 
-# Versions
+## Versions
 
 see [Version History](docs/versionhistory.md)                     
 
 
-# Build and Development 
+## Building and development
+
+At least Java 11 & maven to compile the engine.
+However, it should run under any newer Java version. It is mainly tested with Java 11 under Linux.
 
 Building the project
 
@@ -184,6 +233,6 @@ This is used to add assertions to test versions, but to exclude the complete ass
 - make evaluation better by considering more aspects
 - more tuning of evaluation parameter and using better tuning data
 - pruning optimization
-- alternative version with nnue?
+- alternative evaluation with nnue?
 
 
