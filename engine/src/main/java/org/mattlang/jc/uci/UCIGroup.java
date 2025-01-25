@@ -1,10 +1,10 @@
 package org.mattlang.jc.uci;
 
-import static java.util.Objects.requireNonNull;
+import lombok.Getter;
 
 import java.util.Objects;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A group an uci option belongs to.
@@ -51,6 +51,10 @@ public class UCIGroup {
         return new UCICheckOption(options, this, name, description, defaultValue, type);
     }
 
+    public UCIConstantStringOption createConstStringOpt(String name, String description, String defaultValue) {
+        return new UCIConstantStringOption(options, this, name, description, defaultValue, type);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -65,4 +69,6 @@ public class UCIGroup {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+
 }

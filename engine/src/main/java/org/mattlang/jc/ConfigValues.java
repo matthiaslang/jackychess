@@ -1,11 +1,10 @@
 package org.mattlang.jc;
 
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.Constants.MAX_THREADS;
-
+import lombok.Getter;
 import org.mattlang.jc.uci.*;
 
-import lombok.Getter;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_THREADS;
 
 public class ConfigValues {
 
@@ -43,6 +42,10 @@ public class ConfigValues {
     public final UCICheckOption uciChess960 = variants.createCheckOpt("UCI_Chess960",
             "indicates support for Chess960",
             false);
+
+    public final UCIConstantStringOption uciAbout = variants.createConstStringOpt("UCI_EngineAbout",
+            "uci engine about",
+            "JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess");
 
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
