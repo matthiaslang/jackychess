@@ -146,6 +146,7 @@ public class UciProcessor {
             } else if (SEARCHMOVES.equals(tok)) {
                 x++;
                 param.searchMoves = Arrays.copyOfRange(result, x, result.length);
+                x= result.length;
             } else {
                 // overread unknown token to not endless parse in loop
                 x++;
