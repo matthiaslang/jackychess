@@ -22,5 +22,6 @@ public class UciKeyWords {
     public static final String BINC = "binc";
     public static final String MOVESTOGO = "movestogo";
     public static final String MOVETIME = "movetime";
+    public static final String SEARCHMOVES = "searchmoves";
 
 }

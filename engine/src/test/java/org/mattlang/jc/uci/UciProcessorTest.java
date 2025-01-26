@@ -52,4 +52,12 @@ public class UciProcessorTest {
         GoParameter goParams = ucip.parseGoParams("go showeval infinite");
         assertThat(goParams.infinite).isTrue();
     }
+
+    @Test
+    public void goInfiniteAndSearchMovesParsing() {
+        UciProcessor ucip = new UciProcessor();
+        GoParameter goParams = ucip.parseGoParams("go infinite searchmoves e2e4 g1f3 ");
+        assertThat(goParams.infinite).isTrue();
+        assertThat(goParams.searchMoves).containsExactly("e2e4", "g1f3");
+    }
 }

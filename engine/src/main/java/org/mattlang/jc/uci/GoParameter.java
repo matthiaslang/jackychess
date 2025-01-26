@@ -12,4 +12,6 @@ public class GoParameter {
     public long movestogo;
 
     public long movetime;
+    public String[] searchMoves;
+
 }

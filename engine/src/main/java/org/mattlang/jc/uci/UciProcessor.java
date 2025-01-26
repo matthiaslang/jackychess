@@ -11,6 +11,7 @@ import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -142,6 +143,9 @@ public class UciProcessor {
                 x++;
                 param.movetime = Long.parseLong(result[x]);
                 x++;
+            } else if (SEARCHMOVES.equals(tok)) {
+                x++;
+                param.searchMoves = Arrays.copyOfRange(result, x, result.length);
             } else {
                 // overread unknown token to not endless parse in loop
                 x++;
