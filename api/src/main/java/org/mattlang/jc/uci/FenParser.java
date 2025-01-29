@@ -26,11 +26,11 @@ public class FenParser {
     public static final int FEN_INDEX_MOVES_BY_STARTPOS = 2;
     public static final int FEN_INDEX_MOVES_BY_FEN = 8;
 
-    public GameState setPosition(String positionStr, BoardRepresentation board) {
+    public static GameState setPosition(String positionStr, BoardRepresentation board) {
         return setPosition(positionStr, board, false);
     }
 
-    public GameState setPosition(String positionStr, BoardRepresentation board, boolean isChess960) {
+    public static GameState setPosition(String positionStr, BoardRepresentation board, boolean isChess960) {
         if (!positionStr.startsWith("position")) {
             throw new IllegalStateException(
                     "Error Parsing fen position string: Not starting with 'position':" + positionStr);
@@ -72,7 +72,7 @@ public class FenParser {
         return new GameState(board, positionStr);
     }
 
-    public Move parseMove(BoardRepresentation board, String moveStr) {
+    public static Move parseMove(BoardRepresentation board, String moveStr) {
         IndexConversion.MoveFromTo movePos = IndexConversion.parseMoveStr(moveStr);
         Figure fig = board.getFigure(movePos.getFrom());
 
@@ -132,7 +132,7 @@ public class FenParser {
         return new MoveImpl(fig.figureType.figureCode, movePos.getFrom(), movePos.getTo(), captureFig);
     }
 
-    private Move castlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+    private static Move castlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
         for (CastlingType castlingType : CastlingType.values()) {
             CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(castlingType);
             if (castlingMove.getKingFrom() == movePos.getFrom() && castlingMove.getKingTo() == movePos.getTo()) {
@@ -153,14 +153,14 @@ public class FenParser {
      * @param movePos
      * @return
      */
-    private boolean istCastlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+    private static boolean istCastlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
         Figure figFrom = board.getFigure(movePos.getFrom());
         return figFrom.figureType == FigureType.King
                 && movePos.getFrom() == movePos.getTo()
                 && figFrom.color == board.getSiteToMove();
     }
 
-    private Move castlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+    private static Move castlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
         for (CastlingType castlingType : CastlingType.values()) {
             CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(castlingType);
             if (castlingMove.getKingFrom() == movePos.getFrom() && castlingMove.getRookFrom() == movePos.getTo()) {
@@ -171,7 +171,7 @@ public class FenParser {
                 "internal error creating castling move from king captures rook description!");
     }
 
-    private boolean isCastlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
+    private static boolean isCastlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
         Figure figFrom = board.getFigure(movePos.getFrom());
         Figure figTo = board.getFigure(movePos.getTo());
         return figFrom.figureType == FigureType.King
@@ -179,12 +179,12 @@ public class FenParser {
                 && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
-    private Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm, byte captureFig) {
+    private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm, byte captureFig) {
         Figure figure = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
         return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
     }
 
-    private void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade,
+    private static void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade,
             String enpassant,
             String noHalfMoves,
             String nextMoveNum) {
@@ -246,7 +246,7 @@ public class FenParser {
         }
     }
 
-    private void parseSchredderFenCastlingDef(String rochade, BoardRepresentation board) {
+    private static void parseSchredderFenCastlingDef(String rochade, BoardRepresentation board) {
         for (int i = 0; i < rochade.length(); i++) {
             char ch = rochade.charAt(i);
             if (isSchredderCastlingSym(ch)) {
@@ -266,12 +266,12 @@ public class FenParser {
         }
     }
 
-    private boolean isSchredderCastlingSym(char ch) {
+    private static boolean isSchredderCastlingSym(char ch) {
         char upper = Character.toUpperCase(ch);
         return upper >= 'A' && upper <= 'H';
     }
 
-    private int searchSmallerRook(int kingPos, long rooks) {
+    private static int searchSmallerRook(int kingPos, long rooks) {
         while (rooks != 0) {
             final int rook = Long.numberOfTrailingZeros(rooks);
             if (rook < kingPos) {
@@ -282,7 +282,7 @@ public class FenParser {
         throw new IllegalArgumentException("Unable to find smaller Rook pos for Castling!");
     }
 
-    private int searchBiggerRook(int kingPos, long rooks) {
+    private static int searchBiggerRook(int kingPos, long rooks) {
         while (rooks != 0) {
             final int rook = Long.numberOfTrailingZeros(rooks);
             if (rook > kingPos) {

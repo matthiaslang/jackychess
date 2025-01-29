@@ -180,4 +180,18 @@ public final class MoveList {
         return l1;
     }
 
+    /**
+     * Copies all moves of the other movelist to this move list overriding all previously existing moves in this list.
+     * Order info ist not copied.
+     * @param otherList
+     */
+    public void initFrom(MoveList otherList) {
+        this.sideToMove = otherList.sideToMove;
+        size = otherList.size;
+        for (int i = 0; i < size; i++) {
+            moves[i] = otherList.moves[i];
+        }
+        Arrays.fill(filterMoves, 0);
+
+    }
 }

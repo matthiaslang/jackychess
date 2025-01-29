@@ -1,14 +1,7 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
-import org.mattlang.jc.JCExecutors;
-import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.search.SearchException;
-import org.mattlang.jc.util.MoveValidator;
+import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -16,8 +9,16 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.Factory;
+import org.mattlang.jc.JCExecutors;
+import org.mattlang.jc.SearchParameter;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.Engine;
+import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.search.SearchException;
+import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
 
@@ -31,7 +32,6 @@ public class AsyncEngine {
      * "inner" future which is asynchronously executed. This future can be cancelled.
      */
     private Future<Move> future;
-
 
     private MoveValidator moveValidator = new MoveValidator();
 
@@ -51,17 +51,15 @@ public class AsyncEngine {
      */
     private Semaphore semaphore = new Semaphore(1, true);
 
-    public CompletableFuture<Move> start(final GameState gameState, GameContext gameContext) {
-        GoParameter goParams = new GoParameter();
-        goParams.infinite = true;
-        return start(gameState, goParams, new ConfigValues(), gameContext);
-    }
-
     public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options,
-                                         GameContext gameContext) {
+            GameContext gameContext) {
+
+        MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
+
+        gameState.setLegalMovesToSearch(legalMovesToSearch);
         // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
-        bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState));
+        bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch));
 
         // init the search parameters, eval functions, etc:
         SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();

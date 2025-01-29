@@ -48,7 +48,7 @@ public class Gobbler {
 
     public Optional<String> readCommand() {
         try {
-            return Optional.ofNullable(inQueue.poll(1000, TimeUnit.SECONDS));
+            return Optional.ofNullable(inQueue.poll(1, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
             return Optional.empty();
         }

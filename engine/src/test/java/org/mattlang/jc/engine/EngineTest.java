@@ -21,6 +21,7 @@ import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.MoveValidator;
 
 public class EngineTest {
 
@@ -177,6 +178,44 @@ public class EngineTest {
 
         // check result; of course this could change if evaluation changes
         assertThat(move.toStr()).isIn("c7c6", "e7e5");
+    }
+
+    @Test
+    public void testSearchMoves() throws IOException {
+
+        TestTools.initUciEngineTest();
+
+        Factory.setDefaults(Factory.createStable()
+                .config(c -> c.timeout.setValue(60000))
+                .config(c -> c.maxDepth.setValue(16)));
+        // now starting engine:
+        Engine engine = new Engine();
+        engine.getBoard().setStartPosition();
+        System.out.println(engine.getBoard().toUniCodeStr());
+        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+
+        Move[] bestm = new Move[1];
+        engine.registerListener(new IterativeDeepeningListener() {
+
+            @Override
+            public void updateBestRoundMove(Move bestMove) {
+                System.out.println("new best move of round: " + bestMove.toStr());
+                bestm[0] = bestMove;
+            }
+        });
+        MoveValidator moveValidator = new MoveValidator();
+
+        GameState gameState = new GameState(engine.getBoard());
+        MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, new String[]{"a2a4", "b2b4", "b2b3"});
+
+        gameState.setLegalMovesToSearch(legalMovesToSearch);
+        Move move = engine.go(gameState, gameContext);
+
+        System.out.println(move.toStr());
+        assertThat(move).isEqualTo(bestm[0]);
+
+        // check result; of course this could change if evaluation changes
+        assertThat(move.toStr()).isIn("b2b3");
     }
 
     /**

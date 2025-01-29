@@ -42,6 +42,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private static final int STAGE_QUIESCENCE_REST = 9;
     private static final int PREPARE_STAGE_REST = 10;
     private static final int STAGE_REST = 11;
+    private static final int STAGE_STATIC_ALL = 12;
 
     /* stage names, used for debugging. */
     private static final String[] STAGENAME =
@@ -65,6 +66,9 @@ public class StagedMoveIterationPreparer implements MoveIterator {
      */
     private static final int[] STAGES_QUIESCENCE =
             { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_QUIESCENCE_REST };
+
+    private static final int[] SINGLE_STATIC_STAGE =
+            { STAGE_STATIC_ALL };
 
     private MoveList moveList = new MoveList();
 
@@ -108,6 +112,28 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
         this.mode = mode;
         stages = mode == GenMode.NORMAL ? STAGES_NORMAL : STAGES_QUIESCENCE;
+    }
+
+    public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, Color color,
+            MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
+        moveList.reset(color);
+        movelistPos = 0;
+        this.stage = 0;
+        this.stc = stc;
+        this.board = board;
+        this.hashMove = hashMove;
+        this.color = color;
+        this.ply = 1;
+        this.parentMove = parentMove;
+        this.captureMargin = captureMargin;
+        this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
+        this.mode = GenMode.NORMAL;
+        stages = STAGES_NORMAL;
+        if (ply == 1 && legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
+            stages = SINGLE_STATIC_STAGE;
+            moveList.initFrom(legalMovesToSearch);
+            createSortOrders(0);
+        }
     }
 
     private int theNextMove = 0;
@@ -243,6 +269,15 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                     return theNextMove;
                 }
                 break;
+            case STAGE_STATIC_ALL:
+                if (movelistPos < moveList.size()) {
+                    theNextMove = sortToFront(movelistPos);
+                    theNextOrder = moveList.getOrder(movelistPos);
+                    movelistPos++;
+                    return theNextMove;
+                }
+                stage++;
+                break;
             }
 
         }
@@ -301,4 +336,5 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         theNextMove = nextMove();
         return theNextMove != 0;
     }
+
 }

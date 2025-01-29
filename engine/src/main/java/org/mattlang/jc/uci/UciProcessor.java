@@ -1,5 +1,13 @@
 package org.mattlang.jc.uci;
 
+import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.uci.UciKeyWords.*;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
@@ -10,14 +18,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
-
-import static java.util.logging.Level.SEVERE;
-import static org.mattlang.jc.uci.UciKeyWords.*;
 
 public class UciProcessor {
 
@@ -146,7 +146,7 @@ public class UciProcessor {
             } else if (SEARCHMOVES.equals(tok)) {
                 x++;
                 param.searchMoves = Arrays.copyOfRange(result, x, result.length);
-                x= result.length;
+                x = result.length;
             } else {
                 // overread unknown token to not endless parse in loop
                 x++;
@@ -158,10 +158,9 @@ public class UciProcessor {
 
     private GameState setPosition(String positionStr) {
         try {
-            FenParser fenParser = new FenParser();
             BoardRepresentation board = Configurator.createBoard();
             boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
-            return fenParser.setPosition(positionStr, board, isChess960);
+            return FenParser.setPosition(positionStr, board, isChess960);
         } catch (RuntimeException re) {
             throw new RuntimeException("Error parsing UCI postion: " + positionStr, re);
         }

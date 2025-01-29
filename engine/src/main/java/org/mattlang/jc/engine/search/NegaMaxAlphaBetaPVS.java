@@ -9,8 +9,6 @@ import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.Weights.*;
 import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
@@ -270,7 +268,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
                 int probCutMargin = beta + 90;
                 int probCutCount = 0;
-                try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color,
+                try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color,
                         hashMove, 0,
                         probCutMargin - staticEval)) {
                     while (moveCursor.nextMove() && probCutCount < 3) {
@@ -337,8 +335,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             hashMove = searchContext.probeTTHashMove();
         }
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(NORMAL, ply, color, hashMove,
-                parentMove, 0)) {
+        try (MoveBoardIterator moveCursor = searchContext.genRegularMoves(ply, color, hashMove, parentMove, 0)) {
 
             boolean firstChild = true;
 
@@ -648,7 +645,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         int movecount = 0;
 
-        try (MoveBoardIterator moveCursor = searchContext.genSortedMovesIterator(QUIESCENCE, ply, color, hashMove, 0,
+        try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color, hashMove, 0,
                 0)) {
             statistics.quiescenceNodesVisited++;
             searchContext.adjustSelDepth(depth);

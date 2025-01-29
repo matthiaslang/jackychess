@@ -47,10 +47,6 @@ public class Engine {
         return searchMethod.iterativeSearch(gameState, gameContext, depth).getSavedMove();
     }
 
-    public Move go(GameState gameState, GameContext gameContext, int depth) {
-        searchMethod.registerListener(listener);
-        return searchMethod.iterativeSearch(gameState, gameContext, depth).getSavedMove();
-    }
 
     public IterativeSearchResult goIterative(GameState gameState, GameContext gameContext) {
         searchMethod.registerListener(listener);

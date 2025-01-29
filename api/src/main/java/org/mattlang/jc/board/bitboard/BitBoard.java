@@ -106,8 +106,7 @@ public final class BitBoard implements BoardRepresentation {
 
     @Override
     public GameState setFenPosition(String fen) {
-        FenParser parser = new FenParser();
-        return parser.setPosition(fen, this);
+        return FenParser.setPosition(fen, this);
     }
 
     private void set(int pos, byte figureCode) {

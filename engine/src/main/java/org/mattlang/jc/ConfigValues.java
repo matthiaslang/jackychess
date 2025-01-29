@@ -1,10 +1,11 @@
 package org.mattlang.jc;
 
-import lombok.Getter;
-import org.mattlang.jc.uci.*;
-
 import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.Constants.MAX_THREADS;
+
+import org.mattlang.jc.uci.*;
+
+import lombok.Getter;
 
 public class ConfigValues {
 
@@ -41,6 +42,14 @@ public class ConfigValues {
      */
     public final UCICheckOption uciChess960 = variants.createCheckOpt("UCI_Chess960",
             "indicates support for Chess960",
+            false);
+
+    /**
+     * Marker send from Gui that we are in analysis mode.
+     * Currently we do not make a difference yet.
+     * */
+    public final UCICheckOption uciAnalyseMode = variants.createCheckOpt("UCI_AnalyseMode",
+            "indicates we are in Analysis Mode",
             false);
 
     public final UCIConstantStringOption uciAbout = variants.createConstStringOpt("UCI_EngineAbout",

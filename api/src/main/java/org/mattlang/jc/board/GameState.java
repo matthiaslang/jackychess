@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import org.mattlang.jc.engine.MoveList;
+
 import lombok.Getter;
 
 @Getter
@@ -8,6 +10,11 @@ public class GameState {
     private String fenStr;
 
     private BoardRepresentation board;
+
+    /** an optional list with legal moves  when coming from async engine. If searchmoves is set, it contains only the
+     * legal search moves.
+     * It may be null in test cases. */
+    private MoveList legalMovesToSearch;
 
     public GameState(BoardRepresentation board, String fenStr) {
         this.board = board.copy();
@@ -24,5 +31,13 @@ public class GameState {
 
     public GameState copy() {
         return new GameState(board.copy(), fenStr);
+    }
+
+    public void setLegalMovesToSearch(MoveList legalMovesToSearch) {
+        this.legalMovesToSearch = legalMovesToSearch;
+    }
+
+    public MoveList getLegalMovesToSearch() {
+        return legalMovesToSearch;
     }
 }

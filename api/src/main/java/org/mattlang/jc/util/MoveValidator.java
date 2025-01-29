@@ -15,6 +15,7 @@ import org.mattlang.jc.engine.sorting.MvvLva;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.uci.FenParser;
 
 /**
  * Helper class for debugging.
@@ -121,14 +122,11 @@ public class MoveValidator {
      * @param gameState
      * @return
      */
-    public Move findSimpleBestMove(GameState gameState) {
+    public Move findSimpleBestMove(GameState gameState, MoveList legalMovesToSearch) {
         BoardRepresentation board = gameState.getBoard();
-        moveList.reset(board.getSiteToMove());
-        movegen.generate(board, board.getSiteToMove(), moveList);
-
         int maxOrder = Integer.MIN_VALUE;
         int bestMove = 0;
-        try (MoveBoardIterator iterator = iterateMoves(board)) {
+        try (MoveBoardIterator iterator = iterateMoves(board, legalMovesToSearch)) {
             while (iterator.doNextValidMove()) {
                 int order = MvvLva.calcMMVLVA(iterator);
                 if (order > maxOrder) {
@@ -141,6 +139,10 @@ public class MoveValidator {
     }
 
     private MoveBoardIterator iterateMoves(BoardRepresentation board) {
+        return iterateMoves(board, moveList);
+    }
+
+    private MoveBoardIterator iterateMoves(BoardRepresentation board, MoveList moveList) {
         moveIterator.init(moveList, 0);
         moveBoardIterator.init(moveIterator, board);
         return moveBoardIterator;
@@ -156,6 +158,11 @@ public class MoveValidator {
      */
     public MoveList generateLegalMoves(BoardRepresentation board, Color color) {
         MoveList resultList = new MoveList();
+        generateLegalMoves(resultList, board, color);
+        return resultList;
+    }
+
+    public void generateLegalMoves(MoveList resultList, BoardRepresentation board, Color color) {
         resultList.reset(color);
         moveList.reset(color);
         movegen.generate(board, board.getSiteToMove(), moveList);
@@ -165,6 +172,22 @@ public class MoveValidator {
                 resultList.addMove(iterator.getMoveInt());
             }
         }
-        return resultList;
+    }
+
+    public MoveList createLegalMovesToSearch(GameState gameState, String[] searchMoves) {
+        MoveList legalMovesToSearch = generateLegalMoves(gameState.getBoard(), gameState.getWho2Move());
+        if (searchMoves != null && searchMoves.length > 0) {
+            MoveList searchMovesResult = new MoveList();
+            for (String searchMove : searchMoves) {
+                Move move = FenParser.parseMove(gameState.getBoard(), searchMove);
+                if (isLegalMove(gameState.getBoard(), move, gameState.getWho2Move())) {
+                    searchMovesResult.addMove(move.getMoveInt());
+                }
+            }
+            if (searchMovesResult.size() > 0) {
+                legalMovesToSearch = searchMovesResult;
+            }
+        }
+        return legalMovesToSearch;
     }
 }

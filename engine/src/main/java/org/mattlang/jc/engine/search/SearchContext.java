@@ -1,5 +1,8 @@
 package org.mattlang.jc.engine.search;
 
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -7,12 +10,12 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
-import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
@@ -83,11 +86,16 @@ public final class SearchContext {
 
     private CounterMoveHeuristic counterMoveHeuristic = null;
 
+    private MoveList legalMovesToSearch = null;
+
     public SearchContext(SearchThreadContext stc, GameState gameState,
             GameContext context,
             int targetDepth, int alpha) {
 
         this.stc = stc;
+
+        this.legalMovesToSearch = gameState.getLegalMovesToSearch();
+
         this.board = gameState.getBoard();
 
         openingOrMiddleGame = PhaseCalculator.isOpeningOrMiddleGame(gameState.getBoard());
@@ -175,17 +183,21 @@ public final class SearchContext {
 
     }
 
-    private StagedMoveIterationPreparer prepareMoves(GenMode mode, int ply, Color color, int hashMove,
+    public MoveBoardIterator genQuiescenceMoves(int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
-
         StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
-        preparer.prepare(stc, mode, board, color, ply, hashMove, parentMove, captureMargin);
-        return preparer;
+        preparer.prepare(stc, QUIESCENCE, board, color, ply, hashMove, parentMove, captureMargin);
+        return preparer.iterateMoves();
     }
 
-    public MoveBoardIterator genSortedMovesIterator(GenMode mode, int ply, Color color, int hashMove,
+    public MoveBoardIterator genRegularMoves(int ply, Color color, int hashMove,
             int parentMove, int captureMargin) {
-        StagedMoveIterationPreparer preparer = prepareMoves(mode, ply, color, hashMove, parentMove, captureMargin);
+        StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
+        if (ply == 1) {
+            preparer.prepareFirstPly(stc, board, color, legalMovesToSearch, hashMove, parentMove, captureMargin);
+        } else {
+            preparer.prepare(stc, NORMAL, board, color, ply, hashMove, parentMove, captureMargin);
+        }
         return preparer.iterateMoves();
     }
 
@@ -276,6 +288,7 @@ public final class SearchContext {
 
     /**
      * Reset Killers on a ply. This is done to keep killers of children local to similar positions.
+     *
      * @param ply
      */
     public void resetKillers(int ply) {
