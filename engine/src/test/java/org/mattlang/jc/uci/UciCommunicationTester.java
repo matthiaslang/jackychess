@@ -40,8 +40,8 @@ public class UciCommunicationTester {
             return; // already initialized
         }
         LOGGER.info("initialize Uci Communication");
-//        System.setProperty(LOGGING_ACTIVATE, "true");
-//        System.setProperty(LOG_UCI, "true");
+        //        System.setProperty(LOGGING_ACTIVATE, "true");
+        //        System.setProperty(LOG_UCI, "true");
         Logging.initLogging();
         gobbler = new Gobbler("Comm. Tester");
 
@@ -71,29 +71,49 @@ public class UciCommunicationTester {
         outputToUciEngine.println(ucicmd);
     }
 
-    public void expectOverread(String expectedUciString) throws IOException {
+    public void expectBestmove(String bestMove) throws IOException {
         init();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         while (stopWatch.getCurrDuration() < 5 * 100000) {
             Optional<String> optCmd = gobbler.readCommand();
             if (optCmd.isPresent()) {
-                printLogOutput(optCmd.get());
-                if (optCmd.get().equals(expectedUciString)) {
+                String result = optCmd.get();
+                printLogOutput(result);
+                if (result.startsWith("info ")) {
+                    // overread info
+                    continue;
+                }
+                if (result.startsWith("bestmove ")) {
+                    Assertions.assertThat(optCmd.get()).isEqualTo("bestmove " + bestMove);
                     return;
                 }
             }
         }
-        Assertions.fail("no expected uci string " + expectedUciString);
+        Assertions.fail("no expected bestmove " + bestMove);
     }
 
     private void printLogOutput(String uci) {
         System.out.println("UCI< " + uci);
     }
 
+    /**
+     * Read from gobbler input. Handling one timeout which might be occured.
+     * @return
+     */
+    private Optional<String> read() {
+        Optional<String> readResult = gobbler.readCommand();
+        if (readResult.isEmpty()) {
+            // maybe got timeout, therefore try one read again:
+            readResult = gobbler.readCommand();
+        }
+        return readResult;
+    }
+
     public void expect(String expectedUciString) throws IOException {
         init();
-        Optional<String> readResult = gobbler.readCommand();
+        Optional<String> readResult = read();
+        // now we really expect a result and exactly that string:
         Assertions.assertThat(readResult).isPresent();
         printLogOutput(readResult.get());
         Assertions.assertThat(readResult.get()).isEqualTo(expectedUciString);
@@ -129,15 +149,14 @@ public class UciCommunicationTester {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         while (stopWatch.getCurrDuration() < 5 * 1000) {
-            Optional<String> readResult = gobbler.readCommand();
+            Optional<String> readResult = read();
             while (readResult.isPresent()) {
-                readResult = gobbler.readCommand();
-                if (readResult.isPresent()) {
-                    printLogOutput(readResult.get());
+                printLogOutput(readResult.get());
+                readResult = read();
+
+                if (stopWatch.getCurrDuration() < 5 * 1000) {
+                    break;
                 }
-               if (stopWatch.getCurrDuration() < 5 * 1000){
-                   break;
-               }
             }
         }
     }
