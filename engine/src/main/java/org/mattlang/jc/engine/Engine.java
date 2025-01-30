@@ -23,11 +23,6 @@ public class Engine {
         this.board = board;
     }
 
-    public Engine(BoardRepresentation board, int depth) {
-        this.board = board;
-        this.depth = depth;
-    }
-
     public Engine() {
     }
 
@@ -46,7 +41,6 @@ public class Engine {
         searchMethod.registerListener(listener);
         return searchMethod.iterativeSearch(gameState, gameContext, depth).getSavedMove();
     }
-
 
     public IterativeSearchResult goIterative(GameState gameState, GameContext gameContext) {
         searchMethod.registerListener(listener);

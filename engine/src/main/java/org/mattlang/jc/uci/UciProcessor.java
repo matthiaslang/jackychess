@@ -89,7 +89,7 @@ public class UciProcessor {
 
         LOGGER.info("start new game");
         SearchThreadContexts.CONTEXTS.reset();
-        return new GameContext(configValues);
+        return new GameContext();
     }
 
     private void quit() {

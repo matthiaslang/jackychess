@@ -277,7 +277,7 @@ public class StagedMoveIterationPreparerTest {
         engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
         System.out.println(engine.getBoard().toUniCodeStr());
 
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
@@ -300,7 +300,7 @@ public class StagedMoveIterationPreparerTest {
         engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
         System.out.println(engine.getBoard().toUniCodeStr());
 
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 

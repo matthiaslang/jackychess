@@ -3,9 +3,7 @@ package org.mattlang.jc.uci;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.SearchStatistics;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.engine.tt.TTCache;
@@ -32,13 +30,6 @@ public class GameContext {
     public GameContext() {
         ttCache = Caching.CACHING.getTtCache();
         ttCache.reset();
-        System.gc();
-    }
-
-    public GameContext(ConfigValues configValues) {
-        ttCache = Caching.CACHING.getTtCache();
-        ttCache.reset();
-        EvalCache.instance.reset();
         System.gc();
     }
 

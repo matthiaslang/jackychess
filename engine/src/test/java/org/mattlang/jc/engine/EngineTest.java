@@ -73,7 +73,7 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
@@ -103,7 +103,7 @@ public class EngineTest {
                 .setFenPosition(
                         "position startpos moves d2d4 d7d6 c2c4 e7e5 d4e5 d6e5 d1d8 e8d8 b1c3 c7c6 f2f4 b8d7 g1f3 g8e7 f4e5 e7g6 e2e4 f8c5 f1e2 d8c7 c3a4 c5b4 e1f2 d7e5 f3e5 g6e5 c4c5 c8e6 a2a3 b4a5 c1f4 f7f6 b2b4 e6b3");
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         try {
             Move move = engine.go(gameState, gameContext);
@@ -137,7 +137,7 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move move = engine.go(new GameState(engine.getBoard()), gameContext);
 
@@ -160,7 +160,7 @@ public class EngineTest {
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         engine.getBoard().switchSiteToMove();
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move[] bestm = new Move[1];
         engine.registerListener(new IterativeDeepeningListener() {
@@ -192,7 +192,7 @@ public class EngineTest {
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
 
         Move[] bestm = new Move[1];
         engine.registerListener(new IterativeDeepeningListener() {
@@ -276,7 +276,7 @@ public class EngineTest {
                 .setFenPosition("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
 
         System.out.println(engine.getBoard().toUniCodeStr());
-        GameContext gameContext = new GameContext(Factory.getDefaults().getConfig());
+        GameContext gameContext = new GameContext();
         Move move = engine.go(state, gameContext);
 
         System.out.println(move.toStr());
