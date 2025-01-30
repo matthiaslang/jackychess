@@ -577,7 +577,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             throw new TimeoutException();
         }
         if (Thread.interrupted()) {
-            throw new TimeoutException();
+            throw new StopException();
         }
         if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
             updateListener();

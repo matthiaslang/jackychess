@@ -26,7 +26,8 @@ public class AsyncEngine {
      * Timeout value used in infinite mode: use one year as milliseconds as time out.
      */
     public static final int INFINITE_TIMEOUT = Integer.MAX_VALUE;
-    Logger logger = Logger.getLogger("ASYNC");
+
+    private Logger logger = Logger.getLogger(AsyncEngine.class.getSimpleName());
 
     /**
      * "inner" future which is asynchronously executed. This future can be cancelled.
@@ -85,8 +86,11 @@ public class AsyncEngine {
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
+                logger.info(this + " try to acquire semaphore..");
                 // acquire the semaphore, but do not wait endless in case the JVM or Thread gets interrupted
                 semaphore.tryAcquire(5, TimeUnit.SECONDS);
+                logger.info(this + " got semaphore, starting search");
+
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
                 Move move = engine.go(gameState, gameContext);
@@ -107,7 +111,9 @@ public class AsyncEngine {
                 // this is the reason why we use tryAcquire
                 // with a timeout; otherwise we got from time to time "hanging" processes in linux and docker
                 // when e.g. clients like cutechess gets interrupted by the user.
+                logger.info(this + " releasing semaphore");
                 semaphore.release();
+                logger.info(this + " released semaphore");
             }
 
         });
@@ -121,7 +127,10 @@ public class AsyncEngine {
      * @return
      */
     public Move stop() {
+
+        logger.info(this + " stopping search");
         if (future != null) {
+            logger.info(this + " stopping future");
             // fire and forget:
             // simply cancel the engine, we even do not wait till it properly stopped
             future.cancel(true);

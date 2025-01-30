@@ -76,10 +76,9 @@ public class UciCommunicationTester {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         while (stopWatch.getCurrDuration() < 5 * 100000) {
-            Optional<String> optCmd = gobbler.readCommand();
+            Optional<String> optCmd = read();
             if (optCmd.isPresent()) {
                 String result = optCmd.get();
-                printLogOutput(result);
                 if (result.startsWith("info ")) {
                     // overread info
                     continue;
@@ -93,12 +92,9 @@ public class UciCommunicationTester {
         Assertions.fail("no expected bestmove " + bestMove);
     }
 
-    private void printLogOutput(String uci) {
-        System.out.println("UCI< " + uci);
-    }
-
     /**
-     * Read from gobbler input. Handling one timeout which might be occured.
+     * Read from gobbler input. Handling one timeout which might be occured meanwhile.
+     *
      * @return
      */
     private Optional<String> read() {
@@ -107,6 +103,10 @@ public class UciCommunicationTester {
             // maybe got timeout, therefore try one read again:
             readResult = gobbler.readCommand();
         }
+        if (readResult.isPresent()) {
+            System.out.println("UCI< " + readResult.get());
+        }
+
         return readResult;
     }
 
@@ -115,7 +115,6 @@ public class UciCommunicationTester {
         Optional<String> readResult = read();
         // now we really expect a result and exactly that string:
         Assertions.assertThat(readResult).isPresent();
-        printLogOutput(readResult.get());
         Assertions.assertThat(readResult.get()).isEqualTo(expectedUciString);
     }
 
@@ -144,19 +143,20 @@ public class UciCommunicationTester {
         expect("readyok");
     }
 
-    public void consumeAllInput() throws IOException {
+    public void consumeAllInfo() throws IOException {
         init();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         while (stopWatch.getCurrDuration() < 5 * 1000) {
             Optional<String> readResult = read();
-            while (readResult.isPresent()) {
-                printLogOutput(readResult.get());
-                readResult = read();
-
-                if (stopWatch.getCurrDuration() < 5 * 1000) {
-                    break;
-                }
+            if (readResult.isEmpty()) {
+                break;
+            }
+            if (readResult.get().startsWith("info ")) {
+                // overread info
+                continue;
+            } else {
+                Assertions.fail("unexpected read command: " + readResult.get());
             }
         }
     }

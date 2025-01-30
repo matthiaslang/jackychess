@@ -5,7 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
@@ -14,6 +16,9 @@ import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.util.Logging;
 
 public class AsyncEngineTest {
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Test
     public void start() throws ExecutionException, InterruptedException, IOException {
@@ -112,6 +117,8 @@ public class AsyncEngineTest {
 
         // get will block forever if the executor job has not already started before stop has been called.
         // so this should be used with care... in the real code we do never use get() but only thenAccept
+        // here we will get an exception since the search thread is stopped:
+        exception.expect(ExecutionException.class);
         future.get();
     }
 

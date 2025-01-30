@@ -23,12 +23,21 @@ public class UciInterfaceTest {
         communication.write("go infinite");
 
         Thread.sleep(2000);
-
         communication.write("stop");
         Thread.sleep(2000);
-        communication.expectBestmove("g1f3");
-        communication.consumeAllInput();
 
+        communication.expectBestmove("g1f3");
+        communication.consumeAllInfo();
+
+        communication.write("position startpos moves e2e4 e7e5 g1f3 d2d4");
+        communication.write("go infinite");
+
+        Thread.sleep(2000);
+        communication.write("stop");
+        Thread.sleep(2000);
+        communication.expectBestmove("c2d3");
+
+        communication.consumeAllInfo();
     }
 
 
@@ -46,6 +55,7 @@ public class UciInterfaceTest {
         Thread.sleep(2000);
 
         communication.expectBestmove("g1f3");
+        communication.consumeAllInfo();
 
         communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
         communication.write("go wtime 1000 btime 1000 winc 0 binc 0 movestogo 10");
@@ -53,7 +63,7 @@ public class UciInterfaceTest {
         Thread.sleep(2000);
         communication.expectBestmove("e4d5");
 
-        communication.consumeAllInput();
+        communication.consumeAllInfo();
     }
 
     @Test
@@ -71,7 +81,7 @@ public class UciInterfaceTest {
         communication.write("stop");
         Thread.sleep(2000);
         communication.expectBestmove("d2d4");
-        communication.consumeAllInput();
+        communication.consumeAllInfo();
     }
 
 }

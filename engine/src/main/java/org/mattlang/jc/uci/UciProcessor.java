@@ -66,7 +66,11 @@ public class UciProcessor {
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
             CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
-            result.thenAccept(move -> sendBestMove(gameState, move));
+            // when the search stops regularly within its search time, deliver the best move
+            result.thenAccept(move -> {
+                LOGGER.fine(String.format("future completed with best move: %s", move));
+                sendBestMove(gameState, move);
+            });
 
         } else if (CMD_STOP.equals(cmdStr)) {
             stop(gameState);
