@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.assertj.core.api.Assertions;
+import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.util.Logging;
 
@@ -122,7 +123,9 @@ public class UciCommunicationTester {
 
         write("uci");
 
-        expect("id name JackyChess 25.01");
+        String version = AppConfiguration.getAppProps().getProperty("version");
+
+        expect("id name JackyChess "+ version);
         expect("id author Matthias Lang");
 
         expect("option name thinktime type spin default 15000 min 1000 max 600000");
