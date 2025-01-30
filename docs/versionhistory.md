@@ -1,7 +1,9 @@
 # Versions
 
-##
+## 25.01A
 
+- Support for uci go searchmoves directive
+- fixed bug with uci stop command returning bestmove twice
 - fixed bug when parsing unknown go directives....
 
 ## 25.01
