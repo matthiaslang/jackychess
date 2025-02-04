@@ -3,6 +3,7 @@ package org.mattlang.jc;
 import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.Constants.MAX_THREADS;
 
+import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.*;
 
 import lombok.Getter;
@@ -12,12 +13,10 @@ import lombok.Getter;
  */
 public class ConfigValues {
 
-
     private static ConfigValues configValues = new ConfigValues();
 
     private ConfigValues() {
     }
-
 
     public static final ConfigValues getConfigValues() {
         return configValues;
@@ -78,6 +77,10 @@ public class ConfigValues {
     public final UCISpinOption hash = caching.createSpinOpt("Hash",
             "TT Hash Size in MB",
             1, 2048, 128);
+
+    {
+        hash.setChangeListener(newValue -> Caching.CACHING.getTtCache().checkUpdateCacheSize());
+    }
 
     public final UCICheckOption useTTCache = internal.createCheckOpt("useTTCache",
             "Flag, if the tt cache to store scores should be activated",

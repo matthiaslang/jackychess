@@ -8,20 +8,18 @@ package org.mattlang.jc.uci;
 public class UCIComboOption<E extends Enum> extends UCIOption<E> {
 
     private final Class<E> eclass;
-    private E defaultValue;
-    private E value;
 
     public UCIComboOption(UCIOptions optionBundle, UCIGroup group, String name, String description, Class<E> eclass,
             E defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
-        this.defaultValue = defaultValue;
-        this.value = defaultValue;
+        setDefaultValue(defaultValue);
+        setValue(defaultValue);
         this.eclass = eclass;
     }
 
     @Override
     public void parseAndSetParameter(String newValue) {
-        this.value = (E) Enum.valueOf(eclass, newValue);
+        setValue((E) Enum.valueOf(eclass, newValue));
     }
 
     @Override
@@ -31,20 +29,7 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
             b.append(" var " + enumConstant);
         }
         String values = b.toString();
-        return "option name " + getName() + " type combo default " + defaultValue + values;
+        return "option name " + getName() + " type combo default " + getDefaultValue() + values;
     }
 
-    @Override
-    public E getInternalValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(E newValue) {
-        value = newValue;
-    }
-
-    public E getDefaultValue() {
-        return defaultValue;
-    }
 }

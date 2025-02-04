@@ -7,37 +7,21 @@ package org.mattlang.jc.uci;
  */
 public class UCICheckOption extends UCIOption<Boolean> {
 
-    private boolean defaultValue;
-    private boolean value;
-
     public UCICheckOption(UCIOptions optionBundle, UCIGroup group, String name, String description,
             boolean defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
-        this.defaultValue = defaultValue;
-        this.value = defaultValue;
+        setDefaultValue(defaultValue);
+        setValue(defaultValue);
     }
 
     @Override
     public void parseAndSetParameter(String newValue) {
-        this.value = "true".equalsIgnoreCase(newValue);
+        setValue("true".equalsIgnoreCase(newValue));
     }
 
     @Override
     public String createOptionDeclaration() {
-        return "option name " + getName() + " type check default " + defaultValue;
+        return "option name " + getName() + " type check default " + getDefaultValue();
     }
 
-    @Override
-    public Boolean getInternalValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(Boolean newValue) {
-        value = newValue;
-    }
-
-    public boolean isDefaultValue() {
-        return defaultValue;
-    }
 }

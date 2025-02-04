@@ -29,6 +29,12 @@ public abstract class UCIOption<T> {
     @Getter
     private OptionType type = OptionType.UCI;
 
+    private T value;
+    private T defaultValue;
+
+    private UCIOptionChangeListener<T> changeListener = newValue -> {
+    };
+
     public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description, OptionType type) {
         this.group = requireNonNull(group);
         this.name = requireNonNull(name);
@@ -65,7 +71,7 @@ public abstract class UCIOption<T> {
 
     public abstract String createOptionDeclaration();
 
-    public final T getValue(){
+    public final T getValue() {
 
         Optional<String> optStrVal = AppConfiguration.APPCONFIG.getStringValue("opt." + getName());
         if (optStrVal.isPresent()) {
@@ -76,8 +82,24 @@ public abstract class UCIOption<T> {
         return getInternalValue();
     }
 
-    protected abstract T getInternalValue();
+    protected T getInternalValue() {
+        return value;
+    }
 
-    public abstract void setValue(T newValue);
+    public void setValue(T newValue) {
+        value = newValue;
+        changeListener.updateValue(newValue);
+    }
 
+    protected void setDefaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setChangeListener(UCIOptionChangeListener<T> changeListener) {
+        this.changeListener = changeListener;
+    }
 }

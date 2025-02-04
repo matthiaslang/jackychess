@@ -77,7 +77,7 @@ public class GenUciParamDocs {
                     "default: " + spinOption.getDefaultValue());
         } else if (option instanceof UCICheckOption) {
             UCICheckOption checkOption = (UCICheckOption) option;
-            fw.unOrderedList("default value: " + checkOption.isDefaultValue());
+            fw.unOrderedList("default value: " + checkOption.getDefaultValue());
         }
     }
 

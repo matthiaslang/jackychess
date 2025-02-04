@@ -11,16 +11,14 @@ public class UCISpinOption extends UCIOption<Integer> {
 
     private int min;
     private int max;
-    private int defaultValue;
-    private int value;
 
     public UCISpinOption(UCIOptions optionBundle, UCIGroup group, String name, String description, int min, int max,
             int defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
         this.min = min;
         this.max = max;
-        this.defaultValue = defaultValue;
-        this.value = defaultValue;
+        setDefaultValue(defaultValue);
+        setValue(defaultValue);
         if (min > max) {
             throw new IllegalArgumentException("min > max!");
         }
@@ -34,30 +32,20 @@ public class UCISpinOption extends UCIOption<Integer> {
         int val = Integer.parseInt(newValue);
         if (val < min || val > max) {
             UCILogger.log(getName() + ": value not within [min,max] !");
-            if (value < min){
-                value = min;
-            } else if (value > max){
-                value = max;
+            if (val < min) {
+                setValue(min);
+            } else if (val > max) {
+                setValue(max);
             }
 
         } else {
-            this.value = val;
+            setValue(val);
         }
     }
 
     @Override
     public String createOptionDeclaration() {
-        return "option name " + getName() + " type spin default " + defaultValue + " min " + min + " max " + max;
-    }
-
-    @Override
-    public Integer getInternalValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(Integer newValue) {
-        value = newValue;
+        return "option name " + getName() + " type spin default " + getDefaultValue() + " min " + min + " max " + max;
     }
 
     public int getMin() {
@@ -68,7 +56,4 @@ public class UCISpinOption extends UCIOption<Integer> {
         return max;
     }
 
-    public int getDefaultValue() {
-        return defaultValue;
-    }
 }

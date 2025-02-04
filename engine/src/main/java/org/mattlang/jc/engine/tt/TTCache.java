@@ -219,7 +219,7 @@ public final class TTCache {
         //		}
     }
 
-    private void checkUpdateCacheSize() {
+    public void checkUpdateCacheSize() {
         if (getConfiguredMbSize() != mbSize) {
             initCache();
         }

@@ -104,12 +104,12 @@ public class UciInterfaceTest {
         //        communication.consumeAllInfo();
 
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(16 * 1024 * 1024);
-        communication.write("setoption name Hash value 21");
-        Thread.sleep(200);
-        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(21 * 1024 * 1024);
-        communication.write("setoption name Hash value 24");
-        Thread.sleep(200);
-        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(24 * 1024 * 1024);
+        communication.write("setoption name Hash value 64");
+        Thread.sleep(2000);
+        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(64 * 1024 * 1024);
+        communication.write("setoption name Hash value 32");
+        Thread.sleep(2000);
+        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(32 * 1024 * 1024);
         ConfigValues.resetConfigValues();
 
     }
