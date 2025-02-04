@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -24,12 +25,6 @@ public class QueenAndKingVsKing2_EndgameTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.useTTCache.setValue(false))
-                //                .config(c -> c.evluateFunctions.setValue(EvalFunctions.MINIMAL_PST))
-
-                .config(c -> c.timeout.setValue(6000000)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 4k3/8/1Q6/4K3/8/8/8/8 w - - 0 0 ");
@@ -39,7 +34,7 @@ public class QueenAndKingVsKing2_EndgameTest {
 
         IterativeDeepeningPVS itDeep = (IterativeDeepeningPVS) searchMethod;
         IterativeSearchResult itResult =
-                itDeep.iterativeSearch(gameState, new GameContext(), maxDepth);
+                itDeep.iterativeSearch(SearchParameter.params(6000000, maxDepth), gameState, new GameContext());
 
         // execute moves on board of pv:
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {

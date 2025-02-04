@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.sorting;
 
 import static java.util.Objects.requireNonNull;
 
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
@@ -65,7 +65,7 @@ public final class OrderCalculator {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
-        this.useMvvLva = Factory.getDefaults().getConfig().useMvvLvaSorting.getValue();
+        this.useMvvLva = ConfigValues.getConfigValues().useMvvLvaSorting.getValue();
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,

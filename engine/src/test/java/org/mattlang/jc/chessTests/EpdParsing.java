@@ -1,7 +1,9 @@
 package org.mattlang.jc.chessTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.chessTests.EigenmannRapidEngineChessIT.CHESS_SUITE_TEST_TIMEOUT;
 
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -38,7 +40,9 @@ public class EpdParsing {
                 throw new TimeoutException();
             }
         });
-        Move move = engine.go(gameState, gameContext);
+        SearchParameter searparams = new SearchParameter(CHESS_SUITE_TEST_TIMEOUT);
+
+        Move move = engine.go(searparams, gameState, gameContext);
         gameContext.logStatistics();
 
         // if we havent already stopped because we have the expected move found, validate the result:

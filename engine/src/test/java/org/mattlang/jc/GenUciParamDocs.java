@@ -13,7 +13,7 @@ public class GenUciParamDocs {
 
     @Test
     public void genUciParamDocs() throws IOException {
-        UCIOptions all = new ConfigValues().getAllOptions();
+        UCIOptions all = ConfigValues.getConfigValues().getAllOptions();
 
         try (FileWriter fw = new FileWriter("../docs/uciparameter.md");
                 MarkdownWriter bw = new MarkdownWriter(fw)) {

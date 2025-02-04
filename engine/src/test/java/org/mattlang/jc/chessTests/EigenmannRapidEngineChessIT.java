@@ -49,11 +49,7 @@ public class EigenmannRapidEngineChessIT {
     @Test
     public void testWithDefaultConfig() {
         // create engine
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(CHESS_SUITE_TEST_TIMEOUT))
-                .config(c -> c.maxDepth.setValue(25))
-
-        );
+        Factory.setDefaults(Factory.createStable());
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }

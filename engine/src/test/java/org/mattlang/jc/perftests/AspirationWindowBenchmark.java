@@ -1,11 +1,13 @@
 package org.mattlang.jc.perftests;
 
+import static org.mattlang.jc.ConfigValues.getConfigValues;
+
 import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.BenchmarkResults;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.EngineBenchmarksRunner;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
@@ -33,28 +35,28 @@ public class AspirationWindowBenchmark {
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner();
 
         // no pvsearch, no aspiration
-        runner.benchmarkExecute(
-                everythingOn()
-                        .config(c -> c.activatePvsSearch.setValue(false))
-                        .config(c -> c.aspiration.setValue(false)));
+        everythingOn();
+        getConfigValues().activatePvsSearch.setValue(false);
+        getConfigValues().aspiration.setValue(false);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // only pv search:
-        runner.benchmarkExecute(
-                everythingOn()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.aspiration.setValue(false)));
+        everythingOn();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().aspiration.setValue(false);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // pv search +  aspiration:
-        runner.benchmarkExecute(
-                everythingOn()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.aspiration.setValue(true)));
+        everythingOn();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().aspiration.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // aspiration without pv search:
-        runner.benchmarkExecute(
-                everythingOn()
-                        .config(c -> c.activatePvsSearch.setValue(false))
-                        .config(c -> c.aspiration.setValue(true)));
+        everythingOn();
+        getConfigValues().activatePvsSearch.setValue(false);
+        getConfigValues().aspiration.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
@@ -62,20 +64,17 @@ public class AspirationWindowBenchmark {
 
         runner.writeCsvReport("target/aspirationBenchmark.csv");
 
+        ConfigValues.resetConfigValues();
     }
 
-    private SearchParameter everythingOn() {
-        SearchParameter searchParameter = Factory.createStable()
-                .config(c -> c.timeout.setValue(TIMEOUT))
-                .config(c -> c.activatePvsSearch.setValue(true))
-                .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.useKillerMoves.setValue(true))
-                .config(c -> c.useHistoryHeuristic.setValue(true))
-                .config(c -> c.useMvvLvaSorting.setValue(true))
-                ;
-
-        return searchParameter;
+    private void everythingOn() {
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useTTCache.setValue(true);
+        getConfigValues().aspiration.setValue(true);
+        getConfigValues().useKillerMoves.setValue(true);
+        getConfigValues().useHistoryHeuristic.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        getConfigValues().maxDepth.setValue(MAX_DEPTH);
     }
 
 }

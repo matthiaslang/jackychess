@@ -6,7 +6,7 @@ import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
@@ -56,7 +56,7 @@ public final class TTCache {
     }
 
     private int getConfiguredMbSize() {
-        Integer mb = Factory.getDefaults().getConfig().hash.getValue();
+        Integer mb = ConfigValues.getConfigValues().hash.getValue();
 
         if (mb == null) {
             return DEFAULT_CACHE_SIZE_MB;
@@ -229,4 +229,7 @@ public final class TTCache {
         return getUsagePercentage();
     }
 
+    public int getCacheSize() {
+        return keys.length * 8;
+    }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
@@ -64,11 +64,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         }
     }
 
-    private final int maxQuiescenceDepth = Factory.getDefaults().getConfig().maxQuiescence.getValue();
+    private final int maxQuiescenceDepth = ConfigValues.getConfigValues().maxQuiescence.getValue();
 
-    private final boolean doChessExtension = Factory.getDefaults().getConfig().chessExtension.getValue();
-    private final boolean mateDistancePruning = Factory.getDefaults().getConfig().mateDistancePruning.getValue();
-    private final boolean iid = Factory.getDefaults().getConfig().internalIterativeDeepening.getValue();
+    private final boolean doChessExtension = ConfigValues.getConfigValues().chessExtension.getValue();
+    private final boolean mateDistancePruning = ConfigValues.getConfigValues().mateDistancePruning.getValue();
+    private final boolean iid = ConfigValues.getConfigValues().internalIterativeDeepening.getValue();
 
     private final PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -78,14 +78,14 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private SearchListener searchListener;
 
-    private final boolean doPVSSearch = Factory.getDefaults().getConfig().activatePvsSearch.getValue();
+    private final boolean doPVSSearch = ConfigValues.getConfigValues().activatePvsSearch.getValue();
 
-    private final boolean useNullMoves = Factory.getDefaults().getConfig().useNullMoves.getValue();
-    private final boolean staticNullMove = Factory.getDefaults().getConfig().staticNullMove.getValue();
-    private final boolean razoring = Factory.getDefaults().getConfig().razoring.getValue();
-    private final boolean deltaCutOff = Factory.getDefaults().getConfig().deltaCutoff.getValue();
-    private final boolean useLateMoveReductions = Factory.getDefaults().getConfig().useLateMoveReductions.getValue();
-    private final boolean futilityPruning = Factory.getDefaults().getConfig().futilityPruning.getValue();
+    private final boolean useNullMoves = ConfigValues.getConfigValues().useNullMoves.getValue();
+    private final boolean staticNullMove = ConfigValues.getConfigValues().staticNullMove.getValue();
+    private final boolean razoring = ConfigValues.getConfigValues().razoring.getValue();
+    private final boolean deltaCutOff = ConfigValues.getConfigValues().deltaCutoff.getValue();
+    private final boolean useLateMoveReductions = ConfigValues.getConfigValues().useLateMoveReductions.getValue();
+    private final boolean futilityPruning = ConfigValues.getConfigValues().futilityPruning.getValue();
 
     /**
      * parent moves. needs one more place than max ply to save the "following" move.

@@ -1,6 +1,7 @@
 package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.SearchParameter.params;
 import static org.mattlang.jc.moves.TestTools.getAllMoves;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -269,9 +270,7 @@ public class StagedMoveIterationPreparerTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(20)));
+
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
@@ -279,7 +278,8 @@ public class StagedMoveIterationPreparerTest {
 
         GameContext gameContext = new GameContext();
 
-        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+        SearchParameter params = params(60000, 20);
+        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
 
@@ -292,9 +292,7 @@ public class StagedMoveIterationPreparerTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(20)));
+
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
@@ -302,7 +300,8 @@ public class StagedMoveIterationPreparerTest {
 
         GameContext gameContext = new GameContext();
 
-        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+        SearchParameter params = params(60000, 20);
+        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
 

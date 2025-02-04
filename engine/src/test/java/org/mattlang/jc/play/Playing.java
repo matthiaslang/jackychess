@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -32,7 +33,7 @@ public class Playing {
         this.fenPosition = fenPosition;
     }
 
-    public GameStatusResult playGameTillEnd() {
+    public GameStatusResult playGameTillEnd(SearchParameter params) {
 
         Engine engine = new Engine();
         engine.getBoard().setFenPosition(fenPosition);
@@ -54,7 +55,7 @@ public class Playing {
             GameContext gameContext =
                     engine.getBoard().getSiteToMove() == WHITE ? gameContextPlayerWhite : gameContextPlayerBlack;
             IterativeSearchResult result =
-                    engine.goIterative(new GameState(engine.getBoard()), gameContext);
+                    engine.goIterative(params, new GameState(engine.getBoard()), gameContext);
             Move move = result.getSavedMove();
 
             if (!engine.getBoard().isvalidmove(engine.getBoard().getSiteToMove(), move.getMoveInt())) {

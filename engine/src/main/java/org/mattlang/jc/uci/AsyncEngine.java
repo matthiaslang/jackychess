@@ -9,7 +9,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.SearchParameter;
@@ -52,9 +51,10 @@ public class AsyncEngine {
      */
     private Semaphore semaphore = new Semaphore(1, true);
 
-    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams, ConfigValues options,
+    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams,
             GameContext gameContext) {
 
+        // parameter/typ SearchConfig with legalmovestosearch, timeout, etc....?
         MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
 
         gameState.setLegalMovesToSearch(legalMovesToSearch);
@@ -63,18 +63,16 @@ public class AsyncEngine {
         bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch));
 
         // init the search parameters, eval functions, etc:
-        SearchParameter searchParams = options.searchAlgorithm.getValue().createSearchParameter();
-        searchParams.setConfig(options);
+
+        final long timeToUse;
         // if we have special "go" parameters, then override thinktime:
         if (!goParams.infinite) {
-            long timeToUse =
-                    TimeCalc.determineCalculationTime(gameState, goParams);
-            searchParams.getConfig().timeout.setValue((int) timeToUse);
-
+            timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
         } else {
-            // in infinite mode set a maximal high timeout
-            searchParams.getConfig().timeout.setValue(INFINITE_TIMEOUT);
+            timeToUse = INFINITE_TIMEOUT;
         }
+        SearchParameter searchParams = SearchParameter.createMultiThread((int) timeToUse);
+
         Factory.setDefaults(searchParams);
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {
@@ -93,7 +91,7 @@ public class AsyncEngine {
 
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
-                Move move = engine.go(gameState, gameContext);
+                Move move = engine.go(searchParams, gameState, gameContext);
                 completableFuture.complete(move);
                 return move;
             } catch (SearchException se) {

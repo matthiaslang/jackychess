@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class Impl<T> {
@@ -17,7 +16,6 @@ public class Impl<T> {
 
     public Impl(SearchParameter searchParameter, Supplier<T> supplier) {
         this.searchParameter = requireNonNull(searchParameter);
-        searchParameter.register(this);
         set(supplier);
     }
 
@@ -31,7 +29,7 @@ public class Impl<T> {
     }
 
     private T internCreate() {
-        T t= supplier.get();
+        T t = supplier.get();
         if (t instanceof StatisticsCollector) {
             statCollectorInstances.add((StatisticsCollector) t);
         }
@@ -56,9 +54,4 @@ public class Impl<T> {
         return searchParameter;
     }
 
-    public void collectStatistics(Map stats) {
-        for (StatisticsCollector collector : statCollectorInstances) {
-            collector.collectStatistics(stats);
-        }
-    }
 }

@@ -1,12 +1,13 @@
 package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.Move;
 
@@ -18,14 +19,12 @@ public class WarmupTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(6000000))
-                .config(c -> c.maxDepth.setValue(63)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
+        SearchParameter params = params(6000000, 63);
+        Move move = engine.go(params);
 
         System.out.println(move.toStr());
 

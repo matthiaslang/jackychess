@@ -90,7 +90,7 @@ public class EngineBenchmarksRunner {
 
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
-                () -> engine.goIterative(state, gameContext), count);
+                () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
         Map stats = Factory.getDefaults().collectStatistics();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
@@ -100,11 +100,11 @@ public class EngineBenchmarksRunner {
 
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
-//        System.out.println(engine.getBoard().toUniCodeStr());
+        //        System.out.println(engine.getBoard().toUniCodeStr());
 
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
-                () -> engine.goIterative(state, gameContext), count);
+                () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
         Map stats = Factory.getDefaults().collectStatistics();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
@@ -112,7 +112,7 @@ public class EngineBenchmarksRunner {
 
     private String generateNameFromOptions() {
         StringBuilder b = new StringBuilder();
-        for (UCIOption option : Factory.getDefaults().getConfig().getAllOptions().getAllOptions()) {
+        for (UCIOption option : ConfigValues.getConfigValues().getAllOptions().getAllOptions()) {
             if (option instanceof UCICheckOption) {
                 if (((UCICheckOption) option).getValue()) {
                     b.append(option.getName());

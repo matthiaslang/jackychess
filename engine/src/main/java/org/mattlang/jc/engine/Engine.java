@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine;
 
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -15,8 +16,6 @@ public class Engine {
 
     private IterativeDeepeningSearch searchMethod = Factory.getDefaults().searchMethod.create();
 
-    private int depth = Factory.getDefaults().getConfig().maxDepth.getValue();
-
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
 
     public Engine(BoardRepresentation board) {
@@ -26,25 +25,24 @@ public class Engine {
     public Engine() {
     }
 
-    public Engine(IterativeDeepeningSearch searchMethod, int depth) {
+    public Engine(IterativeDeepeningSearch searchMethod) {
         this.searchMethod = searchMethod;
-        this.depth = depth;
     }
 
     @Deprecated
-    public Move go() {
-        searchMethod.registerListener(listener);
-        return searchMethod.search(new GameState(board, null), new GameContext(), depth);
+    public Move go(SearchParameter searchParams) {
+        return go(searchParams, new GameState(board, null), new GameContext());
     }
 
-    public Move go(GameState gameState, GameContext gameContext) {
+    public Move go(SearchParameter searchParams, GameState gameState, GameContext gameContext) {
         searchMethod.registerListener(listener);
-        return searchMethod.iterativeSearch(gameState, gameContext, depth).getSavedMove();
+        return searchMethod.iterativeSearch(searchParams, gameState, gameContext).getSavedMove();
     }
 
-    public IterativeSearchResult goIterative(GameState gameState, GameContext gameContext) {
+    public IterativeSearchResult goIterative(SearchParameter searchParams, GameState gameState,
+            GameContext gameContext) {
         searchMethod.registerListener(listener);
-        return searchMethod.iterativeSearch(gameState, gameContext, depth);
+        return searchMethod.iterativeSearch(searchParams, gameState, gameContext);
     }
 
     public BoardRepresentation getBoard() {

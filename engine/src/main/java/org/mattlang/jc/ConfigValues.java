@@ -7,7 +7,25 @@ import org.mattlang.jc.uci.*;
 
 import lombok.Getter;
 
+/**
+ * Contains all UCI Parameters as well as internal development relevant configurations.
+ */
 public class ConfigValues {
+
+
+    private static ConfigValues configValues = new ConfigValues();
+
+    private ConfigValues() {
+    }
+
+
+    public static final ConfigValues getConfigValues() {
+        return configValues;
+    }
+
+    public static void resetConfigValues() {
+        configValues = new ConfigValues();
+    }
 
     @Getter
     private final UCIOptions allOptions = new UCIOptions();
@@ -20,8 +38,6 @@ public class ConfigValues {
 
     public final UCIGroup limits =
             allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
-
-    public final UCISpinOption timeout = new UCITimeoutOption(allOptions, limits);
 
     public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
             "the maximum search depth to use if there is enough search time",
@@ -47,7 +63,7 @@ public class ConfigValues {
     /**
      * Marker send from Gui that we are in analysis mode.
      * Currently we do not make a difference yet.
-     * */
+     */
     public final UCICheckOption uciAnalyseMode = variants.createCheckOpt("UCI_AnalyseMode",
             "indicates we are in Analysis Mode",
             false);
@@ -68,11 +84,6 @@ public class ConfigValues {
             true);
 
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
-
-    public final UCIComboOption<SearchAlgorithms> searchAlgorithm =
-            limits.createComboOpt("searchalg",
-                    "the search algorithm to use.",
-                    SearchAlgorithms.class, SearchAlgorithms.MULTITHREAD);
 
     public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",
             "should principal variation search be used",

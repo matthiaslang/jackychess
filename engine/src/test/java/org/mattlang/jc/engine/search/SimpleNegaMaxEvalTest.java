@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -24,10 +25,7 @@ public class SimpleNegaMaxEvalTest {
         Logging.initLogging();
         UCI.instance.attachStreams();
 
-        Factory.setDefaults(Factory.createStable());
-        Factory.getDefaults().config(c -> c.timeout.setValue(600000));
-        Factory.getDefaults().config(c -> c.maxQuiescence.setValue(0));
-        Factory.getDefaults().config(c -> c.aspiration.setValue(false));
+        ConfigValues.getConfigValues().maxQuiescence.setValue(0);
 
         BoardRepresentation board = Configurator.createBoard();
         GameState gameState = board.setFenPosition(
@@ -42,6 +40,8 @@ public class SimpleNegaMaxEvalTest {
         MoveList whiteMoves = LegalMoves.generateLegalMoves(board, Color.WHITE);
         // so white should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);
+
+        ConfigValues.resetConfigValues();
     }
 
 }

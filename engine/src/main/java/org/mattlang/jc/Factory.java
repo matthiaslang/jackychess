@@ -11,18 +11,12 @@ public class Factory {
 
     public static SearchParameter createStable() {
         return new SearchParameter()
-                .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()))
-                .config(c -> {
-                    c.timeout.setValue(15000);
-                });
+                .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()));
     }
 
     public static SearchParameter createMultiThread() {
         return new SearchParameter()
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
-                .config(c -> {
-                    c.timeout.setValue(15000);
-                });
+                .searchMethod.set(() -> new MultiThreadedIterativeDeepening());
     }
 
     public static SearchParameter createDefaultParameter() {

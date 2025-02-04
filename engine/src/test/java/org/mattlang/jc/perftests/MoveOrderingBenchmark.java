@@ -1,5 +1,6 @@
 package org.mattlang.jc.perftests;
 
+import static org.mattlang.jc.ConfigValues.getConfigValues;
 import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
@@ -7,7 +8,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.mattlang.jc.BenchmarkResults;
 import org.mattlang.jc.EngineBenchmarksRunner;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.uci.UCI;
 
@@ -33,69 +33,69 @@ public class MoveOrderingBenchmark {
 
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner();
 
+        everythingOff();
         // all opts deactivated
-        runner.benchmarkExecute(everythingOff());
-
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // pv sorting, pv search
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // pv sorting, pv search, mvvlva
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.useMvvLvaSorting.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // only mvvlva
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.useMvvLvaSorting.setValue(true)));
+        everythingOff();
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // only killer moves
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.useKillerMoves.setValue(true)));
+        everythingOff();
+        getConfigValues().useKillerMoves.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // only history heuristic
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.useHistoryHeuristic.setValue(true)));
+        everythingOff();
+        getConfigValues().useHistoryHeuristic.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // everything on:
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.useKillerMoves.setValue(true))
-                        .config(c -> c.useMvvLvaSorting.setValue(true))
-                        .config(c -> c.useHistoryHeuristic.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useKillerMoves.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        getConfigValues().useHistoryHeuristic.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // everything on + cache:
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.useKillerMoves.setValue(true))
-                        .config(c -> c.useMvvLvaSorting.setValue(true))
-                        .config(c -> c.useHistoryHeuristic.setValue(true))
-                        .config(c -> c.useTTCache.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useKillerMoves.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        getConfigValues().useHistoryHeuristic.setValue(true);
+        getConfigValues().useTTCache.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // everything on + cache + aspiration:
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.useKillerMoves.setValue(true))
-                        .config(c -> c.useMvvLvaSorting.setValue(true))
-                        .config(c -> c.useHistoryHeuristic.setValue(true))
-                        .config(c -> c.aspiration.setValue(true))
-                        .config(c -> c.useTTCache.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useKillerMoves.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        getConfigValues().useHistoryHeuristic.setValue(true);
+        getConfigValues().useTTCache.setValue(true);
+        getConfigValues().aspiration.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         // "old" version: pv search, pv order, mmvla + cache:
-        runner.benchmarkExecute(
-                everythingOff()
-                        .config(c -> c.activatePvsSearch.setValue(true))
-                        .config(c -> c.useMvvLvaSorting.setValue(true))
-                        .config(c -> c.useTTCache.setValue(true)));
+        everythingOff();
+        getConfigValues().activatePvsSearch.setValue(true);
+        getConfigValues().useMvvLvaSorting.setValue(true);
+        getConfigValues().useTTCache.setValue(true);
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
@@ -105,19 +105,16 @@ public class MoveOrderingBenchmark {
 
     }
 
-    private SearchParameter everythingOff() {
-        SearchParameter searchParameter = Factory.createStable()
-                .config(c -> c.timeout.setValue(TIMEOUT))
-                .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                .config(c -> c.useTTCache.setValue(false))
-                .config(c -> c.useKillerMoves.setValue(false))
-                .config(c -> c.useHistoryHeuristic.setValue(false))
-                .config(c -> c.useMvvLvaSorting.setValue(false))
-                .config(c -> c.aspiration.setValue(false))
-                ;
+    private void everythingOff() {
 
-        return searchParameter;
+        getConfigValues().activatePvsSearch.setValue(false);
+        getConfigValues().useTTCache.setValue(false);
+        getConfigValues().aspiration.setValue(false);
+        getConfigValues().useKillerMoves.setValue(false);
+        getConfigValues().useHistoryHeuristic.setValue(false);
+        getConfigValues().useMvvLvaSorting.setValue(false);
+        getConfigValues().maxDepth.setValue(MAX_DEPTH);
+
     }
 
 }

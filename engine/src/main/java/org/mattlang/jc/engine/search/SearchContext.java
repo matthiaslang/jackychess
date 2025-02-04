@@ -3,7 +3,7 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -31,11 +31,9 @@ public final class SearchContext {
 
     private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
-    private boolean doCaching = Factory.getDefaults().getConfig().useTTCache.getValue();
-
-    private boolean useHistoryHeuristic = Factory.getDefaults().getConfig().useHistoryHeuristic.getValue();
-    private boolean useKillerMoves = Factory.getDefaults().getConfig().useKillerMoves.getValue();
-    private boolean useCounterMove = Factory.getDefaults().getConfig().useCounterMoves.getValue();
+    private boolean useHistoryHeuristic = ConfigValues.getConfigValues().useHistoryHeuristic.getValue();
+    private boolean useKillerMoves = ConfigValues.getConfigValues().useKillerMoves.getValue();
+    private boolean useCounterMove = ConfigValues.getConfigValues().useCounterMoves.getValue();
 
     /**
      * The side that we are.
@@ -163,24 +161,18 @@ public final class SearchContext {
 
     public void storeTT(Color color, int max, int alpha, int beta, int depth,
             int move) {
-        if (doCaching) {
-            ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
-        }
+        ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
     }
 
     public TTResult getTTEntry() {
-        if (doCaching && ttCache.findEntry(ttResult, board)) {
+        if (ttCache.findEntry(ttResult, board)) {
             return ttResult;
         }
         return null;
     }
 
     public int probeTTHashMove() {
-        if (doCaching) {
-            return ttCache.findHashMove(board);
-        }
-        return 0;
-
+        return ttCache.findHashMove(board);
     }
 
     public MoveBoardIterator genQuiescenceMoves(int ply, Color color, int hashMove,

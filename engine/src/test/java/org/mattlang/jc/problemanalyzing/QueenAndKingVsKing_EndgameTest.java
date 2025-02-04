@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -27,12 +28,6 @@ public class QueenAndKingVsKing_EndgameTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.maxQuiescence.setValue(50))
-                .config(c -> c.useTTCache.setValue(false))
-                //                .config(c -> c.evluateFunctions.setValue(MINIMAL_PST))
-                .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 8/8/4k3/8/3Q4/4K3/8/8 w - - 0 0 ");
@@ -42,7 +37,7 @@ public class QueenAndKingVsKing_EndgameTest {
 
         IterativeDeepeningPVS itDeep = (IterativeDeepeningPVS) searchMethod;
         IterativeSearchResult itResult =
-                itDeep.iterativeSearch(gameState, new GameContext(), maxDepth);
+                itDeep.iterativeSearch(SearchParameter.params(2000, maxDepth), gameState, new GameContext());
 
         // execute moves on board of pv:
         for (Move move : itResult.getRslt().pvList.getPvMoves()) {
@@ -60,14 +55,10 @@ public class QueenAndKingVsKing_EndgameTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.timeout.setValue(600)));
         // now starting engine:
-
         Playing playing = new Playing("position fen 8/8/8/1Q6/8/8/8/K5k1 w - - 0 60 ");
 
-        playing.playGameTillEnd();
+        playing.playGameTillEnd(SearchParameter.params(2000, maxDepth));
 
         Factory.setDefaults(Factory.createDefaultParameter());
     }
@@ -77,15 +68,12 @@ public class QueenAndKingVsKing_EndgameTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.timeout.setValue(2000)));
         // now starting engine:
 
         //        Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
         Playing playing = new Playing("position fen k7/8/8/8/2Q5/8/8/5K2 w - - 0 60  ");
 
-        GameStatusResult status = playing.playGameTillEnd();
+        GameStatusResult status = playing.playGameTillEnd(SearchParameter.params(2000, maxDepth));
 
         Factory.setDefaults(Factory.createDefaultParameter());
 

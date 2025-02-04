@@ -1,9 +1,12 @@
 package org.mattlang.jc.problemanalyzing;
 
+import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
+
 import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -29,13 +32,7 @@ public class PVMovesAreWrongTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(6))
-                .config(c -> c.maxQuiescence.setValue(0))
-                .config(c -> c.useTTCache.setValue(false))
-                .config(c -> c.aspiration.setValue(false))
-                .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.timeout.setValue(600)));
+        Factory.setDefaults(Factory.createDefaultParameter());
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard()
@@ -47,7 +44,7 @@ public class PVMovesAreWrongTest {
 
         IterativeDeepeningPVS itDeep = (IterativeDeepeningPVS) searchMethod;
         IterativeSearchResult itResult =
-                itDeep.iterativeSearch(gameState, new GameContext(), maxDepth);
+                itDeep.iterativeSearch(new SearchParameter(DEFAULT_SEARCHTIME, maxDepth), gameState, new GameContext());
 
         System.out.println("best move + " + itResult.getSavedMove());
         // execute moves on board of pv:
@@ -87,13 +84,7 @@ public class PVMovesAreWrongTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(5))
-                .config(c -> c.maxQuiescence.setValue(0))
-                .config(c -> c.useTTCache.setValue(false))
-                .config(c -> c.aspiration.setValue(false))
-                .config(c -> c.activatePvsSearch.setValue(false))
-                .config(c -> c.timeout.setValue(60000000)));
+        Factory.setDefaults(Factory.createDefaultParameter());
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard()
@@ -105,7 +96,7 @@ public class PVMovesAreWrongTest {
 
         IterativeDeepeningPVS itDeep = (IterativeDeepeningPVS) searchMethod;
         IterativeSearchResult itResult =
-                itDeep.iterativeSearch(gameState, new GameContext(), maxDepth);
+                itDeep.iterativeSearch(new SearchParameter(DEFAULT_SEARCHTIME, maxDepth), gameState, new GameContext());
 
         System.out.println("best move + " + itResult.getSavedMove());
         // execute moves on board of pv:

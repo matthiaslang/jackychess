@@ -8,7 +8,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -33,7 +32,7 @@ public class AsyncEngineTest {
         goparams.movetime = 500;
 
         CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
 
         future.thenAccept(move -> System.out.println(move.toStr()));
         future.get();
@@ -52,7 +51,7 @@ public class AsyncEngineTest {
         goparams.movetime = 50;
 
         CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
         // in ultra short time games a stop could nearly directly after the "go" command happen.
         // the engine should properly responde with a found so far best move:
         Move move = asyncEngine.stop();
@@ -73,7 +72,7 @@ public class AsyncEngineTest {
         goparams.movetime = 150;
 
         CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
         // in ultra short time games a stop could nearly directly after the "go" command happen.
         // the engine should properly responde with a found so far best move:
         Thread.sleep(10);
@@ -97,7 +96,7 @@ public class AsyncEngineTest {
         goparams.movetime = 50000000;
 
         CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
         // in ultra short time games a stop could nearly directly after the "go" command happen.
         // the engine should properly responde with a found so far best move:
         Thread.sleep(100);
@@ -109,7 +108,7 @@ public class AsyncEngineTest {
         board.setStartPosition();
         board.switchSiteToMove();
 
-        future = asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+        future = asyncEngine.start(new GameState(board), goparams, new GameContext());
         Thread.sleep(20);
         // and stop again:
         move = asyncEngine.stop();
@@ -140,13 +139,13 @@ public class AsyncEngineTest {
         // executes but block a "start" till the last "start" is really finished by a semaphore.
         // otherwise we would get Exceptions when both access the same data structures.
         CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
         // start directly afterwards again
         future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
         // and again...
         future =
-                asyncEngine.start(new GameState(board), goparams, new ConfigValues(), new GameContext());
+                asyncEngine.start(new GameState(board), goparams, new GameContext());
 
         // but we should not get any exceptions
         future.thenAccept(move -> System.out.println(move.toStr()));

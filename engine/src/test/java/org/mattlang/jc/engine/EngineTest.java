@@ -2,20 +2,22 @@ package org.mattlang.jc.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.AppConfiguration.LOGGING_ACTIVATE;
+import static org.mattlang.jc.SearchParameter.params;
 import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.IterativeDeepeningListener;
-import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.uci.FenParser;
@@ -30,14 +32,12 @@ public class EngineTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(9)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go();
+        SearchParameter parameter = params(60000, 9);
+        Move move = engine.go(parameter);
 
         System.out.println(move.toStr());
 
@@ -63,19 +63,15 @@ public class EngineTest {
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
 
-                .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.maxDepth.setValue(11))
-        );
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
-        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+        SearchParameter params = params(36000000, 11);
+        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
 
@@ -90,13 +86,6 @@ public class EngineTest {
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
-
-                //                .config(c -> c.cacheImpls.setValue(CacheImpls.V3))
-                .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.useTTCache.setValue(true))
-                .config(c -> c.maxDepth.setValue(11))
-        );
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard()
@@ -106,7 +95,8 @@ public class EngineTest {
         GameContext gameContext = new GameContext();
 
         try {
-            Move move = engine.go(gameState, gameContext);
+            SearchParameter params = params(36000000, 11);
+            Move move = engine.go(params, gameState, gameContext);
             System.out.println(move.toStr());
 
             // with the evaluation function it should yield e7e6:
@@ -125,23 +115,22 @@ public class EngineTest {
         System.setProperty(LOGGING_ACTIVATE, "false");
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
 
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepening())
-                .config(c -> c.hash.setValue(512))
-                .config(c -> c.timeout.setValue(36000000))
-                .config(c -> c.maxDepth.setValue(11))
-                .config(c -> c.maxThreads.setValue(4))
-        );
+        ConfigValues.getConfigValues().hash.setValue(512);
+        ConfigValues.getConfigValues().maxThreads.setValue(4);
+
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
         System.out.println(engine.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
-        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+        SearchParameter params = params(36000000, 11);
+        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
+
+        ConfigValues.resetConfigValues();
 
         // with the evaluation function it should yield e7e6:
         assertThat(move.toStr()).isEqualTo("e7e6");
@@ -152,9 +141,6 @@ public class EngineTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(8)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -171,7 +157,8 @@ public class EngineTest {
                 bestm[0] = bestMove;
             }
         });
-        Move move = engine.go(new GameState(engine.getBoard()), gameContext);
+        SearchParameter params = params(60000, 8);
+        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
 
         System.out.println(move.toStr());
         assertThat(move).isEqualTo(bestm[0]);
@@ -185,9 +172,6 @@ public class EngineTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(16)));
         // now starting engine:
         Engine engine = new Engine();
         engine.getBoard().setStartPosition();
@@ -206,10 +190,12 @@ public class EngineTest {
         MoveValidator moveValidator = new MoveValidator();
 
         GameState gameState = new GameState(engine.getBoard());
-        MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, new String[]{"a2a4", "b2b4", "b2b3"});
+        MoveList legalMovesToSearch =
+                moveValidator.createLegalMovesToSearch(gameState, new String[] { "a2a4", "b2b4", "b2b3" });
 
         gameState.setLegalMovesToSearch(legalMovesToSearch);
-        Move move = engine.go(gameState, gameContext);
+        SearchParameter params = params(60000, 16);
+        Move move = engine.go(params, gameState, gameContext);
 
         System.out.println(move.toStr());
         assertThat(move).isEqualTo(bestm[0]);
@@ -234,17 +220,13 @@ public class EngineTest {
 
         TestTools.initUciEngineTest();
 
-        Factory.setDefaults(Factory.createStable()
-                        .config(c -> c.timeout.setValue(18000000))
-                        .config(c -> c.maxDepth.setValue(31))
-                //                .config(c->c.aspiration.setValue(false))
-        );
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
 
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(state, new GameContext());
+        SearchParameter params = params(18000000, 31);
+        Move move = engine.go(params, state, new GameContext());
 
         System.out.println(move.toStr());
 
@@ -258,18 +240,7 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
 
-                        .config(c -> c.timeout.setValue(2000))
-                        .config(c -> c.maxDepth.setValue(20))
-                        .config(c -> c.useLateMoveReductions.setValue(true))
-                        .config(c -> c.deltaCutoff.setValue(true))
-                        .config(c -> c.razoring.setValue(true))
-                        .config(c -> c.useNullMoves.setValue(true))
-                        .config(c -> c.staticNullMove.setValue(true))
-                        .config(c -> c.futilityPruning.setValue(true))
-                //                .config(c->c.aspiration.setValue(false))
-        );
         // now starting engine:
         Engine engine = new Engine();
         GameState state = engine.getBoard()
@@ -277,7 +248,8 @@ public class EngineTest {
 
         System.out.println(engine.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
-        Move move = engine.go(state, gameContext);
+        SearchParameter params = params(2000, 20);
+        Move move = engine.go(params, state, gameContext);
 
         System.out.println(move.toStr());
 
@@ -287,7 +259,7 @@ public class EngineTest {
 
         System.out.println(engine.getBoard().toUniCodeStr());
 
-        move = engine.go(state, gameContext);
+        move = engine.go(params, state, gameContext);
         System.out.println(move.toStr());
 
     }
@@ -297,16 +269,15 @@ public class EngineTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable()
-                .config(c -> c.timeout.setValue(60000))
-                .config(c -> c.maxDepth.setValue(7)));
+
         // now starting engine:
         Engine engine = new Engine();
 
         GameState gameState = engine.getBoard().setFenPosition("position fen 7k/P7/8/8/8/8/K7/8 w - - 2 17 ");
 
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState, new GameContext());
+        SearchParameter params = params(60000, 7);
+        Move move = engine.go(params, gameState, new GameContext());
 
         System.out.println(move.toStr());
 

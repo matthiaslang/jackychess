@@ -2,11 +2,13 @@ package org.mattlang.jc.perftests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.Benchmarks.benchmark;
+import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
@@ -42,18 +44,14 @@ public class ZobristPerfTests2 {
         StopWatch ttMeasure = benchmark(
                 "iterative deepening alpha beta TT zobrist",
                 () -> {
-                    Factory.setDefaults(Factory.createStable()
-                            .config(c -> c.timeout.setValue(TIMEOUT))
-                            .config(c -> c.activatePvsSearch.setValue(true))
-                            .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                            .config(c -> c.useTTCache.setValue(true)));
+                    ConfigValues.getConfigValues().useTTCache.setValue(true);
 
                     // now starting engine:
                     Engine engine = new Engine();
                     GameState state = engine.getBoard()
                             .setFenPosition(POSITION);
                     System.out.println(engine.getBoard().toUniCodeStr());
-                    Move move = engine.go(state, new GameContext());
+                    Move move = engine.go(params(TIMEOUT, MAX_DEPTH), state, new GameContext());
                 });
 
         Map itTT = Factory.getDefaults().collectStatistics();
@@ -61,12 +59,7 @@ public class ZobristPerfTests2 {
         StopWatch normalMeasure = benchmark(
                 "iterative deepening alpha beta",
                 () -> {
-                    Factory.setDefaults(Factory.createStable()
-                            .config(c -> c.timeout.setValue(TIMEOUT))
-                            .config(c -> c.activatePvsSearch.setValue(true))
-                            .config(c -> c.maxDepth.setValue(MAX_DEPTH))
-                            .config(c -> c.useTTCache.setValue(false)))
-                           ;
+                    ConfigValues.getConfigValues().useTTCache.setValue(false);
 
                     // now starting engine:
                     Engine engine = new Engine();
@@ -74,7 +67,7 @@ public class ZobristPerfTests2 {
                             engine.getBoard()
                                     .setFenPosition(POSITION);
                     System.out.println(engine.getBoard().toUniCodeStr());
-                    Move move = engine.go(state, new GameContext());
+                    Move move = engine.go(params(TIMEOUT, MAX_DEPTH), state, new GameContext());
                 });
         Map itNormal = Factory.getDefaults().collectStatistics();
 
@@ -83,6 +76,8 @@ public class ZobristPerfTests2 {
 
         SearchParameter.printStats("tt zobrist", itTT);
         SearchParameter.printStats("normal", itNormal);
+
+        ConfigValues.resetConfigValues();
 
         assertThat(ttMeasure.getDuration()).isLessThan(normalMeasure.getDuration());
 

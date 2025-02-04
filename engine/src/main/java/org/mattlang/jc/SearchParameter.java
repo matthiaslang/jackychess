@@ -1,10 +1,8 @@
 package org.mattlang.jc;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -12,26 +10,63 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
+import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
+import lombok.Getter;
+
+/**
+ * Parameter of one search of a best move.
+ */
 public class SearchParameter {
 
     private static final Logger LOGGER = Logger.getLogger(SearchParameter.class.getSimpleName());
+    public static final int DEFAULT_SEARCHTIME = 15000;
 
-    private List<Impl> impls = new ArrayList<>();
+    @Getter
+    private int timeout = DEFAULT_SEARCHTIME;
 
-    private ConfigValues config = new ConfigValues();
+    @Getter
+    private int depth = ConfigValues.getConfigValues().maxDepth.getValue();
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
+
+    public SearchParameter(int timeout, int depth) {
+        this.timeout = timeout;
+        this.depth = depth;
+    }
+
+    public SearchParameter(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public SearchParameter() {
+    }
+
+    public static SearchParameter params(int timeout) {
+        return new SearchParameter(timeout);
+    }
+
+    public static SearchParameter params(int timeout, int depth) {
+        return new SearchParameter(timeout, depth);
+    }
+
+    public static SearchParameter createMultiThread(int timeout) {
+        return new SearchParameter(timeout)
+                .searchMethod.set(() -> new MultiThreadedIterativeDeepening());
+    }
 
     public void log() {
         UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
                 + " Evaluation: " + Configurator.determineEvalImplName());
-        for (Map.Entry<UCIGroup, List<UCIOption>> entry : config.getAllOptions().getOptionsByGroup().entrySet()) {
+        for (Map.Entry<UCIGroup, List<UCIOption>> entry : ConfigValues.getConfigValues()
+                .getAllOptions()
+                .getOptionsByGroup()
+                .entrySet()) {
             UCIGroup group = entry.getKey();
             List<UCIOption> opts = entry.getValue();
-            if (group != config.common) {
+            if (group != ConfigValues.getConfigValues().common) {
                 StringBuilder b = new StringBuilder();
                 b.append(group.getName()).append(": ");
                 b.append(opts.stream()
@@ -50,7 +85,7 @@ public class SearchParameter {
             LOGGER.info("Board: " + Configurator.determineBoardImplName());
             LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
             LOGGER.info("Evaluation: " + Configurator.determineEvalImplName());
-            for (UCIOption option : config.getAllOptions().getAllOptions()) {
+            for (UCIOption option : ConfigValues.getConfigValues().getAllOptions().getAllOptions()) {
                 LOGGER.info(option.getName() + ": " + option.getValue());
             }
         }
@@ -64,7 +99,7 @@ public class SearchParameter {
         b.append("\n");
         b.append("Evaluation: " + Configurator.determineEvalImplName());
         b.append("\n");
-        for (UCIOption option : config.getAllOptions().getAllOptions()) {
+        for (UCIOption option : ConfigValues.getConfigValues().getAllOptions().getAllOptions()) {
             b.append(option.getName() + ": " + option.getValue());
             b.append("\n");
         }
@@ -73,22 +108,8 @@ public class SearchParameter {
 
     public Map collectStatistics() {
         HashMap stats = new HashMap();
-        for (Impl impl : impls) {
-            impl.collectStatistics(stats);
-        }
+
         return stats;
-    }
-
-    public <T> void register(Impl impl) {
-        impls.add(impl);
-    }
-
-    public static void printStats(Map stats) {
-        printStats("", stats);
-    }
-
-    public void printStats() {
-        printStats(collectStatistics());
     }
 
     public static void printStats(String prefix, Map stats) {
@@ -108,17 +129,4 @@ public class SearchParameter {
         }
     }
 
-    public ConfigValues getConfig() {
-        return config;
-    }
-
-    public SearchParameter config(Consumer<ConfigValues> cfgChange) {
-        cfgChange.accept(config);
-        return this;
-    }
-
-    public SearchParameter setConfig(ConfigValues config) {
-        this.config = config;
-        return this;
-    }
 }

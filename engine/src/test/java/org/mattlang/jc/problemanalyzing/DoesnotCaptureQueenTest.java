@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -20,13 +21,12 @@ public class DoesnotCaptureQueenTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(7)));
+
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState = engine.getBoard().setFenPosition("position fen 8/5k2/8/8/3q4/4K3/8/8 w - - 1 56 ");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState, new GameContext());
+        Move move = engine.go(new SearchParameter(), gameState, new GameContext());
 
         System.out.println(move.toStr());
         assertThat(move.toStr()).isEqualTo("e3d4");

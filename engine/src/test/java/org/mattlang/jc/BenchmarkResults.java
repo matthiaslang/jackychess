@@ -35,7 +35,7 @@ public class BenchmarkResults<T> {
     private final Boolean useHistoryHeuristic;
     private final Boolean pvSearch;
     private final Integer maxQuiescence;
-    private final String searchAlgorithm;
+
 
     public BenchmarkResults(String name, ExecResults<T> execResults, Map stats, TestPosition testPosition) {
         this.name = name;
@@ -49,7 +49,7 @@ public class BenchmarkResults<T> {
             this.testName = testPosition.getName();
             this.testExpectedBestMove = testPosition.getExpectedBestMove();
         }
-        ConfigValues config = Factory.getDefaults().getConfig();
+        ConfigValues config = ConfigValues.getConfigValues();
         this.depth = config.maxDepth.getValue();
         this.evaluateFunction = Configurator.determineEvalImplName();
         this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
@@ -58,7 +58,6 @@ public class BenchmarkResults<T> {
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
         this.pvSearch = config.activatePvsSearch.getValue();
         this.maxQuiescence = config.maxQuiescence.getValue();
-        this.searchAlgorithm = config.searchAlgorithm.getValue().name();
         this.aspiration = config.aspiration.getValue();
         this.useNullMoves = config.useNullMoves.getValue();
         this.staticNullMove = config.staticNullMove.getValue();

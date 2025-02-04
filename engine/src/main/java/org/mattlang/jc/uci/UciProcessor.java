@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.JCExecutors;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -26,8 +26,6 @@ public class UciProcessor {
     private GameState gameState;
 
     private GameContext gameContext = new GameContext();
-
-    private ConfigValues configValues = new ConfigValues();
 
     private boolean finished = false;
 
@@ -65,7 +63,7 @@ public class UciProcessor {
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
-            CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, configValues, gameContext);
+            CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, gameContext);
             // when the search stops regularly within its search time, deliver the best move
             result.thenAccept(move -> {
                 LOGGER.fine(String.format("future completed with best move: %s", move));
@@ -106,8 +104,12 @@ public class UciProcessor {
         String[] result = cmdStr.split("\\s");
         String option = result[2];
         String value = result[4];
-
-        UCIOption.parseOption(configValues.getAllOptions(), option, value);
+        try {
+            UCIOption.parseOption(ConfigValues.getConfigValues().getAllOptions(), option, value);
+        } catch (IllegalArgumentException iae) {
+            LOGGER.warning(iae.getMessage());
+            UCILogger.log(iae.getMessage());
+        }
     }
 
     public GoParameter parseGoParams(String cmdStr) {
@@ -163,7 +165,7 @@ public class UciProcessor {
     private GameState setPosition(String positionStr) {
         try {
             BoardRepresentation board = Configurator.createBoard();
-            boolean isChess960 = Factory.getDefaults().getConfig().uciChess960.getValue().booleanValue();
+            boolean isChess960 = ConfigValues.getConfigValues().uciChess960.getValue().booleanValue();
             return FenParser.setPosition(positionStr, board, isChess960);
         } catch (RuntimeException re) {
             throw new RuntimeException("Error parsing UCI postion: " + positionStr, re);
@@ -175,17 +177,13 @@ public class UciProcessor {
         UCI.instance.putCommand("id name JackyChess " + version);
         UCI.instance.putCommand("id author Matthias Lang");
 
-        UCIOption.writeOptionsDescriptions(configValues.getAllOptions());
+        UCIOption.writeOptionsDescriptions(ConfigValues.getConfigValues().getAllOptions());
 
         UCI.instance.putCommand(CMD_UCIOK);
     }
 
     private void sendBestMove(GameState gameState, Move bestMove) {
         UCI.instance.putCommand(CMD_BESTMOVE + " " + bestMove.toUCIString(gameState.getBoard()));
-    }
-
-    public ConfigValues getConfigValues() {
-        return configValues;
     }
 
     // analyse:

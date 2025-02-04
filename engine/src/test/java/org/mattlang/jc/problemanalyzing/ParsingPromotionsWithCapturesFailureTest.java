@@ -3,7 +3,7 @@ package org.mattlang.jc.problemanalyzing;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -29,16 +29,13 @@ public class ParsingPromotionsWithCapturesFailureTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(maxDepth))
-                .config(c -> c.timeout.setValue(60000)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState =
                 engine.getBoard().setFenPosition("position fen 3qk3/2P5/1Q6/4K3/8/8/8/8 w - - 0 0 moves c7d8q ");
         System.out.println(engine.getBoard().toUniCodeStr());
 
-        Move move = engine.go(gameState, new GameContext());
+        Move move = engine.go(SearchParameter.params(60000, maxDepth), gameState, new GameContext());
 
         System.out.println(move.toStr());
 

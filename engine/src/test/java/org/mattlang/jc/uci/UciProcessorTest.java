@@ -1,16 +1,18 @@
 package org.mattlang.jc.uci;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
+import org.mattlang.jc.ConfigValues;
 
 public class UciProcessorTest {
 
     @Test
     public void optionsParsing() {
         UciProcessor ucip = new UciProcessor();
-        ucip.parseOption("setoption name thinktime value 16000");
-        assertThat(ucip.getConfigValues().timeout.getValue()).isEqualTo( 16000);
+        ucip.parseOption("setoption name quiescence value 16");
+        assertThat(ConfigValues.getConfigValues().maxQuiescence.getValue()).isEqualTo(16);
+        ConfigValues.resetConfigValues();
     }
 
     @Test
@@ -24,7 +26,6 @@ public class UciProcessorTest {
         assertThat(goParams.binc).isEqualTo(0L);
         assertThat(goParams.movestogo).isEqualTo(39L);
     }
-
 
     @Test
     public void goParameterParsin2() {

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -33,14 +34,12 @@ public class PattChosenTest {
 
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createDefaultParameter()
-                .config(c -> c.maxDepth.setValue(3)));
         // now starting engine:
         Engine engine = new Engine();
         GameState gameState =
                 engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
         System.out.println(engine.getBoard().toUniCodeStr());
-        Move move = engine.go(gameState, new GameContext());
+        Move move = engine.go(SearchParameter.params(15000, 3), gameState, new GameContext());
 
         System.out.println(move.toStr());
 

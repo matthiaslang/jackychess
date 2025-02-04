@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.tt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -18,7 +19,7 @@ public class TTCacheTest {
 
         cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
 
-        TTResult entry=new TTResult();
+        TTResult entry = new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
         assertThat(entry).isNotNull();
 
@@ -77,8 +78,7 @@ public class TTCacheTest {
     @Test
     public void testIntCaches() {
 
-        IntIntCache intIntCache=new IntIntCache(20);
-
+        IntIntCache intIntCache = new IntIntCache(20);
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
@@ -93,6 +93,7 @@ public class TTCacheTest {
         assertThat(entry).isEqualTo(-500);
 
     }
+
     @Test
     public void testSizeCalc() {
         assertThat(TTCache.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
@@ -103,6 +104,22 @@ public class TTCacheTest {
 
         // take smaller or higer bit??
         assertThat(TTCache.determineCacheBitSizeFromMb(192, 16)).isEqualTo(23);
+    }
+
+    @Test
+    public void testSizeCalc2() {
+
+        ConfigValues.getConfigValues().hash.setValue(16);
+
+        Caching.CACHING.getTtCache().reset();
+
+        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(16 * 1024 * 1024);
+        ConfigValues.getConfigValues().hash.setValue(8);
+
+        Caching.CACHING.getTtCache().reset();
+        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
+
+        ConfigValues.resetConfigValues();
     }
 
 }

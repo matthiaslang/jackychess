@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.search;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
@@ -11,7 +12,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -62,9 +64,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
-    private long timeout = Factory.getDefaults().getConfig().timeout.getValue();
-
-    private boolean useAspirationWindow = Factory.getDefaults().getConfig().aspiration.getValue();
+    private boolean useAspirationWindow = ConfigValues.getConfigValues().aspiration.getValue();
 
     private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
@@ -94,11 +94,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
-        return iterativeSearch(gameState, gameContext, maxDepth).getSavedMove();
+        return iterativeSearch(new SearchParameter(DEFAULT_SEARCHTIME, maxDepth), gameState, gameContext).getSavedMove();
     }
 
     @Override
-    public IterativeSearchResult iterativeSearch(GameState gameState, GameContext gameContext, int maxDepth) {
+    public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState, GameContext gameContext) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
         negaMaxAlphaBeta.setIsWorker(isWorker);
@@ -113,13 +113,15 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         watch.start();
         negaMaxAlphaBeta.setSearchListener(this);
 
-        long stopTime = System.currentTimeMillis() + timeout;
+        long stopTime = System.currentTimeMillis() + searchParams.getTimeout();
 
         gameContext.initNewMoveSearch(gameState);
         ebf.clear();
         ArrayList<IterativeRoundResult> rounds = new ArrayList<>();
 
         int startDepth = workerNumber == 0 ? 1 : 2;
+        final int maxDepth= searchParams.getDepth();
+
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
         IterativeRoundResult lastResults = new IterativeRoundResult(null, new StopWatch());
