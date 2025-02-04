@@ -93,16 +93,8 @@ public class UciInterfaceTest {
 
         communication.write("ucinewgame");
         communication.write("setoption name Hash value 16");
-        communication.write("position startpos");
-        communication.write("go infinite searchmoves d2d4 g1f3 b2b3");
 
         Thread.sleep(2000);
-
-        communication.write("stop");
-        Thread.sleep(2000);
-//        communication.expectBestmove("g1f3");
-        //        communication.consumeAllInfo();
-
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(16 * 1024 * 1024);
         communication.write("setoption name Hash value 64");
         Thread.sleep(2000);
@@ -111,7 +103,7 @@ public class UciInterfaceTest {
         Thread.sleep(2000);
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(32 * 1024 * 1024);
         ConfigValues.resetConfigValues();
-
+        communication.consumeAllInfo();
     }
 
 }
