@@ -111,12 +111,16 @@ public class TTCacheTest {
 
         ConfigValues.getConfigValues().hash.setValue(16);
 
-        Caching.CACHING.getTtCache().reset();
+        Caching.CACHING.getTtCache().checkUpdateCacheSize();
 
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(16 * 1024 * 1024);
         ConfigValues.getConfigValues().hash.setValue(8);
 
-        Caching.CACHING.getTtCache().reset();
+        Caching.CACHING.getTtCache().checkUpdateCacheSize();
+        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
+
+        ConfigValues.getConfigValues().hash.setValue(9);
+        Caching.CACHING.getTtCache().checkUpdateCacheSize();
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
 
         ConfigValues.resetConfigValues();

@@ -80,7 +80,7 @@ public final class TTCache {
         POWER_2_TT_ENTRIES = bitSize - BUCKET_SIZE + 1;
 
         keyShifts = 64 - POWER_2_TT_ENTRIES;
-        int maxEntries = (int) (1L << POWER_2_TT_ENTRIES + BUCKET_SIZE - 1) * 2;
+        int maxEntries = (int) (1L << bitSize) * 2;
         LOGGER.info("TT Cache: allocating " + maxEntries + " longs;");
 
         keys = new long[maxEntries];
