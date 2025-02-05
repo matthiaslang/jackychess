@@ -21,7 +21,6 @@ public final class TTCache {
 
     private static final Logger LOGGER = Logger.getLogger(TTCache.class.getSimpleName());
 
-    private static int POWER_2_TT_ENTRIES = 22;
     private static final int BUCKET_SIZE = 3;
 
     private int keyShifts;
@@ -77,9 +76,9 @@ public final class TTCache {
 
     private void initCache() {
         int bitSize = determineBitSizeFromConfig();
-        POWER_2_TT_ENTRIES = bitSize - BUCKET_SIZE + 1;
+        int power2TtEntries = bitSize - BUCKET_SIZE + 1;
 
-        keyShifts = 64 - POWER_2_TT_ENTRIES;
+        keyShifts = 64 - power2TtEntries;
         int maxEntries = (int) (1L << bitSize) * 2;
         LOGGER.info("TT Cache: allocating " + maxEntries + " longs;");
 
