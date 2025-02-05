@@ -192,8 +192,7 @@ public class EngineTest {
         MoveList legalMovesToSearch =
                 moveValidator.createLegalMovesToSearch(gameState, new String[] { "a2a4", "b2b4", "b2b3" });
 
-        gameState.setLegalMovesToSearch(legalMovesToSearch);
-        SearchParameter params = params(60000, 16);
+        SearchParameter params = params(60000, 16, legalMovesToSearch);
         Move move = engine.go(params, gameState, gameContext);
 
         System.out.println(move.toStr());

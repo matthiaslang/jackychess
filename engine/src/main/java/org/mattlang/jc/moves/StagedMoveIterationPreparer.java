@@ -129,7 +129,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
         this.mode = GenMode.NORMAL;
         stages = STAGES_NORMAL;
-        if (ply == 1 && legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
+        if (legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
             stages = SINGLE_STATIC_STAGE;
             moveList.initFrom(legalMovesToSearch);
             createSortOrders(0);

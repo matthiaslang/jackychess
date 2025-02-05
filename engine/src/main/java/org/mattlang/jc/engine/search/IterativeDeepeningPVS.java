@@ -142,7 +142,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                 stc.resetKillers();
 
                 IterativeRoundResult irr =
-                        searchRound(stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
+                        searchRound(searchParams, stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
                 rounds.add(irr);
                 if (irr.isCheckMate()) {
@@ -251,7 +251,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         }
     }
 
-    private IterativeRoundResult searchRound(SearchThreadContext stc, StopWatch watch,
+    private IterativeRoundResult searchRound(SearchParameter searchParams,
+            SearchThreadContext stc, StopWatch watch,
             IterativeRoundResult lastRoundResults,
             GameState gameState, GameContext gameContext, int currdepth,
             long stopTime) {
@@ -268,11 +269,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         if (useAspirationWindow && currdepth >= 3 && lastRoundResults.hasResults()) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
-            rslt = searchWithAspirationWindow(stc, aspWindow, gameState, gameContext, stopTime,
+            rslt = searchWithAspirationWindow(searchParams, stc, aspWindow, gameState, gameContext, stopTime,
                     currdepth);
 
         } else {
-            rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
+            rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
+                    stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime);
@@ -297,13 +299,14 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         return new IterativeRoundResult(rslt, roundWatch);
     }
 
-    private NegaMaxResult searchWithAspirationWindow(SearchThreadContext stc,
+    private NegaMaxResult searchWithAspirationWindow(SearchParameter searchParams, SearchThreadContext stc,
             Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, int currdepth) {
 
         LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
 
-        NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
+        NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
+                stc, gameState, gameContext,
                 currdepth,
                 aspWindow.getAlpha(), aspWindow.getBeta(),
                 stopTime);
@@ -311,7 +314,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
             LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
-            rslt = negaMaxAlphaBeta.searchWithScore(stc, gameState, gameContext,
+            rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
+                    stc, gameState, gameContext,
                     currdepth,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime);

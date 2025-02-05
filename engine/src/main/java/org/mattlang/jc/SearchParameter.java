@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.uci.UCIGroup;
@@ -32,9 +33,28 @@ public class SearchParameter {
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
+    /**
+     * an optional list with legal moves  when coming from async engine. If searchmoves is set, it contains only the
+     * legal search moves.
+     * It may be null in test cases.
+     */
+    @Getter
+    private MoveList legalMovesToSearch;
+
     public SearchParameter(int timeout, int depth) {
         this.timeout = timeout;
         this.depth = depth;
+    }
+
+    public SearchParameter(int timeout, int depth, MoveList legalMovesToSearch) {
+        this.timeout = timeout;
+        this.depth = depth;
+        this.legalMovesToSearch = legalMovesToSearch;
+    }
+
+    public SearchParameter(int timeout, MoveList legalMovesToSearch) {
+        this.timeout = timeout;
+        this.legalMovesToSearch = legalMovesToSearch;
     }
 
     public SearchParameter(int timeout) {
@@ -52,8 +72,12 @@ public class SearchParameter {
         return new SearchParameter(timeout, depth);
     }
 
-    public static SearchParameter createMultiThread(int timeout) {
-        return new SearchParameter(timeout)
+    public static SearchParameter params(int timeout, int depth, MoveList legalMovesToSearch) {
+        return new SearchParameter(timeout, depth, legalMovesToSearch);
+    }
+
+    public static SearchParameter createMultiThread(int timeout, MoveList legalMovesToSearch) {
+        return new SearchParameter(timeout, legalMovesToSearch)
                 .searchMethod.set(MultiThreadedIterativeDeepening::new);
     }
 

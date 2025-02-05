@@ -86,13 +86,13 @@ public final class SearchContext {
 
     private MoveList legalMovesToSearch = null;
 
-    public SearchContext(SearchThreadContext stc, GameState gameState,
+    public SearchContext(MoveList legalMovesToSearch, SearchThreadContext stc, GameState gameState,
             GameContext context,
             int targetDepth, int alpha) {
 
         this.stc = stc;
 
-        this.legalMovesToSearch = gameState.getLegalMovesToSearch();
+        this.legalMovesToSearch = legalMovesToSearch;
 
         this.board = gameState.getBoard();
 

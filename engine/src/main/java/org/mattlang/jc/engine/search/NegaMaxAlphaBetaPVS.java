@@ -20,6 +20,7 @@ import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
@@ -110,7 +111,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         assert depth > 0;
         reset();
 
-        searchWithScore(SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
+        searchWithScore(null, SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
                 ALPHA_START, BETA_START,
                 stopTime);
         return new MoveImpl(searchContext.getSavedMove());
@@ -713,7 +714,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     @Override
-    public NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState,
+    public NegaMaxResult searchWithScore(MoveList legalMovesToSearch, SearchThreadContext stc, GameState gameState,
             GameContext context,
             int depth,
             int alpha, int beta, long stopTime) {
@@ -721,7 +722,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (LOGGER.isLoggable(FINE)) {
             LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
         }
-        searchContext = new SearchContext(stc, gameState, context, depth, alpha);
+        searchContext = new SearchContext(legalMovesToSearch, stc, gameState, context, depth, alpha);
 
         this.stopTime = stopTime;
         this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;

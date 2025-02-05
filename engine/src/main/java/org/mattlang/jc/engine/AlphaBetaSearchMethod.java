@@ -11,7 +11,11 @@ public interface AlphaBetaSearchMethod extends SearchMethod {
 
     int getNodesVisited();
 
-    NegaMaxResult searchWithScore(SearchThreadContext stc, GameState gameState, GameContext context, int currdepth,
+    NegaMaxResult searchWithScore(MoveList legalMovesToSearch,
+            SearchThreadContext stc,
+            GameState gameState,
+            GameContext context,
+            int currdepth,
             int alphaStart, int betaStart, long stopTime);
 
 }

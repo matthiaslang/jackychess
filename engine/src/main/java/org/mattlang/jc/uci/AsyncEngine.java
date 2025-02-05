@@ -1,6 +1,7 @@
 package org.mattlang.jc.uci;
 
 import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.SearchParameter.createMultiThread;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
 
 import java.util.concurrent.CompletableFuture;
@@ -50,9 +51,8 @@ public class AsyncEngine {
             GameContext gameContext) {
 
         // parameter/typ SearchConfig with legalmovestosearch, timeout, etc....?
-        MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
+        final MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
 
-        gameState.setLegalMovesToSearch(legalMovesToSearch);
         // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
         bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch));
@@ -60,7 +60,7 @@ public class AsyncEngine {
         // init the search parameters, eval functions, etc:
 
         final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
-        final SearchParameter searchParams = SearchParameter.createMultiThread((int) timeToUse);
+        final SearchParameter searchParams = createMultiThread((int) timeToUse, legalMovesToSearch);
 
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {
