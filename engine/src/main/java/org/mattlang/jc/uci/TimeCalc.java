@@ -6,12 +6,18 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
 public class TimeCalc {
 
+    /**
+     * Timeout value used in infinite mode: use one year as milliseconds as time out.
+     */
+    public static final int INFINITE_TIMEOUT = Integer.MAX_VALUE;
+
     public static final int DELAY_BUFFER_MS = 100;
     public static final int ONE_SECOND_MS = 1000;
 
     public static long determineCalculationTime(GameState gameState, GoParameter goParams) {
-        // if we have special "go" parameters, then override thinktime:
-        if (goParams.movetime > 0) {
+        if (goParams.infinite) {
+            return INFINITE_TIMEOUT;
+        } else if (goParams.movetime > 0) {
             return goParams.movetime;
         } else {
             long restTime;

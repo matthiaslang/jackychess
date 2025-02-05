@@ -21,11 +21,6 @@ import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
 
-    /**
-     * Timeout value used in infinite mode: use one year as milliseconds as time out.
-     */
-    public static final int INFINITE_TIMEOUT = Integer.MAX_VALUE;
-
     private Logger logger = Logger.getLogger(AsyncEngine.class.getSimpleName());
 
     /**
@@ -64,13 +59,7 @@ public class AsyncEngine {
 
         // init the search parameters, eval functions, etc:
 
-        final long timeToUse;
-        // if we have special "go" parameters, then override thinktime:
-        if (!goParams.infinite) {
-            timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
-        } else {
-            timeToUse = INFINITE_TIMEOUT;
-        }
+        final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
         SearchParameter searchParams = SearchParameter.createMultiThread((int) timeToUse);
 
         Factory.setDefaults(searchParams);
