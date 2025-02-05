@@ -5,11 +5,11 @@ import static org.mattlang.jc.Benchmarks.benchmark;
 import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.GameState;
@@ -54,7 +54,7 @@ public class ZobristPerfTests2 {
                     Move move = engine.go(params(TIMEOUT, MAX_DEPTH), state, new GameContext());
                 });
 
-        Map itTT = Factory.getDefaults().collectStatistics();
+        Map itTT = new HashMap();
 
         StopWatch normalMeasure = benchmark(
                 "iterative deepening alpha beta",
@@ -69,7 +69,7 @@ public class ZobristPerfTests2 {
                     System.out.println(engine.getBoard().toUniCodeStr());
                     Move move = engine.go(params(TIMEOUT, MAX_DEPTH), state, new GameContext());
                 });
-        Map itNormal = Factory.getDefaults().collectStatistics();
+        Map itNormal = new HashMap();
 
         System.out.println("normal time: " + normalMeasure.toString());
         System.out.println("tt zobrist time: " + ttMeasure.toString());

@@ -9,7 +9,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
@@ -61,12 +60,11 @@ public class AsyncEngine {
         // init the search parameters, eval functions, etc:
 
         final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
-        SearchParameter searchParams = SearchParameter.createMultiThread((int) timeToUse);
+        final SearchParameter searchParams = SearchParameter.createMultiThread((int) timeToUse);
 
-        Factory.setDefaults(searchParams);
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {
-            Factory.getDefaults().log();
+            searchParams.log();
             gameContext.setContext("startLogged", true);
         }
 
@@ -95,7 +93,7 @@ public class AsyncEngine {
                 throw stopException;
             } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
-                logger.log(SEVERE, fmtSevere(gameState, "error during async execution!"), e);
+                logger.log(SEVERE, fmtSevere(searchParams, gameState, "error during async execution!"), e);
                 throw e;
             } finally {
                 // release the semaphore. according to the JVM specification in case of thread interruption or

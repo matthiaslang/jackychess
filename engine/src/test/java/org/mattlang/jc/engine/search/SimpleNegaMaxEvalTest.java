@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -33,7 +32,7 @@ public class SimpleNegaMaxEvalTest {
 
         System.out.println(board.toUniCodeStr());
 
-        Move move = Factory.getDefaults().searchMethod.create().search(gameState, new GameContext(), 6);
+        Move move = new IterativeDeepeningPVS().search(gameState, new GameContext(), 6);
         // since we recognize patts, we avoid moves which make patt:
         board.domove(move);
         // means we should have no patt situation:

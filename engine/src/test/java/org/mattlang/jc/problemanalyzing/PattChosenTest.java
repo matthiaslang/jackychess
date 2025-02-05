@@ -6,7 +6,6 @@ import static org.mattlang.jc.util.Logging.initLogging;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -49,7 +48,6 @@ public class PattChosenTest {
         // so black should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);
 
-        Factory.setDefaults(Factory.createDefaultParameter());
     }
 
 }

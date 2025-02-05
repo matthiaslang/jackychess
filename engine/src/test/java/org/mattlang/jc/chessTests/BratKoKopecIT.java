@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.Engine;
@@ -46,7 +45,6 @@ public class BratKoKopecIT {
     @Test
     public void testStable() {
         // create engine
-        Factory.setDefaults(Factory.createStable());
         Engine engine = new Engine();
         EpdParsing.testPosition(engine, position, expectedBestMove);
     }

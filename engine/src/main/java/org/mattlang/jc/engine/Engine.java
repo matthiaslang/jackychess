@@ -1,6 +1,5 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
@@ -14,8 +13,6 @@ public class Engine {
 
     private BoardRepresentation board = Configurator.createBoard();
 
-    private IterativeDeepeningSearch searchMethod = Factory.getDefaults().searchMethod.create();
-
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
 
     public Engine(BoardRepresentation board) {
@@ -25,22 +22,20 @@ public class Engine {
     public Engine() {
     }
 
-    public Engine(IterativeDeepeningSearch searchMethod) {
-        this.searchMethod = searchMethod;
-    }
-
     @Deprecated
     public Move go(SearchParameter searchParams) {
         return go(searchParams, new GameState(board, null), new GameContext());
     }
 
     public Move go(SearchParameter searchParams, GameState gameState, GameContext gameContext) {
+        IterativeDeepeningSearch searchMethod = searchParams.searchMethod.instance();
         searchMethod.registerListener(listener);
         return searchMethod.iterativeSearch(searchParams, gameState, gameContext).getSavedMove();
     }
 
     public IterativeSearchResult goIterative(SearchParameter searchParams, GameState gameState,
             GameContext gameContext) {
+        IterativeDeepeningSearch searchMethod = searchParams.searchMethod.instance();
         searchMethod.registerListener(listener);
         return searchMethod.iterativeSearch(searchParams, gameState, gameContext);
     }

@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import java.util.ArrayList;
 
-import org.mattlang.jc.Factory;
+import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.uci.GameContext;
 
@@ -12,19 +12,21 @@ import org.mattlang.jc.uci.GameContext;
  */
 public class SearchException extends RuntimeException {
 
-    private GameState gameState;
-    private GameContext gameContext;
+    private final SearchParameter searchParameter;
+    private final GameState gameState;
+    private final GameContext gameContext;
     private ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds;
     private String ebfreport;
     private Throwable e;
 
-    public SearchException(GameState gameState, GameContext gameContext,
+    public SearchException(SearchParameter searchParameter, GameState gameState, GameContext gameContext,
             ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds, String ebfreport, Throwable e) {
         super(e);
         this.gameState = gameState;
         this.gameContext = gameContext;
         this.rounds = rounds;
         this.ebfreport = ebfreport;
+        this.searchParameter = searchParameter;
         this.e = e;
     }
 
@@ -43,7 +45,7 @@ public class SearchException extends RuntimeException {
             }
         }
         b.append("\n");
-        Factory.getDefaults().log(b);
+        searchParameter.log(b);
         b.append("\n");
 
         return b.toString();

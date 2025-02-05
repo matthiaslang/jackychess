@@ -3,13 +3,11 @@ package org.mattlang.jc.problemanalyzing;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.SearchMethod;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.uci.GameContext;
@@ -30,9 +28,7 @@ public class QueenAndKingVsKing2_EndgameTest {
         GameState gameState = engine.getBoard().setFenPosition("position fen 4k3/8/1Q6/4K3/8/8/8/8 w - - 0 0 ");
         System.out.println(engine.getBoard().toUniCodeStr());
 
-        SearchMethod searchMethod = Factory.getDefaults().searchMethod.create();
-
-        IterativeDeepeningPVS itDeep = (IterativeDeepeningPVS) searchMethod;
+        IterativeDeepeningPVS itDeep = new IterativeDeepeningPVS();
         IterativeSearchResult itResult =
                 itDeep.iterativeSearch(SearchParameter.params(6000000, maxDepth), gameState, new GameContext());
 
@@ -45,7 +41,6 @@ public class QueenAndKingVsKing2_EndgameTest {
             System.out.println(gameState.getBoard().toUniCodeStr());
         }
 
-        Factory.setDefaults(Factory.createDefaultParameter());
     }
 
 }

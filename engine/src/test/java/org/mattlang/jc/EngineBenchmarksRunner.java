@@ -4,10 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.Benchmarks.benchmark;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.Engine;
@@ -49,7 +46,6 @@ public class EngineBenchmarksRunner {
 
     public void benchmarkExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
-        Factory.setDefaults(searchParameter);
 
         for (TestPosition position : testPositions) {
             results.add(benchmarkRun(position));
@@ -58,7 +54,6 @@ public class EngineBenchmarksRunner {
 
     public void benchmarkSingleExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
-        Factory.setDefaults(searchParameter);
         SearchThreadContexts.CONTEXTS.reset();
 
         for (TestPosition position : testPositions) {
@@ -68,7 +63,6 @@ public class EngineBenchmarksRunner {
 
     public void benchmarkSingleExecute(String name, SearchParameter searchParameter) {
         gameContext = new GameContext();
-        Factory.setDefaults(searchParameter);
         SearchThreadContexts.CONTEXTS.reset();
         EvalCache.instance.reset();
 
@@ -91,7 +85,7 @@ public class EngineBenchmarksRunner {
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
                 () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
-        Map stats = Factory.getDefaults().collectStatistics();
+        Map stats = new HashMap();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
     }
@@ -105,7 +99,7 @@ public class EngineBenchmarksRunner {
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
                 () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
-        Map stats = Factory.getDefaults().collectStatistics();
+        Map stats = new HashMap();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
     }

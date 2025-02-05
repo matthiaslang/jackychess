@@ -163,7 +163,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             // rethrow stop exceptions:
             throw stopException;
         } catch (Throwable e) {
-            throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
+            throw new SearchException(searchParams, gameState, gameContext, rounds, ebf.report(), e);
         }
 
         String ebfReport = format("EBF: %s", ebf.report());

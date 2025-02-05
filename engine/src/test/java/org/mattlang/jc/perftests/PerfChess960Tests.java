@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mattlang.SlowTests;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -29,7 +28,6 @@ public class PerfChess960Tests {
     public void pos1() {
 
         Perft perft = new Perft(DEFAULT_SUPPLIER);
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen bqnb1rkr/pp3ppp/3ppn2/2p5/5P2/P2P4/NPP1P1PP/BQ1BNRKR w HFhf - 2 9");
@@ -56,7 +54,6 @@ public class PerfChess960Tests {
                 ((BitBoard) board).doAssertLogs();
             }
         });
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen bbrnk1qr/1pppppp1/p4n1p/8/P2P2N1/8/1PP1PPPP/BBR1NKQR w HC - 1 9");
@@ -76,7 +73,6 @@ public class PerfChess960Tests {
         // q1brnknr/pp1pp1p1/8/2p2p1p/5b2/P4N2/1PPPP1PP/QBBRK1NR w hd - 0 9 ;D1 22 ;D2 675 ;D3 15778 ;D4 473994 ;D5 12077228 ;D6 368479752
 
         Perft perft = new Perft(DEFAULT_SUPPLIER);
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen q1brnknr/pp1pp1p1/8/2p2p1p/5b2/P4N2/1PPPP1PP/QBBRK1NR w hd - 0 9");
@@ -96,7 +92,6 @@ public class PerfChess960Tests {
         // qbbrkn1r/pppppp1p/8/6p1/2P1Pn1P/6N1/PP1P1PP1/QBBRKNR1 w GDd - 3 9 ;D1 20 ;D2 532 ;D3 11581 ;D4 303586 ;D5 7512432 ;D6 202967948
 
         Perft perft = new Perft(DEFAULT_SUPPLIER);
-        Factory.setDefaults(Factory.createStable());
 
         BitBoard board = new BitBoard();
         board.setFenPosition("position fen qbbrkn1r/pppppp1p/8/6p1/2P1Pn1P/6N1/PP1P1PP1/QBBRKNR1 w GDd - 3 9");
@@ -122,7 +117,6 @@ public class PerfChess960Tests {
 
         for (PerfChess960AllVariantsTests.Chess960Perft chess960Perft : chess960Perfts) {
             Perft perft = new Perft(DEFAULT_SUPPLIER);
-            Factory.setDefaults(Factory.createStable());
 
             BitBoard board = new BitBoard();
             board.setFenPosition("position fen " + chess960Perft.fen);

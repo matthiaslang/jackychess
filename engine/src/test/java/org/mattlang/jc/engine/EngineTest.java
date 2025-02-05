@@ -10,7 +10,6 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -380,7 +379,6 @@ public class EngineTest {
     public void testProblemNoBestMoveFound() throws IOException {
         initLogging();
         UCI.instance.attachStreams();
-        Factory.setDefaults(Factory.createStable());
 
         BoardRepresentation board = new BitBoard();
         GameState gameState =

@@ -6,7 +6,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mattlang.SlowTests;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -37,7 +36,6 @@ public class PerfEvalTests {
 
     @Test
     public void initialPositionPerformanceLegalMoves() {
-        Factory.setDefaults(Factory.createStable());
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 

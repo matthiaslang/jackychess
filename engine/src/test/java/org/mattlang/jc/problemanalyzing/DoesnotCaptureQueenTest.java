@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mattlang.jc.Factory;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
@@ -31,7 +30,6 @@ public class DoesnotCaptureQueenTest {
         System.out.println(move.toStr());
         assertThat(move.toStr()).isEqualTo("e3d4");
 
-        Factory.setDefaults(Factory.createDefaultParameter());
     }
 
 }
