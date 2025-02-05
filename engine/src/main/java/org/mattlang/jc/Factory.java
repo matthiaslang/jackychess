@@ -1,7 +1,6 @@
 package org.mattlang.jc;
 
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
-import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
 
 /**
@@ -12,11 +11,6 @@ public class Factory {
     public static SearchParameter createStable() {
         return new SearchParameter()
                 .searchMethod.set(() -> new IterativeDeepeningPVS(new NegaMaxAlphaBetaPVS()));
-    }
-
-    public static SearchParameter createMultiThread() {
-        return new SearchParameter()
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepening());
     }
 
     public static SearchParameter createDefaultParameter() {

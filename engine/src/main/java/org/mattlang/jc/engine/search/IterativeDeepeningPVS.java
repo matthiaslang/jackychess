@@ -94,11 +94,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
-        return iterativeSearch(new SearchParameter(DEFAULT_SEARCHTIME, maxDepth), gameState, gameContext).getSavedMove();
+        return iterativeSearch(new SearchParameter(DEFAULT_SEARCHTIME, maxDepth), gameState,
+                gameContext).getSavedMove();
     }
 
     @Override
-    public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState, GameContext gameContext) {
+    public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState,
+            GameContext gameContext) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
         negaMaxAlphaBeta.setIsWorker(isWorker);
@@ -120,7 +122,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         ArrayList<IterativeRoundResult> rounds = new ArrayList<>();
 
         int startDepth = workerNumber == 0 ? 1 : 2;
-        final int maxDepth= searchParams.getDepth();
+        final int maxDepth = searchParams.getDepth();
 
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
@@ -148,7 +150,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                 }
             }
         } catch (TimeoutException te) {
-
+            // regular time out: return best move information so far collected:
             String ebfReport = format("EBF: %s", ebf.report());
             if (!isWorker) {
                 UCILogger.log(ebfReport);
@@ -157,6 +159,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             gameContext.addStatistics(negaMaxAlphaBeta.getStatistics());
             logIsr(isr);
             return isr;
+        } catch (StopException stopException) {
+            // rethrow stop exceptions:
+            throw stopException;
         } catch (Throwable e) {
             throw new SearchException(gameState, gameContext, rounds, ebf.report(), e);
         }

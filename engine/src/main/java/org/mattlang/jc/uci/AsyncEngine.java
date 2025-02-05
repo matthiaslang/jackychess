@@ -17,6 +17,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchException;
+import org.mattlang.jc.engine.search.StopException;
 import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
@@ -87,6 +88,11 @@ public class AsyncEngine {
                 completableFuture.completeExceptionally(se);
                 logger.log(SEVERE, se.toStringAllInfos(), se);
                 throw se;
+            } catch (StopException stopException) {
+                completableFuture.completeExceptionally(stopException);
+                // we got stopped. do not do anything, the asynchrone stop command will meanwhile return the bestmove so far.
+                // since this is an "expected" outcome, do not log any error here
+                throw stopException;
             } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
                 logger.log(SEVERE, fmtSevere(gameState, "error during async execution!"), e);

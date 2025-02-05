@@ -54,7 +54,7 @@ public class SearchParameter {
 
     public static SearchParameter createMultiThread(int timeout) {
         return new SearchParameter(timeout)
-                .searchMethod.set(() -> new MultiThreadedIterativeDeepening());
+                .searchMethod.set(MultiThreadedIterativeDeepening::new);
     }
 
     public void log() {

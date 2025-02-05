@@ -95,10 +95,9 @@ public class AsyncEngineTest {
         GoParameter goparams = new GoParameter();
         goparams.movetime = 50000000;
 
-        CompletableFuture<Move> future =
-                asyncEngine.start(new GameState(board), goparams, new GameContext());
+        asyncEngine.start(new GameState(board), goparams, new GameContext());
         // in ultra short time games a stop could nearly directly after the "go" command happen.
-        // the engine should properly responde with a found so far best move:
+        // the engine should properly respond with a found so far best move:
         Thread.sleep(100);
         Move move = asyncEngine.stop();
         System.out.println(move.toStr());
@@ -108,7 +107,7 @@ public class AsyncEngineTest {
         board.setStartPosition();
         board.switchSiteToMove();
 
-        future = asyncEngine.start(new GameState(board), goparams, new GameContext());
+        CompletableFuture<Move> future = asyncEngine.start(new GameState(board), goparams, new GameContext());
         Thread.sleep(20);
         // and stop again:
         move = asyncEngine.stop();
