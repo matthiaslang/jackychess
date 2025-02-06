@@ -110,11 +110,11 @@ git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  j
 echo "creating shredder engine file"
 # create shredder eng file definition for my local system
   cat << EOF > ${SHREDDERENGFILE}
-  [ENGINE]
-  Name=jackychess${MVNVERSION}
-  Author=Matthias Lang
-  Filename=C:\Program Files\AdoptOpenJDK\jdk-11.0.10.9-hotspot\bin\java.exe
-  Parameter=-jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILE}
+[ENGINE]
+Name=jackychess${MVNVERSION}
+Author=Matthias Lang
+Filename=C:\Program Files\AdoptOpenJDK\jdk-11.0.10.9-hotspot\bin\java.exe
+Parameter=-jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILE}
 
 EOF
 
