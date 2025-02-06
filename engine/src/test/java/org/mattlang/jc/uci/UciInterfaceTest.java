@@ -33,13 +33,13 @@ public class UciInterfaceTest {
         communication.expectBestmove("g1f3");
         communication.consumeAllInfo();
 
-        communication.write("position startpos moves e2e4 e7e5 g1f3 d2d4");
+        communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
         communication.write("go infinite");
 
         Thread.sleep(2000);
         communication.write("stop");
         Thread.sleep(2000);
-        communication.expectBestmove("c2d3");
+        communication.expectBestmove("e4d5");
 
         communication.consumeAllInfo();
     }
