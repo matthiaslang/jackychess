@@ -23,9 +23,20 @@ public final class TTCache {
 
     private static final Logger LOGGER = Logger.getLogger(TTCache.class.getSimpleName());
 
+    /**
+     * number of buckets used for one index entry.
+     */
     private static final int BUCKET_SIZE = 3;
 
-    private int keyShifts;
+    /* slot size: number of longs for one slot. */
+    private static final int SLOT_SIZE = 2;
+
+    /**
+     * size of the buckets of one "index": the number of buckets mult the size of one slot.
+     */
+    private static final int BUCKET_CHUNK_SIZE = BUCKET_SIZE * SLOT_SIZE;
+
+    private static final int BYTE_SIZE_SLOT = 8 * SLOT_SIZE;
 
     // key, value
     private long[] keys;
@@ -62,15 +73,11 @@ public final class TTCache {
      */
     private int indexPlaces;
 
-    /**
-     * Size of a "chunk" consisting of the data of all buckets of an index place.
-     */
-    private int bucketChunkSize;
 
     private int determineBitSizeFromConfig() {
         int mb = getConfiguredMbSize();
         mbSize = mb;
-        return determineCacheBitSizeFromMb(mb, 16);
+        return determineCacheBitSizeFromMb(mb, BYTE_SIZE_SLOT);
     }
 
     private int getConfiguredMbSize() {
@@ -95,16 +102,12 @@ public final class TTCache {
 
     private void initCache() {
         int bitSize = determineBitSizeFromConfig();
-        int power2TtEntries = bitSize - BUCKET_SIZE + 1;
-
-        keyShifts = 64 - power2TtEntries;
-        int maxEntries = (int) (1L << bitSize) * 2;
+        final int maxEntries = (int) (1L << bitSize) * SLOT_SIZE;
         LOGGER.info("TT Cache: allocating " + maxEntries + " longs;");
 
         keys = new long[maxEntries];
-        bucketChunkSize = BUCKET_SIZE * 2;
         // entries is size div bucket size div data size.
-        indexPlaces = keys.length / bucketChunkSize;
+        indexPlaces = maxEntries / BUCKET_CHUNK_SIZE;
     }
 
     public void reset() {
@@ -120,12 +123,16 @@ public final class TTCache {
 
         final int index = getIndex(key);
 
-        for (int i = index; i < index + BUCKET_SIZE * 2; i += 2) {
+        for (int i = index; i < index + BUCKET_CHUNK_SIZE; i += SLOT_SIZE) {
             long xorKey = keys[i];
             long value = keys[i + 1];
             if ((xorKey ^ value) == key) {
                 cacheHits++;
                 return value;
+            }
+            // clean up very old keys, to keep the usage statistic more up to date
+            if (getDepth(value) < 1) {
+                keys[i] = 0L;
             }
         }
 
@@ -135,6 +142,7 @@ public final class TTCache {
 
     /**
      * Calculates the index place in the data.
+     *
      * @param key
      * @return
      */
@@ -142,7 +150,7 @@ public final class TTCache {
         // xor upper and lower halves of zobrist together and apply mask to have positive values:
         long index = (key ^ (key >>> 32)) & 0x7FFFFFFF;
         // use modulo to ensure better distribution of the values over the array.
-        return (int) (index % indexPlaces) * bucketChunkSize;
+        return (int) (index % indexPlaces) * BUCKET_CHUNK_SIZE;
     }
 
     public void addValue(final long key, int score, final int depth, final int flag, final int move) {
@@ -150,7 +158,7 @@ public final class TTCache {
         final int index = getIndex(key);
         long replacedDepth = Integer.MAX_VALUE;
         int replaceIndex = index;
-        for (int i = index; i < index + BUCKET_SIZE * 2; i += 2) {
+        for (int i = index; i < index + BUCKET_CHUNK_SIZE; i += SLOT_SIZE) {
 
             long xorKey = keys[i];
             if (xorKey == 0) {
@@ -216,16 +224,27 @@ public final class TTCache {
      * Gives a raw statistical usage by inspecting the first 1000 entries.
      * If the cache is well distributing the values this gives a good match of the overal usage.
      *
+     * It counts only "empty" slots, so the statistic is not completely up to date, as we only occasionally clean up
+     * entries during cache search.
+     *
      * @return
      */
     public long getUsagePercentage() {
         int usage = 0;
-        for (int i = 0; i < 2000; i += 2) {
+        for (int i = 0; i < 2000; i += SLOT_SIZE) {
             if (keys[i] != 0) {
                 usage++;
             }
         }
         return usage;
+    }
+
+    private boolean isEffectivelyUsedEntry(int i) {
+        if (keys[i] == 0) {
+            return false;
+        }
+        long value = keys[i + 1];
+        return getDepth(value) > 0;
     }
 
     /**
@@ -236,12 +255,12 @@ public final class TTCache {
      */
     public long getPreciseUsagePercentage() {
         int usage = 0;
-        for (int i = 0; i < keys.length; i += 2) {
+        for (int i = 0; i < keys.length; i += SLOT_SIZE) {
             if (keys[i] != 0) {
                 usage++;
             }
         }
-        return (usage * 1000 / (keys.length / 2));
+        return (usage * 1000 / (keys.length / SLOT_SIZE));
 
     }
 
@@ -267,12 +286,12 @@ public final class TTCache {
 
     private int calcChunkHeuristic(int from, int to, int chunkSize) {
         int usage = 0;
-        for (int i = from; i < to; i += 2) {
+        for (int i = from; i < to; i += SLOT_SIZE) {
             if (keys[i] != 0) {
                 usage++;
             }
         }
-        return (usage * 1000 / (chunkSize / 2));
+        return (usage * 1000 / (chunkSize / SLOT_SIZE));
     }
 
     public boolean findEntry(TTResult result, BoardRepresentation board) {
