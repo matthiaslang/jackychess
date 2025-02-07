@@ -105,7 +105,9 @@ fi
 
 # add the created jar to the git repository of the cutechess test project:
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$JARFILE
-git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$TUNERJARFILE
+#git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$TUNERJARFILE
+
+
 
 echo "creating shredder engine file"
 # create shredder eng file definition for my local system
