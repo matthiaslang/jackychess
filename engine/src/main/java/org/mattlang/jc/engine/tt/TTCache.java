@@ -73,7 +73,6 @@ public final class TTCache {
      */
     private int indexPlaces;
 
-
     private int determineBitSizeFromConfig() {
         int mb = getConfiguredMbSize();
         mbSize = mb;
@@ -129,10 +128,6 @@ public final class TTCache {
             if ((xorKey ^ value) == key) {
                 cacheHits++;
                 return value;
-            }
-            // clean up very old keys, to keep the usage statistic more up to date
-            if (getDepth(value) < 1) {
-                keys[i] = 0L;
             }
         }
 
@@ -232,9 +227,15 @@ public final class TTCache {
     public long getUsagePercentage() {
         int usage = 0;
         for (int i = 0; i < 2000; i += SLOT_SIZE) {
+            long value = keys[i + 1];
+            // clean up very old keys, to keep the usage statistic more up to date
+            if (getDepth(value) < 1) {
+                keys[i] = 0L;
+            }
             if (keys[i] != 0) {
                 usage++;
             }
+
         }
         return usage;
     }
