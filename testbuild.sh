@@ -24,7 +24,7 @@ mvn versions:set -DnewVersion=${MVNTESTVERSION}
 
 git checkout -b ${TESTBRANCHNAME}
 
-git add **/pom.xml
+git add pom.xml **/pom.xml
 git commit -m "testversion $MVNTESTVERSION"
 git push --set-upstream origin $TESTBRANCHNAME
 
