@@ -2,6 +2,14 @@
 
 # script to create a "test" release for verification testing in tournaments, etc.
 
+if [ -n "$1" ]; then
+  echo "building test version named $1"
+else
+    echo "Argument: Name needed!"
+    break 1;
+fi
+
+
 NAME=$1
 
 TESTBRANCHNAME=testing/${NAME}
@@ -16,7 +24,7 @@ mvn versions:set -DnewVersion=${MVNTESTVERSION}
 
 git checkout -b ${TESTBRANCHNAME}
 
-git add .
+git add **/pom.xml
 git commit -m "testversion $MVNTESTVERSION"
 git push --set-upstream origin $TESTBRANCHNAME
 
