@@ -1,5 +1,13 @@
 # Versions
 
+## 25.01C
+
+- TT Cache rework
+  - better distribution of hash values
+  - a bit more precise percentage usage of hash memory
+- Code Cleanup regarding search parameter
+- 
+
 ## 25.01A
 
 - Support for uci go searchmoves directive

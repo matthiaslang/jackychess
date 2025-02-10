@@ -6,6 +6,7 @@ import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -126,7 +127,9 @@ public final class TTCache {
             long xorKey = keys[i];
             long value = keys[i + 1];
             if ((xorKey ^ value) == key) {
-                cacheHits++;
+                if (BuildConstants.STATS_ACTIVATED) {
+                    cacheHits++;
+                }
                 return value;
             }
         }
@@ -158,7 +161,9 @@ public final class TTCache {
             long xorKey = keys[i];
             if (xorKey == 0) {
                 replaceIndex = i;
-                numFilledEntries++;
+                if (BuildConstants.STATS_ACTIVATED) {
+                    numFilledEntries++;
+                }
                 break;
             }
 
@@ -167,7 +172,9 @@ public final class TTCache {
             int currentDepth = getDepth(currentValue);
             if ((xorKey ^ currentValue) == key) {
                 if (currentDepth > depth && flag != TTResult.EXACT_VALUE) {
-                    noReplaceCacheAlreadyBetter++;
+                    if (BuildConstants.STATS_ACTIVATED) {
+                        noReplaceCacheAlreadyBetter++;
+                    }
                     return;
                 }
                 replaceIndex = i;
@@ -217,10 +224,10 @@ public final class TTCache {
 
     /**
      * Gives a raw statistical usage by inspecting the first 1000 entries.
-     * If the cache is well distributing the values this gives a good match of the overal usage.
+     * If the cache is well distributing the values this gives a good match of the overall usage.
      *
-     * It counts only "empty" slots, so the statistic is not completely up to date, as we only occasionally clean up
-     * entries during cache search.
+     * It counts only "empty" slots and identifies "very old slots", so the statistic is not completely up to date, but
+     * good enough to give a hint on the cache usage.
      *
      * @return
      */
