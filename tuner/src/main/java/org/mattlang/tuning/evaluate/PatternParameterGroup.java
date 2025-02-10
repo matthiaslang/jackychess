@@ -55,21 +55,6 @@ public class PatternParameterGroup implements TuningParameterGroup {
 
     private Function<Integer, Boolean> includePositions = INCLUDE_ALL_POSITIONS;
 
-    public PatternParameterGroup(String subdir, String tableCsvName,
-            boolean mirrored,
-            ParameterizedEvaluation parameterizedEvaluation,
-            Function<ParameterizedEvaluation, Pattern> getter) {
-        this.subdir = subdir;
-        this.tableCsvName = tableCsvName;
-        this.paramName = tableCsvName.replace(".csv", "");
-        this.mgEgCombined = false;
-        this.getter = getter;
-        this.pattern = getter.apply(parameterizedEvaluation).copy();
-        this.mirrored = mirrored;
-
-        initPatternParamValues();
-    }
-
     public PatternParameterGroup(String subdir, String tableCsvNameMg, String tableCsvNameEg,
             boolean mirrored,
             ParameterizedEvaluation parameterizedEvaluation,

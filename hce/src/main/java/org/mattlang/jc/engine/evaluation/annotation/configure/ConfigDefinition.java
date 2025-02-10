@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.evaluation.annotation.configure;
 import java.lang.reflect.Field;
 
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
+import org.mattlang.jc.engine.evaluation.annotation.MirrorPattern;
 
 import lombok.Getter;
 
@@ -19,7 +20,11 @@ public class ConfigDefinition {
     private final boolean disableTuning;
     private final Class<?> declaredFieldType;
 
-    public ConfigDefinition(PrefixStack prefixes, EvalConfigParam param, Field declaredField) {
+    private final boolean mirror;
+
+    public ConfigDefinition(PrefixStack prefixes, EvalConfigParam param,
+            MirrorPattern mirrorPattern,
+            Field declaredField) {
         declaredFieldName = declaredField.getName();
         declaredFieldType = declaredField.getType();
         definedPrefix = param.prefix();
@@ -29,5 +34,6 @@ public class ConfigDefinition {
 
         fullQualifiedConfigName = prefixes.with(definedPrefix).with(effectiveConfigName).getQualifiedName();
 
+        mirror = mirrorPattern != null ? mirrorPattern.mirror() : true;
     }
 }

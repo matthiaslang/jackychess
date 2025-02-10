@@ -4,10 +4,7 @@ import static org.mattlang.jc.engine.evaluation.annotation.configure.FieldAccess
 
 import java.lang.reflect.Field;
 
-import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
-import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
-import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
-import org.mattlang.jc.engine.evaluation.annotation.EvalValueInterval;
+import org.mattlang.jc.engine.evaluation.annotation.*;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
@@ -59,8 +56,15 @@ public class ParamConfiguratorTraverser {
 
             EvalConfigParam evalConfigParam = declaredField.getAnnotation(EvalConfigParam.class);
             if (evalConfigParam != null) {
+                MirrorPattern mirrorPattern = declaredField.getAnnotation(MirrorPattern.class);
                 ConfigDefinition configDefinition =
-                        new ConfigDefinition(prefixStackToUse, evalConfigParam, declaredField);
+                        new ConfigDefinition(prefixStackToUse, evalConfigParam,
+                                mirrorPattern,
+                                declaredField);
+
+
+
+                // todo add individual config el settings...
 
                 if (configFilter.filter(configDefinition.getFullQualifiedConfigName())) {
                     configureField(configDefinition, eval, prefixStackToUse, nestedAccessStack,

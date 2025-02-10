@@ -99,7 +99,7 @@ public class TuningParamVisitor implements EvalConfigVisitor {
             groups.add(new PatternParameterGroup(patternConfigDefinition.getSubDir(),
                     patternConfigDefinition.getCsvTableNameMG(),
                     patternConfigDefinition.getCsvTableNameEG(),
-                    true,
+                    patternConfigDefinition.getMgEgConfigDefinition().getConfigDefinition().isMirror(),
                     evaluation,
                     e -> (Pattern) fieldAccessStack.get(e)));
         }
