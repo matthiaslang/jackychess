@@ -14,4 +14,8 @@ public class GoParameter {
     public long movetime;
     public String[] searchMoves;
 
+
+    public int depth;
+    public int nodes;
+    public int mate;
 }

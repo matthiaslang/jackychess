@@ -64,7 +64,18 @@ public class UciInterfaceTest {
 
         Thread.sleep(2000);
         communication.expectBestmove("e4d5");
+        communication.consumeAllInfo();
 
+        communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
+        communication.write("go depth 1");
+        Thread.sleep(2000);
+        communication.expectBestmove("e4d5");
+        communication.consumeAllInfo();
+
+        communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
+        communication.write("go nodes 10000");
+        Thread.sleep(2000);
+        communication.expectBestmove("e4d5");
         communication.consumeAllInfo();
     }
 

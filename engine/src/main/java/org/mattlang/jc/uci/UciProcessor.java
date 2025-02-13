@@ -1,6 +1,9 @@
 package org.mattlang.jc.uci;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.logging.Level.SEVERE;
+import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.uci.UciKeyWords.*;
 
 import java.util.Arrays;
@@ -22,6 +25,12 @@ import org.mattlang.jc.engine.search.SearchThreadContexts;
 public class UciProcessor {
 
     private static final Logger LOGGER = Logger.getLogger(UciProcessor.class.getSimpleName());
+
+    /**
+     * our minimum search depth is 3, since otherwise we come into some technical issues with indexing.
+     * Because of that we do not support lower depths, since this makes anyway not really sense.
+     */
+    private static final int MIN_DEPTH = 3;
 
     private GameState gameState;
 
@@ -148,6 +157,18 @@ public class UciProcessor {
             } else if (MOVETIME.equals(tok)) {
                 x++;
                 param.movetime = Long.parseLong(result[x]);
+                x++;
+            } else if (MATE.equals(tok)) {
+                x++;
+                param.mate = Integer.parseInt(result[x]);
+                x++;
+            } else if (DEPTH.equals(tok)) {
+                x++;
+                param.depth = min(MAX_PLY - 1, max(MIN_DEPTH, Integer.parseInt(result[x])));
+                x++;
+            } else if (NODES.equals(tok)) {
+                x++;
+                param.nodes = Integer.parseInt(result[x]);
                 x++;
             } else if (SEARCHMOVES.equals(tok)) {
                 x++;

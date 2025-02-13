@@ -12,6 +12,8 @@ import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.IterativeDeepeningPVS;
 import org.mattlang.jc.engine.search.MultiThreadedIterativeDeepening;
+import org.mattlang.jc.uci.GoParameter;
+import org.mattlang.jc.uci.TimeCalc;
 import org.mattlang.jc.uci.UCIGroup;
 import org.mattlang.jc.uci.UCIOption;
 
@@ -30,6 +32,9 @@ public class SearchParameter {
 
     @Getter
     private int depth = ConfigValues.getConfigValues().maxDepth.getValue();
+
+    @Getter
+    private int nodes;
 
     public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
 
@@ -52,9 +57,17 @@ public class SearchParameter {
         this.legalMovesToSearch = legalMovesToSearch;
     }
 
-    public SearchParameter(int timeout, MoveList legalMovesToSearch) {
+    public SearchParameter(int timeout, MoveList legalMovesToSearch, GoParameter goParams) {
         this.timeout = timeout;
         this.legalMovesToSearch = legalMovesToSearch;
+        if (goParams.depth > 0) {
+            this.depth = goParams.depth;
+            this.timeout = TimeCalc.INFINITE_TIMEOUT;
+        }
+        if (goParams.nodes > 0) {
+            this.nodes = goParams.nodes;
+            this.timeout = TimeCalc.INFINITE_TIMEOUT;
+        }
     }
 
     public SearchParameter(int timeout) {
@@ -76,8 +89,8 @@ public class SearchParameter {
         return new SearchParameter(timeout, depth, legalMovesToSearch);
     }
 
-    public static SearchParameter createMultiThread(int timeout, MoveList legalMovesToSearch) {
-        return new SearchParameter(timeout, legalMovesToSearch)
+    public static SearchParameter createMultiThread(int timeout, MoveList legalMovesToSearch, GoParameter goParams) {
+        return new SearchParameter(timeout, legalMovesToSearch, goParams)
                 .searchMethod.set(MultiThreadedIterativeDeepening::new);
     }
 

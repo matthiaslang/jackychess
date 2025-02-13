@@ -60,7 +60,7 @@ public class AsyncEngine {
         // init the search parameters, eval functions, etc:
 
         final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
-        final SearchParameter searchParams = createMultiThread((int) timeToUse, legalMovesToSearch);
+        final SearchParameter searchParams = createMultiThread((int) timeToUse, legalMovesToSearch, goParams);
 
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {

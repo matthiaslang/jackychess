@@ -84,11 +84,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         isWorker = workerNumber > 0;
     }
 
-    public IterativeDeepeningPVS(NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
-        this(0);
-        this.negaMaxAlphaBeta = negaMaxAlphaBeta;
-    }
-
     public IterativeDeepeningPVS() {
     }
 
@@ -104,6 +99,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
         negaMaxAlphaBeta.setIsWorker(isWorker);
+        if (searchParams.getNodes() > 0) {
+            negaMaxAlphaBeta.setMaxNodes(searchParams.getNodes());
+        }
         this.gameState = gameState.copy();
         lastCurrMove = 0;
 

@@ -31,6 +31,7 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -102,6 +103,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private boolean isWorker = false;
 
+    @Setter
+    private int maxNodes = Integer.MAX_VALUE;
+
     public NegaMaxAlphaBetaPVS() {
         reset();
     }
@@ -122,6 +126,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     public void reset() {
+        maxNodes = Integer.MAX_VALUE;
         resetStatistics();
     }
 
@@ -146,6 +151,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         final int mateValue = KING_WEIGHT - ply;
 
         statistics.nodesVisited++;
+        if (statistics.nodesVisited > maxNodes) {
+            throw new TimeoutException();
+        }
         final boolean not_pv = abs(beta - alpha) <= 1;
 
         /**************************************************************************
@@ -597,7 +605,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private int quiesce(final int ply, final int depth, final Color color, int alpha, int beta) {
         statistics.nodesVisited++;
-
+        if (statistics.nodesVisited > maxNodes) {
+            throw new TimeoutException();
+        }
         if (searchContext.isDrawByMaterial()) {
             return Weights.REPETITION_WEIGHT;
         }
