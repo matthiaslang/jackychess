@@ -18,6 +18,17 @@ public class Constants {
     public static final int MAX_PLY = 64;
 
     /**
+     * Maximum supported search depth.
+     */
+    public static final int MAX_DEPTH = MAX_PLY - 1;
+
+    /**
+     * our minimum search depth is 3, since otherwise we come into some technical issues with indexing.
+     * Because of that we do not support lower depths, since this makes anyway not really sense.
+     */
+    public static final int MIN_DEPTH = 3;
+
+    /**
      * maximum Threads supported.
      */
     public static final int MAX_THREADS = 8;

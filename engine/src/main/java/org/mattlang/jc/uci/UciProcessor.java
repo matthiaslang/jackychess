@@ -4,6 +4,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MIN_DEPTH;
 import static org.mattlang.jc.uci.UciKeyWords.*;
 
 import java.util.Arrays;
@@ -25,12 +26,6 @@ import org.mattlang.jc.engine.search.SearchThreadContexts;
 public class UciProcessor {
 
     private static final Logger LOGGER = Logger.getLogger(UciProcessor.class.getSimpleName());
-
-    /**
-     * our minimum search depth is 3, since otherwise we come into some technical issues with indexing.
-     * Because of that we do not support lower depths, since this makes anyway not really sense.
-     */
-    private static final int MIN_DEPTH = 3;
 
     private GameState gameState;
 

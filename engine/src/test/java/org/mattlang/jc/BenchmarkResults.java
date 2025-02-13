@@ -26,7 +26,6 @@ public class BenchmarkResults<T> {
     private final String formattedDuration;
     private String fenposition;
     Map stats;
-    private int depth;
 
     private final String evaluateFunction;
     private final Boolean useMvvLvaSorting;
@@ -50,7 +49,6 @@ public class BenchmarkResults<T> {
             this.testExpectedBestMove = testPosition.getExpectedBestMove();
         }
         ConfigValues config = ConfigValues.getConfigValues();
-        this.depth = config.maxDepth.getValue();
         this.evaluateFunction = Configurator.determineEvalImplName();
         this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
         this.useTTCache = config.useTTCache.getValue();

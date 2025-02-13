@@ -35,33 +35,33 @@ public class MoveOrderingBenchmark {
 
         everythingOff();
         // all opts deactivated
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // pv sorting, pv search
         everythingOff();
         getConfigValues().activatePvsSearch.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // pv sorting, pv search, mvvlva
         everythingOff();
         getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only mvvlva
         everythingOff();
         getConfigValues().useMvvLvaSorting.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only killer moves
         everythingOff();
         getConfigValues().useKillerMoves.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only history heuristic
         everythingOff();
         getConfigValues().useHistoryHeuristic.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on:
         everythingOff();
@@ -69,7 +69,7 @@ public class MoveOrderingBenchmark {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on + cache:
         everythingOff();
@@ -78,7 +78,7 @@ public class MoveOrderingBenchmark {
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
         getConfigValues().useTTCache.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on + cache + aspiration:
         everythingOff();
@@ -88,14 +88,14 @@ public class MoveOrderingBenchmark {
         getConfigValues().useHistoryHeuristic.setValue(true);
         getConfigValues().useTTCache.setValue(true);
         getConfigValues().aspiration.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // "old" version: pv search, pv order, mmvla + cache:
         everythingOff();
         getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useTTCache.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
@@ -113,7 +113,6 @@ public class MoveOrderingBenchmark {
         getConfigValues().useKillerMoves.setValue(false);
         getConfigValues().useHistoryHeuristic.setValue(false);
         getConfigValues().useMvvLvaSorting.setValue(false);
-        getConfigValues().maxDepth.setValue(MAX_DEPTH);
 
     }
 

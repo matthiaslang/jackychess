@@ -38,17 +38,13 @@ public class ConfigValues {
     public final UCIGroup limits =
             allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
 
-    public final UCISpinOption maxDepth = limits.createSpinOpt("maxdepth",
-            "the maximum search depth to use if there is enough search time",
-            3, MAX_PLY - 1, MAX_PLY - 1);
-
     public final UCISpinOption maxQuiescence =
             limits.createSpinOpt("quiescence",
                     "the maximum search depth in quiescence",
                     0, MAX_PLY - 1, MAX_PLY - 1);
 
-    public final UCISpinOption maxThreads = limits.createSpinOpt("maxThreads",
-            "the maximum search threads when multi threading search is activated",
+    public final UCISpinOption maxThreads = limits.createSpinOpt("Threads",
+            "the maximum search threads to use for search",
             1, MAX_THREADS, 1);
 
     /**

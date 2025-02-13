@@ -1,5 +1,7 @@
 package org.mattlang.jc;
 
+import static org.mattlang.jc.Constants.MAX_DEPTH;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class SearchParameter {
     private int timeout = DEFAULT_SEARCHTIME;
 
     @Getter
-    private int depth = ConfigValues.getConfigValues().maxDepth.getValue();
+    private int depth = MAX_DEPTH;
 
     @Getter
     private int nodes;
@@ -62,11 +64,17 @@ public class SearchParameter {
         this.legalMovesToSearch = legalMovesToSearch;
         if (goParams.depth > 0) {
             this.depth = goParams.depth;
-            this.timeout = TimeCalc.INFINITE_TIMEOUT;
+            // we support setting depth and timeout (normally only testcases would do that..)
+            // so, only if we got no time restriction set limit to endless, as we stop by depth:
+            if (timeout == 0) {
+                this.timeout = TimeCalc.INFINITE_TIMEOUT;
+            }
         }
         if (goParams.nodes > 0) {
             this.nodes = goParams.nodes;
-            this.timeout = TimeCalc.INFINITE_TIMEOUT;
+            if (timeout == 0) {
+                this.timeout = TimeCalc.INFINITE_TIMEOUT;
+            }
         }
     }
 

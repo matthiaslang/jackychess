@@ -42,7 +42,7 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
 
 
     public static final String[] props =
-            { "name", "fenposition", "testName", "testExpectedBestMove", "depth", "maxQuiescence", "duration",
+            { "name", "fenposition", "testName", "testExpectedBestMove", "maxQuiescence", "duration",
                     "formattedDuration",
                     "evaluateFunction",
                     "useMvvLvaSorting",  "useTTCache", "useKillerMoves", "useHistoryHeuristic",

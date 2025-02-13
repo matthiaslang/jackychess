@@ -38,25 +38,25 @@ public class AspirationWindowBenchmark {
         everythingOn();
         getConfigValues().activatePvsSearch.setValue(false);
         getConfigValues().aspiration.setValue(false);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only pv search:
         everythingOn();
         getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().aspiration.setValue(false);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // pv search +  aspiration:
         everythingOn();
         getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().aspiration.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // aspiration without pv search:
         everythingOn();
         getConfigValues().activatePvsSearch.setValue(false);
         getConfigValues().aspiration.setValue(true);
-        runner.benchmarkExecute(new SearchParameter(TIMEOUT));
+        runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         for (BenchmarkResults result : runner.getResults()) {
             System.out.println(result.getName() + ": " + result.getWatch().getFormattedDuration());
@@ -74,7 +74,6 @@ public class AspirationWindowBenchmark {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
-        getConfigValues().maxDepth.setValue(MAX_DEPTH);
     }
 
 }
