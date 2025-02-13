@@ -62,7 +62,7 @@ else
   },
     {
       "workingDirectory": "/jackychess",
-      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=INFO -Duser.home=/logs -jar /jackychess/$JARFILE",
+      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/logs -jar /jackychess/$JARFILE",
       "name": "jacky${MVNVERSION}4T",
       "protocol": "uci",
       "options": [{"name": "maxThreads", "value": "4"}, {"name": "Hash","value": "512"}]
@@ -86,10 +86,12 @@ GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
 # $JARFILE
 
 - Tag $TAGNAME
+- Branch ${CURRBRANCH}
 - Git Describe $GITDESCR
+- Maven Version ${MVNVERSION}
 
 
-## Changes
+## Changes compared to develop
 
 \`\`\`
 $GITLOG
