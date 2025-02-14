@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.mattlang.jackychess</groupId>
         <artifactId>parent</artifactId>
-        <version>25.01C</version>
+        <version>25.01D</version>
     </parent>
 
     <packaging>jar</packaging>
     <groupId>org.mattlang.jackychess</groupId>
     <artifactId>tuner</artifactId>
-    <version>25.01C</version>
+    <version>25.01D</version>
 
     <profiles>
         <profile>
