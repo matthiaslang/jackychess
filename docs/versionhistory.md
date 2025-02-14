@@ -1,5 +1,10 @@
 # Versions
 
+## 25.01D
+
+- support for uci "go depth" and "go nodes" 
+- uci option "maxThreads" changed in "Threads"
+
 ## 25.01C
 
 - TT Cache rework
