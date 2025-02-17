@@ -1,6 +1,7 @@
 package org.mattlang.jc.moves;
 
 import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.moves.Stage.*;
 
 import java.util.logging.Logger;
 
@@ -31,32 +32,12 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
     public static final Logger LOGGER = Logger.getLogger(StagedMoveIterationPreparer.class.getSimpleName());
 
-    private static final int STAGE_HASH = 1;
-    private static final int PREPARE_STAGE_GOOD_CAPTURES = 2;
-    private static final int STAGE_GOOD_CAPTURES = 3;
-    private static final int STAGE_KILLERS1 = 4;
-    private static final int STAGE_KILLERS2 = 5;
-    private static final int STAGE_COUNTER = 6;
-    private static final int STAGE_QUIESCENCE_HASH = 7;
-    private static final int PREPARE_STAGE_QUIESCENCE_REST = 8;
-    private static final int STAGE_QUIESCENCE_REST = 9;
-    private static final int PREPARE_STAGE_REST = 10;
-    private static final int STAGE_REST = 11;
-    private static final int STAGE_STATIC_ALL = 12;
-
-    /* stage names, used for debugging. */
-    private static final String[] STAGENAME =
-            { "NONE", "STAGE HASH", "PREPARE STAGE GOOD CAPTURES", "STAGE GOOD CAPTURES", "STAGE KILLERS1",
-                    "STAGE KILLERS2", "STAGE COUNTER MOVE",
-                    "STAGE QUIESCENCE HASH", "PREPARE STAGE QUIESCENCE REST", "STAGE QUIESCENCE REST",
-                    "PREPARE STAGE REST", "STAGE REST" };
-
     /**
      * stages for "normal" negamax iteration.
      * This is currently the best split in stages. Other combinations, e.g. split killers in two stages, etc.
      * have not given any benefits.
      */
-    private static final int[] STAGES_NORMAL =
+    private static final Stage[] STAGES_NORMAL =
             { STAGE_HASH, PREPARE_STAGE_GOOD_CAPTURES, STAGE_GOOD_CAPTURES, STAGE_KILLERS1, STAGE_KILLERS2,
                     STAGE_COUNTER, PREPARE_STAGE_REST, STAGE_REST };
 
@@ -64,11 +45,10 @@ public class StagedMoveIterationPreparer implements MoveIterator {
      * Stages for quiescence. Actually we only have on stage for quiescence; other experiments have not
      * given any benefit.
      */
-    private static final int[] STAGES_QUIESCENCE =
+    private static final Stage[] STAGES_QUIESCENCE =
             { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_QUIESCENCE_REST };
 
-    private static final int[] SINGLE_STATIC_STAGE =
-            { STAGE_STATIC_ALL };
+    private static final Stage[] SINGLE_STATIC_STAGE = { STAGE_STATIC_ALL };
 
     private MoveList moveList = new MoveList();
 
@@ -79,9 +59,9 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private OrderCalculator orderCalculator;
     private BoardRepresentation board;
 
-    private int stage;
+    private int stageIndex;
 
-    private int[] stages;
+    private Stage[] stages;
 
     private int hashMove;
     private Color color;
@@ -90,7 +70,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
     private int captureMargin;
     private SearchThreadContext stc;
-    private GenMode mode;
+    private Stage currStage;
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove) {
@@ -101,7 +81,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         movelistPos = 0;
-        this.stage = 0;
+        this.stageIndex = 0;
         this.stc = stc;
         this.board = board;
         this.hashMove = hashMove;
@@ -110,15 +90,15 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        this.mode = mode;
         stages = mode == GenMode.NORMAL ? STAGES_NORMAL : STAGES_QUIESCENCE;
+        currStage = stages[stageIndex];
     }
 
     public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, Color color,
             MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         movelistPos = 0;
-        this.stage = 0;
+        this.stageIndex = 0;
         this.stc = stc;
         this.board = board;
         this.hashMove = hashMove;
@@ -127,13 +107,13 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        this.mode = GenMode.NORMAL;
         stages = STAGES_NORMAL;
         if (legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
             stages = SINGLE_STATIC_STAGE;
             moveList.initFrom(legalMovesToSearch);
             createSortOrders(0);
         }
+        currStage = stages[stageIndex];
     }
 
     private int theNextMove = 0;
@@ -142,15 +122,15 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
     private int nextMove() {
 
-        while (stage < stages.length) {
+        while (stageIndex < stages.length) {
 
             if (BuildConstants.ASSERTIONS) {
-                LOGGER.fine("ply " + ply + " try " + STAGENAME[stages[stage]]);
+                LOGGER.fine("ply " + ply + " try " + currStage);
             }
 
-            switch (stages[stage]) {
+            switch (currStage) {
             case STAGE_HASH:
-                stage++;
+                nextStage();
                 if (hashMove != 0 && board.isvalidmove(color, hashMove)) {
                     theNextMove = hashMove;
                     theNextOrder = OrderCalculator.HASHMOVE_SCORE;
@@ -159,13 +139,13 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 }
                 break;
             case PREPARE_STAGE_GOOD_CAPTURES:
-                stage++;
+                nextStage();
 
                 int currSize = moveList.size();
                 MoveGeneration.generateAttacks(board, color, moveList);
                 if (currSize == moveList.size()) {
                     // not captures at all: overstep next step:
-                    stage++;
+                    nextStage();
                 } else {
                     createCaptureSortOrders(movelistPos);
                     if (movelistPos < moveList.size()) {
@@ -175,7 +155,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                             return theNextMove;
                         } else {
                             // there are only bad captures: overstep the "stage good captures":
-                            stage++;
+                            nextStage();
                         }
 
                     }
@@ -190,11 +170,11 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                         return theNextMove;
                     }
                 }
-                stage++;
+                nextStage();
 
                 break;
             case STAGE_KILLERS1:
-                stage++;
+                nextStage();
                 int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
 
                 if (killers[0] != 0 && board.isvalidmove(color, killers[0]) && !moveList.isFiltered(killers[0])) {
@@ -205,7 +185,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 }
                 break;
             case STAGE_KILLERS2:
-                stage++;
+                nextStage();
                 killers = stc.getKillerMoves().getOrCreateKillerList(ply);
 
                 if (killers[1] != 0 && board.isvalidmove(color, killers[1]) && !moveList.isFiltered(killers[1])) {
@@ -216,7 +196,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 }
                 break;
             case STAGE_COUNTER:
-                stage++;
+                nextStage();
                 int counterMove = stc.getCounterMoveHeuristic().getCounter(color.ordinal(), parentMove);
                 if (counterMove != 0 && board.isvalidmove(color, counterMove) && !moveList.isFiltered(counterMove)) {
                     theNextMove = counterMove;
@@ -226,7 +206,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 }
                 break;
             case PREPARE_STAGE_REST:
-                stage++;
+                nextStage();
                 int start = moveList.size();
                 MoveGeneration.generateQuiets(board, color, moveList);
                 createQuietSortOrders(start);
@@ -245,11 +225,11 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                     theNextOrder = moveList.getOrder(movelistPos);
                     return theNextMove;
                 }
-                stage++;
+                nextStage();
 
                 break;
             case STAGE_QUIESCENCE_HASH:
-                stage++;
+                nextStage();
                 if (hashMove != 0
                         && (MoveImpl.isCapture(hashMove) || MoveImpl.isPromotion(hashMove))
                         && board.isvalidmove(color, hashMove)) {
@@ -259,7 +239,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 }
                 break;
             case PREPARE_STAGE_QUIESCENCE_REST:
-                stage++;
+                nextStage();
                 start = moveList.size();
                 generator.generate(GenMode.QUIESCENCE, board, color, moveList);
                 createSortOrders(start);
@@ -276,7 +256,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                     movelistPos++;
                     return theNextMove;
                 }
-                stage++;
+                nextStage();
                 break;
             }
 
@@ -337,4 +317,18 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         return theNextMove != 0;
     }
 
+    private void nextStage() {
+        stageIndex++;
+        if (stageIndex < stages.length) {
+            currStage = stages[stageIndex];
+        }
+    }
+
+    private boolean hasNextSortedMove() {
+        if (movelistPos < moveList.size()) {
+            theNextMove = sortToFront(movelistPos);
+            return true;
+        }
+        return false;
+    }
 }
