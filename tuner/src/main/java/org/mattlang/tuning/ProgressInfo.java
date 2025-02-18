@@ -22,12 +22,12 @@ public class ProgressInfo {
 
     private StopWatch stopWatch = new StopWatch();
 
-    private double overallAdjPerSecond;
+    private double overallAdjPerHour;
 
     private int lastParamsAdjusted;
 
     private long lastTime;
-    private double adjPerSecond;
+    private double adjPerHour;
 
     public ProgressInfo(OptParameters optParameters, File outputDir, MarkdownAppender markdownAppender) {
         this.outputDir = outputDir;
@@ -50,14 +50,14 @@ public class ProgressInfo {
         long secondsOfProgressInterval = (stopWatch.getCurrDuration() - lastTime) / 1000;
         if (secondsOfProgressInterval > 0) {
 
-            adjPerSecond = ((double) adjOfProgressInterval) / secondsOfProgressInterval;
+            adjPerHour = ((double) adjOfProgressInterval) / secondsOfProgressInterval *60*60;
         }
         lastParamsAdjusted = progress.numParamAdjusted;
         lastTime = stopWatch.getCurrDuration();
 
         long seconds = stopWatch.getCurrDuration() / 1000;
         if (seconds > 0) {
-            overallAdjPerSecond = ((double) progress.numParamAdjusted) / seconds;
+            overallAdjPerHour = ((double) progress.numParamAdjusted) / seconds *60*60;
         }
 
         String progressInfoTxt =
@@ -68,14 +68,15 @@ public class ProgressInfo {
                         ", params adjustments: " + adjOfProgressInterval
                         + ", total: " + progress.numParamAdjusted
                         + "; curr Error= " + progress.bestE
-                        + ", overall paramsAdjPerSecond= " + overallAdjPerSecond
-                        + ", paramsAdjPerSecond= " + adjPerSecond;
+                        + ", overall paramsAdjPerHour= " + overallAdjPerHour
+                        + ", paramsAdjPerHour= " + adjPerHour;
         LOGGER.info(progressInfoTxt);
         parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {
             progressTable.row(stopWatch.getFormattedCurrDuration(), progress.paramIterationRound, progress.round
-                    , step, adjOfProgressInterval, progress.numParamAdjusted, progress.bestE, overallAdjPerSecond, adjPerSecond);
+                    , step, adjOfProgressInterval, progress.numParamAdjusted, progress.bestE, overallAdjPerHour,
+                    adjPerHour);
             progressTable.writeRows(w);
         });
     }
