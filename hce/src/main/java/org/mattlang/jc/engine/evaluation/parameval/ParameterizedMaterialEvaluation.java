@@ -19,28 +19,43 @@ import lombok.Getter;
 @EvalValueInterval(min = 0, max = 2000)
 public class ParameterizedMaterialEvaluation implements EvalComponent {
 
+    // explicit endgame values used for end game functions
     @EvalConfigParam(disableTuning = true)
     @Getter
     private int pawnEG;
+
     @EvalConfigParam(disableTuning = true)
     private int knightEG;
+
     @EvalConfigParam(disableTuning = true)
     private int bishopEG;
+
     @EvalConfigParam(disableTuning = true)
     @Getter
     private int rookEG;
+
     @EvalConfigParam(disableTuning = true)
     @Getter
     private int queenEG;
 
+    // the real eg/mg values which are also tuned
+    @EvalValueInterval(min = 0, max = 2000)
     @EvalConfigParam(mgEgCombined = true)
     private int pawn;
+
+    @EvalValueInterval(min = 0, max = 2000)
     @EvalConfigParam(mgEgCombined = true)
     private int knight;
+
+    @EvalValueInterval(min = 0, max = 2000)
     @EvalConfigParam(mgEgCombined = true)
     private int bishop;
+
+    @EvalValueInterval(min = 0, max = 2000)
     @EvalConfigParam(mgEgCombined = true)
     private int rook;
+
+    @EvalValueInterval(min = 0, max = 2000)
     @EvalConfigParam(mgEgCombined = true)
     private int queen;
 
