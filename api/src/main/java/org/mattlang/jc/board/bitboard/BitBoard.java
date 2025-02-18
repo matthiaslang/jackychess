@@ -91,9 +91,21 @@ public final class BitBoard implements BoardRepresentation {
     @Override
     public void setPosition(String[] fenPosition) {
         for (int i = 0; i < 8; i++) {
-            String row = expandRow(fenPosition[i]);
+            String row = fenPosition[i];
+            int rowIndex = 0;
             for (int j = 0; j < 8; j++) {
-                setPos(i, j, row.charAt(j));
+                char ch = row.charAt(rowIndex);
+                if (isDigit(ch)) {
+                    int empties = ch - '0';// parseInt(String.valueOf(ch));
+                    for (int e = 0; e < empties; e++) {
+                        setPos(i, j, ' ');
+                        j++;
+                    }
+                    j--;
+                } else {
+                    setPos(i, j, ch);
+                }
+                rowIndex++;
             }
         }
         moveCounter = 0;
