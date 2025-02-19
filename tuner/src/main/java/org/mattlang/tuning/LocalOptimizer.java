@@ -79,7 +79,7 @@ public class LocalOptimizer implements Optimizer {
 
         ProgressInfo progressInfo = new ProgressInfo(optParameters, outputDir, markdownAppender);
 
-        while (progress.improved) {
+        while (progress.improved && progressInfo.hasEnoughProgress(step)) {
             progress.improved = false;
             if (shuffle) {
                 Collections.shuffle(parameterSet.getParams(), random);

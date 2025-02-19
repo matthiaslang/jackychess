@@ -28,6 +28,7 @@ public class ProgressInfo {
 
     private long lastTime;
     private double adjPerHour;
+    private boolean tooLessProgress = false;
 
     public ProgressInfo(OptParameters optParameters, File outputDir, MarkdownAppender markdownAppender) {
         this.outputDir = outputDir;
@@ -36,8 +37,9 @@ public class ProgressInfo {
         stopWatch.start();
 
         progressTable =
-                new MarkdownTable().header("Duration", "Param Iteration", "Round", "Step", "Params adjustments", "Adj total", "Curr Error"
-                        , "Overall AdjPerSecond", "AdjPerSecond");
+                new MarkdownTable().header("Duration", "Param Iteration", "Round", "Step", "Params adjustments",
+                        "Adj total", "Curr Error"
+                        , "Overall AdjPerHour", "AdjPerHour");
 
         markdownAppender.append(w -> {
             progressTable.writeTableHeader(w);
@@ -47,17 +49,19 @@ public class ProgressInfo {
     public void progressInfo(ParameterSet parameterSet, int step, ProgressParams progress) {
         int adjOfProgressInterval = progress.numParamAdjusted - lastParamsAdjusted;
 
+        tooLessProgress = adjOfProgressInterval < 5;
+
         long secondsOfProgressInterval = (stopWatch.getCurrDuration() - lastTime) / 1000;
         if (secondsOfProgressInterval > 0) {
 
-            adjPerHour = ((double) adjOfProgressInterval) / secondsOfProgressInterval *60*60;
+            adjPerHour = ((double) adjOfProgressInterval) / secondsOfProgressInterval * 60 * 60;
         }
         lastParamsAdjusted = progress.numParamAdjusted;
         lastTime = stopWatch.getCurrDuration();
 
         long seconds = stopWatch.getCurrDuration() / 1000;
         if (seconds > 0) {
-            overallAdjPerHour = ((double) progress.numParamAdjusted) / seconds *60*60;
+            overallAdjPerHour = ((double) progress.numParamAdjusted) / seconds * 60 * 60;
         }
 
         String progressInfoTxt =
@@ -83,5 +87,13 @@ public class ProgressInfo {
 
     public boolean isEnoughTimeElapsed() {
         return stopWatch.timeElapsed(updatesInMinutes * 60000);
+    }
+
+    public boolean hasEnoughProgress(int step) {
+        if (step == 1) {
+            return true;
+        }
+        // in higher steps we check that we make a minimum of progress, otherwise continue with the next smaller step:
+        return !tooLessProgress;
     }
 }
