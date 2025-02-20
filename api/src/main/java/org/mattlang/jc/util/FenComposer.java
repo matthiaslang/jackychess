@@ -62,6 +62,13 @@ public class FenComposer {
                 + enpassant(board) + " " + noHalfMoves + " " + nextMoveNum;
     }
 
+    public void createRawFenFromBoard(BoardRepresentation board,
+            Color who2Move, int noHalfMoves, int nextMoveNum) {
+        clear();
+        preStr = buildFenPosition(board) + " " + colorFen(who2Move) + " " + rochade(board) + " "
+                + enpassant(board) + " " + noHalfMoves + " " + nextMoveNum;
+    }
+
     private String enpassant(BoardRepresentation board) {
         int i = board.getEnPassantMoveTargetPos();
         if (i == -1) {
@@ -98,6 +105,10 @@ public class FenComposer {
     public void createFenFromBoard(BoardRepresentation board) {
         createFenFromBoard(board, board.getSiteToMove(), 0, 0);
     }
+    public void createRawFenFromBoard(BoardRepresentation board) {
+        createRawFenFromBoard(board, board.getSiteToMove(), 0, 0);
+    }
+
 
     public static String buildFenPosition(BoardRepresentation board) {
         StringBuilder fen = new StringBuilder();

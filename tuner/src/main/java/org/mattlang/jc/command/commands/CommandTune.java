@@ -89,16 +89,9 @@ public class CommandTune implements JCTCommand {
     }
 
     @Override
-    public void executeCommand() {
-
+    public void executeCommand() throws IOException {
         params = buildParams();
-
-        try {
-            LocalOptimizationTuner.run(params);
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-
+        LocalOptimizationTuner.run(params);
     }
 
     public OptParameters buildParams() {
