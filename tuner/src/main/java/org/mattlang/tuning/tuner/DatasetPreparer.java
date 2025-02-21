@@ -41,15 +41,23 @@ public class DatasetPreparer {
 
     public DataSet prepareLoadFromFile(File file) throws IOException {
         if (file.getName().endsWith(".pgn")) {
-            PgnParser parser = new PgnParser();
-            List<PgnGame> games = parser.parse(file);
-
-            return prepareGames(games);
+            return prepareLoadPgn(file);
         } else if (file.getName().endsWith(".epd") || file.getName().endsWith(".book")) {
             return prepareFromEpd(file);
         } else {
             throw new RuntimeException("can only parse pgn or epd files!");
         }
+    }
+
+    public DataSet prepareLoadPgn(File file, PgnPrepareConfig config) throws IOException {
+        PgnParser parser = new PgnParser();
+        List<PgnGame> games = parser.parse(file);
+
+        return prepareGames(games, config);
+    }
+
+    public DataSet prepareLoadPgn(File file) throws IOException {
+        return prepareLoadPgn(file, PgnPrepareConfig.DEFAULT);
     }
 
     private DataSet prepareFromEpd(File file) {
@@ -136,15 +144,19 @@ public class DatasetPreparer {
         }
     }
 
-    private DataSet prepareGames(List<PgnGame> games) {
+    private DataSet prepareGames(List<PgnGame> games, PgnPrepareConfig config) {
         LOGGER.info("preparing Data now...");
         DataSet dataSet = new DataSet(params);
-        int counter = 0;
+        int counter = 1;
         Iterator<PgnGame> iterator = games.iterator();
         while (iterator.hasNext()) {
             PgnGame game = iterator.next();
             if (game.getResult() != Ending.UNTERMINATED) {
-                addGame(dataSet, game);
+                try {
+                    addGame(dataSet, game, config);
+                } catch (PgnParserException ppe) {
+                    throw new RuntimeException("Error parsing game " + counter + " " + game.getTagStr(), ppe);
+                }
             }
             iterator.remove();
             counter++;
@@ -155,30 +167,41 @@ public class DatasetPreparer {
         return dataSet;
     }
 
-    private void addGame(DataSet dataSet, PgnGame game) {
+    private void addGame(DataSet dataSet, PgnGame game, PgnPrepareConfig config) {
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         // play game and add all relevant positions:
+        int halfMoveCounter = 1;
+        int moveCount = game.getMoves().size() * 2;
+        int movesToAdd = moveCount;
+        if (config.getSkipLastNHalfMoves() > 0) {
+            movesToAdd -= config.getSkipLastNHalfMoves();
+
+        }
         for (PgnMove pgnMove : game.getMoves()) {
 
-            doAndHandleMove(dataSet, pgnMove.getWhite(), board, game.getResult());
+            boolean addMove = halfMoveCounter > config.getSkipFirstNHalfMoves() && halfMoveCounter < movesToAdd;
+            doAndHandleMove(dataSet, pgnMove.getWhite(), board, game.getResult(), addMove);
 
+            halfMoveCounter++;
             if (pgnMove.getBlack() != null) {
-                doAndHandleMove(dataSet, pgnMove.getBlack(), board, game.getResult());
+                doAndHandleMove(dataSet, pgnMove.getBlack(), board, game.getResult(), addMove);
             }
-
+            halfMoveCounter++;
         }
     }
 
-    private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending) {
+    private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending,
+            boolean addMove) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
         MoveValidator moveValidator = new MoveValidator();
         MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
 
         boolean anyLegalMoves = moveList.size() > 0;
-        if (moveDesr.getEnding() == null
+        if (addMove
+                && moveDesr.getEnding() == null
                 && !isBookMove(moveDesr)
                 && anyLegalMoves
                 && !isEvalUsingEndGameFunction(board)

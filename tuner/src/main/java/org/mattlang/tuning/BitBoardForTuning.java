@@ -1,6 +1,7 @@
 package org.mattlang.tuning;
 
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.board.bitboard.BitBoard.NO_EN_PASSANT_OPTION;
 
 import java.util.Objects;
 
@@ -34,11 +35,18 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     private boolean chess960 = false;
 
+    /**
+     * the target pos of the en passant move that could be taken as next move on the board.
+     * -1 if no en passant is possible.
+     */
+    private int enPassantMoveTargetPos = NO_EN_PASSANT_OPTION;
+
     public BitBoardForTuning(BitChessBoard board, CastlingRights castlingRights, int enPassantMoveTargetPos,
             Color siteToMove) {
         this.board = board;
         this.castlingRights = castlingRights.getRights();
         this.siteToMove = siteToMove;
+        this.enPassantMoveTargetPos=enPassantMoveTargetPos;
     }
 
     public BitBoardForTuning(BitChessBoard board, byte castlingRights, int enPassantMoveTargetPos,
@@ -46,6 +54,7 @@ public class BitBoardForTuning implements BoardRepresentation {
         this.board = board;
         this.castlingRights = castlingRights;
         this.siteToMove = siteToMove;
+        this.enPassantMoveTargetPos=enPassantMoveTargetPos;
     }
 
     @Override
@@ -134,19 +143,19 @@ public class BitBoardForTuning implements BoardRepresentation {
         if (o == null || getClass() != o.getClass())
             return false;
         BitBoardForTuning bitBoard = (BitBoardForTuning) o;
-        return  board.equals(bitBoard.board)
+        return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos &&  board.equals(bitBoard.board)
                 && castlingRights == bitBoard.castlingRights && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, castlingRights, siteToMove);
+        return Objects.hash(board, castlingRights, siteToMove, enPassantMoveTargetPos);
     }
 
     @Override
     public BitBoardForTuning copy() {
         BitBoardForTuning
-                copied = new BitBoardForTuning(board.copy(), castlingRights, 0, siteToMove);
+                copied = new BitBoardForTuning(board.copy(), castlingRights, enPassantMoveTargetPos, siteToMove);
         copied.zobristHash = Zobrist.hash(copied);
         copied.material.init(copied);
         copied.chess960 = chess960;
@@ -173,17 +182,25 @@ public class BitBoardForTuning implements BoardRepresentation {
 
     @Override
     public boolean isEnPassantCapturePossible(int n) {
-        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
+        return enPassantMoveTargetPos == n;
     }
 
     @Override
     public int getEnPassantCapturePos() {
-        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
+        return calcEnPassantCaptureFromEnPassantOption();
     }
 
     @Override
     public int getEnPassantMoveTargetPos() {
-        throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
+        return enPassantMoveTargetPos;
+    }
+
+    private int calcEnPassantCaptureFromEnPassantOption() {
+        if (enPassantMoveTargetPos >= 16 && enPassantMoveTargetPos <= 23) {
+            return enPassantMoveTargetPos + 8;
+        } else {
+            return enPassantMoveTargetPos - 8;
+        }
     }
 
     @Override

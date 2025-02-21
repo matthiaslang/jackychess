@@ -15,6 +15,7 @@ import org.mattlang.tuning.DataSet;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.data.pgnparser.Ending;
 import org.mattlang.tuning.tuner.DatasetPreparer;
+import org.mattlang.tuning.tuner.PgnPrepareConfig;
 
 @Parameters(commandNames = { CommandPgn2Epd.CMD_PGN_2_EPD },
         separators = "=",
@@ -24,11 +25,17 @@ public class CommandPgn2Epd implements JCTCommand {
     private static final Logger LOGGER = Logger.getLogger(CommandPgn2Epd.class.getSimpleName());
 
     public static final String CMD_PGN_2_EPD = "pgn2epd";
-    @Parameter(description = "List of pgn input files")
+    @Parameter(description = "List of pgn input files", required = true)
     private List<String> files;
 
-    @Parameter(names = { "--output", "-o" }, description = "EPD Output file")
+    @Parameter(names = { "--output", "-o" }, description = "EPD Output file", required = true)
     private String outputFile;
+
+    @Parameter(names = { "--skipFirstMoves" }, description = "skip first n half moves")
+    private int skipFirstNHalfMoves = 0;
+
+    @Parameter(names = { "--skipLastMoves" }, description = "skip last n half moves")
+    private int skipLastNHalfMoves = 0;
 
     @Override
     public String getCmdName() {
@@ -37,8 +44,12 @@ public class CommandPgn2Epd implements JCTCommand {
 
     @Override
     public void executeCommand() throws IOException {
-        DataSet dataSet = loadDataset(files);
+        DataSet dataSet = loadDataset(files, createConfig());
         writeEpd(dataSet, outputFile);
+    }
+
+    private PgnPrepareConfig createConfig() {
+        return new PgnPrepareConfig(skipFirstNHalfMoves, skipLastNHalfMoves);
     }
 
     private void writeEpd(DataSet dataSet, String outputFile) throws IOException {
@@ -67,12 +78,12 @@ public class CommandPgn2Epd implements JCTCommand {
         throw new IllegalStateException("unsupported ending" + ending);
     }
 
-    private DataSet loadDataset(List<String> args) throws IOException {
+    private DataSet loadDataset(List<String> args, PgnPrepareConfig config) throws IOException {
         DatasetPreparer preparer = new DatasetPreparer(null);
         DataSet result = new DataSet(null);
         for (String arg : args) {
             LOGGER.info("parsing file " + arg);
-            result.add(preparer.prepareLoadFromFile(new File(arg)));
+            result.add(preparer.prepareLoadPgn(new File(arg), config));
         }
         return result;
     }
