@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.IndexConversion;
 
 /**
  * Class to build a fen string from a board position.
@@ -74,7 +75,7 @@ public class FenComposer {
         if (i == -1) {
             return "-";
         } else {
-            return Integer.toString(i);
+            return IndexConversion.convert(i);
         }
     }
 

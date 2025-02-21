@@ -71,7 +71,7 @@ public class DatasetPreparer {
                 try {
                     parseFen(dataSet, line);
                 } catch (RuntimeException re) {
-                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line);
+                    LOGGER.log(Level.SEVERE, "Error parsing/preparing fen " + line + ": " + re.getMessage());
                     //                    throw re;
                 }
             });
@@ -186,6 +186,7 @@ public class DatasetPreparer {
 
             halfMoveCounter++;
             if (pgnMove.getBlack() != null) {
+                addMove = halfMoveCounter > config.getSkipFirstNHalfMoves() && halfMoveCounter < movesToAdd;
                 doAndHandleMove(dataSet, pgnMove.getBlack(), board, game.getResult(), addMove);
             }
             halfMoveCounter++;
@@ -196,20 +197,24 @@ public class DatasetPreparer {
             boolean addMove) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
-        MoveValidator moveValidator = new MoveValidator();
-        MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
 
-        boolean anyLegalMoves = moveList.size() > 0;
-        if (addMove
-                && moveDesr.getEnding() == null
-                && !isBookMove(moveDesr)
-                && anyLegalMoves
-                && !isEvalUsingEndGameFunction(board)
-                && !isCheck(board)
-                && isQuiet(moveList)
-                && !isMateScore(moveDesr.getComment())) {
-            addFen(dataSet, board, ending);
+        if (addMove) {
+            MoveValidator moveValidator = new MoveValidator();
+            MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
+
+            boolean anyLegalMoves = moveList.size() > 0;
+            if (addMove
+                    && moveDesr.getEnding() == null
+                    && !isBookMove(moveDesr)
+                    && anyLegalMoves
+                    && !isEvalUsingEndGameFunction(board)
+                    && !isCheck(board)
+                    && isQuiet(moveList)
+                    && !isMateScore(moveDesr.getComment())) {
+                addFen(dataSet, board, ending);
+            }
         }
+
     }
 
     private boolean isCheck(BoardRepresentation board) {

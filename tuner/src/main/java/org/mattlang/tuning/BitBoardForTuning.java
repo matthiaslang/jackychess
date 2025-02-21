@@ -165,7 +165,7 @@ public class BitBoardForTuning implements BoardRepresentation {
     public static BitBoardForTuning copy(BoardRepresentation bitBoard) {
         BitBoardForTuning
                 copied =
-                new BitBoardForTuning(bitBoard.getBoard().copy(), new CastlingRights(bitBoard.getCastlingRights()),
+                new BitBoardForTuning(bitBoard.getBoard().copy(), bitBoard.getCastlingRights(),
                         bitBoard.getEnPassantMoveTargetPos(), bitBoard.getSiteToMove());
         copied.zobristHash = bitBoard.getZobristHash();
         copied.material.init(copied);
