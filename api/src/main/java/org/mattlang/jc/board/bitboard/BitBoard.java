@@ -268,26 +268,16 @@ public final class BitBoard implements BoardRepresentation {
                 }
             } else if (figType == FT_ROOK) {
                 if (isWhiteFigure) {
-                    if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(WHITE_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(WHITE_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
+                    whiteRookCastlingCheck(from);
                 } else {
-                    if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(BLACK_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(BLACK_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
+                    blackRookCastlingCheck(from);
                 }
+            }
+            // if a rook gets captured, we may need to update the castling rights of the opponent:
+            if (capturedFigure == Figure.W_Rook.figureCode) {
+                whiteRookCastlingCheck(to);
+            } else if (capturedFigure == Figure.B_Rook.figureCode) {
+                blackRookCastlingCheck(to);
             }
         }
 
@@ -303,6 +293,30 @@ public final class BitBoard implements BoardRepresentation {
         // be careful: we must not set the en passant option by undoing a double pawn move:
         if (figType == FT_PAWN && Math.abs(to - from) == 16) {
             setEnPassantOption((from + to) / 2);
+        }
+    }
+
+    private void whiteRookCastlingCheck(int pos){
+        if (pos == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(WHITE_LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        } else if (pos == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(WHITE_SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        }
+    }
+
+    private void blackRookCastlingCheck(int pos){
+        if (pos == boardCastlings.getCastlingBlackLong().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(BLACK_LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        } else if (pos == boardCastlings.getCastlingBlackShort().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(BLACK_SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
         }
     }
 

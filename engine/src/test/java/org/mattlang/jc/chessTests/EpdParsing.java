@@ -53,7 +53,7 @@ public class EpdParsing {
 
     }
 
-    private static TextPosition emptyPos() {
+    public static TextPosition emptyPos() {
         return new TextPosition() {
 
             @Override
