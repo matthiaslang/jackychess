@@ -173,6 +173,10 @@ public class DataSet {
         fens.addAll(other.getFens());
     }
 
+    public void add(Collection<FenEntry> other) {
+        fens.addAll(other);
+    }
+
     public void logInfos() {
         LinkedHashMap<String, Object> stats = new LinkedHashMap<>();
 
@@ -289,15 +293,15 @@ public class DataSet {
     private void writeNumberOfFensByMaterial(MarkdownWriter w) throws IOException {
         w.h2("Number of fens by Material");
         // stats about mid/end game:
-//        TreeMap<Material, Long> countsByPhase = fens.stream()
-//                .map(f -> f.getBoard().getMaterial())
-//                .collect(groupingBy(identity(), TreeMap::new, counting()));
+        //        TreeMap<Material, Long> countsByPhase = fens.stream()
+        //                .map(f -> f.getBoard().getMaterial())
+        //                .collect(groupingBy(identity(), TreeMap::new, counting()));
         TreeMap<Material, Long> countsByPhase = new TreeMap<>();
         for (FenEntry fen : fens) {
             // add white and black mat separate to group by the material of one side (regardless of the side)
-            Material mw=new Material(fen.getBoard().getMaterial().getWhiteMat());
+            Material mw = new Material(fen.getBoard().getMaterial().getWhiteMat());
             countsByPhase.compute(mw, (k, v) -> (v == null) ? 1 : v + 1);
-            Material mb=new Material(fen.getBoard().getMaterial().getBlackAsWhitePart());
+            Material mb = new Material(fen.getBoard().getMaterial().getBlackAsWhitePart());
             countsByPhase.compute(mb, (k, v) -> (v == null) ? 1 : v + 1);
         }
 
@@ -317,18 +321,20 @@ public class DataSet {
         TreeMap<Byte, Long> pinnedByFigureType = new TreeMap<>();
         TreeMap<Byte, Long> discoveredByFigureType = new TreeMap<>();
         for (FenEntry fen : fens) {
-            PinnedCalc pinnedCalc=new PinnedCalc();
+            PinnedCalc pinnedCalc = new PinnedCalc();
             BitChessBoard bb = fen.getBoard().getBoard();
             pinnedCalc.calcPinnedDiscoveredAndChecking(bb);
             if (pinnedCalc.getPinnedPieces() != 0) {
                 long piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
-                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
                 piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
-                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
             }
@@ -336,12 +342,14 @@ public class DataSet {
             if (pinnedCalc.getDiscoveredPieces() != 0) {
                 long piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
-                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
                 piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
-                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
             }

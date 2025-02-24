@@ -6,8 +6,7 @@ import static org.mattlang.jc.board.Color.WHITE;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -35,6 +34,8 @@ public class DatasetPreparer {
 
     private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
+    private static Random rand = new Random(47L);
+
     public DatasetPreparer(OptParameters params) {
         this.params = params;
     }
@@ -53,7 +54,7 @@ public class DatasetPreparer {
         PgnParser parser = new PgnParser();
         List<PgnGame> games = parser.parse(file);
 
-        return prepareGames(games, config);
+        return prepareGames(games, file.getName(), config);
     }
 
     public DataSet prepareLoadPgn(File file) throws IOException {
@@ -139,12 +140,12 @@ public class DatasetPreparer {
         }
 
         if (!isEvalUsingEndGameFunction(board)) {
-            FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
+            FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending, null);
             dataSet.addFen(entry);
         }
     }
 
-    private DataSet prepareGames(List<PgnGame> games, PgnPrepareConfig config) {
+    private DataSet prepareGames(List<PgnGame> games, String filename, PgnPrepareConfig config) {
         LOGGER.info("preparing Data now...");
         DataSet dataSet = new DataSet(params);
         int counter = 1;
@@ -153,7 +154,7 @@ public class DatasetPreparer {
             PgnGame game = iterator.next();
             if (game.getResult() != Ending.UNTERMINATED) {
                 try {
-                    addGame(dataSet, game, config);
+                    addGame(dataSet, filename, game, counter, config);
                 } catch (PgnParserException ppe) {
                     throw new RuntimeException("Error parsing game " + counter + " " + game.getTagStr(), ppe);
                 }
@@ -167,54 +168,86 @@ public class DatasetPreparer {
         return dataSet;
     }
 
-    private void addGame(DataSet dataSet, PgnGame game, PgnPrepareConfig config) {
+    private void addGame(DataSet dataSet, String filename, PgnGame game, int gameCounter, PgnPrepareConfig config) {
 
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
         // play game and add all relevant positions:
         int halfMoveCounter = 1;
         int moveCount = game.getMoves().size() * 2;
-        int movesToAdd = moveCount;
+        int moveLast = moveCount;
         if (config.getSkipLastNHalfMoves() > 0) {
-            movesToAdd -= config.getSkipLastNHalfMoves();
+            moveLast -= config.getSkipLastNHalfMoves();
 
         }
+        List<FenEntry> fens = new ArrayList<>();
+
         for (PgnMove pgnMove : game.getMoves()) {
 
-            boolean addMove = halfMoveCounter > config.getSkipFirstNHalfMoves() && halfMoveCounter < movesToAdd;
-            doAndHandleMove(dataSet, pgnMove.getWhite(), board, game.getResult(), addMove);
-
-            halfMoveCounter++;
-            if (pgnMove.getBlack() != null) {
-                addMove = halfMoveCounter > config.getSkipFirstNHalfMoves() && halfMoveCounter < movesToAdd;
-                doAndHandleMove(dataSet, pgnMove.getBlack(), board, game.getResult(), addMove);
+            doMove(pgnMove.getWhite(), board);
+            if (decideAddMove(config, halfMoveCounter, moveLast)) {
+                String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
+                Optional<FenEntry> fen = handleMove(comment, pgnMove.getWhite(), board, game.getResult());
+                fen.ifPresent(fens::add);
             }
             halfMoveCounter++;
+
+            if (pgnMove.getBlack() != null) {
+                doMove(pgnMove.getBlack(), board);
+
+                if (decideAddMove(config, halfMoveCounter, moveLast)) {
+                    String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
+                    Optional<FenEntry> fen = handleMove(comment, pgnMove.getBlack(), board, game.getResult());
+                    fen.ifPresent(fens::add);
+                }
+            }
+            halfMoveCounter++;
+        }
+
+        // add all prepared or only a limit of the fens to the dataset:
+        if (config.getAddOnlyNHalfMoves() > 0 && fens.size() > config.getAddOnlyNHalfMoves()) {
+            // if only a limit of moves should be add, then shuffle and add only n moves:
+            Collections.shuffle(fens, rand);
+            dataSet.add(fens.subList(0, config.getAddOnlyNHalfMoves()));
+        } else {
+            dataSet.add(fens);
         }
     }
 
-    private void doAndHandleMove(DataSet dataSet, MoveDescr moveDesr, BoardRepresentation board, Ending ending,
-            boolean addMove) {
+    /**
+     * Decide by the given config parameters, if this move should be added.
+     *
+     * @param config
+     * @param halfMoveCounter
+     * @param moveLast
+     * @return
+     */
+    private static boolean decideAddMove(PgnPrepareConfig config, int halfMoveCounter, int moveLast) {
+        return halfMoveCounter > config.getSkipFirstNHalfMoves() && halfMoveCounter < moveLast;
+    }
+
+    private void doMove(MoveDescr moveDesr, BoardRepresentation board) {
         Move move = moveDesr.createMove(board);
         board.domove(move);
+    }
 
-        if (addMove) {
-            MoveValidator moveValidator = new MoveValidator();
-            MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
+    private Optional<FenEntry> handleMove(String comment, MoveDescr moveDesr, BoardRepresentation board,
+            Ending ending) {
+        MoveValidator moveValidator = new MoveValidator();
+        MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
 
-            boolean anyLegalMoves = moveList.size() > 0;
-            if (addMove
-                    && moveDesr.getEnding() == null
-                    && !isBookMove(moveDesr)
-                    && anyLegalMoves
-                    && !isEvalUsingEndGameFunction(board)
-                    && !isCheck(board)
-                    && isQuiet(moveList)
-                    && !isMateScore(moveDesr.getComment())) {
-                addFen(dataSet, board, ending);
-            }
+        boolean anyLegalMoves = moveList.size() > 0;
+        if (moveDesr.getEnding() == null
+                && !isBookMove(moveDesr)
+                && anyLegalMoves
+                && !isEvalUsingEndGameFunction(board)
+                && !isCheck(board)
+                && isQuiet(moveList)
+                && !isMateScore(moveDesr.getComment())) {
+            return Optional.of(addFen(board, ending, comment));
+        } else {
+            return Optional.empty();
         }
-
     }
 
     private boolean isCheck(BoardRepresentation board) {
@@ -254,10 +287,10 @@ public class DatasetPreparer {
         return false;
     }
 
-    private void addFen(DataSet dataSet, BoardRepresentation board, Ending ending) {
+    private FenEntry addFen(BoardRepresentation board, Ending ending, String comment) {
         //        String fen = FenComposer.buildFenPosition(board);
-        FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending);
-        dataSet.addFen(entry);
+        FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending, comment);
+        return entry;
     }
 
     private boolean isBookMove(MoveDescr moveDesr) {

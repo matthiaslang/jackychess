@@ -11,7 +11,9 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.IndexConversion;
 
 /**
- * Class to build a fen string from a board position.
+ * Class to build a fen string from a board position. Only basic Syntax is supported.
+ *
+ * See https://www.chessprogramming.org/Extended_Position_Description for full definition.
  */
 public class FenComposer {
 

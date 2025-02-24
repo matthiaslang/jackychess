@@ -37,6 +37,12 @@ public class CommandPgn2Epd implements JCTCommand {
     @Parameter(names = { "--skipLastMoves" }, description = "skip last n half moves")
     private int skipLastNHalfMoves = 0;
 
+    @Parameter(names = { "--addNMoves" }, description = "add only n half moves at max per game")
+    private int addOnlyNHalfMoves = 0;
+
+    @Parameter(names = { "--writeComments" }, description = "write comment to epd about the source pgn")
+    private boolean writeComments = false;
+
     @Override
     public String getCmdName() {
         return CMD_PGN_2_EPD;
@@ -49,7 +55,7 @@ public class CommandPgn2Epd implements JCTCommand {
     }
 
     private PgnPrepareConfig createConfig() {
-        return new PgnPrepareConfig(skipFirstNHalfMoves, skipLastNHalfMoves);
+        return new PgnPrepareConfig(skipFirstNHalfMoves, skipLastNHalfMoves, addOnlyNHalfMoves, writeComments);
     }
 
     private void writeEpd(DataSet dataSet, String outputFile) throws IOException {
@@ -61,7 +67,11 @@ public class CommandPgn2Epd implements JCTCommand {
                 fenComposer.createRawFenFromBoard(fen.getBoard());
                 printWriter.print(fenComposer.createFenStr());
                 printWriter.print(" ");
-                printWriter.println(convertEnding(fen.getEnding()));
+                printWriter.print(convertEnding(fen.getEnding()));
+                if (fen.getComment() != null) {
+                    printWriter.print(" c0 " + fen.getComment());
+                }
+                printWriter.println();
             }
         }
     }

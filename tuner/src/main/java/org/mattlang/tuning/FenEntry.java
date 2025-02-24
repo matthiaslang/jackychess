@@ -26,10 +26,13 @@ public class FenEntry {
 
     private BitSet dependingParams = null;
 
-    public FenEntry(String fen, BoardRepresentation board, Ending ending) {
+    private String comment;
+
+    public FenEntry(String fen, BoardRepresentation board, Ending ending, String comment) {
         //        this.fen = fen;
         this.board = board;
         this.ending = ending;
+        this.comment = comment;
     }
 
     public double getResult() {
