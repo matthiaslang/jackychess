@@ -146,7 +146,6 @@ public class DatasetPreparer {
     }
 
     private DataSet prepareGames(List<PgnGame> games, String filename, PgnPrepareConfig config) {
-        LOGGER.info("preparing Data now...");
         DataSet dataSet = new DataSet(params);
         int counter = 1;
         Iterator<PgnGame> iterator = games.iterator();
@@ -161,10 +160,8 @@ public class DatasetPreparer {
             }
             iterator.remove();
             counter++;
-            if (counter % 500 == 0) {
-                LOGGER.info(" prepared " + counter + " games; " + dataSet.getFens().size() + " fens...");
-            }
         }
+        LOGGER.info(" prepared " + counter + " games; " + dataSet.getFens().size() + " fens...");
         return dataSet;
     }
 
