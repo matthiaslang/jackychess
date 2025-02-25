@@ -1,10 +1,13 @@
 package org.mattlang.jc.command.commands;
 
+import static java.util.stream.Collectors.groupingBy;
+import static org.mattlang.tuning.data.pgnparser.Ending.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.beust.jcommander.Parameter;
@@ -43,6 +46,10 @@ public class CommandPgn2Epd implements JCTCommand {
     @Parameter(names = { "--writeComments" }, description = "write comment to epd about the source pgn")
     private boolean writeComments = false;
 
+    @Parameter(names = { "--endingDistribution" },
+            description = "distribute result fens: ratio of endings should be about that percentage")
+    private int endingDistribution = 100;
+
     @Override
     public String getCmdName() {
         return CMD_PGN_2_EPD;
@@ -51,7 +58,47 @@ public class CommandPgn2Epd implements JCTCommand {
     @Override
     public void executeCommand() throws IOException {
         DataSet dataSet = loadDataset(files, createConfig());
+
+        distributeDataset(dataSet);
+
         writeEpd(dataSet, outputFile);
+    }
+
+    private void distributeDataset(DataSet dataSet) {
+        if (endingDistribution < 100) {
+            Map<Ending, List<FenEntry>> fensByEnding = dataSet.getFens().stream()
+                    .collect(groupingBy(FenEntry::getEnding));
+
+            distributeEnding(dataSet, fensByEnding.get(MATE_WHITE), fensByEnding.get(MATE_BLACK));
+
+            fensByEnding = dataSet.getFens().stream()
+                    .collect(groupingBy(FenEntry::getEnding));
+            distributeEnding(dataSet, fensByEnding.get(MATE_WHITE), fensByEnding.get(DRAW));
+        }
+
+    }
+
+    private void distributeEnding(DataSet dataSet, List<FenEntry> group1, List<FenEntry> group2) {
+        List<FenEntry> smallerGroup = group1.size() > group2.size() ? group2 : group1;
+        List<FenEntry> biggerGroup = group1.size() > group2.size() ? group1 : group2;
+        if (biggerGroup.isEmpty()){
+            return;
+        }
+        int ratio = 100 * smallerGroup.size() / biggerGroup.size();
+        if (ratio < endingDistribution) {
+
+            LOGGER.info("adjust ending ratio: " + ratio + " to " + endingDistribution);
+            int newShrinkedSize = biggerGroup.size() * ratio / endingDistribution;
+            // remove ratioDiff percent from the bigger group:
+            int numToRemove = biggerGroup.size() - newShrinkedSize;
+            LOGGER.info("distribute ending ratio adjusting: removing " + numToRemove + " fens ");
+
+            Collections.shuffle(biggerGroup);
+            Set<FenEntry> fenSet = new LinkedHashSet<>(dataSet.getFens());
+            biggerGroup.subList(0, numToRemove).forEach(fenSet::remove);
+            dataSet.getFens().clear();
+            dataSet.getFens().addAll(fenSet);
+        }
     }
 
     private PgnPrepareConfig createConfig() {

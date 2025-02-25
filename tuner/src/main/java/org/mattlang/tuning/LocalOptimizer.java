@@ -70,7 +70,7 @@ public class LocalOptimizer implements Optimizer {
 
         // init bestE value: also important for dependend fen optimization that we have a precalculated error value
         // for each fen:
-        progress.bestE= e(parameterSet);
+        progress.bestE = e(parameterSet);
 
         LOGGER.info("Error at start: " + progress.bestE);
 
@@ -127,9 +127,7 @@ public class LocalOptimizer implements Optimizer {
 
     private void change(TuningParameter param, int change) {
         param.change(change);
-        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
-            dataSet.resetDependingFens(param);
-        }
+
     }
 
     private void analyzeDependantFens(ParameterSet parameterSet) {
@@ -163,7 +161,7 @@ public class LocalOptimizer implements Optimizer {
             for (TuningParameter param : parameterSet.getParams()) {
                 if (checkFenDependsOnParam(fen, param)) {
                     param.addDependingFen(fen);
-                    fen.addDependingParameter(param);
+
                 }
             }
         }

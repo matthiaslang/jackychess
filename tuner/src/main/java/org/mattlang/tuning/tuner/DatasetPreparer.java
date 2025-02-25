@@ -34,7 +34,7 @@ public class DatasetPreparer {
 
     private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
-    private static Random rand = new Random(47L);
+    public static Random rand = new Random(47L);
 
     public DatasetPreparer(OptParameters params) {
         this.params = params;

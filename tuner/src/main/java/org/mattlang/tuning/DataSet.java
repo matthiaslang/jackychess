@@ -374,9 +374,5 @@ public class DataSet {
         return decFactor;
     }
 
-    public void resetDependingFens(TuningParameter param) {
-        for (FenEntry fen : fens) {
-            fen.resetIfDepending(param.getParamNo());
-        }
-    }
+
 }
