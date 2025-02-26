@@ -26,7 +26,7 @@ public class Main {
             JCTCommand jct = jctCommand.get();
             try {
                 jct.executeCommand();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 System.err.println("Error: " + e.getMessage());
             }

@@ -25,10 +25,15 @@ import org.mattlang.tuning.tuner.PgnPrepareConfig;
         commandDescription = "Convert/Extract pgn file to epd files")
 public class CommandPgn2Epd implements JCTCommand {
 
+    /**
+     * max fens to hold in memory before flushing to file during creation.
+     */
+    private static final int MAX_MEM_FENS = 250000;
+
     private static final Logger LOGGER = Logger.getLogger(CommandPgn2Epd.class.getSimpleName());
 
     public static final String CMD_PGN_2_EPD = "pgn2epd";
-    @Parameter(description = "List of pgn input files", required = true)
+    @Parameter(description = "List of pgn input files (pgn files or directories containing pgn files)", required = true)
     private List<String> files;
 
     @Parameter(names = { "--output", "-o" }, description = "EPD Output file", required = true)
@@ -56,12 +61,22 @@ public class CommandPgn2Epd implements JCTCommand {
     }
 
     @Override
-    public void executeCommand() throws IOException {
-        DataSet dataSet = loadDataset(files, createConfig());
+    public void executeCommand() throws Exception {
+        DataSet result = new DataSet(null);
+        File outFile = new File(outputFile);
+        if (outFile.exists()) {
+            outFile.delete();
+        }
+        loadDataset(files, createConfig(), dataSet -> {
+            result.add(dataSet);
+            if (result.getFens().size() > MAX_MEM_FENS) {
+                // write collected fens to output
+                distributeDataset(result);
+                writeEpd(result, outputFile);
+                result.getFens().clear();
+            }
+        });
 
-        distributeDataset(dataSet);
-
-        writeEpd(dataSet, outputFile);
     }
 
     private void distributeDataset(DataSet dataSet) {
@@ -108,7 +123,7 @@ public class CommandPgn2Epd implements JCTCommand {
     private void writeEpd(DataSet dataSet, String outputFile) throws IOException {
         FenComposer fenComposer = new FenComposer();
         File outFile = new File(outputFile);
-        try (FileWriter writer = new FileWriter(outFile);
+        try (FileWriter writer = new FileWriter(outFile, true);
                 PrintWriter printWriter = new PrintWriter(writer)) {
             for (FenEntry fen : dataSet.getFens()) {
                 fenComposer.createRawFenFromBoard(fen.getBoard());
@@ -135,20 +150,21 @@ public class CommandPgn2Epd implements JCTCommand {
         throw new IllegalStateException("unsupported ending" + ending);
     }
 
-    private DataSet loadDataset(List<String> args, PgnPrepareConfig config) throws IOException {
+    private void loadDataset(List<String> args, PgnPrepareConfig config, DataSetConsumer resultConsumer)
+            throws Exception {
         DatasetPreparer preparer = new DatasetPreparer(null);
-        DataSet result = new DataSet(null);
+
         for (String arg : args) {
             LOGGER.info("parsing file " + arg);
             File file = new File(arg);
             if (file.isDirectory()) {
                 for (File fileOfDir : file.listFiles()) {
-                    result.add(preparer.prepareLoadPgn(fileOfDir, config));
+                    resultConsumer.accept(preparer.prepareLoadPgn(fileOfDir, config));
                 }
             } else {
-                result.add(preparer.prepareLoadPgn(file, config));
+                resultConsumer.accept(preparer.prepareLoadPgn(file, config));
             }
         }
-        return result;
+
     }
 }
