@@ -178,13 +178,13 @@ public class DatasetPreparer {
 
         }
         List<FenEntry> fens = new ArrayList<>();
-
+        MoveValidator moveValidator = new MoveValidator();
         for (PgnMove pgnMove : game.getMoves()) {
 
             doMove(pgnMove.getWhite(), board);
             if (decideAddMove(config, halfMoveCounter, moveLast)) {
                 String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
-                Optional<FenEntry> fen = handleMove(comment, pgnMove.getWhite(), board, game.getResult());
+                Optional<FenEntry> fen = handleMove(moveValidator, comment, pgnMove.getWhite(), board, game.getResult());
                 fen.ifPresent(fens::add);
             }
             halfMoveCounter++;
@@ -194,7 +194,7 @@ public class DatasetPreparer {
 
                 if (decideAddMove(config, halfMoveCounter, moveLast)) {
                     String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
-                    Optional<FenEntry> fen = handleMove(comment, pgnMove.getBlack(), board, game.getResult());
+                    Optional<FenEntry> fen = handleMove(moveValidator, comment, pgnMove.getBlack(), board, game.getResult());
                     fen.ifPresent(fens::add);
                 }
             }
@@ -228,9 +228,8 @@ public class DatasetPreparer {
         board.domove(move);
     }
 
-    private Optional<FenEntry> handleMove(String comment, MoveDescr moveDesr, BoardRepresentation board,
+    private Optional<FenEntry> handleMove(MoveValidator moveValidator, String comment, MoveDescr moveDesr, BoardRepresentation board,
             Ending ending) {
-        MoveValidator moveValidator = new MoveValidator();
         MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
 
         boolean anyLegalMoves = moveList.size() > 0;

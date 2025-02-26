@@ -81,7 +81,7 @@ public class CommandPgn2Epd implements JCTCommand {
     private void distributeEnding(DataSet dataSet, List<FenEntry> group1, List<FenEntry> group2) {
         List<FenEntry> smallerGroup = group1.size() > group2.size() ? group2 : group1;
         List<FenEntry> biggerGroup = group1.size() > group2.size() ? group1 : group2;
-        if (biggerGroup.isEmpty()){
+        if (biggerGroup.isEmpty()) {
             return;
         }
         int ratio = 100 * smallerGroup.size() / biggerGroup.size();
@@ -140,7 +140,14 @@ public class CommandPgn2Epd implements JCTCommand {
         DataSet result = new DataSet(null);
         for (String arg : args) {
             LOGGER.info("parsing file " + arg);
-            result.add(preparer.prepareLoadPgn(new File(arg), config));
+            File file = new File(arg);
+            if (file.isDirectory()) {
+                for (File fileOfDir : file.listFiles()) {
+                    result.add(preparer.prepareLoadPgn(fileOfDir, config));
+                }
+            } else {
+                result.add(preparer.prepareLoadPgn(file, config));
+            }
         }
         return result;
     }
