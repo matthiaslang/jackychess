@@ -2,6 +2,7 @@ package org.mattlang.jc.command.commands;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -13,10 +14,25 @@ public class CommandTuneTest {
 
     @Test
     public void testTune() throws IOException {
-        String[] args =
-                "tune adjustK delta=0.001 tuneAll exceptions=tuneMat,tunePst -o target/testtuningoutput src/test/resources/quiet-labeled_debug_short.epd ".split(
-                        " ");
+        String[] args = ("tune adjustK delta=0.01 tuneAll exceptions=tuneMat,tunePst "
+                + "-o target/testtuningoutput src/test/resources/quiet-labeled_debug_short.epd ")
+                .split(" ");
         Main.main(args);
+
+        assertThat(new File("target/testtuningoutput")).exists();
+        assertThat(new File("target/testtuningoutput/current")).exists();
+        assertThat(new File("target/testtuningoutput/current/king")).isDirectoryContaining("glob:**.csv");
+        assertThat(new File("target/testtuningoutput/current/pawn")).isDirectoryContaining("glob:**.csv");
+        assertThat(new File("target/testtuningoutput/current/pst")).isDirectoryContaining("glob:**.csv");
+        assertThat(new File("target/testtuningoutput/current/config.properties")).exists();
+        assertThat(new File("target/testtuningoutput/current/tune.md")).exists();
+
+        args = ("tune adjustK delta=0.001 tuneAll exceptions=tuneMat,tunePst "
+                + "-o target/testtuningoutput src/test/resources/quiet-labeled_debug_short.epd ")
+                .split(" ");
+        Main.main(args);
+
+
     }
 
     @Test
