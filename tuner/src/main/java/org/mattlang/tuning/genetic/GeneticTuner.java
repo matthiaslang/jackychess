@@ -46,7 +46,7 @@ public class GeneticTuner extends AbstractTuner {
 
         ParamTuneableEvaluateFunction evaluate =
                 new ParamTuneableEvaluateFunction(params);
-        copySourceConfigFile(outputDir);
+        copySourceConfigFile(outputDir, evaluate.getParameterizedEvaluation());
 
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 

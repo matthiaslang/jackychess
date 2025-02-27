@@ -21,10 +21,10 @@ public class CommandTuneTest {
 
         assertThat(new File("target/testtuningoutput")).exists();
         assertThat(new File("target/testtuningoutput/current")).exists();
+        assertThat(new File("target/testtuningoutput/current/config.properties")).exists();
         assertThat(new File("target/testtuningoutput/current/king")).isDirectoryContaining("glob:**.csv");
         assertThat(new File("target/testtuningoutput/current/pawn")).isDirectoryContaining("glob:**.csv");
         assertThat(new File("target/testtuningoutput/current/pst")).isDirectoryContaining("glob:**.csv");
-        assertThat(new File("target/testtuningoutput/current/config.properties")).exists();
         assertThat(new File("target/testtuningoutput/current/tune.md")).exists();
 
         args = ("tune adjustK delta=0.001 tuneAll exceptions=tuneMat,tunePst "

@@ -43,7 +43,7 @@ public class LocalOptimizationTuner extends AbstractTuner {
                 new ParamTuneableEvaluateFunction(params);
 
         if (!continuingTuningRun) {
-            copySourceConfigFile(outputDir);
+            copySourceConfigFile(outputDir, evaluate.getParameterizedEvaluation());
         }
 
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());

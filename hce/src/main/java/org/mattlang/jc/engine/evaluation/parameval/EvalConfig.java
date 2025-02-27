@@ -3,13 +3,10 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.mattlang.jc.board.FigureConstants;
@@ -51,22 +48,8 @@ public class EvalConfig {
      */
     public void copyConfig(Path target) {
         copyResourceFile(configFile, target);
-
-        copyAllSubFiles(configDir, "pst", target);
-        copyAllSubFiles(configDir, "pawn", target);
-        copyAllSubFiles(configDir, "king", target);
     }
 
-    private void copyAllSubFiles(String configDir, String subDirPath, Path target) {
-        String subDir = configDir + "/" + subDirPath;
-        Path targetPath = target.getParent().resolve(subDirPath);
-        targetPath.toFile().mkdirs();
-        for (String resourceFile : getResourceFiles(subDir)) {
-            String fullSubDir = subDir + "/" + resourceFile;
-            Path fullTargetPath = targetPath.resolve(resourceFile);
-            copyResourceFile(fullSubDir, fullTargetPath);
-        }
-    }
 
     public void copyResourceFile(String resourceFilePath, Path target) {
         InputStream is =
@@ -76,28 +59,6 @@ public class EvalConfig {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Lists all resource files within a resource directory.
-     *
-     * @param path
-     * @return
-     * @throws IOException
-     */
-    private List<String> getResourceFiles(String path) {
-        List<String> filenames = new ArrayList<>();
-        try (InputStream in = PropertyConfig.class.getResourceAsStream(path);
-                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-            String resource;
-
-            while ((resource = br.readLine()) != null) {
-                filenames.add(resource);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return filenames;
     }
 
     public EvalConfig() {

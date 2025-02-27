@@ -13,7 +13,9 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
+import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.MarkdownAppender;
+import org.mattlang.tuning.evaluate.ParameterSet;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 import org.mattlang.tuning.tuner.OptParameters;
 
@@ -101,14 +103,20 @@ public abstract class AbstractTuner {
      *
      * @param outputDir
      */
-    protected void copySourceConfigFile(File outputDir) {
+    protected void copySourceConfigFile(File outputDir, ParameterizedEvaluation parameterizedEvaluation) {
         // check if external output is requested by parameter
         if (params.getOutputdir() != null) {
-
             File configFile = new File(outputDir, EvalConfig.CONFIG_PROPERTIES_FILE);
             configFile.getParentFile().mkdirs();
             Path targetConfigFile = configFile.toPath();
             new EvalConfig().copyConfig(targetConfigFile);
+
+
+            // build up all Parameters
+            OptParameters allParams=OptParameters.builder().tuneParams(".*").build();
+            ParameterSet fullParameterSet = new ParameterSet(allParams, parameterizedEvaluation);
+            // and write the full set of parameters to output as a full copy of the current parameter configuration
+            fullParameterSet.writeParamDescr(outputDir);
         }
     }
 }
