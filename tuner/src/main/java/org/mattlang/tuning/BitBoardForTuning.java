@@ -63,7 +63,7 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public void setPosition(String[] fenPosition) {
+    public void setPosition(String fenPosition) {
         throw new IllegalStateException("not allowed! this is only a immutable read only Board!");
     }
 

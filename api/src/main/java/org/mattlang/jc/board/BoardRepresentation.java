@@ -9,7 +9,7 @@ public interface BoardRepresentation {
 
     void setStartPosition();
 
-    void setPosition(String[] fenPosition);
+    void setPosition(String fenPosition);
 
     GameState setFenPosition(String fen);
 

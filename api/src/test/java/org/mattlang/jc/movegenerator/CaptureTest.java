@@ -96,7 +96,7 @@ public class CaptureTest {
     public void capturePawn() {
 
         BoardRepresentation board = new BitBoard();
-        board.setFenPosition("position fen 8/8/8/3p1p3/4K3/8/8/8 w - - 2 17 ");
+        board.setFenPosition("position fen 8/8/8/3p1p2/4K3/8/8/8 w - - 2 17 ");
 
         System.out.println(board.toUniCodeStr());
 

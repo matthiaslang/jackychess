@@ -190,8 +190,7 @@ public class FenParser {
             String nextMoveNum) {
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         board.clearPosition();
-        String[] rows = figures.split("/");
-        board.setPosition(rows);
+        board.setPosition(figures);
         // todo parse and set rest of fen string...
 
         if (siteToMove == null || siteToMove.trim().length() == 0) {
