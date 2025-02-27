@@ -52,7 +52,7 @@ public class CommandPgn2Epd implements JCTCommand {
     private boolean writeComments = false;
 
     @Parameter(names = { "--endingDistribution" },
-            description = "distribute result fens: ratio of endings should be about that percentage")
+            description = "distribute result fens: ratio of no draws to draw endings should be about that percentage")
     private int endingDistribution = 100;
 
     @Override
@@ -84,11 +84,16 @@ public class CommandPgn2Epd implements JCTCommand {
             Map<Ending, List<FenEntry>> fensByEnding = dataSet.getFens().stream()
                     .collect(groupingBy(FenEntry::getEnding));
 
-            distributeEnding(dataSet, fensByEnding.get(MATE_WHITE), fensByEnding.get(MATE_BLACK));
+            List<FenEntry> mateWhite = fensByEnding.get(MATE_WHITE);
+            List<FenEntry> mateBlack = fensByEnding.get(MATE_BLACK);
+            List<FenEntry> noDraw = new ArrayList<>();
+            noDraw.addAll(mateWhite);
+            noDraw.addAll(mateBlack);
+            List<FenEntry> draws = fensByEnding.get(DRAW);
 
-            fensByEnding = dataSet.getFens().stream()
-                    .collect(groupingBy(FenEntry::getEnding));
-            distributeEnding(dataSet, fensByEnding.get(MATE_WHITE), fensByEnding.get(DRAW));
+            if (draws.size() > noDraw.size()) {
+                distributeEnding(dataSet, noDraw, draws);
+            }
         }
 
     }
