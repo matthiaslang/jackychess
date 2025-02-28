@@ -13,8 +13,10 @@ public interface EvaluateFunction {
      * The evaluation function gets called once it is created with this method and
      * is then able to either create or reuse its own cache structure.
      * Its up to the evaluation function to make use of this.
+     *
      * @param cache
      */
     void associateThreadCache(SearchThreadContextCache cache);
 
+    TuningCache getTuningCache();
 }

@@ -27,7 +27,7 @@ public class CommandTuneTest {
         assertThat(new File("target/testtuningoutput/current/pst")).isDirectoryContaining("glob:**.csv");
         assertThat(new File("target/testtuningoutput/current/tune.md")).exists();
 
-        args = ("tune adjustK delta=0.001 tuneAll exceptions=tuneMat,tunePst "
+        args = ("tune adjustK delta=0.001 tuneAll exceptions=tuneMat,tunePst optimizeMode "
                 + "-o target/testtuningoutput src/test/resources/quiet-labeled_debug_short.epd ")
                 .split(" ");
         Main.main(args);

@@ -2,6 +2,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.mattlang.jc.board.Color.*;
 
+import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
@@ -17,7 +18,7 @@ import lombok.Getter;
 @Getter
 @EvalConfigurable(prefix = "adjustments")
 @EvalValueInterval(min = -2000, max = 2000)
-public class ParameterizedAdjustmentsEvaluation {
+public class ParameterizedAdjustmentsEvaluation implements EvalComponent {
 
     @EvalConfigParam(mgEgCombined = true)
     private int tempo;
@@ -40,7 +41,7 @@ public class ParameterizedAdjustmentsEvaluation {
     public ParameterizedAdjustmentsEvaluation() {
     }
 
-    public int adjust(BitChessBoard bb, Color who2Move) {
+    private int adjust(BitChessBoard bb, Color who2Move) {
         int result = 0;
         /* tempo bonus */
         if (who2Move == WHITE)
@@ -89,5 +90,11 @@ public class ParameterizedAdjustmentsEvaluation {
         adjBlack += rookAdj.calc(blackPawns) * blackRooks;
 
         return result + (adjWhite - adjBlack);
+    }
+
+    @Override
+    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+        int adj = adjust(bitBoard.getBoard(), result.getWho2Move());
+        result.getMgEgScore().add(adj);
     }
 }

@@ -63,4 +63,9 @@ public class FloatArrayFunctionParam extends AbstractTuningParameter {
     public TuningParameter copyParam(FloatArrayFunctionParameterGroup group) {
         return new FloatArrayFunctionParam(group, index, val, intervall);
     }
+
+    @Override
+    public String getParameterName() {
+        return getGroup().getPropertyName();
+    }
 }

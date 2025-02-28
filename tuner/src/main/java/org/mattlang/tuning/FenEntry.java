@@ -1,6 +1,7 @@
 package org.mattlang.tuning;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.tuning.data.pgnparser.Ending;
 
 import lombok.Data;
@@ -21,6 +22,8 @@ public class FenEntry {
     private int lastEval = NO_EVAL;
 
     private String comment;
+
+    private TuningCache tuningCache = new TuningCache();
 
     public FenEntry(String fen, BoardRepresentation board, Ending ending, String comment) {
         //        this.fen = fen;

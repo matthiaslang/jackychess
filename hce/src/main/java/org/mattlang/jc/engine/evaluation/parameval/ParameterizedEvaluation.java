@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
@@ -67,6 +68,9 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      * set in tuning runs.
      */
     private boolean forTuning = false;
+
+    @Getter
+    private TuningCache tuningCache = new TuningCache();
 
     private IntIntCache evalCache = EvalCache.instance;
 
@@ -146,7 +150,11 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        result.clear();
+        if (forTuning) {
+            return evalForTuning(currBoard, who2Move);
+        }
+
+        result.clear(who2Move);
 
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
         matEvaluation.eval(result, currBoard);
@@ -177,7 +185,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
         mobEvaluation.eval(result, currBoard);
         pawnEvaluation.eval(result, currBoard);
-        result.getMgEgScore().add(adjustments.adjust(currBoard.getBoard(), who2Move));
+        adjustments.eval(result, currBoard);
 
         threatsEvaluation.eval(result, currBoard);
 
@@ -202,6 +210,50 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         }
 
         return score;
+    }
+
+    public int evalForTuning(BoardRepresentation currBoard, Color who2Move) {
+
+        result.clear(who2Move);
+
+        // do mat evaluation first to have material values used for end game rules to decide the stronger side
+        withTuningCaching("mat", () -> matEvaluation.eval(result, currBoard));
+
+        withTuningCaching("pst", () -> pstEvaluation.eval(result, currBoard));
+        // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
+        withTuningCaching("mob", () -> mobEvaluation.eval(result, currBoard));
+        withTuningCaching("pawn", () -> pawnEvaluation.eval(result, currBoard));
+        withTuningCaching("adjustments", () -> adjustments.eval(result, currBoard));
+
+        withTuningCaching("threats", () -> threatsEvaluation.eval(result, currBoard));
+
+        withTuningCaching("king", () -> kingEvaluation.eval(result, currBoard));
+
+        withTuningCaching("complexity", () -> complexityEvaluation.eval(result, currBoard));
+
+        withTuningCaching("space", () -> spaceEvaluation.eval(result, currBoard));
+
+        int score = result.calcCompleteScore(currBoard);
+
+        score = matCorrection.correct(currBoard, score);
+
+        int who2mov = who2Move == Color.WHITE ? 1 : -1;
+        score = score * who2mov;
+
+        return score;
+    }
+
+    private void withTuningCaching(String prefix, Runnable doEvalComponent) {
+        Integer tuneCachedVal = tuningCache.get(prefix);
+        if (tuneCachedVal != null) {
+            result.getMgEgScore().add(tuneCachedVal);
+        } else {
+            int before = result.getMgEgScore().getCombinedScore();
+            doEvalComponent.run();
+            int after = result.getMgEgScore().getCombinedScore();
+            int diff = after - before;
+            tuningCache.put(prefix, diff);
+        }
     }
 
     @Override
@@ -245,7 +297,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      * @return
      */
     public boolean isUsingEndgameFunction(BoardRepresentation currBoard) {
-        result.clear();
+        result.clear(currBoard.getSiteToMove());
         matEvaluation.eval(result, currBoard);
         EndGameRules endGameRule = matchesRule(currBoard, result.getMgEgScore().getEgScore());
         return endGameRule != null;

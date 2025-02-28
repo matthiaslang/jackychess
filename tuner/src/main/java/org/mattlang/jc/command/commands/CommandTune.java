@@ -78,6 +78,9 @@ public class CommandTune implements JCTCommand {
     @Parameter(names = "tuneAll")
     private boolean tuneAll = false;
 
+    @Parameter(names = "optimizeMode")
+    private boolean optimizeMode = false;
+
     @Parameter(names = "exceptions")
     private String exceptions = null;
 
@@ -98,7 +101,7 @@ public class CommandTune implements JCTCommand {
         return OptParameters.builder()
                 .name("tune")
                 .evalParamSet("CURRENT")
-                .optimizeRecalcOnlyDependendFens(false)
+                .optimizeMode(optimizeMode)
                 .resetParametersBeforeTuning(true)
                 .adjustK(adjustK)
                 .multiThreading(true)

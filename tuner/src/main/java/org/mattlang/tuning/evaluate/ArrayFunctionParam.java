@@ -62,4 +62,9 @@ public class ArrayFunctionParam extends AbstractTuningParameter {
     public TuningParameter copyParam(ArrayFunctionParameterGroup group) {
         return new ArrayFunctionParam(group, index, val, intervall);
     }
+
+    @Override
+    public String getParameterName() {
+        return getGroup().getPropertyName();
+    }
 }

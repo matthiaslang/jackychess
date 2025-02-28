@@ -45,6 +45,7 @@ public class PatternParameterGroup implements TuningParameterGroup {
     private final Function<ParameterizedEvaluation, Pattern> getter;
 
     private final boolean mirrored;
+    @Getter
     private final String subdir;
     private final boolean mgEgCombined;
     private String tableCsvNameEg;

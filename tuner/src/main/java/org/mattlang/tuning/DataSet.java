@@ -124,12 +124,12 @@ public class DataSet {
     }
 
     private int calcEval(FenEntry fen) {
-        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
-            int eval = fen.getLastEval();
-            if (eval == FenEntry.NO_EVAL) {
-                eval = evaluate.eval(fen.getBoard(), WHITE);
-                fen.setLastEval(eval);
-            }
+        if (optParameters.isOptimizeMode()) {
+            evaluate.getTuningCache().putAll(fen.getTuningCache());
+
+            int eval = evaluate.eval(fen.getBoard(), WHITE);
+
+            fen.getTuningCache().putAll(evaluate.getTuningCache());
             return eval;
         } else {
             return evaluate.eval(fen.getBoard(), WHITE);
@@ -374,5 +374,9 @@ public class DataSet {
         return decFactor;
     }
 
-
+    public void resetCachedComponentValues(String evalCompName) {
+        for (FenEntry fen : fens) {
+            fen.getTuningCache().clear(evalCompName);
+        }
+    }
 }

@@ -49,8 +49,9 @@ public final class EvalResult {
      * found pawn cache entry of the position to be evaluated.
      */
     private PawnCacheEntry pawnEntry;
+    private Color who2Move;
 
-    public void clear() {
+    public void clear(Color who2Move) {
         mgEgScore.clear();
 
         for (int i = 0; i < 2; i++) {
@@ -66,6 +67,7 @@ public final class EvalResult {
         Arrays.fill(pksafety, 0);
         pawnEntry = null;
 
+        this.who2Move = who2Move;
     }
 
     /**
@@ -75,7 +77,8 @@ public final class EvalResult {
      * @return
      */
     public int calcCompleteScore(BoardRepresentation bitBoard) {
-        int score = (int) PhaseCalculator.scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore());
+        int score =
+                (int) PhaseCalculator.scaleByPhase(bitBoard.getBoard(), mgEgScore.getMgScore(), mgEgScore.getEgScore());
         return score;
     }
 

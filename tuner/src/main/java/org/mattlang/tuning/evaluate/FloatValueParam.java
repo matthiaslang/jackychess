@@ -103,4 +103,9 @@ public class FloatValueParam extends AbstractTuningParameter implements TuningPa
     public void resetValue() {
         value = 1;
     }
+
+    @Override
+    public String getParameterName() {
+        return name;
+    }
 }

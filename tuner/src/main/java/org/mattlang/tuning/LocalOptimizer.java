@@ -1,7 +1,5 @@
 package org.mattlang.tuning;
 
-import static org.mattlang.jc.board.Color.WHITE;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -45,16 +43,6 @@ public class LocalOptimizer implements Optimizer {
         this.evaluate = evaluate;
 
         markdownAppender.append(w -> w.h2("new optimization round"));
-
-        // init optimization:
-        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
-            LOGGER.info("Init depending Fen Information... ");
-            initDependendFensInformation(parameterSet, dataSet);
-            LOGGER.info("Init depending Fen Information finished");
-
-            // analyze dependant fens and log:
-            analyzeDependantFens(parameterSet);
-        }
 
         for (int step : stepGranularity) {
             LOGGER.info("Optimizing with step " + step);
@@ -127,98 +115,14 @@ public class LocalOptimizer implements Optimizer {
 
     private void change(TuningParameter param, int change) {
         param.change(change);
-
-    }
-
-    private void analyzeDependantFens(ParameterSet parameterSet) {
-        // if there are params where NO fen depends on, than thats a problem, because it means
-        // there is no way to optimize these parameter.
-        // so we should at least logout this:
-
-        for (TuningParameter param : parameterSet.getParams()) {
-            if (!param.hasDependingFens()) {
-                LOGGER.info("No depending Fens in Dataset for " + param.getDescr());
-            }
-        }
-        for (TuningParameter param : parameterSet.getParams()) {
-            if (param.hasDependingFens()) {
-                LOGGER.info(param.getDescr() + " depending on " + param.getDependingFenCount() + " fens");
-            }
+        if (optParameters.isOptimizeMode()) {
+            // reset the evalcomponent cached values for this parameter:
+            String paramName = param.getParameterName();
+            String evalCompName = paramName.substring(0, paramName.indexOf('.'));
+            dataSet.resetCachedComponentValues(evalCompName);
         }
     }
 
-    private void initDependendFensInformation(ParameterSet parameterSet, DataSet dataSet) {
-        int i = 0;
-        int percent = 0;
-        int numFens = dataSet.getFens().size();
-        for (FenEntry fen : dataSet.getFens()) {
-            i++;
-            int currPercent = i * 100 / numFens;
-            if (currPercent != percent) {
-                percent = currPercent;
-                LOGGER.info("processed " + percent + "% of fen dependencies");
-            }
-            for (TuningParameter param : parameterSet.getParams()) {
-                if (checkFenDependsOnParam(fen, param)) {
-                    param.addDependingFen(fen);
-
-                }
-            }
-        }
-    }
-
-    private boolean checkFenDependsOnParam(FenEntry fen, TuningParameter param) {
-        int evalOfCurrValue = evaluate.eval(fen.getBoard(), WHITE);
-
-        // check min, max, zero values:
-        int minVal = param.getIntervall().getMinIntVal();
-        int maxVal = param.getIntervall().getMaxIntVal();
-
-        int evalOfMinValue = checkEval(minVal, fen, param);
-        if (evalOfMinValue != evalOfCurrValue) {
-            return true;
-        }
-        int evalOfMaxValue = checkEval(maxVal, fen, param);
-        if (evalOfMaxValue != evalOfCurrValue || evalOfMaxValue != evalOfMinValue) {
-            return true;
-        }
-        if (minVal < 0 && maxVal > 0) {
-            int evaolOfZeroValue = checkEval(0, fen, param);
-            if (evaolOfZeroValue != evalOfCurrValue || evaolOfZeroValue != evalOfMinValue
-                    || evaolOfZeroValue != evalOfMaxValue) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Evaluate the fen with a different parameter value.
-     * Afterwards reset the tuning parameter to its origin value.
-     *
-     * @param value
-     * @param fen
-     * @param param
-     * @return
-     */
-    private int checkEval(int value, FenEntry fen, TuningParameter param) {
-        // save current value
-        int currVal = param.getValue();
-
-        // set the different value:
-        param.setValue(value);
-        // update evaluation function with parameter value:
-        param.saveValue(evaluate.getParameterizedEvaluation());
-        // evaluate with that new value:
-        int cmpValue = evaluate.eval(fen.getBoard(), WHITE);
-        // reset to origin value:
-        param.setValue(currVal);
-        // update evaluation function with parameter value:
-        param.saveValue(evaluate.getParameterizedEvaluation());
-
-        return cmpValue;
-    }
 
     private double e(ParameterSet params) {
         return dataSet.calcError(evaluate, params);
