@@ -83,17 +83,17 @@ public class LocalOptimizationTuner extends AbstractTuner {
             LocalOptimizerK optimizerK = new LocalOptimizerK(params);
             double k = optimizerK.optimize(parameterSet, evaluate, dataset);
             LOGGER.info("Scaling finished: K=" + k);
-            dataset.setK(k);
+            dataset.setScalingK(k);
 
             markdownAppender.append(w -> w.paragraph("K adjusted to: " + k));
         } else {
             if (params.getK() != null) {
-                dataset.setK(params.getK());
+                dataset.setScalingK(params.getK());
                 markdownAppender.append(w -> {
-                    w.paragraph("setting K from Input Tuner Parameter to: " + dataset.getK());
+                    w.paragraph("setting K from Input Tuner Parameter to: " + dataset.getScalingK());
                 });
             }
-            markdownAppender.append(w -> w.paragraph("K: " + dataset.getK()));
+            markdownAppender.append(w -> w.paragraph("K: " + dataset.getScalingK()));
         }
 
         LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);

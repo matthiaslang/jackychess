@@ -4,5 +4,12 @@ import org.mattlang.jc.board.BoardRepresentation;
 
 public interface EvalComponent {
 
-    void eval(EvalResult result, BoardRepresentation bitBoard);
+    /**
+     * Evaluates this component and returns the mg/eg combined value.
+     *
+     * @param result
+     * @param bitBoard
+     * @return
+     */
+    int eval(EvalResult result, BoardRepresentation bitBoard);
 }

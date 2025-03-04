@@ -37,14 +37,7 @@ public class DataSet {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
 
-    /**
-     * scaling Constant.
-     */
-    //            private static final double K = 1.13;
-    /**
-     * calculated to 1.09 by pre-scaling. now using this fixed value.
-     */
-    private static final double K = 1.5800000000000003;
+    private static final double DEFAULT_K = 1.5800000000000003;
 
     private List<DataSet> workers = new ArrayList<>();
 
@@ -54,7 +47,10 @@ public class DataSet {
 
     private boolean multithreaded = false;
 
-    private double k = K;
+    /**
+     * scaling Constant.
+     */
+    private double scalingK = DEFAULT_K;
 
     private OptParameters optParameters;
 
@@ -125,7 +121,7 @@ public class DataSet {
 
     private int calcEval(FenEntry fen) {
         if (optParameters.isOptimizeMode()) {
-            evaluate.getTuningCache().putAll(fen.getTuningCache());
+            evaluate.getTuningCache().updateFromFen(fen.getTuningCache());
 
             int eval = evaluate.eval(fen.getBoard(), WHITE);
 
@@ -156,13 +152,13 @@ public class DataSet {
         // update the evaluation functions of the workers with the current parameter settings:
         for (DataSet worker : workers) {
             worker.getEvaluate().saveValues(parameterSet.getParams());
-            worker.setK(k);
+            worker.setScalingK(scalingK);
         }
     }
 
     private double sigmoid(int eval) {
         double deval = eval;
-        return 1 / (1 + pow(10, -k * deval / 400));
+        return 1 / (1 + pow(10, -scalingK * deval / 400));
     }
 
     public void addFen(FenEntry entry) {
@@ -207,7 +203,7 @@ public class DataSet {
 
     }
 
-    public void removeDuplidateFens() {
+    public void removeDuplicateFens() {
         List<FenEntry> result = new ArrayList<>();
         HashSet<Long> hashes = new HashSet<>();
         for (FenEntry fen : fens) {

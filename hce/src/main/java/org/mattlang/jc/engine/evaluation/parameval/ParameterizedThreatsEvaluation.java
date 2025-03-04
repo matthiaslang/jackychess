@@ -55,10 +55,10 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
         int whiteThreats = evalThreads(result, bitBoard.getBoard(), WHITE);
         int blackThreats = evalThreads(result, bitBoard.getBoard(), Color.BLACK);
-        result.add(whiteThreats - blackThreats);
+        return whiteThreats - blackThreats;
     }
 
     private int evalThreads(EvalResult result, BitChessBoard bb, Color us) {

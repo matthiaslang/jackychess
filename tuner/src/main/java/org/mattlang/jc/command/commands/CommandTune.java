@@ -98,13 +98,14 @@ public class CommandTune implements JCTCommand {
     }
 
     public OptParameters buildParams() {
+        boolean multithreading = threads>1  ;
         return OptParameters.builder()
                 .name("tune")
                 .evalParamSet("CURRENT")
                 .optimizeMode(optimizeMode)
                 .resetParametersBeforeTuning(true)
                 .adjustK(adjustK)
-                .multiThreading(true)
+                .multiThreading(multithreading)
                 .threadCount(threads)
                 .delta(delta)
                 .stepGranularity(asList(1))

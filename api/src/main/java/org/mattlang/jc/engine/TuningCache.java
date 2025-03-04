@@ -4,6 +4,8 @@ import java.util.EnumMap;
 
 public class TuningCache {
 
+
+
     public static enum EvalComponentName {
         MOB,
         PAWN,
@@ -35,6 +37,12 @@ public class TuningCache {
             throw new IllegalArgumentException(
                     "tuningCache must have " + EvalComponentName.values().length + " elements");
         }
+        this.tuningCache.clear();
+        this.tuningCache.putAll(tuningCache.tuningCache);
+    }
+
+    public void updateFromFen(TuningCache tuningCache) {
+        this.tuningCache.clear();
         this.tuningCache.putAll(tuningCache.tuningCache);
     }
 

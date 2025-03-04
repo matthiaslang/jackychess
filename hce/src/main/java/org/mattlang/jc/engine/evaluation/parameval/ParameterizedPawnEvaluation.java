@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.Tools.fileOf;
+import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.createMgEgScore;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -94,25 +95,25 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
 
         int wKingShield = calcWhiteKingShield(bitBoard.getBoard());
         int bKingShield = calcBlackKingShield(bitBoard.getBoard());
 
         // king shield is only relevant for middle game:
-        result.getMgEgScore().addMg(wKingShield - bKingShield);
+        int score = createMgEgScore(wKingShield - bKingShield, 0);
 
         if (caching && !forTuning) {
             PawnCacheEntry entry = result.getPawnEntry();
             if (entry == null) {
                 int pawnEval = calcPawnEval(bitBoard);
-                result.getMgEgScore().add(pawnEval);
+                score += pawnEval;
                 result.pawnEval = pawnEval;
                 result.whitePassers = whitePassers;
                 result.blackPassers = blackPassers;
             } else {
                 // use cached score:
-                result.getMgEgScore().add(entry.score);
+                score+=entry.score;
 
                 // use cached passers:
                 whitePassers = entry.whitePassers;
@@ -120,10 +121,13 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
 
             }
         } else {
-            result.getMgEgScore().add(calcPawnEval(bitBoard));
+            score+=calcPawnEval(bitBoard);
         }
 
-        result.getMgEgScore().addEg(passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers));
+        score+= createMgEgScore(0,
+                passedPawnEval.calculateScores(bitBoard, result, whitePassers, blackPassers));
+
+        return score;
     }
 
     private int calcPawnEval(BoardRepresentation bitBoard) {
@@ -255,7 +259,8 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
         long whitePawns = bb.getPawns(nWhite);
         long blackPawns = bb.getPawns(nBlack);
 
-        return evalWhitePerspectivePawns(flipVertical(blackPawns), flipVertical(whitePawns), flipVertical(blackPassers));
+        return evalWhitePerspectivePawns(flipVertical(blackPawns), flipVertical(whitePawns),
+                flipVertical(blackPassers));
     }
 
     private int calcBlackKingShield(BitChessBoard bb) {

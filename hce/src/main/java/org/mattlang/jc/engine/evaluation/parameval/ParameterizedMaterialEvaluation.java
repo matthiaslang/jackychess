@@ -63,7 +63,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
 
         BitChessBoard bb = bitBoard.getBoard();
 
@@ -73,7 +73,7 @@ public class ParameterizedMaterialEvaluation implements EvalComponent {
         int rooksDiff = bb.getRooksCount(nWhite) - bb.getRooksCount(nBlack);
         int queensDiff = bb.getQueensCount(nWhite) - bb.getQueensCount(nBlack);
 
-        result.getMgEgScore().add(pawn * pawnsDiff +
+        return (pawn * pawnsDiff +
                 knight * knightsDiff +
                 bishop * bishopsDiff +
                 rook * rooksDiff +

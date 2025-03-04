@@ -22,7 +22,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
 
     public ParamTuneableEvaluateFunction(OptParameters optParams) {
         this.optParams = optParams;
-        parameterizedEvaluation = ParameterizedEvaluation.createForTuning();
+        parameterizedEvaluation = ParameterizedEvaluation.createForTuning(optParams.isOptimizeMode());
     }
 
     public ParamTuneableEvaluateFunction(String startEvalConfig, OptParameters optParams) {

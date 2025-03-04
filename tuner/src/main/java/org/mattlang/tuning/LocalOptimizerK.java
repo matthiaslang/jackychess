@@ -35,7 +35,7 @@ public class LocalOptimizerK  {
 
     public double optimize(ParameterSet initialGuess) {
         double bestE = e(initialGuess);
-        LOGGER.info("Error at start: " + bestE + " K=" + dataSet.getK());
+        LOGGER.info("Error at start: " + bestE + " K=" + dataSet.getScalingK());
 
         ParameterSet bestParValues = initialGuess;
         int round = 0;
@@ -50,30 +50,30 @@ public class LocalOptimizerK  {
             round++;
             if (round % 100 == 0 && stopWatch.timeElapsed(60000)) {
                 LOGGER.info(stopWatch.getFormattedCurrDuration() + ": round " + round + ", curr Error= " + bestE + " K="
-                        + dataSet.getK());
+                        + dataSet.getScalingK());
 //                LOGGER.info(bestParValues.collectParamDescr());
             }
-            dataSet.setK(dataSet.getK() + KDELTA);
+            dataSet.setScalingK(dataSet.getScalingK() + KDELTA);
             double newE = e(bestParValues);
             if (newE < bestE - delta) {
                 bestE = newE;
                 improved = true;
             } else {
-                dataSet.setK(dataSet.getK() - 2 * KDELTA);
+                dataSet.setScalingK(dataSet.getScalingK() - 2 * KDELTA);
                 newE = e(bestParValues);
                 if (newE < bestE - delta) {
                     bestE = newE;
                     improved = true;
                 } else {
                     // reset change:
-                    dataSet.setK(dataSet.getK() + KDELTA);
+                    dataSet.setScalingK(dataSet.getScalingK() + KDELTA);
                 }
             }
 
         }
 
-        LOGGER.info("K Optimized: Error: " + bestE + " K=" + dataSet.getK());
-        return dataSet.getK();
+        LOGGER.info("K Optimized: Error: " + bestE + " K=" + dataSet.getScalingK());
+        return dataSet.getScalingK();
     }
 
     private double e(ParameterSet params) {

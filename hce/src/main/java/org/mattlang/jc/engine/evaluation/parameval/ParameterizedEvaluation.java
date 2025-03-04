@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import java.util.function.IntSupplier;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
@@ -63,6 +65,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private boolean endgameEvaluations = false;
 
+    private boolean optimizeMode = false;
+
     @Getter
     /**
      * set in tuning runs.
@@ -120,13 +124,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      *
      * @return
      */
-    public static ParameterizedEvaluation createForTuning() {
+    public static ParameterizedEvaluation createForTuning(boolean optimizeMode) {
         //
         ParameterizedEvaluation eval = new ParameterizedEvaluation(true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)
         eval.endgameEvaluations = false;
+        eval.optimizeMode = optimizeMode;
         return eval;
     }
 
@@ -150,14 +155,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        if (forTuning) {
-            return evalForTuning(currBoard, who2Move);
+        if (forTuning && optimizeMode) {
+            return evalForTuningOptimizedMode(currBoard, who2Move);
         }
 
         result.clear(who2Move);
 
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
-        matEvaluation.eval(result, currBoard);
+        result.add(matEvaluation.eval(result, currBoard));
 
         int materialScore = result.getMgEgScore().getEgScore();
 
@@ -181,19 +186,19 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             result.setPawnEntry(pawnCache.find(pawnHashKey));
         }
 
-        pstEvaluation.eval(result, currBoard);
+        result.add(pstEvaluation.eval(result, currBoard));
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
-        mobEvaluation.eval(result, currBoard);
-        pawnEvaluation.eval(result, currBoard);
-        adjustments.eval(result, currBoard);
+        result.add(mobEvaluation.eval(result, currBoard));
+        result.add(pawnEvaluation.eval(result, currBoard));
+        result.add(adjustments.eval(result, currBoard));
 
-        threatsEvaluation.eval(result, currBoard);
+        result.add(threatsEvaluation.eval(result, currBoard));
 
-        kingEvaluation.eval(result, currBoard);
+        result.add(kingEvaluation.eval(result, currBoard));
 
-        complexityEvaluation.eval(result, currBoard);
+        result.add(complexityEvaluation.eval(result, currBoard));
 
-        spaceEvaluation.eval(result, currBoard);
+        result.add(spaceEvaluation.eval(result, currBoard));
 
         int score = result.calcCompleteScore(currBoard);
 
@@ -212,7 +217,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-    public int evalForTuning(BoardRepresentation currBoard, Color who2Move) {
+    public int evalForTuningOptimizedMode(BoardRepresentation currBoard, Color who2Move) {
 
         result.clear(who2Move);
 
@@ -243,16 +248,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-    private void withTuningCaching(String prefix, Runnable doEvalComponent) {
+    private void withTuningCaching(String prefix, IntSupplier doEvalComponent) {
         Integer tuneCachedVal = tuningCache.get(prefix);
         if (tuneCachedVal != null) {
-            result.getMgEgScore().add(tuneCachedVal);
+            result.add(tuneCachedVal);
         } else {
-            int before = result.getMgEgScore().getCombinedScore();
-            doEvalComponent.run();
-            int after = result.getMgEgScore().getCombinedScore();
-            int diff = after - before;
-            tuningCache.put(prefix, diff);
+            int score = doEvalComponent.getAsInt();
+            result.add(score);
+            tuningCache.put(prefix, score);
         }
     }
 

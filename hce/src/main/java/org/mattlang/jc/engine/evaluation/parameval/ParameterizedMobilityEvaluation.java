@@ -164,12 +164,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     }
 
-
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
         evalMobility(result, bitBoard);
 
-        result.getMgEgScore().add(wResult.eval - bResult.eval);
+        int score = (wResult.eval - bResult.eval);
 
         /**************************************************************************
          *  Merge king attack score. We don't apply this value if there are less   *
@@ -181,14 +180,16 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         if (bResult.kingAttCount < 2 || bitBoard.getBoard().getQueensCount(nBlack) == 0)
             bResult.kingAttWeightMgEg = 0;
 
-        result.getMgEgScore()
-                .addMg(getSafetyValue(getMgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
-                        getMgScore(bResult.kingAttWeightMgEg)));
-        result.getMgEgScore()
-                .addEg(getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
-                        getEgScore(bResult.kingAttWeightMgEg)));
+        int mg = getSafetyValue(getMgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
+                getMgScore(bResult.kingAttWeightMgEg));
+        int eg = getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
+                getEgScore(bResult.kingAttWeightMgEg));
 
-        result.add(MgEgScore.createMgEgScore(wResult.positionalThemes - bResult.positionalThemes, 0));
+        score+=MgEgScore.createMgEgScore(mg, eg);
+
+        score+=MgEgScore.createMgEgScore(wResult.positionalThemes - bResult.positionalThemes, 0);
+
+        return score;
     }
 
     public static int getSafetyValue(int kingAtt) {

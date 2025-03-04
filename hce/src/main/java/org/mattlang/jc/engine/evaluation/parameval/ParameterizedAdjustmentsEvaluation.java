@@ -93,8 +93,8 @@ public class ParameterizedAdjustmentsEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
         int adj = adjust(bitBoard.getBoard(), result.getWho2Move());
-        result.getMgEgScore().add(adj);
+        return adj;
     }
 }

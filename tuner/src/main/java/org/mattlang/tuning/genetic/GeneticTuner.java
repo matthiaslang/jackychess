@@ -83,14 +83,14 @@ public class GeneticTuner extends AbstractTuner {
             LocalOptimizerK optimizerK = new LocalOptimizerK(params);
             double k = optimizerK.optimize(parameterSet, evaluate, dataset);
             LOGGER.info("Scaling finished: K=" + k);
-            dataset.setK(k);
+            dataset.setScalingK(k);
 
             markdownAppender.append(w -> {
                 w.paragraph("K adjusted to: " + k);
             });
         } else {
             markdownAppender.append(w -> {
-                w.paragraph("K: " + dataset.getK());
+                w.paragraph("K: " + dataset.getScalingK());
             });
         }
 

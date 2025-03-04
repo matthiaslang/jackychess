@@ -61,7 +61,7 @@ public class ParameterizedEvaluationTest {
     public void testPerformance() {
 
         // get an evaluation for tuning: no caching activated:
-        ParameterizedEvaluation pe = ParameterizedEvaluation.createForTuning();
+        ParameterizedEvaluation pe = ParameterizedEvaluation.createForTuning(false);
 
         List<TestPosition> positions = EpdParser.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
 

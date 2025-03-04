@@ -75,7 +75,7 @@ public abstract class AbstractTuner {
             dataset.logInfos();
         }
         if (params.isRemoveDuplicateFens()) {
-            dataset.removeDuplidateFens();
+            dataset.removeDuplicateFens();
             if (!continuingTuningRun) {
                 LOGGER.info("Statistics after removing duplicates:");
                 dataset.logInfos();
