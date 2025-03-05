@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.PinnedCalc;
 import org.mattlang.jc.material.Material;
@@ -371,7 +372,7 @@ public class DataSet {
         return decFactor;
     }
 
-    public void resetCachedComponentValues(String evalCompName) {
+    public void resetCachedComponentValues(TuningCache.EvalComponentName evalCompName) {
         for (FenEntry fen : fens) {
             fen.getTuningCache().clear(evalCompName);
         }

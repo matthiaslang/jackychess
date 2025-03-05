@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.engine.TuningCache.EvalComponentName.*;
+
 import java.util.function.IntSupplier;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -125,7 +127,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      * @return
      */
     public static ParameterizedEvaluation createForTuning(EvalConfig evalConfig, boolean optimizeMode) {
-        ParameterizedEvaluation eval = new ParameterizedEvaluation(evalConfig,true);
+        ParameterizedEvaluation eval = new ParameterizedEvaluation(evalConfig, true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)
@@ -221,21 +223,21 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         result.clear(who2Move);
 
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
-        withTuningCaching("mat", () -> matEvaluation.eval(result, currBoard));
+        withTuningCaching(MAT, () -> matEvaluation.eval(result, currBoard));
 
-        withTuningCaching("pst", () -> pstEvaluation.eval(result, currBoard));
+        withTuningCaching(PST, () -> pstEvaluation.eval(result, currBoard));
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
-        withTuningCaching("mob", () -> mobEvaluation.eval(result, currBoard));
-        withTuningCaching("pawn", () -> pawnEvaluation.eval(result, currBoard));
-        withTuningCaching("adjustments", () -> adjustments.eval(result, currBoard));
+        withTuningCaching(MOB, () -> mobEvaluation.eval(result, currBoard));
+        withTuningCaching(PAWN, () -> pawnEvaluation.eval(result, currBoard));
+        withTuningCaching(ADJUSTMENTS, () -> adjustments.eval(result, currBoard));
 
-        withTuningCaching("threats", () -> threatsEvaluation.eval(result, currBoard));
+        withTuningCaching(THREATS, () -> threatsEvaluation.eval(result, currBoard));
 
-        withTuningCaching("king", () -> kingEvaluation.eval(result, currBoard));
+        withTuningCaching(KING, () -> kingEvaluation.eval(result, currBoard));
 
-        withTuningCaching("complexity", () -> complexityEvaluation.eval(result, currBoard));
+        withTuningCaching(COMPLEXITY, () -> complexityEvaluation.eval(result, currBoard));
 
-        withTuningCaching("space", () -> spaceEvaluation.eval(result, currBoard));
+        withTuningCaching(SPACE, () -> spaceEvaluation.eval(result, currBoard));
 
         int score = result.calcCompleteScore(currBoard);
 
@@ -247,14 +249,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-    private void withTuningCaching(String prefix, IntSupplier doEvalComponent) {
-        Integer tuneCachedVal = tuningCache.get(prefix);
+    private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent) {
+        Integer tuneCachedVal = tuningCache.get(name);
         if (tuneCachedVal != null) {
             result.add(tuneCachedVal);
         } else {
             int score = doEvalComponent.getAsInt();
             result.add(score);
-            tuningCache.put(prefix, score);
+            tuningCache.put(name, score);
         }
     }
 

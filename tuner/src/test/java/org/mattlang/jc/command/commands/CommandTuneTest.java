@@ -152,7 +152,7 @@ public class CommandTuneTest {
         int eval2 = evaluation.eval(board, Color.WHITE);
         assertThat(eval2).isEqualTo(eval);
 
-        evaluation.getTuningCache().clear(TuningCache.EvalComponentName.PAWN.name());
+        evaluation.getTuningCache().clear(TuningCache.EvalComponentName.PAWN);
         eval2 = evaluation.eval(board, Color.WHITE);
         assertThat(eval2).isEqualTo(eval);
     }

@@ -5,9 +5,9 @@ import java.util.EnumMap;
 public class TuningCache {
 
     public int getEvalSum() {
-        int sum=0;
+        int sum = 0;
         for (Integer value : tuningCache.values()) {
-            sum+=value;
+            sum += value;
         }
         return sum;
     }
@@ -26,22 +26,23 @@ public class TuningCache {
 
     private EnumMap<EvalComponentName, Integer> tuningCache = new EnumMap<>(EvalComponentName.class);
 
-    private EvalComponentName fromStr(String string) {
-        return EvalComponentName.valueOf(string.toUpperCase());
+    public Integer get(EvalComponentName name) {
+        return tuningCache.get(name);
     }
 
-    public Integer get(String prefix) {
-        return tuningCache.get(fromStr(prefix));
-    }
-
-    public void put(String prefix, int diff) {
-        tuningCache.put(fromStr(prefix), diff);
+    public void put(EvalComponentName name, int diff) {
+        tuningCache.put(name, diff);
     }
 
     public void putAll(TuningCache tuningCache) {
         if (tuningCache.tuningCache.size() != EvalComponentName.values().length) {
             throw new IllegalArgumentException(
                     "tuningCache must have " + EvalComponentName.values().length + " elements");
+        }
+        for (EvalComponentName evalComponentName : EvalComponentName.values()) {
+            if (tuningCache.get(evalComponentName) == null) {
+                throw new IllegalArgumentException();
+            }
         }
         this.tuningCache.clear();
         this.tuningCache.putAll(tuningCache.tuningCache);
@@ -52,7 +53,7 @@ public class TuningCache {
         this.tuningCache.putAll(tuningCache.tuningCache);
     }
 
-    public void clear(String evalCompName) {
-        this.tuningCache.put(fromStr(evalCompName), null);
+    public void clear(EvalComponentName name) {
+        this.tuningCache.put(name, null);
     }
 }

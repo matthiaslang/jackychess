@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.tools.MarkdownAppender;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
 import org.mattlang.tuning.evaluate.ParameterSet;
@@ -120,8 +121,8 @@ public class LocalOptimizer implements Optimizer {
         if (optParameters.isOptimizeMode()) {
             // reset the evalcomponent cached values for this parameter:
             String paramName = param.getParameterName();
-            String evalCompName = paramName.substring(0, paramName.indexOf('.'));
-            dataSet.resetCachedComponentValues(evalCompName);
+            String evalCompName = paramName.substring(0, paramName.indexOf('.')).toUpperCase();
+            dataSet.resetCachedComponentValues(TuningCache.EvalComponentName.valueOf(evalCompName));
         }
     }
 
