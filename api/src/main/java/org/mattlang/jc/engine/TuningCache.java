@@ -4,7 +4,13 @@ import java.util.EnumMap;
 
 public class TuningCache {
 
-
+    public int getEvalSum() {
+        int sum=0;
+        for (Integer value : tuningCache.values()) {
+            sum+=value;
+        }
+        return sum;
+    }
 
     public static enum EvalComponentName {
         MOB,

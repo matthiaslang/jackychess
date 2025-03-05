@@ -44,8 +44,7 @@ public abstract class AbstractTuner {
 
         // set output dir to pst config dir:
         final String path = determineOutputPath();
-        File filepath = new File(path);
-        outputDir = new File(filepath, params.getEvalParamSet().toLowerCase());
+        outputDir = new File(path);
         outputDir.mkdirs();
         File mdFile = new File(outputDir, params.getName() + ".md");
         continuingTuningRun = mdFile.exists();
@@ -95,7 +94,7 @@ public abstract class AbstractTuner {
     }
 
     protected String determineOutputPath() {
-        return params.getOutputdir() != null ? params.getOutputdir() : "./hce/src/main/resources/config/";
+        return params.getOutputdir() != null ? params.getOutputdir() : "./hce/src/main/resources/config/current";
     }
 
     /**
@@ -103,7 +102,7 @@ public abstract class AbstractTuner {
      *
      * @param outputDir
      */
-    protected void copySourceConfigFile(File outputDir, ParameterizedEvaluation parameterizedEvaluation) {
+    public void copySourceConfigFile(File outputDir, ParameterizedEvaluation parameterizedEvaluation) {
         // check if external output is requested by parameter
         if (params.getOutputdir() != null) {
             File configFile = new File(outputDir, EvalConfig.CONFIG_PROPERTIES_FILE);
@@ -111,9 +110,8 @@ public abstract class AbstractTuner {
             Path targetConfigFile = configFile.toPath();
             new EvalConfig().copyConfig(targetConfigFile);
 
-
             // build up all Parameters
-            OptParameters allParams=OptParameters.builder().tuneParams(".*").build();
+            OptParameters allParams = OptParameters.builder().tuneParams(".*").build();
             ParameterSet fullParameterSet = new ParameterSet(allParams, parameterizedEvaluation);
             // and write the full set of parameters to output as a full copy of the current parameter configuration
             fullParameterSet.writeParamDescr(outputDir);

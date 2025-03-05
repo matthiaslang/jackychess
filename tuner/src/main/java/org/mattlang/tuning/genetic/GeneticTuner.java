@@ -45,18 +45,13 @@ public class GeneticTuner extends AbstractTuner {
         initRun();
 
         ParamTuneableEvaluateFunction evaluate =
-                new ParamTuneableEvaluateFunction(params);
+                new ParamTuneableEvaluateFunction(params, continuingTuningRun);
         copySourceConfigFile(outputDir, evaluate.getParameterizedEvaluation());
 
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
-        // start evals for initial population:
+        // start evals for initial population: doesnt make sense anymore...
         List<ParameterSet> startConfigs = new ArrayList<>();
-        for (String startEvalConfig : params.getGeneticParams().getStartEvalConfigs()) {
-            ParamTuneableEvaluateFunction startEval =
-                    new ParamTuneableEvaluateFunction(startEvalConfig, params);
-            startConfigs.add(new ParameterSet(params, startEval.getParameterizedEvaluation()));
-        }
 
         // todo doesnt make sense in genetic tuning...
         if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {

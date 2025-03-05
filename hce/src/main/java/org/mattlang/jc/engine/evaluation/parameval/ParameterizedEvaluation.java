@@ -124,9 +124,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      *
      * @return
      */
-    public static ParameterizedEvaluation createForTuning(boolean optimizeMode) {
-        //
-        ParameterizedEvaluation eval = new ParameterizedEvaluation(true);
+    public static ParameterizedEvaluation createForTuning(EvalConfig evalConfig, boolean optimizeMode) {
+        ParameterizedEvaluation eval = new ParameterizedEvaluation(evalConfig,true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)

@@ -2,14 +2,8 @@ package org.mattlang.jc.engine.evaluation.evaltables;
 
 import static org.mattlang.jc.board.Color.WHITE;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
@@ -110,44 +104,6 @@ public final class Pattern {
         }
 
         return accu;
-    }
-
-    /**
-     * Loads a pattern from a csv file.
-     *
-     * @param resourceFile a resource file path relative to the folder "pattern"
-     * @return
-     */
-    public static Pattern load(String resourceFile) {
-        String fullName = "/pattern/" + resourceFile;
-        return loadFromFullPath(fullName);
-    }
-
-    public static Pattern loadFromFullPath(String fullName) {
-        InputStream is = Pattern.class.getResourceAsStream(fullName);
-        if (is == null) {
-            throw new IllegalArgumentException("Could not load pst pattern from resource file " + fullName);
-        }
-        return parsePattern(is);
-    }
-
-    public static Pattern parsePattern(InputStream is) {
-        List<Integer> values = new ArrayList<>();
-        new BufferedReader(new InputStreamReader(is))
-                .lines().forEach(line -> {
-                    if (line.startsWith("//")) {
-
-                    } else {
-                        // parse and append the values:
-                        values.addAll(Arrays.stream(line.split(";"))
-                                .map(s -> s.trim())
-                                .map(s -> Integer.parseInt(s))
-                                .collect(Collectors.toList()));
-                    }
-                });
-
-        return new Pattern(values.stream().mapToInt(i -> i.intValue()).toArray());
-
     }
 
     @Override

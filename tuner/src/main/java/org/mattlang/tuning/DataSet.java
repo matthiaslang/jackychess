@@ -126,6 +126,7 @@ public class DataSet {
             int eval = evaluate.eval(fen.getBoard(), WHITE);
 
             fen.getTuningCache().putAll(evaluate.getTuningCache());
+
             return eval;
         } else {
             return evaluate.eval(fen.getBoard(), WHITE);
@@ -133,7 +134,7 @@ public class DataSet {
     }
 
     private void updateWorker(ParameterSet parameterSet) {
-        // create if not alreay done:
+        // create if not already done:
         if (workers.size() == 0) {
 
             for (int i = 0; i < optParameters.getThreadCount(); i++) {

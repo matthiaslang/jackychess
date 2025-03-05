@@ -3,13 +3,15 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.util.stream.Collectors.toList;
 import static org.mattlang.jc.engine.evaluation.parameval.MaterialCorrectionRule.parse;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.functions.ArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.FunctionParser;
@@ -24,34 +26,55 @@ import lombok.Getter;
 public class EvalConfig {
 
     public static final String CONFIG_PROPERTIES_FILE = "config.properties";
-    private final String configName;
+
+    private boolean resouceSource = true;
 
     private final PropertyConfig properties;
     @Getter
-    private final String configDir;
-    @Getter
-    private final String configFile;
+    private final String resourceConfigDir;
+
+    private final File configDir;
+
+    public EvalConfig(File dir) {
+        resouceSource = false;
+        resourceConfigDir = null;
+        properties = PropertyConfig.loadFromFile(new File(dir, CONFIG_PROPERTIES_FILE));
+        configDir = dir;
+
+    }
 
     public EvalConfig(String configName) {
-        this.configName = configName;
+        resouceSource = true;
+        configDir = null;
 
         // read in all configuration for all the evaluation components:
-        configDir = "/config/" + configName + "/";
-        configFile = configDir + CONFIG_PROPERTIES_FILE;
+        resourceConfigDir = "/config/" + configName + "/";
 
-        properties = PropertyConfig.loadFromResourceFile(configFile);
+        properties = PropertyConfig.loadFromResourceFile(resourceConfigDir + CONFIG_PROPERTIES_FILE);
     }
 
     /**
-     * Copies the configuration to another directory.
+     * Copies the configuration to another directory. Only the main config.properties file gets copied.
+     *
      * @param target
      */
     public void copyConfig(Path target) {
-        copyResourceFile(configFile, target);
+        if (resouceSource) {
+            copyResourceFile(resourceConfigDir + CONFIG_PROPERTIES_FILE, target);
+        } else {
+            copyFile(new File(configDir, CONFIG_PROPERTIES_FILE).toPath(), target);
+        }
     }
 
+    private void copyFile(Path source, Path target) {
+        try {
+            Files.copy(source, target);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    public void copyResourceFile(String resourceFilePath, Path target) {
+    private void copyResourceFile(String resourceFilePath, Path target) {
         InputStream is =
                 PropertyConfig.class.getResourceAsStream(resourceFilePath);
         try {
@@ -63,14 +86,6 @@ public class EvalConfig {
 
     public EvalConfig() {
         this("current");
-    }
-
-    public int getPosIntProp(String propName) {
-        int val = getIntProp(propName);
-        if (val < 0) {
-            throw new ConfigParseException("Value " + propName + " must not be negative!");
-        }
-        return val;
     }
 
     public boolean getBoolProp(String propName) {
@@ -111,24 +126,46 @@ public class EvalConfig {
                 .collect(toList());
     }
 
-    /**
-     * Parses an array which is used to index by figure code (1-6). It must therefore contain exactly 7 values
-     * (first is emtpy, unused, which symbols an empty figure; index 1-6 for the figure types).
-     *
-     * @param configName
-     * @return
-     */
-    public ArrayFunction parseFigureIndexedArray(String configName) {
-        ArrayFunction function = parseArray(configName);
-        if (function.getSize() != FigureConstants.FT_ALL) {
-            throw new ConfigParseException("Error parsing figure indexed array " + configName
-                    + "! It must have exactly 7 values (0, followed by 6 values for each figure type)!");
+    public Pattern loadFromRelPath(String relPathName) {
+        if (resouceSource) {
+            String fullPath = getResourceConfigDir() + relPathName;
+            return loadFromResourcePath(fullPath);
+        } else {
+            File patternFile = new File(configDir + "/" + relPathName);
+            try (InputStream is = new FileInputStream(patternFile)) {
+                return parsePattern(is);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not load pst pattern from resource file "
+                        + patternFile.getAbsolutePath(), e);
+            }
         }
-        // first entry is unused: we test therefore strictly to have a value of 0:
-        if (function.calc(0) != 0) {
-            throw new ConfigParseException("Error parsing figure indexed array " + configName + "! Index 0 is not 0!");
-        }
+    }
 
-        return function;
+    public static Pattern loadFromResourcePath(String fullPath) {
+
+        InputStream is = Pattern.class.getResourceAsStream(fullPath);
+        if (is == null) {
+            throw new IllegalArgumentException("Could not load pst pattern from resource file " + fullPath);
+        }
+        return parsePattern(is);
+    }
+
+    public static Pattern parsePattern(InputStream is) {
+        List<Integer> values = new ArrayList<>();
+        new BufferedReader(new InputStreamReader(is))
+                .lines().forEach(line -> {
+                    if (line.startsWith("//")) {
+
+                    } else {
+                        // parse and append the values:
+                        values.addAll(Arrays.stream(line.split(";"))
+                                .map(s -> s.trim())
+                                .map(s -> Integer.parseInt(s))
+                                .collect(Collectors.toList()));
+                    }
+                });
+
+        return new Pattern(values.stream().mapToInt(i -> i.intValue()).toArray());
+
     }
 }

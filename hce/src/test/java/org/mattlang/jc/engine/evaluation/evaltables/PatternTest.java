@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import org.junit.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 
 public class PatternTest {
 
@@ -51,7 +52,7 @@ public class PatternTest {
         rslt = test.calcScore(0L, bb.getQueens(nBlack));
         assertThat(rslt).isEqualTo(-115);
 
-        Pattern loadedPattern = Pattern.load("testpattern.csv");
+        Pattern loadedPattern = EvalConfig.loadFromResourcePath("/pattern/testpattern.csv");
         for (int i = 0; i < 64; i++) {
             assertThat(loadedPattern.getVal(i, WHITE)).isEqualTo(test.getVal(i, WHITE));
             assertThat(loadedPattern.getVal(i, BLACK)).isEqualTo(test.getVal(i, BLACK));
@@ -60,7 +61,7 @@ public class PatternTest {
         String patternStr=loadedPattern.toPatternStr();
         System.out.println(patternStr);
 
-        Pattern reParsedPattern = Pattern.parsePattern(new ByteArrayInputStream(patternStr.getBytes()));
+        Pattern reParsedPattern = EvalConfig.parsePattern(new ByteArrayInputStream(patternStr.getBytes()));
 
         assertThat(reParsedPattern).isEqualTo(loadedPattern);
 

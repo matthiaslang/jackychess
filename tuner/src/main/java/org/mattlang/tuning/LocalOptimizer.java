@@ -110,6 +110,8 @@ public class LocalOptimizer implements Optimizer {
                     }
                 }
             }
+            // write last info to output
+            progressInfo.progressInfo(parameterSet, step, progress);
         }
     }
 
@@ -122,7 +124,6 @@ public class LocalOptimizer implements Optimizer {
             dataSet.resetCachedComponentValues(evalCompName);
         }
     }
-
 
     private double e(ParameterSet params) {
         return dataSet.calcError(evaluate, params);

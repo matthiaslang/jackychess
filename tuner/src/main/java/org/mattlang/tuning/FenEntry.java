@@ -9,17 +9,9 @@ import lombok.Data;
 @Data
 public class FenEntry {
 
-    public static final int NO_EVAL = 1000000;
-
     private BoardRepresentation board;
 
     private Ending ending;
-
-    /**
-     * the last calculated error value for that fen. Used in optimization mode where we only recalculate
-     * fens which depend on the current parameter.
-     */
-    private int lastEval = NO_EVAL;
 
     private String comment;
 
@@ -41,6 +33,5 @@ public class FenEntry {
             return 0.5;
         }
     }
-
 
 }
