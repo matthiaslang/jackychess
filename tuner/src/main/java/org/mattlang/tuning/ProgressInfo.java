@@ -1,5 +1,7 @@
 package org.mattlang.tuning;
 
+import static org.mattlang.jc.command.Main.consoleOut;
+
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -66,15 +68,15 @@ public class ProgressInfo {
 
         String progressInfoTxt =
                 stopWatch.getFormattedCurrDuration()
-                        + ": paramIteration " + progress.paramIterationRound
-                        + ": round " + progress.round +
+                        + ": iteration " + progress.paramIterationRound
+                        + ": change tries " + progress.round +
                         ", step " + step +
-                        ", params adjustments: " + adjOfProgressInterval
-                        + ", total: " + progress.numParamAdjusted
-                        + "; curr Error= " + progress.bestE
-                        + ", overall paramsAdjPerHour= " + overallAdjPerHour
-                        + ", paramsAdjPerHour= " + adjPerHour;
-        LOGGER.info(progressInfoTxt);
+                        ", adj: " + adjOfProgressInterval
+                        + ", adj total: " + progress.numParamAdjusted
+                        + "; Error: " + progress.bestE
+                        + ", overall adj/h: " + overallAdjPerHour
+                        + ", adj/h: " + adjPerHour;
+        consoleOut(progressInfoTxt);
         parameterSet.writeParamDescr(outputDir);
 
         markdownAppender.append(w -> {

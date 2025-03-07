@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.command.Main;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.MarkdownAppender;
@@ -87,7 +88,7 @@ public abstract class AbstractTuner {
         DatasetPreparer preparer = new DatasetPreparer(params);
         DataSet result = new DataSet(params);
         for (String arg : args) {
-            LOGGER.info("parsing file " + arg);
+            Main.consoleOut("parsing file " + arg);
             result.add(preparer.prepareLoadFromFile(new File(arg)));
         }
         return result;

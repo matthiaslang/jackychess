@@ -1,5 +1,7 @@
 package org.mattlang.tuning.tuner;
 
+import static org.mattlang.jc.command.Main.consoleOut;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -49,22 +51,23 @@ public class LocalOptimizationTuner extends AbstractTuner {
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
         if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {
-            LOGGER.info("Resetting Parameter values");
+            consoleOut("Resetting Parameter values");
             for (TuningParameter param : parameterSet.getParams()) {
                 param.resetValue();
             }
+            consoleOut("Resetting Parameter values");
             LOGGER.info("Resetted Parameter values:\n" + parameterSet.collectParamDescr());
             parameterSet.writeParamDescr(outputDir);
         }
 
-        LOGGER.info("Load & Prepare Data...");
+        consoleOut("Load & Prepare Data...");
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         DataSet dataset = loadAndPrepareData();
         stopWatch.stop();
 
-        LOGGER.info("Prepare Data took " + stopWatch.getFormattedDuration());
+        consoleOut("Prepare Data took " + stopWatch.getFormattedDuration());
 
         // write or append the general infos for this run
         markdownAppender.append(w -> {
@@ -79,10 +82,10 @@ public class LocalOptimizationTuner extends AbstractTuner {
         }
 
         if (params.isAdjustK()) {
-            LOGGER.info("Minimize Scaling K...");
+            consoleOut("Minimize Scaling K...");
             LocalOptimizerK optimizerK = new LocalOptimizerK(params);
             double k = optimizerK.optimize(parameterSet, evaluate, dataset);
-            LOGGER.info("Scaling finished: K=" + k);
+            consoleOut("Scaling finished: K=" + k);
             dataset.setScalingK(k);
 
             markdownAppender.append(w -> w.paragraph("K adjusted to: " + k));
@@ -98,14 +101,22 @@ public class LocalOptimizationTuner extends AbstractTuner {
 
         LocalOptimizer optimizer = new LocalOptimizer(outputDir, params, markdownAppender);
 
-        LOGGER.info("Initial Parameter values:\n" + parameterSet.collectParamDescr());
+        markdownAppender.append(w-> {
+            w.h2("Initial Parameter values");
+            w.codeBlock(parameterSet.collectParamDescr());
+        });
         parameterSet.writeParamDescr(outputDir);
 
-        LOGGER.info("Optimizing...");
+        consoleOut("Optimizing...");
         ParameterSet optimizedParams = optimizer.optimize(parameterSet, evaluate, dataset);
 
-        LOGGER.info("Optimized Parameter values:\n" + parameterSet.collectParamDescr());
         parameterSet.writeParamDescr(outputDir);
+
+        markdownAppender.append(w-> {
+            w.h2("Parameter after tuning");
+            w.codeBlock(parameterSet.collectParamDescr());
+        });
+
 
         executorService.shutdown();
 

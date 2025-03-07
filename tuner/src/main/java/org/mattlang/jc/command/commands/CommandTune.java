@@ -1,8 +1,7 @@
 package org.mattlang.jc.command.commands;
 
-import static java.util.Arrays.asList;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
@@ -48,6 +47,9 @@ public class CommandTune implements JCTCommand {
 
     @Parameter(names = "delta")
     double delta = 0.00000001;
+
+    @Parameter(names = "steps")
+    private List<Integer> steps = Arrays.asList(1);
 
     @Parameter(names = TUNE_PST)
     boolean tunePst = false;
@@ -98,7 +100,7 @@ public class CommandTune implements JCTCommand {
     }
 
     public OptParameters buildParams() {
-        boolean multithreading = threads>1  ;
+        boolean multithreading = threads > 1;
         return OptParameters.builder()
                 .name("tune")
                 .evalParamSet("CURRENT")
@@ -108,7 +110,7 @@ public class CommandTune implements JCTCommand {
                 .multiThreading(multithreading)
                 .threadCount(threads)
                 .delta(delta)
-                .stepGranularity(asList(1))
+                .stepGranularity(steps)
                 .removeDuplicateFens(removeDuplicates)
                 .tunePst(effectiveTuneFlag(tunePst, TUNE_PST))
                 .tuneMaterial(effectiveTuneFlag(tuneMat, TUNE_MAT))

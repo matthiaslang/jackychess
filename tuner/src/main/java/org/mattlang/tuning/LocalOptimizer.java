@@ -1,11 +1,14 @@
 package org.mattlang.tuning;
 
+import static org.mattlang.jc.command.Main.consoleOut;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.mattlang.jc.command.Main;
 import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.tools.MarkdownAppender;
 import org.mattlang.tuning.evaluate.ParamTuneableEvaluateFunction;
@@ -46,7 +49,7 @@ public class LocalOptimizer implements Optimizer {
         markdownAppender.append(w -> w.h2("new optimization round"));
 
         for (int step : stepGranularity) {
-            LOGGER.info("Optimizing with step " + step);
+            consoleOut("Optimizing with step " + step);
             markdownAppender.append(w -> w.h3("Optimizing with step " + step));
             optimize(parameterSet, step);
         }
@@ -61,7 +64,7 @@ public class LocalOptimizer implements Optimizer {
         // for each fen:
         progress.bestE = e(parameterSet);
 
-        LOGGER.info("Error at start: " + progress.bestE);
+        Main.consoleOut("Error at start: " + progress.bestE);
 
         final double errorAtStart = progress.bestE;
         markdownAppender.append(w -> w.paragraph("Error at start: " + errorAtStart));
@@ -123,6 +126,11 @@ public class LocalOptimizer implements Optimizer {
             String paramName = param.getParameterName();
             String evalCompName = paramName.substring(0, paramName.indexOf('.')).toUpperCase();
             dataSet.resetCachedComponentValues(TuningCache.EvalComponentName.valueOf(evalCompName));
+
+            // complexity depends on the overall eg values calculated so far
+            // this makes is unfortunately useless for caching: we need to always reset its cache:
+            dataSet.resetCachedComponentValues(TuningCache.EvalComponentName.COMPLEXITY);
+
         }
     }
 

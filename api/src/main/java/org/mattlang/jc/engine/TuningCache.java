@@ -12,7 +12,7 @@ public class TuningCache {
         return sum;
     }
 
-    public static enum EvalComponentName {
+    public enum EvalComponentName {
         MOB,
         PAWN,
         COMPLEXITY,

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.Ignore;
@@ -24,18 +25,14 @@ public class CommandTuneTest {
 
     @Test
     public void testTuningAndRetuning() throws IOException {
-        String[] args = ("tune delta=0.001 threads 1 tuneAll exceptions=tuneMat,tunePst "
-                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd ")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.001 threads 1 tuneAll exceptions=tuneMat,tunePst steps 50,20,5,1 "
+                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
 
         assertOutputFilesExist("target/tuning/tuneTest");
 
         // continue and retune further:
-        args = ("tune delta=0.0001 threads 1 tuneAll exceptions=tuneMat,tunePst "
-                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd ")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.0001 threads 1 tuneAll exceptions=tuneMat,tunePst steps 50,20,5,1 "
+                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
 
     }
 
@@ -48,16 +45,12 @@ public class CommandTuneTest {
     @Test
     @Ignore
     public void testCompareMultithreadingTuning() throws IOException {
-        String[] args = ("tune delta=0.001 threads 1 tuneMat tunePst "
-                + "-o target/tuning/testthread1 src/test/resources/quiet-labeled.epd")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.001 threads 1 tuneMat tunePst steps 50,20,5,1 "
+                + "-o target/tuning/testthread1 src/test/resources/quiet-labeled.epd"));
 
         // do same again: should deliver the same results:
-        args = ("tune delta=0.001 threads 4 tuneMat tunePst "
-                + "-o target/tuning/testthread4 src/test/resources/quiet-labeled.epd")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.001 threads 4 tuneMat tunePst steps 50,20,5,1 "
+                + "-o target/tuning/testthread4 src/test/resources/quiet-labeled.epd"));
         // check some result files: they should be equal:
         assertSameFileContent("target/tuning/testthread4", "target/tuning/testthread1");
 
@@ -65,25 +58,35 @@ public class CommandTuneTest {
 
     @Test
     public void testTuneOptimizingMode() throws IOException {
-        String[] args = ("tune delta=0.0001 threads 1 tuneMat "
-                + "-o target/tuning/test1 src/test/resources/quiet-labeled_debug.epd")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.0001 threads 1 tuneAll "
+                + "-o target/tuning/test1 src/test/resources/quiet-labeled_debug.epd"));
 
         assertOutputFilesExist("target/tuning/test1");
 
         // do same again: should deliver the same results:
-        args = ("tune delta=0.0001 threads 1 tuneMat "
-                + "-o target/tuning/test2 src/test/resources/quiet-labeled_debug.epd")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.0001 threads 1 tuneAll "
+                + "-o target/tuning/test2 src/test/resources/quiet-labeled_debug.epd"));
         // check some result files: they should be equal:
         assertSameFileContent("target/tuning/test2", "target/tuning/test1");
 
-        args = ("tune delta=0.0001 threads 1 tuneMat optimizeMode "
-                + "-o target/tuning/testOpt src/test/resources/quiet-labeled_debug.epd")
-                .split(" ");
-        Main.main(args);
+        Main.main(args("tune delta=0.0001 threads 1 tuneAll optimizeMode "
+                + "-o target/tuning/testOpt src/test/resources/quiet-labeled_debug.epd"));
+
+        assertSameFileContent("target/tuning/testOpt", "target/tuning/test1");
+
+    }
+
+    @Test
+    @Ignore
+    public void testTuneOptimizingModeBig() throws IOException {
+
+        Main.main(args("tune delta=0.00001 threads 4 tuneAll exceptions=tuneMat steps 50,20 "
+                + "-o target/tuning/test1 src/test/resources/quiet-labeled.epd"));
+
+        assertOutputFilesExist("target/tuning/test1");
+
+        Main.main(args("tune delta=0.00001 threads 4 tuneAll exceptions=tuneMat steps 50,20 optimizeMode "
+                + "-o target/tuning/testOpt src/test/resources/quiet-labeled.epd"));
 
         assertSameFileContent("target/tuning/testOpt", "target/tuning/test1");
 
@@ -143,7 +146,7 @@ public class CommandTuneTest {
 
         System.out.println(board.toUniCodeStr());
 
-        ParameterizedEvaluation evaluation = ParameterizedEvaluation.createForTuning(new EvalConfig(),true);
+        ParameterizedEvaluation evaluation = ParameterizedEvaluation.createForTuning(new EvalConfig(), true);
 
         assertThat(evaluation.getTuningCache().getEvalSum()).isEqualTo(0);
         int eval = evaluation.eval(board, Color.WHITE);
@@ -171,14 +174,30 @@ public class CommandTuneTest {
     }
 
     private void assertSameFileContent(String dir1, String dir2) {
-
         assertThat(new File(dir1 + "/config.properties"))
                 .hasSameContentAs(new File(dir2 + "/config.properties"));
-        assertThat(new File(dir1 + "/king/kingStormNonBlockedEG.csv"))
-                .hasSameContentAs(new File(dir2 + "/king/kingStormNonBlockedEG.csv"));
-        assertThat(new File(dir1 + "/pawn/weakPawnEG.csv"))
-                .hasSameContentAs(new File(dir2 + "/pawn/weakPawnEG.csv"));
-        assertThat(new File(dir1 + "/pst/rookEG.csv"))
-                .hasSameContentAs(new File(dir2 + "/pst/rookEG.csv"));
+        File fdir1 = new File(dir1);
+        File fdir2 = new File(dir2);
+        assertSameSubFiles(new File(fdir1, "king"), new File(fdir2, "king"));
+        assertSameSubFiles(new File(fdir1, "pawn"), new File(fdir2, "pawn"));
+        assertSameSubFiles(new File(fdir1, "pst"), new File(fdir2, "pst"));
+    }
+
+    private void assertSameSubFiles(File d1, File d2) {
+        File[] files1 = d1.listFiles();
+        File[] files2 = d2.listFiles();
+        assertThat(files1.length).isEqualTo(files2.length);
+        Arrays.sort(files1);
+        Arrays.sort(files2);
+        for (int i = 0; i < files1.length; i++) {
+            assertThat(files1[i]).hasSameContentAs(files2[i]);
+        }
+    }
+
+    public static String[] args(String str) {
+        return Arrays.stream(str.split(" "))
+                .map(s -> s.trim())
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
     }
 }

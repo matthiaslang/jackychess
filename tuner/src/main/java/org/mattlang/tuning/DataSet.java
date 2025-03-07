@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.command.Main;
 import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.PinnedCalc;
@@ -198,9 +199,9 @@ public class DataSet {
 
         stats.put("Duplicate Fens", dupCount);
 
-        LOGGER.info("Data set statistics:");
+        Main.consoleOut("Data set statistics:");
         for (Map.Entry<String, Object> entry : stats.entrySet()) {
-            LOGGER.info(entry.getKey() + ": " + entry.getValue());
+            Main.consoleOut(entry.getKey() + ": " + entry.getValue());
         }
 
     }

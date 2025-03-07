@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.command.Main;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
@@ -84,8 +85,8 @@ public class DatasetPreparer {
     }
 
     private void parseFen(DataSet dataSet, String line) {
-        if (dataSet.getFens().size() % 5000 == 0) {
-            LOGGER.info(" prepared " + dataSet.getFens().size() + " fens...");
+        if (dataSet.getFens().size() % 20000 == 0) {
+            Main.consoleOut(" prepared " + dataSet.getFens().size() + " fens...");
         }
 
         BoardRepresentation board = new BitBoard();
@@ -161,7 +162,7 @@ public class DatasetPreparer {
             iterator.remove();
             counter++;
         }
-        LOGGER.info(" prepared " + counter + " games; " + dataSet.getFens().size() + " fens...");
+        Main.consoleOut(" prepared " + counter + " games; " + dataSet.getFens().size() + " fens...");
         return dataSet;
     }
 

@@ -1,7 +1,10 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static org.mattlang.jc.engine.TuningCache.EvalComponentName.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.RECALCED_EVAL;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.USED_CACHED_EVAL;
 
+import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
 import org.mattlang.jc.board.BoardRepresentation;
@@ -224,10 +227,16 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
         withTuningCaching(MAT, () -> matEvaluation.eval(result, currBoard));
-
         withTuningCaching(PST, () -> pstEvaluation.eval(result, currBoard));
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
-        withTuningCaching(MOB, () -> mobEvaluation.eval(result, currBoard));
+        withTuningCaching(MOB, () -> mobEvaluation.eval(result, currBoard),
+                a -> {
+                    if (a == USED_CACHED_EVAL) {
+                        // mobility calculates also attack information.
+                        // if the mobility cache is used, we need to calc attack information in addition:
+                        mobEvaluation.calcAttacksOnly(result, currBoard);
+                    }
+                });
         withTuningCaching(PAWN, () -> pawnEvaluation.eval(result, currBoard));
         withTuningCaching(ADJUSTMENTS, () -> adjustments.eval(result, currBoard));
 
@@ -257,6 +266,25 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             int score = doEvalComponent.getAsInt();
             result.add(score);
             tuningCache.put(name, score);
+        }
+    }
+
+    public enum TuningCacheAction {
+        USED_CACHED_EVAL,
+        RECALCED_EVAL
+    }
+
+    private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent,
+            Consumer<TuningCacheAction> additionalWorkWhenCached) {
+        Integer tuneCachedVal = tuningCache.get(name);
+        if (tuneCachedVal != null) {
+            result.add(tuneCachedVal);
+            additionalWorkWhenCached.accept(USED_CACHED_EVAL);
+        } else {
+            int score = doEvalComponent.getAsInt();
+            result.add(score);
+            tuningCache.put(name, score);
+            additionalWorkWhenCached.accept(RECALCED_EVAL);
         }
     }
 

@@ -164,6 +164,53 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     }
 
+    private void evalAttacks(EvalResult evalResult, BitChessBoard bb, Color side, long occupancy) {
+
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);;
+        while (bishopBB != 0) {
+            final int bishop = Long.numberOfTrailingZeros(bishopBB);
+            long attacks = genBishopAttacs(bishop, occupancy);
+            evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
+
+            bishopBB &= bishopBB - 1;
+        }
+
+        long knightBB = bb.getPieceSet(FT_KNIGHT, side);
+        while (knightBB != 0) {
+            final int knight = Long.numberOfTrailingZeros(knightBB);
+            long knightAttack = BB.getKnightAttacs(knight);
+            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
+
+            knightBB &= knightBB - 1;
+        }
+
+        long rookBB = bb.getPieceSet(FT_ROOK, side);
+        while (rookBB != 0) {
+            final int rook = Long.numberOfTrailingZeros(rookBB);
+            long attacks = genRookAttacs(rook, occupancy);
+            evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
+
+            rookBB &= rookBB - 1;
+        }
+
+        long queenBB = bb.getPieceSet(FT_QUEEN, side);
+        while (queenBB != 0) {
+            final int queen = Long.numberOfTrailingZeros(queenBB);
+            long attacks = genRookAttacs(queen, occupancy) | genBishopAttacs(queen, occupancy);
+            evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
+
+            queenBB &= queenBB - 1;
+        }
+
+        long kingBB = bb.getPieceSet(FT_KING, side);
+        final int king = Long.numberOfTrailingZeros(kingBB);
+
+        long kingAttack = BB.getKingAttacs(king);
+
+        evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
+
+    }
+
     @Override
     public int eval(EvalResult result, BoardRepresentation bitBoard) {
         evalMobility(result, bitBoard);
@@ -185,9 +232,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         int eg = getSafetyValue(getEgScore(wResult.kingAttWeightMgEg)) - getSafetyValue(
                 getEgScore(bResult.kingAttWeightMgEg));
 
-        score+=MgEgScore.createMgEgScore(mg, eg);
+        score += MgEgScore.createMgEgScore(mg, eg);
 
-        score+=MgEgScore.createMgEgScore(wResult.positionalThemes - bResult.positionalThemes, 0);
+        score += MgEgScore.createMgEgScore(wResult.positionalThemes - bResult.positionalThemes, 0);
 
         return score;
     }
@@ -196,4 +243,18 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         return kingAtt < SAFETYTABLE.length ? SAFETYTABLE[kingAtt] : 500;
     }
 
+    public void calcAttacksOnly(EvalResult result, BoardRepresentation bitBoard) {
+        BitChessBoard bb = bitBoard.getBoard();
+
+        // update pawn attacks
+        result.updatePawnAttacs(bb);
+        // calc mobility of each piece.
+        // we do not count sqares which are attached by enemy pawns.
+
+        long occupancy = bb.getColorMask(nWhite) | bb.getColorMask(nBlack);
+
+        // this update also the attacks information of each piece type
+        evalAttacks(result, bb, Color.WHITE, occupancy);
+        evalAttacks(result, bb, Color.BLACK, occupancy);
+    }
 }

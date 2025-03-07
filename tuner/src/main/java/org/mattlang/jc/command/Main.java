@@ -68,4 +68,9 @@ public class Main {
         }
         return Optional.empty();
     }
+
+    public static void consoleOut(String msg) {
+        System.out.println(msg);
+        LOGGER.info(msg);
+    }
 }
