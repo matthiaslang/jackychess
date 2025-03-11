@@ -94,4 +94,9 @@ public class PatternValueParam extends AbstractTuningParameter {
     public TuningParameter copyParam(PatternParameterGroup group) {
         return new PatternValueParam(group, this);
     }
+
+    @Override
+    public String getParameterName() {
+        return getGroup().getSubdir() + "." + getGroup().getParamName();
+    }
 }

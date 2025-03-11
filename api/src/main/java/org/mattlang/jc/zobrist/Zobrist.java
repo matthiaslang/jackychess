@@ -7,7 +7,6 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import java.util.Random;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.FigureConstants;
 
 public final class Zobrist {
 
@@ -47,11 +46,13 @@ public final class Zobrist {
 
     public static long hash(BoardRepresentation board) {
         long h = 0;
-        for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
-            byte fig = board.getFigureCode(i);
-            if (fig != FigureConstants.FT_EMPTY) {
-                h = updateFig(h, i, fig);
-            }
+        long pieceSet = board.getBoard().getPieces();
+        while (pieceSet != 0) {
+            final int piece = Long.numberOfTrailingZeros(pieceSet);
+            byte fig = board.getFigureCode(piece);
+            h = updateFig(h, piece, fig);
+
+            pieceSet &= pieceSet - 1;
         }
         h = updateEnPassant(h, board.getEnPassantMoveTargetPos());
         h = updateCastling(h, board.getCastlingRights());
@@ -64,11 +65,13 @@ public final class Zobrist {
 
     public static long hashPawnsAndKings(BoardRepresentation board) {
         long h = 0;
-        for (int i = 0; i < NUM_BOARD_FIELDS; i++) {
-            byte fig = board.getFigureCode(i);
-            if (isKingOrPawn(fig)) {
-                h = updateFig(h, i, fig);
-            }
+        long pieceSet = board.getBoard().getPawns() | board.getBoard().getPieceSet(FT_KING);
+        while (pieceSet != 0) {
+            final int piece = Long.numberOfTrailingZeros(pieceSet);
+            byte fig = board.getFigureCode(piece);
+            h = updateFig(h, piece, fig);
+
+            pieceSet &= pieceSet - 1;
         }
         return h;
     }

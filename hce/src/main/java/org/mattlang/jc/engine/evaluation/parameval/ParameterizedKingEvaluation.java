@@ -85,7 +85,7 @@ public class ParameterizedKingEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
 
         if (result.getPawnEntry() != null) {
             result.pkeval = result.getPawnEntry().pkeval;
@@ -100,9 +100,10 @@ public class ParameterizedKingEvaluation implements EvalComponent {
             result.pkeval = pkEvalWhite - pkEvalBlack;
         }
 
-        result.getMgEgScore().add(result.pkeval);
+        int score = result.pkeval;
 
-        result.getMgEgScore().add(evaluateKings(result, bitBoard, nWhite) - evaluateKings(result, bitBoard, nBlack));
+        score += (evaluateKings(result, bitBoard, nWhite) - evaluateKings(result, bitBoard, nBlack));
+        return score;
     }
 
     private int evaluateKingsPawns(EvalResult result, BoardRepresentation board, int color) {

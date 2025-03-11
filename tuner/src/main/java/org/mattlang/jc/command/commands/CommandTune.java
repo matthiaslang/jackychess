@@ -1,8 +1,7 @@
 package org.mattlang.jc.command.commands;
 
-import static java.util.Arrays.asList;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
@@ -49,6 +48,9 @@ public class CommandTune implements JCTCommand {
     @Parameter(names = "delta")
     double delta = 0.00000001;
 
+    @Parameter(names = "steps")
+    private List<Integer> steps = Arrays.asList(1);
+
     @Parameter(names = TUNE_PST)
     boolean tunePst = false;
 
@@ -78,6 +80,9 @@ public class CommandTune implements JCTCommand {
     @Parameter(names = "tuneAll")
     private boolean tuneAll = false;
 
+    @Parameter(names = "optimizeMode")
+    private boolean optimizeMode = false;
+
     @Parameter(names = "exceptions")
     private String exceptions = null;
 
@@ -89,29 +94,23 @@ public class CommandTune implements JCTCommand {
     }
 
     @Override
-    public void executeCommand() {
-
+    public void executeCommand() throws IOException {
         params = buildParams();
-
-        try {
-            LocalOptimizationTuner.run(params);
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-
+        LocalOptimizationTuner.run(params);
     }
 
     public OptParameters buildParams() {
+        boolean multithreading = threads > 1;
         return OptParameters.builder()
                 .name("tune")
                 .evalParamSet("CURRENT")
-                .optimizeRecalcOnlyDependendFens(false)
+                .optimizeMode(optimizeMode)
                 .resetParametersBeforeTuning(true)
                 .adjustK(adjustK)
-                .multiThreading(true)
+                .multiThreading(multithreading)
                 .threadCount(threads)
                 .delta(delta)
-                .stepGranularity(asList(1))
+                .stepGranularity(steps)
                 .removeDuplicateFens(removeDuplicates)
                 .tunePst(effectiveTuneFlag(tunePst, TUNE_PST))
                 .tuneMaterial(effectiveTuneFlag(tuneMat, TUNE_MAT))

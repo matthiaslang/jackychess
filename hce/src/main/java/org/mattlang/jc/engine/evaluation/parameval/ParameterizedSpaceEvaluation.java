@@ -6,6 +6,7 @@ import static org.mattlang.jc.board.BB.soutOne;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.createMgEgScore;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -20,8 +21,9 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
     public static final long BLACK_CENTERFILES = CenterFiles & RANK_567;
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
-        result.getMgEgScore().addMg(space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK));
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
+        int score = createMgEgScore(space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK), 0);
+        return score;
     }
 
     /**

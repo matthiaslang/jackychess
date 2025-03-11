@@ -45,18 +45,13 @@ public class GeneticTuner extends AbstractTuner {
         initRun();
 
         ParamTuneableEvaluateFunction evaluate =
-                new ParamTuneableEvaluateFunction(params);
-        copySourceConfigFile(outputDir);
+                new ParamTuneableEvaluateFunction(params, continuingTuningRun);
+        copySourceConfigFile(outputDir, evaluate.getParameterizedEvaluation());
 
         ParameterSet parameterSet = new ParameterSet(params, evaluate.getParameterizedEvaluation());
 
-        // start evals for initial population:
+        // start evals for initial population: doesnt make sense anymore...
         List<ParameterSet> startConfigs = new ArrayList<>();
-        for (String startEvalConfig : params.getGeneticParams().getStartEvalConfigs()) {
-            ParamTuneableEvaluateFunction startEval =
-                    new ParamTuneableEvaluateFunction(startEvalConfig, params);
-            startConfigs.add(new ParameterSet(params, startEval.getParameterizedEvaluation()));
-        }
 
         // todo doesnt make sense in genetic tuning...
         if (!continuingTuningRun && params.isResetParametersBeforeTuning()) {
@@ -83,14 +78,14 @@ public class GeneticTuner extends AbstractTuner {
             LocalOptimizerK optimizerK = new LocalOptimizerK(params);
             double k = optimizerK.optimize(parameterSet, evaluate, dataset);
             LOGGER.info("Scaling finished: K=" + k);
-            dataset.setK(k);
+            dataset.setScalingK(k);
 
             markdownAppender.append(w -> {
                 w.paragraph("K adjusted to: " + k);
             });
         } else {
             markdownAppender.append(w -> {
-                w.paragraph("K: " + dataset.getK());
+                w.paragraph("K: " + dataset.getScalingK());
             });
         }
 

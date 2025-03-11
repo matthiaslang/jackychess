@@ -45,13 +45,7 @@ public interface TuningParameter {
      */
     boolean isChangePossible(int step);
 
-    void addDependingFen(FenEntry fen);
-
-    boolean hasDependingFens();
-
     String getDescr();
-
-    int getDependingFenCount();
 
     /**
      * reset its value to a neutral value. (usually 0 or 1 depending if its additive or multiplicative).
@@ -60,6 +54,7 @@ public interface TuningParameter {
 
     /**
      * returns a unique number of that param.
+     *
      * @return
      */
     int getParamNo();
@@ -69,4 +64,6 @@ public interface TuningParameter {
     void incAdjCounter();
 
     int getAdjCounter();
+
+    String getParameterName();
 }

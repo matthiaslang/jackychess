@@ -1,10 +1,9 @@
 package org.mattlang.jc.board.cow;
 
-import static java.lang.Character.isDigit;
-import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BitBoard.FEN_START_POSITION;
 import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 import java.util.Objects;
@@ -29,16 +28,6 @@ import lombok.Getter;
  */
 public final class CopyOnWriteBitBoard implements BoardRepresentation {
 
-    public static final String[] FEN_START_POSITION = {
-            "rnbqkbnr",
-            "pppppppp",
-            "8",
-            "8",
-            "8",
-            "8",
-            "PPPPPPPP",
-            "RNBQKBNR"
-    };
     public static final int NO_EN_PASSANT_OPTION = -1;
     public static final int MAXMOVES = 1024;
 
@@ -110,13 +99,8 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
     }
 
     @Override
-    public void setPosition(String[] fenPosition) {
-        for (int i = 0; i < 8; i++) {
-            String row = expandRow(fenPosition[i]);
-            for (int j = 0; j < 8; j++) {
-                setPos(i, j, row.charAt(j));
-            }
-        }
+    public void setPosition(String fenPosition) {
+        board.setFenPositionString(fenPosition);
         moveCounter = 0;
         siteToMove = WHITE;
         castlingRights.setAllCasltingRights();
@@ -127,8 +111,8 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
 
     @Override
     public GameState setFenPosition(String fen) {
-        FenParser parser = new FenParser();
-        return parser.setPosition(fen, this);
+        ;
+        return FenParser.setPosition(fen, this);
     }
 
     private void set(int pos, byte figureCode) {
@@ -225,26 +209,8 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
 
     @Override
     public void clearPosition() {
-        for (int i = 0; i < 64; i++) {
-            board.set(i, Figure.EMPTY.figureCode);
-        }
+        board.clearPosition();
         moveCounter = 0;
-    }
-
-    private String expandRow(String row) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < row.length(); i++) {
-            char ch = row.charAt(i);
-            if (isDigit(ch)) {
-                int empties = parseInt(String.valueOf(ch));
-                for (int e = 1; e <= empties; e++) {
-                    b.append(" ");
-                }
-            } else {
-                b.append(ch);
-            }
-        }
-        return b.toString();
     }
 
     @Override
@@ -278,26 +244,16 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
                 }
             } else if (figType == FT_ROOK) {
                 if (isWhiteFigure) {
-                    if (from == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(WHITE_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(WHITE_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
+                    whiteRookCastlingCheck(from);
                 } else {
-                    if (from == boardCastlings.getCastlingBlackLong().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(BLACK_LONG);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    } else if (from == boardCastlings.getCastlingBlackShort().getRookFrom()) {
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                        castlingRights.removeRight(BLACK_SHORT);
-                        zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
-                    }
+                    blackRookCastlingCheck(from);
                 }
+            }
+            // if a rook gets captured, we may need to update the castling rights of the opponent:
+            if (capturedFigure == Figure.W_Rook.figureCode) {
+                whiteRookCastlingCheck(to);
+            } else if (capturedFigure == Figure.B_Rook.figureCode) {
+                blackRookCastlingCheck(to);
             }
         }
 
@@ -342,6 +298,30 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
         castlingRights.removeRight(BLACK_SHORT);
         castlingRights.removeRight(BLACK_LONG);
         zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+    }
+
+    private void whiteRookCastlingCheck(int pos){
+        if (pos == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(WHITE_LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        } else if (pos == boardCastlings.getCastlingWhiteShort().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(WHITE_SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        }
+    }
+
+    private void blackRookCastlingCheck(int pos){
+        if (pos == boardCastlings.getCastlingBlackLong().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(BLACK_LONG);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        } else if (pos == boardCastlings.getCastlingBlackShort().getRookFrom()) {
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+            castlingRights.removeRight(BLACK_SHORT);
+            zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
+        }
     }
 
     @Override

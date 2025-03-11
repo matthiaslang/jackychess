@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.command.Main;
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.PinnedCalc;
 import org.mattlang.jc.material.Material;
@@ -37,14 +39,7 @@ public class DataSet {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
 
-    /**
-     * scaling Constant.
-     */
-    //            private static final double K = 1.13;
-    /**
-     * calculated to 1.09 by pre-scaling. now using this fixed value.
-     */
-    private static final double K = 1.5800000000000003;
+    private static final double DEFAULT_K = 1.5800000000000003;
 
     private List<DataSet> workers = new ArrayList<>();
 
@@ -54,7 +49,10 @@ public class DataSet {
 
     private boolean multithreaded = false;
 
-    private double k = K;
+    /**
+     * scaling Constant.
+     */
+    private double scalingK = DEFAULT_K;
 
     private OptParameters optParameters;
 
@@ -124,12 +122,13 @@ public class DataSet {
     }
 
     private int calcEval(FenEntry fen) {
-        if (optParameters.isOptimizeRecalcOnlyDependendFens()) {
-            int eval = fen.getLastEval();
-            if (eval == FenEntry.NO_EVAL) {
-                eval = evaluate.eval(fen.getBoard(), WHITE);
-                fen.setLastEval(eval);
-            }
+        if (optParameters.isOptimizeMode()) {
+            evaluate.getTuningCache().updateFromFen(fen.getTuningCache());
+
+            int eval = evaluate.eval(fen.getBoard(), WHITE);
+
+            fen.getTuningCache().putAll(evaluate.getTuningCache());
+
             return eval;
         } else {
             return evaluate.eval(fen.getBoard(), WHITE);
@@ -137,7 +136,7 @@ public class DataSet {
     }
 
     private void updateWorker(ParameterSet parameterSet) {
-        // create if not alreay done:
+        // create if not already done:
         if (workers.size() == 0) {
 
             for (int i = 0; i < optParameters.getThreadCount(); i++) {
@@ -156,13 +155,13 @@ public class DataSet {
         // update the evaluation functions of the workers with the current parameter settings:
         for (DataSet worker : workers) {
             worker.getEvaluate().saveValues(parameterSet.getParams());
-            worker.setK(k);
+            worker.setScalingK(scalingK);
         }
     }
 
     private double sigmoid(int eval) {
         double deval = eval;
-        return 1 / (1 + pow(10, -k * deval / 400));
+        return 1 / (1 + pow(10, -scalingK * deval / 400));
     }
 
     public void addFen(FenEntry entry) {
@@ -171,6 +170,10 @@ public class DataSet {
 
     public void add(DataSet other) {
         fens.addAll(other.getFens());
+    }
+
+    public void add(Collection<FenEntry> other) {
+        fens.addAll(other);
     }
 
     public void logInfos() {
@@ -196,14 +199,14 @@ public class DataSet {
 
         stats.put("Duplicate Fens", dupCount);
 
-        LOGGER.info("Data set statistics:");
+        Main.consoleOut("Data set statistics:");
         for (Map.Entry<String, Object> entry : stats.entrySet()) {
-            LOGGER.info(entry.getKey() + ": " + entry.getValue());
+            Main.consoleOut(entry.getKey() + ": " + entry.getValue());
         }
 
     }
 
-    public void removeDuplidateFens() {
+    public void removeDuplicateFens() {
         List<FenEntry> result = new ArrayList<>();
         HashSet<Long> hashes = new HashSet<>();
         for (FenEntry fen : fens) {
@@ -289,15 +292,15 @@ public class DataSet {
     private void writeNumberOfFensByMaterial(MarkdownWriter w) throws IOException {
         w.h2("Number of fens by Material");
         // stats about mid/end game:
-//        TreeMap<Material, Long> countsByPhase = fens.stream()
-//                .map(f -> f.getBoard().getMaterial())
-//                .collect(groupingBy(identity(), TreeMap::new, counting()));
+        //        TreeMap<Material, Long> countsByPhase = fens.stream()
+        //                .map(f -> f.getBoard().getMaterial())
+        //                .collect(groupingBy(identity(), TreeMap::new, counting()));
         TreeMap<Material, Long> countsByPhase = new TreeMap<>();
         for (FenEntry fen : fens) {
             // add white and black mat separate to group by the material of one side (regardless of the side)
-            Material mw=new Material(fen.getBoard().getMaterial().getWhiteMat());
+            Material mw = new Material(fen.getBoard().getMaterial().getWhiteMat());
             countsByPhase.compute(mw, (k, v) -> (v == null) ? 1 : v + 1);
-            Material mb=new Material(fen.getBoard().getMaterial().getBlackAsWhitePart());
+            Material mb = new Material(fen.getBoard().getMaterial().getBlackAsWhitePart());
             countsByPhase.compute(mb, (k, v) -> (v == null) ? 1 : v + 1);
         }
 
@@ -317,18 +320,20 @@ public class DataSet {
         TreeMap<Byte, Long> pinnedByFigureType = new TreeMap<>();
         TreeMap<Byte, Long> discoveredByFigureType = new TreeMap<>();
         for (FenEntry fen : fens) {
-            PinnedCalc pinnedCalc=new PinnedCalc();
+            PinnedCalc pinnedCalc = new PinnedCalc();
             BitChessBoard bb = fen.getBoard().getBoard();
             pinnedCalc.calcPinnedDiscoveredAndChecking(bb);
             if (pinnedCalc.getPinnedPieces() != 0) {
                 long piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
-                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
                 piece = pinnedCalc.getPinnedPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
-                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    pinnedByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
             }
@@ -336,12 +341,14 @@ public class DataSet {
             if (pinnedCalc.getDiscoveredPieces() != 0) {
                 long piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nWhite);
                 while (piece != 0) {
-                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
                 piece = pinnedCalc.getDiscoveredPieces() & bb.getPieceSet(nBlack);
                 while (piece != 0) {
-                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)), (k, v) -> (v == null) ? 1 : v + 1);
+                    discoveredByFigureType.compute(bb.getFigType(Long.numberOfTrailingZeros(piece)),
+                            (k, v) -> (v == null) ? 1 : v + 1);
                     piece &= piece - 1;
                 }
             }
@@ -366,9 +373,9 @@ public class DataSet {
         return decFactor;
     }
 
-    public void resetDependingFens(TuningParameter param) {
+    public void resetCachedComponentValues(TuningCache.EvalComponentName evalCompName) {
         for (FenEntry fen : fens) {
-            fen.resetIfDepending(param.getParamNo());
+            fen.getTuningCache().clear(evalCompName);
         }
     }
 }

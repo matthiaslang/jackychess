@@ -1,5 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
+import static java.lang.Character.isDigit;
 import static java.lang.System.arraycopy;
 import static java.util.stream.Collectors.joining;
 import static org.mattlang.jc.board.Color.*;
@@ -19,6 +20,8 @@ import org.mattlang.jc.board.*;
  * Of course this needs then step-by-step been refactored to make real use of all the bitboard benefits.
  */
 public class BitChessBoard {
+
+    public static final int INSERT_START_POS = (7 - 0) * 8 + 0;
 
     /**
      * contains the bit masks for the colors (white and black figures).
@@ -301,7 +304,7 @@ public class BitChessBoard {
         //occupiedBB            ^=  fromBB;     // update occupied, only from becomes empty
         //emptyBB               ^=  fromBB;     // update empty bitboard
 
-        if (BuildConstants.ASSERTIONS){
+        if (BuildConstants.ASSERTIONS) {
             doAssertions();
         }
     }
@@ -418,5 +421,33 @@ public class BitChessBoard {
     public void copyFrom(BitChessBoard bitChessBoard) {
         arraycopy(bitChessBoard.colorBB, 0, this.colorBB, 0, bitChessBoard.colorBB.length);
         arraycopy(bitChessBoard.pieceBB, 0, this.pieceBB, 0, bitChessBoard.pieceBB.length);
+    }
+
+    /**
+     * Sets a fen position part like "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+     * The bit chess board must be clean before setting the figures.
+     *
+     * @param fenPosition
+     */
+    public void setFenPositionString(String fenPosition) {
+        // start insert pos is "left top" (0,0):
+        int insertPos = INSERT_START_POS;
+
+        for (int i = 0; i < fenPosition.length(); i++) {
+            char ch = fenPosition.charAt(i);
+            if (isDigit(ch)) {
+                int empties = ch - '0';
+                insertPos += empties;
+            } else if (ch == '/') {
+                insertPos -= 16;
+            } else {
+                set(insertPos++, Figure.convertFigureChar(ch));
+            }
+        }
+    }
+
+    public void clearPosition() {
+        Arrays.fill(colorBB, 0L);
+        Arrays.fill(pieceBB, 0L);
     }
 }

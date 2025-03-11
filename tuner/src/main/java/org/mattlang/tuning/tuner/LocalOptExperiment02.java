@@ -62,7 +62,7 @@ public class LocalOptExperiment02 {
         OptParameters params = OptParameters.builder()
                 .name("king safety tuning after bugfixes")
                 .evalParamSet("CURRENT")
-                .optimizeRecalcOnlyDependendFens(false)
+                .optimizeMode(false)
                 .resetParametersBeforeTuning(true)
                 .adjustK(false)
                 .multiThreading(true)

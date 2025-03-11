@@ -100,4 +100,9 @@ public class IntegerValueParam extends AbstractTuningParameter implements Tuning
     public void resetValue() {
         value = 0;
     }
+
+    @Override
+    public String getParameterName() {
+        return name;
+    }
 }

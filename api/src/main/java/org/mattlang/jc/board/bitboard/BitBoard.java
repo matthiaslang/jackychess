@@ -1,7 +1,5 @@
 package org.mattlang.jc.board.bitboard;
 
-import static java.lang.Character.isDigit;
-import static java.lang.Integer.parseInt;
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
@@ -20,16 +18,8 @@ import lombok.Getter;
 
 public final class BitBoard implements BoardRepresentation {
 
-    public static final String[] FEN_START_POSITION = {
-            "rnbqkbnr",
-            "pppppppp",
-            "8",
-            "8",
-            "8",
-            "8",
-            "PPPPPPPP",
-            "RNBQKBNR"
-    };
+    public static final String FEN_START_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
     public static final int NO_EN_PASSANT_OPTION = -1;
     public static final int MAXMOVES = 1024;
 
@@ -89,13 +79,8 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     @Override
-    public void setPosition(String[] fenPosition) {
-        for (int i = 0; i < 8; i++) {
-            String row = expandRow(fenPosition[i]);
-            for (int j = 0; j < 8; j++) {
-                setPos(i, j, row.charAt(j));
-            }
-        }
+    public void setPosition(String fenPosition) {
+        board.setFenPositionString(fenPosition);
         moveCounter = 0;
         siteToMove = WHITE;
         castlingRights.setAllCasltingRights();
@@ -203,26 +188,8 @@ public final class BitBoard implements BoardRepresentation {
 
     @Override
     public void clearPosition() {
-        for (int i = 0; i < 64; i++) {
-            board.set(i, Figure.EMPTY.figureCode);
-        }
+        board.clearPosition();
         moveCounter = 0;
-    }
-
-    private String expandRow(String row) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < row.length(); i++) {
-            char ch = row.charAt(i);
-            if (isDigit(ch)) {
-                int empties = parseInt(String.valueOf(ch));
-                for (int e = 1; e <= empties; e++) {
-                    b.append(" ");
-                }
-            } else {
-                b.append(ch);
-            }
-        }
-        return b.toString();
     }
 
     @Override

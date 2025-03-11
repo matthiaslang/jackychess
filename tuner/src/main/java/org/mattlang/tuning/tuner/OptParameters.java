@@ -37,9 +37,9 @@ public class OptParameters {
     private int progressUpdatesInMinutes = ProgressInfo.DEFAULT_UPDATE_MINUTES;
 
     /**
-     * optimization to recalc only the fens which depend on that particular parameter.
+     * optimization to recalc only the eval component values that the current changed parameter depends on.
      */
-    private boolean optimizeRecalcOnlyDependendFens = false;
+    private boolean optimizeMode = false;
 
     private boolean multiThreading = true;
 

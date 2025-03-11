@@ -46,10 +46,11 @@ public class ParameterizedComplexityEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation board) {
+    public int eval(EvalResult result, BoardRepresentation board) {
         // evaluate complexity related to given current eg eval value:
-        result.getMgEgScore().addEg(evaluateComplexity(board, result.getMgEgScore().getEgScore()));
-        result.getMgEgScore().add(evaluateClosedness(board));
+        int score = MgEgScore.createMgEgScore(0, evaluateComplexity(board, result.getMgEgScore().getEgScore()));
+        score += evaluateClosedness(board);
+        return score;
     }
 
     int evaluateComplexity(BoardRepresentation board, int eg) {

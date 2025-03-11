@@ -54,7 +54,7 @@ public class PgnParser {
             result.add(game);
             counter++;
             if (counter % 500 == 0) {
-                LOGGER.info("parsed " + counter + " games...");
+                LOGGER.fine("parsed " + counter + " games...");
             }
         }
         if (scanner.hasNext()) {

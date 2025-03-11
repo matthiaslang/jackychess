@@ -8,9 +8,12 @@ import java.util.stream.Collectors;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.board.IndexConversion;
 
 /**
- * Class to build a fen string from a board position.
+ * Class to build a fen string from a board position. Only basic Syntax is supported.
+ *
+ * See https://www.chessprogramming.org/Extended_Position_Description for full definition.
  */
 public class FenComposer {
 
@@ -62,12 +65,19 @@ public class FenComposer {
                 + enpassant(board) + " " + noHalfMoves + " " + nextMoveNum;
     }
 
+    public void createRawFenFromBoard(BoardRepresentation board,
+            Color who2Move, int noHalfMoves, int nextMoveNum) {
+        clear();
+        preStr = buildFenPosition(board) + " " + colorFen(who2Move) + " " + rochade(board) + " "
+                + enpassant(board) + " " + noHalfMoves + " " + nextMoveNum;
+    }
+
     private String enpassant(BoardRepresentation board) {
         int i = board.getEnPassantMoveTargetPos();
         if (i == -1) {
             return "-";
         } else {
-            return Integer.toString(i);
+            return IndexConversion.convert(i);
         }
     }
 
@@ -98,6 +108,10 @@ public class FenComposer {
     public void createFenFromBoard(BoardRepresentation board) {
         createFenFromBoard(board, board.getSiteToMove(), 0, 0);
     }
+    public void createRawFenFromBoard(BoardRepresentation board) {
+        createRawFenFromBoard(board, board.getSiteToMove(), 0, 0);
+    }
+
 
     public static String buildFenPosition(BoardRepresentation board) {
         StringBuilder fen = new StringBuilder();

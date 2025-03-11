@@ -49,10 +49,10 @@ public class ParameterizedPstEvaluation implements EvalComponent {
     }
 
     @Override
-    public void eval(EvalResult result, BoardRepresentation bitBoard) {
+    public int eval(EvalResult result, BoardRepresentation bitBoard) {
         BitChessBoard bb = bitBoard.getBoard();
 
-        result.getMgEgScore().add(pawnMGEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
+        return (pawnMGEG.calcScore(bb.getPawns(nWhite), bb.getPawns(nBlack)) +
                 knightMGEG.calcScore(bb.getKnights(nWhite), bb.getKnights(nBlack)) +
                 bishopMGEG.calcScore(bb.getBishops(nWhite), bb.getBishops(nBlack)) +
                 rookMGEG.calcScore(bb.getRooks(nWhite), bb.getRooks(nBlack)) +

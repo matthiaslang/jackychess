@@ -34,8 +34,12 @@ public class PropertyConfig {
     }
 
     public static PropertyConfig loadFromFile(String configFile) {
+        return loadFromFile(new File(configFile));
+    }
+
+    public static PropertyConfig loadFromFile(File configFile) {
         LOGGER.log(INFO, "loading config file {0}", configFile);
-        return new PropertyConfig(loadProperty(new File(configFile)));
+        return new PropertyConfig(loadProperty(configFile));
     }
 
     public static PropertyConfig loadFromResourceFile(String configResourceFile) {

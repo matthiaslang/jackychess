@@ -29,4 +29,15 @@ public class PgnGame {
         String result = getTag("Result");
         return Ending.match(result);
     }
+
+    public String getTagStr() {
+       StringBuilder b=new StringBuilder();
+       for (String key : tags.keySet()) {
+           b.append(key);
+           b.append("=");
+           b.append(tags.get(key));
+           b.append("\n");
+       }
+       return b.toString();
+    }
 }

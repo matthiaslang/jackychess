@@ -1,8 +1,16 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.engine.TuningCache.EvalComponentName.*;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.RECALCED_EVAL;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.USED_CACHED_EVAL;
+
+import java.util.function.Consumer;
+import java.util.function.IntSupplier;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
+import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
@@ -62,11 +70,16 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private boolean endgameEvaluations = false;
 
+    private boolean optimizeMode = false;
+
     @Getter
     /**
      * set in tuning runs.
      */
     private boolean forTuning = false;
+
+    @Getter
+    private TuningCache tuningCache = new TuningCache();
 
     private IntIntCache evalCache = EvalCache.instance;
 
@@ -116,13 +129,13 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      *
      * @return
      */
-    public static ParameterizedEvaluation createForTuning() {
-        //
-        ParameterizedEvaluation eval = new ParameterizedEvaluation(true);
+    public static ParameterizedEvaluation createForTuning(EvalConfig evalConfig, boolean optimizeMode) {
+        ParameterizedEvaluation eval = new ParameterizedEvaluation(evalConfig, true);
         // disable caching for tuning since the parameters change during tuning:
         eval.caching = false;
         // disable special end game functions, as they get not tuned (because they do not have any parameters)
         eval.endgameEvaluations = false;
+        eval.optimizeMode = optimizeMode;
         return eval;
     }
 
@@ -146,10 +159,14 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             }
         }
 
-        result.clear();
+        if (forTuning && optimizeMode) {
+            return evalForTuningOptimizedMode(currBoard, who2Move);
+        }
+
+        result.clear(who2Move);
 
         // do mat evaluation first to have material values used for end game rules to decide the stronger side
-        matEvaluation.eval(result, currBoard);
+        result.add(matEvaluation.eval(result, currBoard));
 
         int materialScore = result.getMgEgScore().getEgScore();
 
@@ -173,19 +190,19 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             result.setPawnEntry(pawnCache.find(pawnHashKey));
         }
 
-        pstEvaluation.eval(result, currBoard);
+        result.add(pstEvaluation.eval(result, currBoard));
         // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
-        mobEvaluation.eval(result, currBoard);
-        pawnEvaluation.eval(result, currBoard);
-        result.getMgEgScore().add(adjustments.adjust(currBoard.getBoard(), who2Move));
+        result.add(mobEvaluation.eval(result, currBoard));
+        result.add(pawnEvaluation.eval(result, currBoard));
+        result.add(adjustments.eval(result, currBoard));
 
-        threatsEvaluation.eval(result, currBoard);
+        result.add(threatsEvaluation.eval(result, currBoard));
 
-        kingEvaluation.eval(result, currBoard);
+        result.add(kingEvaluation.eval(result, currBoard));
 
-        complexityEvaluation.eval(result, currBoard);
+        result.add(complexityEvaluation.eval(result, currBoard));
 
-        spaceEvaluation.eval(result, currBoard);
+        result.add(spaceEvaluation.eval(result, currBoard));
 
         int score = result.calcCompleteScore(currBoard);
 
@@ -202,6 +219,73 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         }
 
         return score;
+    }
+
+    public int evalForTuningOptimizedMode(BoardRepresentation currBoard, Color who2Move) {
+
+        result.clear(who2Move);
+
+        // do mat evaluation first to have material values used for end game rules to decide the stronger side
+        withTuningCaching(MAT, () -> matEvaluation.eval(result, currBoard));
+        withTuningCaching(PST, () -> pstEvaluation.eval(result, currBoard));
+        // do mobility rel. early as it calculates attacks which are needed by some evaluations later on:
+        withTuningCaching(MOB, () -> mobEvaluation.eval(result, currBoard),
+                a -> {
+                    if (a == USED_CACHED_EVAL) {
+                        // mobility calculates also attack information.
+                        // if the mobility cache is used, we need to calc attack information in addition:
+                        mobEvaluation.calcAttacksOnly(result, currBoard);
+                    }
+                });
+        withTuningCaching(PAWN, () -> pawnEvaluation.eval(result, currBoard));
+        withTuningCaching(ADJUSTMENTS, () -> adjustments.eval(result, currBoard));
+
+        withTuningCaching(THREATS, () -> threatsEvaluation.eval(result, currBoard));
+
+        withTuningCaching(KING, () -> kingEvaluation.eval(result, currBoard));
+
+        withTuningCaching(COMPLEXITY, () -> complexityEvaluation.eval(result, currBoard));
+
+        withTuningCaching(SPACE, () -> spaceEvaluation.eval(result, currBoard));
+
+        int score = result.calcCompleteScore(currBoard);
+
+        score = matCorrection.correct(currBoard, score);
+
+        int who2mov = who2Move == Color.WHITE ? 1 : -1;
+        score = score * who2mov;
+
+        return score;
+    }
+
+    private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent) {
+        Integer tuneCachedVal = tuningCache.get(name);
+        if (tuneCachedVal != null) {
+            result.add(tuneCachedVal);
+        } else {
+            int score = doEvalComponent.getAsInt();
+            result.add(score);
+            tuningCache.put(name, score);
+        }
+    }
+
+    public enum TuningCacheAction {
+        USED_CACHED_EVAL,
+        RECALCED_EVAL
+    }
+
+    private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent,
+            Consumer<TuningCacheAction> additionalWorkWhenCached) {
+        Integer tuneCachedVal = tuningCache.get(name);
+        if (tuneCachedVal != null) {
+            result.add(tuneCachedVal);
+            additionalWorkWhenCached.accept(USED_CACHED_EVAL);
+        } else {
+            int score = doEvalComponent.getAsInt();
+            result.add(score);
+            tuningCache.put(name, score);
+            additionalWorkWhenCached.accept(RECALCED_EVAL);
+        }
     }
 
     @Override
@@ -245,7 +329,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      * @return
      */
     public boolean isUsingEndgameFunction(BoardRepresentation currBoard) {
-        result.clear();
+        result.clear(currBoard.getSiteToMove());
         matEvaluation.eval(result, currBoard);
         EndGameRules endGameRule = matchesRule(currBoard, result.getMgEgScore().getEgScore());
         return endGameRule != null;

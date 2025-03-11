@@ -1,7 +1,5 @@
 package org.mattlang.jc.engine.evaluation.annotation;
 
-import static org.mattlang.jc.engine.evaluation.evaltables.Pattern.loadFromFullPath;
-
 import org.mattlang.jc.engine.evaluation.annotation.configure.*;
 import org.mattlang.jc.engine.evaluation.evaltables.Pattern;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
@@ -12,7 +10,6 @@ import org.mattlang.jc.engine.evaluation.parameval.functions.FloatArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 
 import lombok.extern.java.Log;
-
 
 @Log
 public class EvalConfigurator implements EvalConfigVisitor {
@@ -71,11 +68,9 @@ public class EvalConfigurator implements EvalConfigVisitor {
     public void visitMgEgPattern(PatternConfigDefinition patternConfigDefinition,
             FieldAccessStack fieldAccessStack, EvalValueInterval intIntervall) {
         Pattern patternMg =
-                loadFromFullPath(
-                        config.getConfigDir() + patternConfigDefinition.getCsvTablePathNameMg());
+                config.loadFromRelPath(patternConfigDefinition.getCsvTablePathNameMg());
         Pattern patternEg =
-                loadFromFullPath(
-                        config.getConfigDir() + patternConfigDefinition.getCsvTablePathNameEg());
+                config.loadFromRelPath(patternConfigDefinition.getCsvTablePathNameEg());
         Pattern patVal = Pattern.combine(patternMg, patternEg);
         fieldAccessStack.set(eval, patVal);
     }
@@ -83,9 +78,7 @@ public class EvalConfigurator implements EvalConfigVisitor {
     @Override
     public void visitPattern(PatternConfigDefinition patternConfigDefinition, FieldAccessStack fieldAccessStack,
             EvalValueInterval intIntervall) {
-        Pattern patVal =
-                loadFromFullPath(
-                        config.getConfigDir() + patternConfigDefinition.getCsvTablePathName());
+        Pattern patVal = config.loadFromRelPath(patternConfigDefinition.getCsvTablePathName());
         fieldAccessStack.set(eval, patVal);
     }
 

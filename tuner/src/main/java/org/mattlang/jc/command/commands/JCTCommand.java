@@ -7,5 +7,5 @@ public interface JCTCommand {
 
     String getCmdName();
 
-    void executeCommand();
+    void executeCommand() throws Exception;
 }
