@@ -1,5 +1,9 @@
 # Versions
 
+## 25.01T
+
+- internal changes: refactorings and impl of tuning command
+
 ## 25.01D
 
 - support for uci "go depth" and "go nodes" 
