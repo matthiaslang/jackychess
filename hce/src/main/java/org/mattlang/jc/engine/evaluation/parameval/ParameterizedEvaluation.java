@@ -11,6 +11,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.TuningCache;
+import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
@@ -56,8 +57,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     private final ParameterizedComplexityEvaluation complexityEvaluation;
 
     private final ParameterizedSpaceEvaluation spaceEvaluation;
-
-    private final ParameterizedMaterialCorrectionEvaluation matCorrection;
 
     @Getter
     private final ParameterizedAdjustmentsEvaluation adjustments;
@@ -111,7 +110,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         mobEvaluation = new ParameterizedMobilityEvaluation();
         pawnEvaluation = new ParameterizedPawnEvaluation(forTuning, caching);
 
-        matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
         adjustments = new ParameterizedAdjustmentsEvaluation();
 
         threatsEvaluation = new ParameterizedThreatsEvaluation();
@@ -157,6 +155,10 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             if (cachedResult != IntIntCache.NORESULT) {
                 return cachedResult;
             }
+        }
+
+        if (currBoard.getMaterial().isDrawByMaterial()) {
+            return Weights.REPETITION_WEIGHT;
         }
 
         if (forTuning && optimizeMode) {
@@ -206,8 +208,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         int score = result.calcCompleteScore(currBoard);
 
-        score = matCorrection.correct(currBoard, score);
-
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
 
@@ -249,8 +249,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         withTuningCaching(SPACE, () -> spaceEvaluation.eval(result, currBoard));
 
         int score = result.calcCompleteScore(currBoard);
-
-        score = matCorrection.correct(currBoard, score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
