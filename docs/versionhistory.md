@@ -1,5 +1,9 @@
 # Versions
 
+## 25.02
+
+- hce: removed material correction (obsolete due to complexity and drawByMaterial checks) 
+
 ## 25.01T
 
 - internal changes: refactorings and impl of tuning command
