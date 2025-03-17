@@ -18,16 +18,20 @@ public class EpdWriter {
         try (FileWriter writer = new FileWriter(outFile, true);
                 PrintWriter printWriter = new PrintWriter(writer)) {
             for (FenEntry fen : dataSet.getFens()) {
-                fenComposer.createRawFenFromBoard(fen.getBoard());
-                printWriter.print(fenComposer.createFenStr());
-                printWriter.print(" ");
-                printWriter.print(convertEnding(fen.getEnding()));
-                if (fen.getComment() != null) {
-                    printWriter.print(" c0 " + fen.getComment());
-                }
-                printWriter.println();
+                writeFenEntry(fen, fenComposer, printWriter);
             }
         }
+    }
+
+    public static void writeFenEntry(FenEntry fen, FenComposer fenComposer, PrintWriter printWriter) {
+        fenComposer.createRawFenFromBoard(fen.getBoard());
+        printWriter.print(fenComposer.createFenStr());
+        printWriter.print(" ");
+        printWriter.print(convertEnding(fen.getEnding()));
+        if (fen.getComment() != null) {
+            printWriter.print(" c0 " + fen.getComment());
+        }
+        printWriter.println();
     }
 
     private static String convertEnding(Ending ending) {

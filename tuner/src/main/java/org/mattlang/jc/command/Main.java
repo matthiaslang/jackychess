@@ -1,5 +1,7 @@
 package org.mattlang.jc.command;
 
+import static org.mattlang.jc.util.Logging.initLogging;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,8 @@ public class Main {
     private static final Logger LOGGER = Logger.getLogger(Main.class.getSimpleName());
 
     public static void main(String[] args) throws IOException {
+        initLogging("/tuningLogging.properties");
+
         Optional<JCTCommand> jctCommand = parseCommandFromArgs(args);
         if (jctCommand.isPresent()) {
             JCTCommand jct = jctCommand.get();

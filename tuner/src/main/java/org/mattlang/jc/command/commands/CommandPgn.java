@@ -1,16 +1,22 @@
 package org.mattlang.jc.command.commands;
 
-import static org.mattlang.jc.command.commands.EpdWriter.writeEpd;
+import static org.mattlang.jc.command.Main.consoleOut;
+import static org.mattlang.jc.command.commands.EpdWriter.writeFenEntry;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import org.mattlang.jc.command.Main;
-import org.mattlang.tuning.DataSet;
+import org.mattlang.jc.util.FenComposer;
+import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 
 @Parameters(commandNames = { CommandPgn.CMD_PGN },
@@ -35,6 +41,12 @@ public class CommandPgn implements JCTCommand {
     @Parameter(names = { "--removeDuplicates" }, description = "removes duplicate epds")
     private boolean removeDuplicates = false;
 
+    private FenComposer fenComposer = new FenComposer();
+
+    HashSet<Long> hashes = new HashSet<>();
+    StreamProcessInfo remDupsInfo = new StreamProcessInfo("Duplicates");
+    StreamProcessInfo writerInfo = new StreamProcessInfo("Written");
+
     @Override
     public String getCmdName() {
         return CMD_PGN;
@@ -42,40 +54,48 @@ public class CommandPgn implements JCTCommand {
 
     @Override
     public void executeCommand() throws Exception {
-        DataSet result = new DataSet(null);
+
         File outFile = new File(outputFile);
         if (outFile.exists()) {
             outFile.delete();
         }
-        loadDataset(files, dataSet -> {
-            result.add(dataSet);
-        });
 
-        if (removeDuplicates) {
-            Main.consoleOut("removing duplicates...");
-            result.removeDuplicateFens();
-        }
+        try (FileWriter writer = new FileWriter(outFile, true);
+                PrintWriter printWriter = new PrintWriter(writer)) {
 
-        writeEpd(result, outputFile);
-    }
-
-
-
-    private void loadDataset(List<String> args, DataSetConsumer resultConsumer)
-            throws Exception {
-        DatasetPreparer preparer = new DatasetPreparer(null);
-
-        for (String arg : args) {
-            LOGGER.info("parsing file " + arg);
-            File file = new File(arg);
-            if (file.isDirectory()) {
-                for (File fileOfDir : file.listFiles()) {
-                    resultConsumer.accept(preparer.prepareFromEpd(fileOfDir));
+            for (String file : files) {
+                consoleOut("parsing file " + file);
+                StreamProcessInfo processInfo = new StreamProcessInfo(file);
+                try (Stream<String> linesStream = Files.lines(new File(file).toPath())) {
+                    linesStream.forEach(line -> {
+                        processInfo.increment();
+                        FenEntry entry = DatasetPreparer.parseFen(line);
+                        streamProcessFenEntry(entry, printWriter);
+                    });
                 }
-            } else {
-                resultConsumer.accept(preparer.prepareFromEpd(file));
             }
+
         }
 
+        consoleOut("processed " + files.size() + " files");
+        if (removeDuplicates) {
+            consoleOut("removed " + remDupsInfo.size() + " duplicates");
+        }
+        consoleOut("written " + writerInfo.size() + " entries to " + outFile);
     }
+
+    private void streamProcessFenEntry(FenEntry entry, PrintWriter printWriter) {
+        if (removeDuplicates) {
+            if (!hashes.contains(entry.getBoard().getZobristHash())) {
+                writerInfo.increment();
+                writeFenEntry(entry, fenComposer, printWriter);
+                hashes.add(entry.getBoard().getZobristHash());
+            } else {
+                remDupsInfo.increment();
+            }
+        } else {
+            writeFenEntry(entry, fenComposer, printWriter);
+        }
+    }
+
 }
