@@ -6,6 +6,7 @@ public class StreamProcessInfo {
 
     private final String title;
     private int counter = 0;
+    private StreamProcessWrapper parent;
 
     public StreamProcessInfo(String title) {
         this.title = title;
@@ -13,12 +14,32 @@ public class StreamProcessInfo {
 
     public void increment() {
         counter++;
-        if (counter % 25000 == 0) {
+        if (counter % 50000 == 0) {
+            writeInfo();
+        }
+    }
+
+    public void writeInfo() {
+        if (parent != null) {
+            parent.writeInfo();
+        } else {
             Main.consoleOut("process " + title + ": " + counter);
         }
     }
 
     public int size() {
         return counter;
+    }
+
+    public void setParent(StreamProcessWrapper parent) {
+        this.parent = parent;
+    }
+
+    public StreamProcessWrapper getParent() {
+        return parent;
+    }
+
+    public String createBasicInfo() {
+        return title + ": " + counter;
     }
 }

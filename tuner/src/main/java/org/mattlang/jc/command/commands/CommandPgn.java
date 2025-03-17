@@ -46,6 +46,9 @@ public class CommandPgn implements JCTCommand {
     HashSet<Long> hashes = new HashSet<>();
     StreamProcessInfo remDupsInfo = new StreamProcessInfo("Duplicates");
     StreamProcessInfo writerInfo = new StreamProcessInfo("Written");
+    StreamProcessInfo readInfo = new StreamProcessInfo("Read");
+
+    StreamProcessWrapper wrapper = new StreamProcessWrapper();
 
     @Override
     public String getCmdName() {
@@ -54,6 +57,10 @@ public class CommandPgn implements JCTCommand {
 
     @Override
     public void executeCommand() throws Exception {
+
+        wrapper.add(readInfo);
+        wrapper.add(remDupsInfo);
+        wrapper.add(writerInfo);
 
         File outFile = new File(outputFile);
         if (outFile.exists()) {
@@ -65,10 +72,9 @@ public class CommandPgn implements JCTCommand {
 
             for (String file : files) {
                 consoleOut("parsing file " + file);
-                StreamProcessInfo processInfo = new StreamProcessInfo(file);
                 try (Stream<String> linesStream = Files.lines(new File(file).toPath())) {
                     linesStream.forEach(line -> {
-                        processInfo.increment();
+                        readInfo.increment();
                         FenEntry entry = DatasetPreparer.parseFen(line);
                         streamProcessFenEntry(entry, printWriter);
                     });
@@ -76,6 +82,7 @@ public class CommandPgn implements JCTCommand {
             }
 
         }
+        wrapper.add(remDupsInfo);
 
         consoleOut("processed " + files.size() + " files");
         if (removeDuplicates) {
