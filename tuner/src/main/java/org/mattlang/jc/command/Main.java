@@ -11,10 +11,7 @@ import java.util.logging.Logger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import org.mattlang.jc.command.commands.CommandMain;
-import org.mattlang.jc.command.commands.CommandPgn2Epd;
-import org.mattlang.jc.command.commands.CommandTune;
-import org.mattlang.jc.command.commands.JCTCommand;
+import org.mattlang.jc.command.commands.*;
 
 public class Main {
 
@@ -38,13 +35,16 @@ public class Main {
         List<JCTCommand> commands = new ArrayList<>();
         CommandTune tune = new CommandTune();
         CommandPgn2Epd pgn2Epd = new CommandPgn2Epd();
+        CommandPgn pgn = new CommandPgn();
         commands.add(tune);
         commands.add(pgn2Epd);
+        commands.add(pgn);
 
         JCommander jc = JCommander.newBuilder()
                 .addObject(main)
                 .addCommand(tune)
                 .addCommand(pgn2Epd)
+                .addCommand(pgn)
                 .build();
 
         try {

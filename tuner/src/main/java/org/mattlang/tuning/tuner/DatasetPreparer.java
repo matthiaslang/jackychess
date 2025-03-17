@@ -62,7 +62,7 @@ public class DatasetPreparer {
         return prepareLoadPgn(file, PgnPrepareConfig.DEFAULT);
     }
 
-    private DataSet prepareFromEpd(File file) {
+    public DataSet prepareFromEpd(File file) {
         DataSet dataSet = new DataSet(params);
 
         try (Stream<String> stream = Files.lines(file.toPath())) {

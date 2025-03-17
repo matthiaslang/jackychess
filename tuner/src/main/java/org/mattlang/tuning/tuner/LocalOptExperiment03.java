@@ -9,12 +9,15 @@ public class LocalOptExperiment03 {
     public static final String QUIET_LABELED_EPD = "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\tuningdata\\quiet-labeled.epd";
     public static final String LICHESS = "C:\\projekte\\cygwin_home\\mla\\jackyChessDockerTesting\\tuningdata\\lichess-big3-resolved.book";
 
+    public static final String CCRLBLITZPREPARED = "C:\\projekte\\cygwin_home\\mla\\chessdata\\prepared\\ccrlblitz-prepared.epd";
+
+
     public static void main(String[] args) throws IOException {
         /**
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
-                .name("lichess test3")
+                .name("ccrl blitz prepared test2")
                 .evalParamSet("CURRENT")
                 .optimizeMode(false)
                 .resetParametersBeforeTuning(true)
@@ -38,7 +41,7 @@ public class LocalOptExperiment03 {
                 .tuneComplexity(true)
                 .tuneMobilityTropism(true)
 //                .inputFiles(asList(QUIET_LABELED_EPD))
-                .inputFiles(asList(LICHESS))
+                .inputFiles(asList(CCRLBLITZPREPARED))
                 .build();
 
         LocalOptimizationTuner.run(params);
