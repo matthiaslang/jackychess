@@ -82,7 +82,8 @@ public class CommandPgn implements JCTCommand {
             }
 
         }
-        wrapper.add(remDupsInfo);
+
+        wrapper.writeInfo();
 
         consoleOut("processed " + files.size() + " files");
         if (removeDuplicates) {
