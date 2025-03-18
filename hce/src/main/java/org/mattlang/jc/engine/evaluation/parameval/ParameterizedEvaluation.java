@@ -57,7 +57,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private final ParameterizedSpaceEvaluation spaceEvaluation;
 
-    private final ParameterizedMaterialCorrectionEvaluation matCorrection;
+//    private final ParameterizedMaterialCorrectionEvaluation matCorrection;
 
     @Getter
     private final ParameterizedAdjustmentsEvaluation adjustments;
@@ -111,7 +111,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         mobEvaluation = new ParameterizedMobilityEvaluation();
         pawnEvaluation = new ParameterizedPawnEvaluation(forTuning, caching);
 
-        matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
+//        matCorrection = new ParameterizedMaterialCorrectionEvaluation(config);
         adjustments = new ParameterizedAdjustmentsEvaluation();
 
         threatsEvaluation = new ParameterizedThreatsEvaluation();
@@ -206,7 +206,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         int score = result.calcCompleteScore(currBoard);
 
-        score = matCorrection.correct(currBoard, score);
+//        score = matCorrection.correct(currBoard, score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
@@ -250,7 +250,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
         int score = result.calcCompleteScore(currBoard);
 
-        score = matCorrection.correct(currBoard, score);
+//        score = matCorrection.correct(currBoard, score);
 
         int who2mov = who2Move == Color.WHITE ? 1 : -1;
         score = score * who2mov;
