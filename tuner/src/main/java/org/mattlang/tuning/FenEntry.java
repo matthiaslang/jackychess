@@ -15,7 +15,7 @@ public class FenEntry {
 
     private String comment;
 
-    private TuningCache tuningCache = new TuningCache();
+    private TuningCache tuningCache;
 
     public FenEntry(String fen, BoardRepresentation board, Ending ending, String comment) {
         //        this.fen = fen;
@@ -34,4 +34,10 @@ public class FenEntry {
         }
     }
 
+    public TuningCache getTuningCache() {
+        if (tuningCache == null) {
+            tuningCache = new TuningCache();
+        }
+        return tuningCache;
+    }
 }

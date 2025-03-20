@@ -259,8 +259,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     }
 
     private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent) {
-        Integer tuneCachedVal = tuningCache.get(name);
-        if (tuneCachedVal != null) {
+        int tuneCachedVal = tuningCache.get(name);
+        if (tuneCachedVal != Integer.MIN_VALUE) {
             result.add(tuneCachedVal);
         } else {
             int score = doEvalComponent.getAsInt();
@@ -276,8 +276,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
     private void withTuningCaching(TuningCache.EvalComponentName name, IntSupplier doEvalComponent,
             Consumer<TuningCacheAction> additionalWorkWhenCached) {
-        Integer tuneCachedVal = tuningCache.get(name);
-        if (tuneCachedVal != null) {
+        int tuneCachedVal = tuningCache.get(name);
+        if (tuneCachedVal != Integer.MIN_VALUE) {
             result.add(tuneCachedVal);
             additionalWorkWhenCached.accept(USED_CACHED_EVAL);
         } else {
