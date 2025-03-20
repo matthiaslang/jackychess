@@ -62,7 +62,7 @@ public class DatasetPreparer {
         return prepareLoadPgn(file, PgnPrepareConfig.DEFAULT);
     }
 
-    private DataSet prepareFromEpd(File file) {
+    public DataSet prepareFromEpd(File file) {
         DataSet dataSet = new DataSet(params);
 
         try (Stream<String> stream = Files.lines(file.toPath())) {
@@ -88,9 +88,14 @@ public class DatasetPreparer {
         if (dataSet.getFens().size() % 20000 == 0) {
             Main.consoleOut(" prepared " + dataSet.getFens().size() + " fens...");
         }
+        FenEntry fenEntry = parseFen(line);
+        if (!isEvalUsingEndGameFunction(fenEntry.getBoard())) {
+            dataSet.addFen(fenEntry);
+        }
+    }
 
+    public static FenEntry parseFen(String line) {
         BoardRepresentation board = new BitBoard();
-
         boolean isCcrlPgenEncoding = line.contains("pgn=");
 
         Ending ending;
@@ -140,10 +145,7 @@ public class DatasetPreparer {
             }
         }
 
-        if (!isEvalUsingEndGameFunction(board)) {
-            FenEntry entry = new FenEntry(null, BitBoardForTuning.copy(board), ending, null);
-            dataSet.addFen(entry);
-        }
+        return new FenEntry(null, BitBoardForTuning.copy(board), ending, null);
     }
 
     private DataSet prepareGames(List<PgnGame> games, String filename, PgnPrepareConfig config) {
@@ -185,7 +187,8 @@ public class DatasetPreparer {
             doMove(pgnMove.getWhite(), board);
             if (decideAddMove(config, halfMoveCounter, moveLast)) {
                 String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
-                Optional<FenEntry> fen = handleMove(moveValidator, comment, pgnMove.getWhite(), board, game.getResult());
+                Optional<FenEntry> fen =
+                        handleMove(moveValidator, comment, pgnMove.getWhite(), board, game.getResult());
                 fen.ifPresent(fens::add);
             }
             halfMoveCounter++;
@@ -195,7 +198,8 @@ public class DatasetPreparer {
 
                 if (decideAddMove(config, halfMoveCounter, moveLast)) {
                     String comment = config.isWriteComments() ? filename + ":" + gameCounter : null;
-                    Optional<FenEntry> fen = handleMove(moveValidator, comment, pgnMove.getBlack(), board, game.getResult());
+                    Optional<FenEntry> fen =
+                            handleMove(moveValidator, comment, pgnMove.getBlack(), board, game.getResult());
                     fen.ifPresent(fens::add);
                 }
             }
@@ -229,7 +233,8 @@ public class DatasetPreparer {
         board.domove(move);
     }
 
-    private Optional<FenEntry> handleMove(MoveValidator moveValidator, String comment, MoveDescr moveDesr, BoardRepresentation board,
+    private Optional<FenEntry> handleMove(MoveValidator moveValidator, String comment, MoveDescr moveDesr,
+            BoardRepresentation board,
             Ending ending) {
         MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
 

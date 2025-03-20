@@ -207,15 +207,16 @@ public class DataSet {
     }
 
     public void removeDuplicateFens() {
-        List<FenEntry> result = new ArrayList<>();
-        HashSet<Long> hashes = new HashSet<>();
-        for (FenEntry fen : fens) {
-            if (!hashes.contains(fen.getBoard().getZobristHash())) {
-                result.add(fen);
+        TreeSet<Long> hashes = new TreeSet<>();
+        Iterator<FenEntry> iterator = fens.iterator();
+        while (iterator.hasNext()) {
+            FenEntry fen = iterator.next();
+            if (hashes.contains(fen.getBoard().getZobristHash())) {
+                iterator.remove();
+            } else {
                 hashes.add(fen.getBoard().getZobristHash());
             }
         }
-        fens = result;
     }
 
     public void writeLogInfos(MarkdownWriter w) throws IOException {
