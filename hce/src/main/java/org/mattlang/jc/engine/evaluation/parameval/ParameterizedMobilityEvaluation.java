@@ -31,6 +31,9 @@ import lombok.Getter;
 @EvalConfigurable(prefix = "mob")
 public class ParameterizedMobilityEvaluation implements EvalComponent {
 
+    public static final long CENTER_SQUARES = D4 | E4 | D5 | E5;
+    public static final long EXTENDED_CENTER_SQUARES = CENTER_SQUARES | C4 | F4 | C5 | F5 | D6 | D3 | E6 | E3;
+
     private static int[] SAFETYTABLE = {
             0, 0, 1, 2, 3, 5, 7, 9, 12, 15,
             18, 22, 26, 30, 35, 39, 44, 50, 56, 62,
@@ -81,8 +84,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigParam(mgEgCombined = true)
     private int shieldMinorBonus;
 
+//    @EvalConfigParam(mgEgCombined = true)
+//    private int knightClosedBonus;
+
     @EvalConfigParam(mgEgCombined = true)
-    private int knightClosedBonus;
+    private int bishopFianchettoBonus;
 
     public ParameterizedMobilityEvaluation() {
 
@@ -128,6 +134,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
 
+        long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
+        long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
+
         final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
         long bishopBB = ourBishopBB;
         while (bishopBB != 0) {
@@ -136,15 +145,22 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = genBishopAttacs(bishop, occupancy);
 
             evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
-            result.countFigureMobilityVals(paramsBishop, bishop, attacks);
+            result.countFigureMobilityVals(paramsBishop, bishop, attacks, true);
 
             result.eval += kingProtectorBishop * Tools.distance(bishop, ourKingPos);
+
+            // A bonus for fianchettoed bishops that are not blocked by pawns
+            // We can easily tell if a bishop is on the long diagonal since it can see two center squares at once
+
+            long fianchettoBishop = genBishopAttacs(bishop, whitePawns | blackPawns) & CENTER_SQUARES;
+            if ((fianchettoBishop & (fianchettoBishop - 1)) != 0L) {
+                result.eval += bishopFianchettoBonus;
+            }
 
             bishopBB &= bishopBB - 1;
         }
 
-        long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
-        long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
+
         long blockedPawns = side == WHITE ?
                 calcBlockedWhitePawns(whitePawns, blackPawns) :
                 calcBlockedBlackPawns(whitePawns, blackPawns);
@@ -168,7 +184,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long knightAttack = BB.getKnightAttacs(knight);
 
             evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
-            result.countFigureMobilityVals(paramsKnight, knight, knightAttack);
+            result.countFigureMobilityVals(paramsKnight, knight, knightAttack, true);
 
             result.eval += kingProtectorKnight * Tools.distance(knight, ourKingPos);
 
@@ -181,8 +197,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         result.eval += shieldMinorBonus * bitCount(pawns & (ourKnightBB | ourBishopBB) & ranks);
 
-        int numRammedPawns = Long.bitCount(blockedPawns);
-        result.eval += knightClosedBonus * Long.bitCount(ourKnightBB) * numRammedPawns * numRammedPawns / 4;
+//        int numRammedPawns = Long.bitCount(blockedPawns);
+//        result.eval += knightClosedBonus * Long.bitCount(ourKnightBB) * numRammedPawns * numRammedPawns / 4;
 
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
@@ -191,7 +207,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = genRookAttacs(rook, occupancy);
 
             evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
-            result.countFigureMobilityVals(paramsRook, rook, attacks);
+            result.countFigureMobilityVals(paramsRook, rook, attacks, true);
 
             result.rookOpenFiles(rook);
 
@@ -206,7 +222,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long attacks = genRookAttacs(queen, occupancy) | genBishopAttacs(queen, occupancy);
 
             evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
-            result.countFigureMobilityVals(paramsQueen, queen, attacks);
+            result.countFigureMobilityVals(paramsQueen, queen, attacks, false);
 
             queenBB &= queenBB - 1;
         }
@@ -217,7 +233,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long kingAttack = BB.getKingAttacs(king);
 
         evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
-        result.countFigureMobilityVals(paramsKing, king, kingAttack);
+        result.countFigureMobilityVals(paramsKing, king, kingAttack, false);
 
     }
 

@@ -6,9 +6,14 @@ import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.board.Tools.rankOf;
+import static org.mattlang.jc.board.Tools.relativeRank;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation.CENTER_SQUARES;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedMobilityEvaluation.EXTENDED_CENTER_SQUARES;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Rank;
 import org.mattlang.jc.board.Tools;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
@@ -41,7 +46,6 @@ public class MobilityEvalResult {
     public int kingAttWeightMgEg;
     public int positionalThemes;
 
-
     private final int MGEG_ONE = MgEgScore.createMgEgScore(1, 1);
     private final int MGEG_TWO = MgEgScore.createMgEgScore(2, 2);
 
@@ -62,6 +66,15 @@ public class MobilityEvalResult {
     @EvalValueInterval(min = -50, max = 50)
     private int earlyQueenPenalty;
 
+    @EvalConfigParam(mgEgCombined = true)
+    private int extendedCenterVal;
+
+    @EvalConfigParam(mgEgCombined = true)
+    private int centerVal;
+
+    @EvalConfigParam(mgEgCombined = true)
+    private int rookPawnRankThread;
+
     private long empty;
     private long occupancy;
     private long noOppPawnAttacs;
@@ -70,6 +83,7 @@ public class MobilityEvalResult {
     private int oppKingPos;
     private long ownPawns;
     private long oppPawns;
+    private Color side;
 
     public MobilityEvalResult() {
     }
@@ -81,7 +95,7 @@ public class MobilityEvalResult {
         positionalThemes = 0;
     }
 
-    public void countFigureMobilityVals(MobFigParams params, int figPos, long attacks) {
+    public void countFigureMobilityVals(MobFigParams params, int figPos, long attacks, boolean withCenterVals) {
 
         long mobility = attacks & empty & noOppPawnAttacs;
         long captures = attacks & opponentFigsMask;
@@ -93,6 +107,10 @@ public class MobilityEvalResult {
         int currKingAttCount = bitCount(kingZoneAttacs);
 
         eval += params.mobility.calc(mobCount);
+        if (withCenterVals) {
+            eval += extendedCenterVal * bitCount(mobility & EXTENDED_CENTER_SQUARES);
+            eval += centerVal * bitCount(mobility & CENTER_SQUARES);
+        }
 
         kingAttCount += currKingAttCount;
         kingAttWeightMgEg += params.kingAtt.calc(currKingAttCount);
@@ -123,6 +141,10 @@ public class MobilityEvalResult {
             }
         }
 
+        // Bonus for having rooks on same ranks as enemy pawns
+        if (relativeRank(side, rook) >= 4) {
+            eval += rookPawnRankThread * bitCount(Rank.rank(rankOf(rook)).rankMask & oppPawns);
+        }
     }
 
     public void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, Color side) {
@@ -150,6 +172,8 @@ public class MobilityEvalResult {
     public void init(Color side, BitChessBoard bb) {
         Color xside = side.invert();
 
+        this.side=side;
+
         long ownFigsMask = bb.getColorMask(side);
         opponentFigsMask = bb.getColorMask(xside);
         empty = ~ownFigsMask & ~opponentFigsMask;
@@ -166,7 +190,6 @@ public class MobilityEvalResult {
         ownPawns = bb.getPieceSet(FT_PAWN, side);
         oppPawns = bb.getPieceSet(FT_PAWN, xside);
     }
-
 
     /**
      * Creates opponents pawn attacs.
