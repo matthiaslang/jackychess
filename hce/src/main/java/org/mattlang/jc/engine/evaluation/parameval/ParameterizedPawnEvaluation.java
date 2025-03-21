@@ -325,4 +325,8 @@ public final class ParameterizedPawnEvaluation implements EvalComponent {
     public static long calcBlockedWhitePawns(long whitePawns, long blackPawns) {
         return whitePawns & BB.soutOne(blackPawns);
     }
+
+    public static long calcBlockedBlackPawns(long whitePawns, long blackPawns) {
+        return blackPawns & BB.nortOne(whitePawns);
+    }
 }

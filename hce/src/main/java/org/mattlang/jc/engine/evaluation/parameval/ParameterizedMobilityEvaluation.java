@@ -1,11 +1,15 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static java.lang.Long.bitCount;
+import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedBlackPawns;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedWhitePawns;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -15,7 +19,6 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
-import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
@@ -64,15 +67,22 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     private final MobFigParams paramsKing;
 
     @EvalConfigParam(mgEgCombined = true)
-    public MgEgArrayFunction kingProtectorBishop;
+    public int kingProtectorBishop;
 
-    //    @EvalConfigParam(mgEgCombined = true)
-    //    private int kingProtectorKnight;
     @EvalConfigParam(mgEgCombined = true)
-    public MgEgArrayFunction kingProtectorKnight;
+    public int kingProtectorKnight;
 
-    @EvalConfigParam
-    private MgEgArrayFunction bishopPawnPenalty;
+    @EvalConfigParam(mgEgCombined = true)
+    private int bishopPawnPenalty;
+
+    @EvalConfigParam(mgEgCombined = true)
+    private int bishopBlockedPawnPenalty;
+
+    @EvalConfigParam(mgEgCombined = true)
+    private int shieldMinorBonus;
+
+    @EvalConfigParam(mgEgCombined = true)
+    private int knightClosedBonus;
 
     public ParameterizedMobilityEvaluation() {
 
@@ -128,17 +138,26 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
             result.countFigureMobilityVals(paramsBishop, bishop, attacks);
 
-            result.eval += kingProtectorBishop.calc(Tools.distance(bishop, ourKingPos));
+            result.eval += kingProtectorBishop * Tools.distance(bishop, ourKingPos);
 
             bishopBB &= bishopBB - 1;
         }
 
+        long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
+        long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
+        long blockedPawns = side == WHITE ?
+                calcBlockedWhitePawns(whitePawns, blackPawns) :
+                calcBlockedBlackPawns(whitePawns, blackPawns);
+
         if (ourBishopBB != 0) {
+
             if ((ourBishopBB & BB.WHITE_SQUARES) != 0) {
-                result.eval += bishopPawnPenalty.calc(Long.bitCount(result.getOwnPawns() & BB.WHITE_SQUARES));
+                result.eval += bishopPawnPenalty * bitCount(result.getOwnPawns() & BB.WHITE_SQUARES);
+                result.eval += bishopBlockedPawnPenalty * bitCount(blockedPawns & BB.WHITE_SQUARES);
             }
             if ((ourBishopBB & BB.BLACK_SQUARES) != 0) {
-                result.eval += bishopPawnPenalty.calc(Long.bitCount(result.getOwnPawns() & BB.BLACK_SQUARES));
+                result.eval += bishopPawnPenalty * bitCount(result.getOwnPawns() & BB.BLACK_SQUARES);
+                result.eval += bishopBlockedPawnPenalty * bitCount(blockedPawns & BB.BLACK_SQUARES);
             }
         }
 
@@ -151,11 +170,19 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
             result.countFigureMobilityVals(paramsKnight, knight, knightAttack);
 
-            result.eval += kingProtectorKnight.calc(Tools.distance(knight, ourKingPos));
-
+            result.eval += kingProtectorKnight * Tools.distance(knight, ourKingPos);
 
             knightBB &= knightBB - 1;
         }
+
+        // calc Shielded minors: minors behind own pawns
+        final long pawns = side == WHITE ? BB.soutOne(whitePawns) : BB.nortOne(blackPawns);
+        final long ranks = side == WHITE ? rank2 | rank3 | rank4 : rank7 | rank6 | rank5;
+
+        result.eval += shieldMinorBonus * bitCount(pawns & (ourKnightBB | ourBishopBB) & ranks);
+
+        int numRammedPawns = Long.bitCount(blockedPawns);
+        result.eval += knightClosedBonus * Long.bitCount(ourKnightBB) * numRammedPawns * numRammedPawns / 4;
 
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
@@ -196,7 +223,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
     private void evalAttacks(EvalResult evalResult, BitChessBoard bb, Color side, long occupancy) {
 
-        long bishopBB = bb.getPieceSet(FT_BISHOP, side);;
+        long bishopBB = bb.getPieceSet(FT_BISHOP, side);
+        ;
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
             long attacks = genBishopAttacs(bishop, occupancy);
