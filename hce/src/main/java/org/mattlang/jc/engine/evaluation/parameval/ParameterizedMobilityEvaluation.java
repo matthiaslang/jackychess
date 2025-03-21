@@ -10,9 +10,12 @@ import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.Tools;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
+import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
@@ -60,6 +63,17 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigPrefix(prefix = "king")
     private final MobFigParams paramsKing;
 
+    @EvalConfigParam(mgEgCombined = true)
+    public MgEgArrayFunction kingProtectorBishop;
+
+    //    @EvalConfigParam(mgEgCombined = true)
+    //    private int kingProtectorKnight;
+    @EvalConfigParam(mgEgCombined = true)
+    public MgEgArrayFunction kingProtectorKnight;
+
+    @EvalConfigParam
+    private MgEgArrayFunction bishopPawnPenalty;
+
     public ParameterizedMobilityEvaluation() {
 
         paramsKnight = new MobFigParams();
@@ -102,6 +116,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         MobilityEvalResult result = side == WHITE ? wResult : bResult;
         result.init(side, bb);
 
+        int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
+
         final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
         long bishopBB = ourBishopBB;
         while (bishopBB != 0) {
@@ -112,7 +128,18 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
             result.countFigureMobilityVals(paramsBishop, bishop, attacks);
 
+            result.eval += kingProtectorBishop.calc(Tools.distance(bishop, ourKingPos));
+
             bishopBB &= bishopBB - 1;
+        }
+
+        if (ourBishopBB != 0) {
+            if ((ourBishopBB & BB.WHITE_SQUARES) != 0) {
+                result.eval += bishopPawnPenalty.calc(Long.bitCount(result.getOwnPawns() & BB.WHITE_SQUARES));
+            }
+            if ((ourBishopBB & BB.BLACK_SQUARES) != 0) {
+                result.eval += bishopPawnPenalty.calc(Long.bitCount(result.getOwnPawns() & BB.BLACK_SQUARES));
+            }
         }
 
         final long ourKnightBB = bb.getPieceSet(FT_KNIGHT, side);
@@ -123,6 +150,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
             result.countFigureMobilityVals(paramsKnight, knight, knightAttack);
+
+            result.eval += kingProtectorKnight.calc(Tools.distance(knight, ourKingPos));
+
 
             knightBB &= knightBB - 1;
         }
