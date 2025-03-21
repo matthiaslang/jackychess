@@ -69,25 +69,25 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigPrefix(prefix = "king")
     private final MobFigParams paramsKing;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     public int kingProtectorBishop;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     public int kingProtectorKnight;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     private int bishopPawnPenalty;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     private int bishopBlockedPawnPenalty;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     private int shieldMinorBonus;
 
-//    @EvalConfigParam(mgEgCombined = true)
+//    @EvalConfigParam(prefix="special", mgEgCombined = true)
 //    private int knightClosedBonus;
 
-    @EvalConfigParam(mgEgCombined = true)
+    @EvalConfigParam(prefix="special", mgEgCombined = true)
     private int bishopFianchettoBonus;
 
     public ParameterizedMobilityEvaluation() {
