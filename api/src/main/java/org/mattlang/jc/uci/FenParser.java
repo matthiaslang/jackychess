@@ -1,8 +1,7 @@
 package org.mattlang.jc.uci;
 
 import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
@@ -26,13 +25,18 @@ public class FenParser {
     public static final int FEN_INDEX_MOVES_BY_STARTPOS = 2;
     public static final int FEN_INDEX_MOVES_BY_FEN = 8;
 
+    /**
+     * Flag to be more lenient when parsing fens.
+     */
+    private static boolean lenient = false;
+
     public static GameState setPosition(String positionStr, BoardRepresentation board) {
         return setPosition(positionStr, board, false);
     }
 
     public static GameState setPosition(String positionStr, BoardRepresentation board, boolean isChess960) {
         if (!positionStr.startsWith("position")) {
-            throw new IllegalStateException(
+            throw new FenParseException(
                     "Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
         String[] splitted = positionStr.split(" ");
@@ -57,7 +61,7 @@ public class FenParser {
 
             movesSection = FEN_INDEX_MOVES_BY_FEN;
         } else {
-            throw new IllegalArgumentException("fen position wrong: no 'position startpos' nor 'position fen' found!");
+            throw new FenParseException("fen position wrong: no 'position startpos' nor 'position fen' found!");
         }
 
         if (splitted.length > movesSection) {
@@ -139,7 +143,7 @@ public class FenParser {
                 return MoveImpl.createCastling(castlingMove);
             }
         }
-        throw new IllegalArgumentException(
+        throw new FenParseException(
                 "internal error creating castling move from king captures king description!");
     }
 
@@ -179,7 +183,8 @@ public class FenParser {
                 && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
-    private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm, byte captureFig) {
+    private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm,
+            byte captureFig) {
         Figure figure = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
         return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
     }
@@ -205,38 +210,60 @@ public class FenParser {
 
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {
-                int wKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(WHITE));
+                int wKingPos = board.getKingPos(nWhite);
                 long rooks = board.getBoard().getRooks(WHITE);
-                int rook = searchBiggerRook(wKingPos, rooks);
+                try {
+                    int rook = searchBiggerRook(wKingPos, rooks);
 
-                CastlingMove castlingMove = createCastlingMove(WHITE_SHORT, wKingPos, rook);
-                board.setCastlingAllowed(WHITE_SHORT, castlingMove);
-
+                    CastlingMove castlingMove = createCastlingMove(WHITE_SHORT, wKingPos, rook);
+                    board.setCastlingAllowed(WHITE_SHORT, castlingMove);
+                } catch (FenParseException fpe) {
+                    if (!lenient) {
+                        throw fpe;
+                    }
+                }
             }
             if (rochade.contains("Q")) {
-                int wKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(WHITE));
+                int wKingPos = board.getKingPos(nWhite);
                 long rooks = board.getBoard().getRooks(WHITE);
-                int rook = searchSmallerRook(wKingPos, rooks);
+                try {
+                    int rook = searchSmallerRook(wKingPos, rooks);
 
-                CastlingMove castlingMove = createCastlingMove(WHITE_LONG, wKingPos, rook);
-                board.setCastlingAllowed(WHITE_LONG, castlingMove);
-
+                    CastlingMove castlingMove = createCastlingMove(WHITE_LONG, wKingPos, rook);
+                    board.setCastlingAllowed(WHITE_LONG, castlingMove);
+                } catch (FenParseException fpe) {
+                    if (!lenient) {
+                        throw fpe;
+                    }
+                }
             }
             if (rochade.contains("k")) {
-                int bKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(BLACK));
+                int bKingPos = board.getKingPos(nBlack);
                 long rooks = board.getBoard().getRooks(BLACK);
-                int rook = searchBiggerRook(bKingPos, rooks);
+                try {
+                    int rook = searchBiggerRook(bKingPos, rooks);
 
-                CastlingMove castlingMove = createCastlingMove(BLACK_SHORT, bKingPos, rook);
-                board.setCastlingAllowed(BLACK_SHORT, castlingMove);
+                    CastlingMove castlingMove = createCastlingMove(BLACK_SHORT, bKingPos, rook);
+                    board.setCastlingAllowed(BLACK_SHORT, castlingMove);
+                } catch (FenParseException fpe) {
+                    if (!lenient) {
+                        throw fpe;
+                    }
+                }
             }
             if (rochade.contains("q")) {
-                int bKingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(BLACK));
+                int bKingPos = board.getKingPos(nBlack);
                 long rooks = board.getBoard().getRooks(BLACK);
-                int rook = searchSmallerRook(bKingPos, rooks);
+                try {
+                    int rook = searchSmallerRook(bKingPos, rooks);
 
-                CastlingMove castlingMove = createCastlingMove(BLACK_LONG, bKingPos, rook);
-                board.setCastlingAllowed(BLACK_LONG, castlingMove);
+                    CastlingMove castlingMove = createCastlingMove(BLACK_LONG, bKingPos, rook);
+                    board.setCastlingAllowed(BLACK_LONG, castlingMove);
+                } catch (FenParseException fpe) {
+                    if (!lenient) {
+                        throw fpe;
+                    }
+                }
             }
             parseSchredderFenCastlingDef(rochade, board);
         }
@@ -257,7 +284,7 @@ public class FenParser {
                 int rook = Long.numberOfTrailingZeros(rookBB);
 
                 RochadeType rochadeType = (rook < kingPos) ? LONG : SHORT;
-                CastlingType castlingType = CastlingType.of(color, rochadeType);
+                CastlingType castlingType = of(color, rochadeType);
 
                 CastlingMove castlingMove = createCastlingMove(castlingType, kingPos, rook);
                 board.setCastlingAllowed(castlingType, castlingMove);
@@ -278,7 +305,7 @@ public class FenParser {
             }
             rooks &= rooks - 1;
         }
-        throw new IllegalArgumentException("Unable to find smaller Rook pos for Castling!");
+        throw new FenParseException("Unable to find smaller Rook pos for Castling!");
     }
 
     private static int searchBiggerRook(int kingPos, long rooks) {
@@ -289,6 +316,14 @@ public class FenParser {
             }
             rooks &= rooks - 1;
         }
-        throw new IllegalArgumentException("Unable to find bigger Rook pos for Castling!");
+        throw new FenParseException("Unable to find bigger Rook pos for Castling!");
+    }
+
+    public static void setLenient(boolean lenient) {
+        FenParser.lenient = lenient;
+    }
+
+    public static boolean isLenient() {
+        return lenient;
     }
 }
