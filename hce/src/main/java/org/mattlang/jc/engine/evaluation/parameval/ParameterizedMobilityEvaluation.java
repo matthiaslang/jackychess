@@ -90,6 +90,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigParam(prefix="special", mgEgCombined = true)
     private int bishopFianchettoBonus;
 
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
+    private int bishopBehindPawn;
+
     public ParameterizedMobilityEvaluation() {
 
         paramsKnight = new MobFigParams();
@@ -133,6 +136,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         result.init(side, bb);
 
         int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
+        int otherSide = side.invert().ordinal();
 
         long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
         long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
@@ -155,6 +159,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long fianchettoBishop = genBishopAttacs(bishop, whitePawns | blackPawns) & CENTER_SQUARES;
             if ((fianchettoBishop & (fianchettoBishop - 1)) != 0L) {
                 result.eval += bishopFianchettoBonus;
+            }
+
+            // Apply a bonus if the bishop is behind a pawn
+            long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
+            if ((pawnAdvanced & (1L << bishop)) != 0) {
+                result.eval += bishopBehindPawn;
             }
 
             bishopBB &= bishopBB - 1;
@@ -331,4 +341,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalAttacks(result, bb, Color.WHITE, occupancy);
         evalAttacks(result, bb, Color.BLACK, occupancy);
     }
+
+    long pawnAdvance(long pawns, int color) {
+        return color == nWhite ? nortOne(pawns) : soutOne(pawns);
+    }
+
 }
