@@ -4,6 +4,7 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.Tools.manhattanDistance;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
@@ -19,6 +20,7 @@ import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigPrefix;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
+import org.mattlang.jc.engine.evaluation.parameval.functions.MgEgArrayFunction;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobFigParams;
 import org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult;
 
@@ -96,6 +98,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int knightBehindPawn;
 
+    @EvalConfigParam(prefix = "special")
+    public MgEgArrayFunction knightInSiberia;
+
     public ParameterizedMobilityEvaluation() {
 
         paramsKnight = new MobFigParams();
@@ -138,8 +143,10 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         MobilityEvalResult result = side == WHITE ? wResult : bResult;
         result.init(side, bb);
 
-        int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
         int otherSide = side.invert().ordinal();
+
+        int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
+        int enemyKingPos = Long.numberOfTrailingZeros(bb.getKings(otherSide));
 
         long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
         long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
@@ -204,6 +211,13 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
             if ((pawnAdvanced & (1L << knight)) != 0) {
                 result.eval += knightBehindPawn;
+            }
+
+            // Apply a penalty if the knight is far from both kings
+            int kingDistance = Math.min(manhattanDistance(knight, enemyKingPos), manhattanDistance(knight, ourKingPos));
+            if (kingDistance >= 4) {
+                result.eval += knightInSiberia.calc(kingDistance - 4);
+
             }
 
             knightBB &= knightBB - 1;
