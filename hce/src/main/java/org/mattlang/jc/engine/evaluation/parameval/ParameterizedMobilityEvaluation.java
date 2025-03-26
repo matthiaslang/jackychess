@@ -69,29 +69,32 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigPrefix(prefix = "king")
     private final MobFigParams paramsKing;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     public int kingProtectorBishop;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     public int kingProtectorKnight;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int bishopPawnPenalty;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int bishopBlockedPawnPenalty;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int shieldMinorBonus;
 
-//    @EvalConfigParam(prefix="special", mgEgCombined = true)
-//    private int knightClosedBonus;
+    //    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    //    private int knightClosedBonus;
 
-    @EvalConfigParam(prefix="special", mgEgCombined = true)
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int bishopFianchettoBonus;
 
     @EvalConfigParam(prefix = "special", mgEgCombined = true)
     private int bishopBehindPawn;
+
+    @EvalConfigParam(prefix = "special", mgEgCombined = true)
+    private int knightBehindPawn;
 
     public ParameterizedMobilityEvaluation() {
 
@@ -170,7 +173,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             bishopBB &= bishopBB - 1;
         }
 
-
         long blockedPawns = side == WHITE ?
                 calcBlockedWhitePawns(whitePawns, blackPawns) :
                 calcBlockedBlackPawns(whitePawns, blackPawns);
@@ -198,6 +200,12 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             result.eval += kingProtectorKnight * Tools.distance(knight, ourKingPos);
 
+            // Apply a bonus if the knight is behind a pawn
+            long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
+            if ((pawnAdvanced & (1L << knight)) != 0) {
+                result.eval += knightBehindPawn;
+            }
+
             knightBB &= knightBB - 1;
         }
 
@@ -207,8 +215,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         result.eval += shieldMinorBonus * bitCount(pawns & (ourKnightBB | ourBishopBB) & ranks);
 
-//        int numRammedPawns = Long.bitCount(blockedPawns);
-//        result.eval += knightClosedBonus * Long.bitCount(ourKnightBB) * numRammedPawns * numRammedPawns / 4;
+        //        int numRammedPawns = Long.bitCount(blockedPawns);
+        //        result.eval += knightClosedBonus * Long.bitCount(ourKnightBB) * numRammedPawns * numRammedPawns / 4;
 
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
