@@ -104,6 +104,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigParam(prefix = "special")
     public MgEgArrayFunction knightOutpost;
 
+    @EvalConfigParam(prefix = "special")
+    public MgEgArrayFunction bishopOutpost;
+
     public ParameterizedMobilityEvaluation() {
 
         paramsKnight = new MobFigParams();
@@ -178,6 +181,21 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             if ((fianchettoBishop & (fianchettoBishop - 1)) != 0L) {
                 result.eval += bishopFianchettoBonus;
             }
+
+            // Apply a bonus if the knight is on an outpost square, and cannot be attacked
+            // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
+            long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
+
+            final long pawnFrontFilled = pawnFront(bishop, side.ordinal());
+            long frontAdjacentPawnAttackers = getPawnNeighbours(pawnFrontFilled) & ~pawnFrontFilled & enemyPawns;
+
+            final long bishopMask = 1L << bishop;
+            if ((outpostRanksMasks & bishopMask) != 0 && frontAdjacentPawnAttackers == 0L) {
+                int outside = ((BB.A | BB.H) & bishopMask) == 0 ? 0 : 1;
+                int defended = (ourPawnAttacks & bishopMask) == 0 ? 0 : 1;
+                result.eval += bishopOutpost.calc(outside * 2 + defended);
+            }
+
 
             // Apply a bonus if the bishop is behind a pawn
             long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
