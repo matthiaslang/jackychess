@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.util.FenComposer;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.tuner.DatasetPreparer;
@@ -41,6 +42,9 @@ public class CommandPgn implements JCTCommand {
     @Parameter(names = { "--removeDuplicates" }, description = "removes duplicate epds")
     private boolean removeDuplicates = false;
 
+    @Parameter(names = { "--lenient" }, description = "lenient parsing pgns; try to read pgns even if there are minor semantical issues")
+    private boolean lenient = false;
+
     private FenComposer fenComposer = new FenComposer();
 
     HashSet<Long> hashes = new HashSet<>();
@@ -66,6 +70,8 @@ public class CommandPgn implements JCTCommand {
         if (outFile.exists()) {
             outFile.delete();
         }
+
+        FenParser.setLenient(lenient);
 
         try (FileWriter writer = new FileWriter(outFile, true);
                 PrintWriter printWriter = new PrintWriter(writer)) {
