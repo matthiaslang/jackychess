@@ -4,7 +4,7 @@ import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.BB.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.Tools.manhattanDistance;
+import static org.mattlang.jc.board.Tools.distance;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
@@ -162,6 +162,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long whitePawnAttacs = createWhitePawnAttacs(whitePawns);
         long ourPawnAttacks = side == WHITE ? whitePawnAttacs : blackPawnAttacs;
 
+        final long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
+
         final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
         long bishopBB = ourBishopBB;
         while (bishopBB != 0) {
@@ -184,10 +186,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             // Apply a bonus if the knight is on an outpost square, and cannot be attacked
             // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
-            long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
-
-            final long pawnFrontFilled = pawnFront(bishop, side.ordinal());
-            long frontAdjacentPawnAttackers = getPawnNeighbours(pawnFrontFilled) & ~pawnFrontFilled & enemyPawns;
+            long frontAdjacentPawnAttackers = frontOutposts[bishop][side.ordinal()] & enemyPawns;
 
             final long bishopMask = 1L << bishop;
             if ((outpostRanksMasks & bishopMask) != 0 && frontAdjacentPawnAttackers == 0L) {
@@ -195,7 +194,6 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
                 int defended = (ourPawnAttacks & bishopMask) == 0 ? 0 : 1;
                 result.eval += bishopOutpost.calc(outside * 2 + defended);
             }
-
 
             // Apply a bonus if the bishop is behind a pawn
             long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
@@ -241,10 +239,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             // Apply a bonus if the knight is on an outpost square, and cannot be attacked
             // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
-            long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
-
-            final long pawnFrontFilled = pawnFront(knight, side.ordinal());
-            long frontAdjacentPawnAttackers = getPawnNeighbours(pawnFrontFilled) & ~pawnFrontFilled & enemyPawns;
+            long frontAdjacentPawnAttackers = frontOutposts[knight][side.ordinal()] & enemyPawns;
 
             long knightMask = 1L << knight;
             if ((outpostRanksMasks & knightMask) != 0 && frontAdjacentPawnAttackers == 0L) {
@@ -254,7 +249,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             }
 
             // Apply a penalty if the knight is far from both kings
-            int kingDistance = Math.min(manhattanDistance(knight, enemyKingPos), manhattanDistance(knight, ourKingPos));
+            int kingDistance = Math.min(distance(knight, enemyKingPos), distance(knight, ourKingPos));
             if (kingDistance >= 4) {
                 result.eval += knightInSiberia.calc(kingDistance - 4);
 
@@ -404,8 +399,22 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         evalAttacks(result, bb, Color.BLACK, occupancy);
     }
 
-    long pawnAdvance(long pawns, int color) {
+    private long pawnAdvance(long pawns, int color) {
         return color == nWhite ? nortOne(pawns) : soutOne(pawns);
     }
 
+    private static long[][] frontOutposts = new long[64][2];
+
+    static {
+        for (int square = 0; square < 64; square++) {
+            for (int color = 0; color < 2; color++) {
+                frontOutposts[square][color] = calcFrontOutpost(square, color);
+            }
+        }
+    }
+
+    private static long calcFrontOutpost(int square, int color) {
+        final long pawnFrontFilled = pawnFront(square, color);
+        return getPawnNeighbours(pawnFrontFilled) & ~pawnFrontFilled;
+    }
 }
