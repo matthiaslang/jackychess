@@ -9,8 +9,8 @@ import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getEgScore;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.getMgScore;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedBlackPawns;
-import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.calcBlockedWhitePawns;
+import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvaluation.*;
+import static org.mattlang.jc.engine.evaluation.parameval.PassedPawnEval.pawnFront;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -101,6 +101,9 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
     @EvalConfigParam(prefix = "special")
     public MgEgArrayFunction knightInSiberia;
 
+    @EvalConfigParam(prefix = "special")
+    public MgEgArrayFunction knightOutpost;
+
     public ParameterizedMobilityEvaluation() {
 
         paramsKnight = new MobFigParams();
@@ -150,6 +153,11 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
         long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
+        long enemyPawns = side == WHITE ? blackPawns : whitePawns;
+
+        long blackPawnAttacs = createBlackPawnAttacs(blackPawns);
+        long whitePawnAttacs = createWhitePawnAttacs(whitePawns);
+        long ourPawnAttacks = side == WHITE ? whitePawnAttacs : blackPawnAttacs;
 
         final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
         long bishopBB = ourBishopBB;
@@ -211,6 +219,20 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             long pawnAdvanced = pawnAdvance(whitePawns | blackPawns, otherSide);
             if ((pawnAdvanced & (1L << knight)) != 0) {
                 result.eval += knightBehindPawn;
+            }
+
+            // Apply a bonus if the knight is on an outpost square, and cannot be attacked
+            // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
+            long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
+
+            final long pawnFrontFilled = pawnFront(knight, side.ordinal());
+            long frontAdjacentPawnAttackers = getPawnNeighbours(pawnFrontFilled) & ~pawnFrontFilled & enemyPawns;
+
+            long knightMask = 1L << knight;
+            if ((outpostRanksMasks & knightMask) != 0 && frontAdjacentPawnAttackers == 0L) {
+                int outside = ((BB.A | BB.H) & knightMask) == 0 ? 0 : 1;
+                int defended = (ourPawnAttacks & knightMask) == 0 ? 0 : 1;
+                result.eval += knightOutpost.calc(outside * 2 + defended);
             }
 
             // Apply a penalty if the knight is far from both kings

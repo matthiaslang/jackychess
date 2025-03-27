@@ -92,7 +92,7 @@ public final class PassedPawnEval {
         for (int square = 0; square < 64; square++) {
             long squareMask = 1L << square;
             for (int color = 0; color < 2; color++) {
-                pawnFronts[square][color] = pawnFront(squareMask, color);
+                pawnFronts[square][color] = calcPawnFront(squareMask, color);
             }
         }
     }
@@ -367,8 +367,11 @@ public final class PassedPawnEval {
      * @param color
      * @return
      */
-    public static long pawnFront(long square, int color) {
+    private static long calcPawnFront(long square, int color) {
         return color == nWhite ? BB.wFrontFill(square) & ~square : BB.bFrontFill(square) & ~square;
     }
 
+    public static long pawnFront(int square, int color){
+        return pawnFronts[square][color];
+    }
 }
