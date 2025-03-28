@@ -17,7 +17,7 @@ public class LocalOptExperiment03 {
          * using the zurich quiet labeled test set using all fens except those using special end game functions.
          */
         OptParameters params = OptParameters.builder()
-                .name("tune new mob params")
+                .name("tune new mob params2")
                 .evalParamSet("CURRENT")
                 .optimizeMode(false)
                 .resetParametersBeforeTuning(true)
@@ -25,7 +25,7 @@ public class LocalOptExperiment03 {
                 .k(1.43)
                 .multiThreading(true)
                 .threadCount(5)
-                .delta(0.000001)
+                .delta(0.0000001)
                 .stepGranularity( asList(   1 ))
                 .removeDuplicateFens(true)
                 .tuneParams("mob.special.*|mob.positional.ext.*|mob.positional.center.*|mob.positional.rookP.*")
