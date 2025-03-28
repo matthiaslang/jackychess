@@ -20,19 +20,19 @@ import org.mattlang.jc.util.FenComposer;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 
-@Parameters(commandNames = { CommandPgn.CMD_PGN },
+@Parameters(commandNames = { CommandEpd.CMD_EPD },
         separators = "=",
         commandDescription = "Processes epd files")
-public class CommandPgn implements JCTCommand {
+public class CommandEpd implements JCTCommand {
 
     /**
      * max fens to hold in memory before flushing to file during creation.
      */
     private static final int MAX_MEM_FENS = 250000;
 
-    private static final Logger LOGGER = Logger.getLogger(CommandPgn.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(CommandEpd.class.getSimpleName());
 
-    public static final String CMD_PGN = "pgn";
+    public static final String CMD_EPD = "epd";
     @Parameter(description = "List of epd input files (epd files or directories containing epd files)", required = true)
     private List<String> files;
 
@@ -42,7 +42,7 @@ public class CommandPgn implements JCTCommand {
     @Parameter(names = { "--removeDuplicates" }, description = "removes duplicate epds")
     private boolean removeDuplicates = false;
 
-    @Parameter(names = { "--lenient" }, description = "lenient parsing pgns; try to read pgns even if there are minor semantical issues")
+    @Parameter(names = { "--lenient" }, description = "lenient parsing epds; try to read epds even if there are minor semantical issues")
     private boolean lenient = false;
 
     private FenComposer fenComposer = new FenComposer();
@@ -56,7 +56,7 @@ public class CommandPgn implements JCTCommand {
 
     @Override
     public String getCmdName() {
-        return CMD_PGN;
+        return CMD_EPD;
     }
 
     @Override

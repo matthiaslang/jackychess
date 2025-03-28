@@ -39,16 +39,16 @@ public class Main {
         List<JCTCommand> commands = new ArrayList<>();
         CommandTune tune = new CommandTune();
         CommandPgn2Epd pgn2Epd = new CommandPgn2Epd();
-        CommandPgn pgn = new CommandPgn();
+        CommandEpd epd = new CommandEpd();
         commands.add(tune);
         commands.add(pgn2Epd);
-        commands.add(pgn);
+        commands.add(epd);
 
         JCommander jc = JCommander.newBuilder()
                 .addObject(main)
                 .addCommand(tune)
                 .addCommand(pgn2Epd)
-                .addCommand(pgn)
+                .addCommand(epd)
                 .build();
 
         try {
