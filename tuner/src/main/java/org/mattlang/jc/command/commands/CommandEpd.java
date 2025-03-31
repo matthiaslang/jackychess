@@ -136,16 +136,22 @@ public class CommandEpd implements JCTCommand {
         if (analyze) {
             streamAnalyzer.analyze(entry);
         }
-
         if (removeDuplicates) {
-            if (!hashes.contains(entry.getBoard().getZobristHash())) {
-                doWritingFen(entry, printWriter);
-                hashes.add(entry.getBoard().getZobristHash());
-            } else {
-                remDupsInfo.increment();
-            }
-        } else {
+            entry = filterDuplicates(entry);
+        }
+
+        if (entry != null) {
             doWritingFen(entry, printWriter);
+        }
+    }
+
+    private FenEntry filterDuplicates(FenEntry entry) {
+        if (!hashes.contains(entry.getBoard().getZobristHash())) {
+            hashes.add(entry.getBoard().getZobristHash());
+            return entry;
+        } else {
+            remDupsInfo.increment();
+            return null;
         }
     }
 
