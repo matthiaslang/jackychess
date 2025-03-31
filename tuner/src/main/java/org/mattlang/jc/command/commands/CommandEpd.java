@@ -5,6 +5,7 @@ import static org.mattlang.jc.command.commands.EpdWriter.writeFenEntry;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import com.beust.jcommander.Parameters;
 
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.util.FenComposer;
+import org.mattlang.jc.utils.NoWriter;
 import org.mattlang.tuning.FenEntry;
 import org.mattlang.tuning.tuner.DatasetPreparer;
 
@@ -36,7 +38,7 @@ public class CommandEpd implements JCTCommand {
     @Parameter(description = "List of epd input files (epd files or directories containing epd files)", required = true)
     private List<String> files;
 
-    @Parameter(names = { "--output", "-o" }, description = "EPD Output file", required = true)
+    @Parameter(names = { "--output", "-o" }, description = "EPD Output file")
     private String outputFile;
 
     @Parameter(names = { "--removeDuplicates" }, description = "removes duplicate epds")
@@ -70,17 +72,13 @@ public class CommandEpd implements JCTCommand {
 
         wrapper.add(readInfo);
         wrapper.add(remDupsInfo);
-        wrapper.add(writerInfo);
-
-        File outFile = new File(outputFile);
-        if (outFile.exists()) {
-            outFile.delete();
+        if (outputFile != null) {
+            wrapper.add(writerInfo);
         }
 
         FenParser.setLenient(lenient);
 
-        try (FileWriter writer = new FileWriter(outFile, true);
-                PrintWriter printWriter = new PrintWriter(writer)) {
+        try (PrintWriter printWriter = createWriter()) {
 
             for (String file : files) {
                 consoleOut("parsing file " + file);
@@ -101,10 +99,31 @@ public class CommandEpd implements JCTCommand {
         if (removeDuplicates) {
             consoleOut("removed " + remDupsInfo.size() + " duplicates");
         }
-        consoleOut("written " + writerInfo.size() + " entries to " + outFile);
+        if (outputFile != null) {
+            consoleOut("written " + writerInfo.size() + " entries to " + outputFile);
+        }
 
         if (analyze) {
             streamAnalyzer.writeAnalyzeOutput();
+        }
+    }
+
+    /**
+     * Creaes an output writer or a non-output-writing facade if no output is required.
+     *
+     * @return
+     * @throws IOException
+     */
+    private PrintWriter createWriter() throws IOException {
+        if (outputFile != null) {
+            File outFile = new File(outputFile);
+            if (outFile.exists()) {
+                outFile.delete();
+            }
+            FileWriter writer = new FileWriter(outFile, true);
+            return new PrintWriter(writer);
+        } else {
+            return new PrintWriter(new NoWriter());
         }
     }
 
@@ -115,13 +134,19 @@ public class CommandEpd implements JCTCommand {
 
         if (removeDuplicates) {
             if (!hashes.contains(entry.getBoard().getZobristHash())) {
-                writerInfo.increment();
-                writeFenEntry(entry, fenComposer, printWriter);
+                doWritingFen(entry, printWriter);
                 hashes.add(entry.getBoard().getZobristHash());
             } else {
                 remDupsInfo.increment();
             }
         } else {
+            doWritingFen(entry, printWriter);
+        }
+    }
+
+    private void doWritingFen(FenEntry entry, PrintWriter printWriter) {
+        if (outputFile != null) {
+            writerInfo.increment();
             writeFenEntry(entry, fenComposer, printWriter);
         }
     }
