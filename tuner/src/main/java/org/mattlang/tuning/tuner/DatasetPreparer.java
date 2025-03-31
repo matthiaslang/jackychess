@@ -138,12 +138,13 @@ public class DatasetPreparer {
         board.setFenPosition("position fen " + line);
 
         // by ccrl encoding mate is on perspective of site to move:
-        if (isCcrlPgenEncoding && ending != Ending.DRAW) {
-            // means for black invert the ending result:
-            if (board.getSiteToMove() == BLACK) {
-                ending = ending == Ending.MATE_WHITE ? Ending.MATE_BLACK : Ending.MATE_WHITE;
-            }
-        }
+        // seem to be rubbish.... we do not need this...
+//        if (isCcrlPgenEncoding && ending != Ending.DRAW) {
+//            // means for black invert the ending result:
+//            if (board.getSiteToMove() == WHITE) {
+//                ending = ending == Ending.MATE_WHITE ? Ending.MATE_BLACK : Ending.MATE_WHITE;
+//            }
+//        }
 
         return new FenEntry(null, BitBoardForTuning.copy(board), ending, null);
     }

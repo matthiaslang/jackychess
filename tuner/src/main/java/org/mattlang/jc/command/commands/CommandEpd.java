@@ -42,8 +42,12 @@ public class CommandEpd implements JCTCommand {
     @Parameter(names = { "--removeDuplicates" }, description = "removes duplicate epds")
     private boolean removeDuplicates = false;
 
-    @Parameter(names = { "--lenient" }, description = "lenient parsing epds; try to read epds even if there are minor semantical issues")
+    @Parameter(names = { "--lenient" },
+            description = "lenient parsing epds; try to read epds even if there are minor semantical issues")
     private boolean lenient = false;
+
+    @Parameter(names = { "--analyze" }, description = "analyze the epds")
+    private boolean analyze = false;
 
     private FenComposer fenComposer = new FenComposer();
 
@@ -53,6 +57,8 @@ public class CommandEpd implements JCTCommand {
     StreamProcessInfo readInfo = new StreamProcessInfo("Read");
 
     StreamProcessWrapper wrapper = new StreamProcessWrapper();
+
+    StreamAnalyzer streamAnalyzer = new StreamAnalyzer();
 
     @Override
     public String getCmdName() {
@@ -96,9 +102,17 @@ public class CommandEpd implements JCTCommand {
             consoleOut("removed " + remDupsInfo.size() + " duplicates");
         }
         consoleOut("written " + writerInfo.size() + " entries to " + outFile);
+
+        if (analyze) {
+            streamAnalyzer.writeAnalyzeOutput();
+        }
     }
 
     private void streamProcessFenEntry(FenEntry entry, PrintWriter printWriter) {
+        if (analyze) {
+            streamAnalyzer.analyze(entry);
+        }
+
         if (removeDuplicates) {
             if (!hashes.contains(entry.getBoard().getZobristHash())) {
                 writerInfo.increment();
