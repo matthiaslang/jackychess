@@ -74,6 +74,11 @@ public class CommandEpd implements JCTCommand {
         wrapper.add(remDupsInfo);
         if (outputFile != null) {
             wrapper.add(writerInfo);
+        } else {
+            if (!analyze) {
+                consoleOut("no output specified and no analyze specified does not make sense!");
+                System.exit(1);
+            }
         }
 
         FenParser.setLenient(lenient);
