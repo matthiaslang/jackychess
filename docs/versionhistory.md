@@ -1,5 +1,10 @@
 # Versions
 
+## 25.03RC02
+
+- added some new eval parameters which bring after tuning ~15 Elos.
+
+
 ## 25.02
 
 - hce: removed material correction (obsolete due to complexity and drawByMaterial checks) 
