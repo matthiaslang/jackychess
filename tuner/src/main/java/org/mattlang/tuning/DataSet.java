@@ -39,7 +39,7 @@ public class DataSet {
 
     private static final Logger LOGGER = Logger.getLogger(DatasetPreparer.class.getSimpleName());
 
-    private static final double DEFAULT_K = 1.5800000000000003;
+    public static final double DEFAULT_K = 1.5800000000000003;
 
     private List<DataSet> workers = new ArrayList<>();
 
