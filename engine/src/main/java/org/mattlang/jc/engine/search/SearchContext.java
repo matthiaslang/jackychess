@@ -7,6 +7,7 @@ import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
@@ -60,6 +61,8 @@ public final class SearchContext {
     @Getter
     private int savedMoveScore = 0;
 
+    private final int optionalLastBestMove;
+
     @Getter
     private final BoardRepresentation board;
 
@@ -86,12 +89,15 @@ public final class SearchContext {
 
     private MoveList legalMovesToSearch = null;
 
-    public SearchContext(MoveList legalMovesToSearch, SearchThreadContext stc, GameState gameState,
+    public SearchContext(MoveList legalMovesToSearch,
+            Move optionalLastBestMove,
+            SearchThreadContext stc, GameState gameState,
             GameContext context,
             int targetDepth, int alpha) {
 
         this.stc = stc;
 
+        this.optionalLastBestMove = optionalLastBestMove != null ? optionalLastBestMove.getMoveInt() : 0;
         this.legalMovesToSearch = legalMovesToSearch;
 
         this.board = gameState.getBoard();
@@ -186,7 +192,8 @@ public final class SearchContext {
             int parentMove, int captureMargin) {
         StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         if (ply == 1) {
-            preparer.prepareFirstPly(stc, board, color, legalMovesToSearch, hashMove, parentMove, captureMargin);
+            int bestMoveForSorting = optionalLastBestMove != 0 ? optionalLastBestMove : hashMove;
+            preparer.prepareFirstPly(stc, board, color, legalMovesToSearch, bestMoveForSorting, parentMove, captureMargin);
         } else {
             preparer.prepare(stc, NORMAL, board, color, ply, hashMove, parentMove, captureMargin);
         }

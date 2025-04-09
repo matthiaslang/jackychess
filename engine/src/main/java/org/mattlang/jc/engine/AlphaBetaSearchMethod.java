@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine;
 
 import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.uci.GameContext;
@@ -12,6 +13,7 @@ public interface AlphaBetaSearchMethod extends SearchMethod {
     int getNodesVisited();
 
     NegaMaxResult searchWithScore(MoveList legalMovesToSearch,
+            Move optionalLastBestMove,
             SearchThreadContext stc,
             GameState gameState,
             GameContext context,

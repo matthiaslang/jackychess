@@ -115,7 +115,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         assert depth > 0;
         reset();
 
-        searchWithScore(null, SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
+        searchWithScore(null, null, SearchThreadContexts.CONTEXTS.getContext(0), gameState, context, depth,
                 ALPHA_START, BETA_START,
                 stopTime);
         return new MoveImpl(searchContext.getSavedMove());
@@ -724,7 +724,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     @Override
-    public NegaMaxResult searchWithScore(MoveList legalMovesToSearch, SearchThreadContext stc, GameState gameState,
+    public NegaMaxResult searchWithScore(MoveList legalMovesToSearch,
+            Move optionalLastBestMove,
+            SearchThreadContext stc, GameState gameState,
             GameContext context,
             int depth,
             int alpha, int beta, long stopTime) {
@@ -732,7 +734,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (LOGGER.isLoggable(FINE)) {
             LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
         }
-        searchContext = new SearchContext(legalMovesToSearch, stc, gameState, context, depth, alpha);
+        searchContext = new SearchContext(legalMovesToSearch, optionalLastBestMove, stc, gameState, context, depth, alpha);
 
         this.stopTime = stopTime;
         this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
