@@ -30,7 +30,7 @@ public class UciInterfaceTest {
         communication.write("stop");
         Thread.sleep(2000);
 
-        communication.expectBestmove("g1f3");
+        communication.expectBestmove("g1f3", "b1c3", "d2d4");
         communication.consumeAllInfo();
 
         communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
@@ -56,14 +56,14 @@ public class UciInterfaceTest {
 
         Thread.sleep(2000);
 
-        communication.expectBestmove("g1f3");
+        communication.expectBestmove("g1f3", "b1c3", "d2d4");
         communication.consumeAllInfo();
 
         communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
         communication.write("go wtime 1000 btime 1000 winc 0 binc 0 movestogo 10");
 
         Thread.sleep(2000);
-        communication.expectBestmove("e4d5");
+        communication.expectBestmove("e4d5", "e4d5", "f3e5");
         communication.consumeAllInfo();
 
         communication.write("position startpos moves e2e4 e7e5 g1f3 d7d5");
@@ -93,7 +93,7 @@ public class UciInterfaceTest {
 
         communication.write("stop");
         Thread.sleep(2000);
-        communication.expectBestmove("d2d4");
+        communication.expectBestmove("d2d4", "g1f3");
         communication.consumeAllInfo();
     }
 

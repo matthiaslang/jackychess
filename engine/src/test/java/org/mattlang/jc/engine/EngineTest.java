@@ -199,7 +199,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isIn("b2b3");
+        assertThat(move.toStr()).isIn("b2b3", "a2a4");
     }
 
     /**

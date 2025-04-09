@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.mattlang.jc.AppConfiguration;
@@ -72,7 +75,7 @@ public class UciCommunicationTester {
         outputToUciEngine.println(ucicmd);
     }
 
-    public void expectBestmove(String bestMove) throws IOException {
+    public void expectBestmove(String ...bestMoves) throws IOException {
         init();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -85,12 +88,14 @@ public class UciCommunicationTester {
                     continue;
                 }
                 if (result.startsWith("bestmove ")) {
-                    Assertions.assertThat(optCmd.get()).isEqualTo("bestmove " + bestMove);
+                   Set<String> theBestMoves =
+                            Arrays.stream(bestMoves).map(b -> "bestmove " + b).collect(Collectors.toSet());
+                    Assertions.assertThat(optCmd.get()).isIn(theBestMoves);
                     return;
                 }
             }
         }
-        Assertions.fail("no expected bestmove " + bestMove);
+        Assertions.fail("no expected one of the bestmoves " + bestMoves);
     }
 
     /**
