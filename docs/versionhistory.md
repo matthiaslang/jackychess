@@ -1,5 +1,10 @@
 # Versions
 
+## 25.03RC03
+
+- move sorting: added capture history and continuation history with gravity bonus: ~30-40Elo
+- move sorting: use best move from last iteration instead hash for sorting ply 1: ~3Elo
+
 ## 25.03RC02
 
 - added some new eval parameters which bring after tuning ~15 Elos.
