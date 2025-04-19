@@ -1,19 +1,16 @@
 package org.mattlang.jc.engine.sorting;
 
-import static java.util.Objects.requireNonNull;
-
+import lombok.Getter;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.search.CounterMoveHeuristic;
-import org.mattlang.jc.engine.search.HistoryHeuristic;
-import org.mattlang.jc.engine.search.KillerMoves;
-import org.mattlang.jc.engine.search.SearchThreadContext;
+import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.moves.MoveImpl;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 @Getter
 public final class OrderCalculator {
@@ -36,8 +33,8 @@ public final class OrderCalculator {
 
     private static final int MVVLVA_MAX_DIFF = 500;
 
-    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - MVVLVA_MAX_DIFF;
-    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + MVVLVA_MAX_DIFF;
+    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 10000000;
+    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 10000000;
 
     private static final int BAD_CAPT_LOWER = OrderCalculator.BAD_CAPTURES_SCORE - MVVLVA_MAX_DIFF;
     private static final int BAD_CAPT_UPPER = OrderCalculator.BAD_CAPTURES_SCORE + MVVLVA_MAX_DIFF;
@@ -48,6 +45,8 @@ public final class OrderCalculator {
     final private HistoryHeuristic historyHeuristic;
     final private KillerMoves killerMoves;
     final private CounterMoveHeuristic counterMoveHeuristic;
+    private final CaptureHeuristic captureHeuristic;
+    private final ContinuationHistoryHeuristic continuationHistoryHeuristic;
 
     private Color color;
 
@@ -63,13 +62,15 @@ public final class OrderCalculator {
 
     public OrderCalculator(SearchThreadContext stc) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
+        this.captureHeuristic = requireNonNull(stc.getCaptureHeuristic());
+        this.continuationHistoryHeuristic = requireNonNull(stc.getContinuationHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
         this.useMvvLva = ConfigValues.getConfigValues().useMvvLvaSorting.getValue();
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
-            BoardRepresentation board, int captureMargin) {
+                             BoardRepresentation board, int captureMargin) {
 
         this.hashMove = hashMove;
         this.parentMove = parentMove;
@@ -82,15 +83,15 @@ public final class OrderCalculator {
 
     /**
      * Calc sort order:
-     *
+     * <p>
      * best: pv
-     *
+     * <p>
      * then good captures
-     *
+     * <p>
      * then killer moves
-     *
+     * <p>
      * then history heuristic
-     *
+     * <p>
      * then bad captures
      *
      * @param m
@@ -116,33 +117,56 @@ public final class OrderCalculator {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else {
+
+            int score = 0;
             // history heuristic
             int heuristic = historyHeuristic.calcValue(m, color);
-            if (heuristic != 0) {
-                // heuristic move: range: depth*depth*2*iterative-deep*moves ~ from 1 to 40000
-                return -heuristic + HISTORY_SCORE;
+            int contHist = continuationHistoryHeuristic.calcValue(parentMove, m, color);
+            score -= heuristic;
+            score -= contHist;
+
+            if (score != 0) {
+                return score + HISTORY_SCORE;
             }
         }
-        int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
-
-        return -mvvLva * 1000 + QUIET;
+        /**
+         * sort at least by figuretype, ordererd from pawn... -> queen. this gives in tests a little reduced
+         * search tree.
+         */
+        return m.getFigureType() + QUIET;
     }
+
+    private static int[] MVVAUGMENT = {100, 320, 330, 500, 900, 0};
 
     private int calcOrderForCaptures(MoveImpl m) {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else if (m.isCapture()) {
             int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
-            // find out good moves (via see)
-            if (SEE.see_ge(board, m, captureMargin)) {
-                return -mvvLva + GOOD_CAPTURES_SCORE;
+
+            int heuristic = captureHeuristic.calcValue(m, color);
+
+            int score = 0;
+
+            score -= heuristic / 4;
+
+            int captFigType = m.getCapturedFigure() & MASK_OUT_COLOR;
+            score -= MVVAUGMENT[captFigType];
+
+            score -= mvvLva;
+            boolean goodSee = SEE.see_ge(board, m, captureMargin);
+            if (goodSee) {
+                score += GOOD_CAPTURES_SCORE;
             } else {
-                return -mvvLva + BAD_CAPTURES_SCORE;
+                score += BAD_CAPTURES_SCORE;
             }
+
+            return score;
         } else {
             throw new IllegalStateException("no capture!");
         }
     }
+
 
     private MoveImpl moveWrapper = new MoveImpl("a1a2");
 
@@ -236,7 +260,7 @@ public final class OrderCalculator {
     /**
      * Is this a "relevant" move in the sense, that we have any kind of statistical relevance for this move?
      * So, is it either a hash move, good capture, killer, counter, or a move with move history statistics?
-     *
+     * <p>
      * This is used, to prune "non relevant" moves with certain criterias.
      *
      * @param order

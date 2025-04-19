@@ -1,13 +1,12 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
-
+import lombok.Getter;
 import org.mattlang.jc.engine.Configurator;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 
-import lombok.Getter;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
 
 /**
  * Holds variables used during a search for one thread which is used for all nested iterative deepening and negamax
@@ -26,6 +25,12 @@ public class SearchThreadContext {
 
     @Getter
     private HistoryHeuristic historyHeuristic = new HistoryHeuristic();
+
+    @Getter
+    private ContinuationHistoryHeuristic continuationHistoryHeuristic = new ContinuationHistoryHeuristic();
+
+    @Getter
+    private CaptureHeuristic captureHeuristic = new CaptureHeuristic();
 
     @Getter
     private CounterMoveHeuristic counterMoveHeuristic = new CounterMoveHeuristic();
@@ -51,6 +56,8 @@ public class SearchThreadContext {
      */
     public void reset() {
         historyHeuristic.reset();
+        continuationHistoryHeuristic.reset();
+        captureHeuristic.reset();
         counterMoveHeuristic.reset();
         killerMoves.reset();
         cache.reset();

@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
-
+import lombok.Getter;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -21,7 +19,8 @@ import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import lombok.Getter;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
 /**
  * Holds Information during a negamax Search.
@@ -83,6 +82,10 @@ public final class SearchContext {
 
     private HistoryHeuristic historyHeuristic = null;
 
+    private ContinuationHistoryHeuristic continuationHistoryHeuristic=null;
+
+    private CaptureHeuristic captureHeuristic = null;
+
     private KillerMoves killerMoves = null;
 
     private CounterMoveHeuristic counterMoveHeuristic = null;
@@ -119,6 +122,8 @@ public final class SearchContext {
 
         killerMoves = stc.getKillerMoves();
         historyHeuristic = stc.getHistoryHeuristic();
+        continuationHistoryHeuristic = stc.getContinuationHistoryHeuristic();
+        captureHeuristic= stc.getCaptureHeuristic();
         counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
@@ -235,12 +240,14 @@ public final class SearchContext {
     }
 
     // todo test that not in check because those heuristics make only for quiet pos sense...?
-    public void updateCutOffHeuristics(int ply, int depth, Color color, int parentMove, int bestMove,
+    public void updateCutOffHeuristics(int ply, int depth, Color color, int grandparentMove, int parentMove, int bestMove,
             MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
             if (useHistoryHeuristic) {
                 historyHeuristic.update(color, moveCursor, depth);
             }
+            continuationHistoryHeuristic.update(color, parentMove, moveCursor, depth);
+            continuationHistoryHeuristic.update(color, grandparentMove, moveCursor, depth);
             if (useKillerMoves) {
                 killerMoves.addKiller(bestMove, ply);
             }
@@ -248,12 +255,20 @@ public final class SearchContext {
             if (useCounterMove) {
                 counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
             }
+        } else {
+            captureHeuristic.update(color, moveCursor, depth);
         }
     }
 
-    public void updateBadHeuristic(int depth, Color color, MoveCursor moveCursor) {
-        if (useHistoryHeuristic && !moveCursor.isCapture()) {
+    public void updateBadHeuristic(int depth, Color color, int grandparentMove, int parentMove, MoveCursor moveCursor) {
+        if (!moveCursor.isCapture()) {
+            if (useHistoryHeuristic) {
             historyHeuristic.updateBad(color, moveCursor, depth);
+        }
+            continuationHistoryHeuristic.updateBad(color, parentMove, moveCursor, depth);
+            continuationHistoryHeuristic.updateBad(color, grandparentMove, moveCursor, depth);
+        } else {
+            captureHeuristic.updateBad(color, moveCursor, depth);
         }
     }
 

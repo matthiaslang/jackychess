@@ -1,20 +1,7 @@
 package org.mattlang.jc.engine.search;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
-import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
-
-import java.util.List;
-import java.util.logging.Logger;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.*;
@@ -30,8 +17,20 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -338,6 +337,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         pvArray.reset(ply);
 
         int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
+        int grandparentMove = ply <= 2 ? 0 : parentMoves[ply - 2];
 
         if (iid && hashMove == 0) {
             doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
@@ -464,7 +464,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                             }
 
                             if (!areWeInCheck) {
-                                searchContext.updateCutOffHeuristics(ply, depth, color, parentMove,
+                                searchContext.updateCutOffHeuristics(ply, depth, color, grandparentMove, parentMove,
                                         bestMove, moveCursor);
                             }
                             statistics.countCutOff(moveCursor, searchedMoves);
@@ -475,7 +475,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                     // update "bad" heuristic
                     if (!areWeInCheck) {
-                        searchContext.updateBadHeuristic(depth, color, moveCursor);
+                        searchContext.updateBadHeuristic(depth, color, grandparentMove, parentMove, moveCursor);
                     }
                 }
             }
