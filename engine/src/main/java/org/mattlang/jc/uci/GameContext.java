@@ -1,7 +1,6 @@
 package org.mattlang.jc.uci;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.search.SearchStatistics;
@@ -17,8 +16,6 @@ import lombok.Getter;
  * a game.
  */
 public class GameContext {
-
-    private static final Logger LOGGER = Logger.getLogger(GameContext.class.getSimpleName());
 
     @Getter
     public TTCache ttCache;

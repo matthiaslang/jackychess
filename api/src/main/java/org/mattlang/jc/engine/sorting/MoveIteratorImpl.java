@@ -1,15 +1,11 @@
 package org.mattlang.jc.engine.sorting;
 
-import java.util.logging.Logger;
-
 import org.mattlang.jc.engine.MoveList;
 
 /**
  * Simple move iterator implementation.
  */
 public final class MoveIteratorImpl implements MoveIterator {
-
-    public static final Logger LOGGER = Logger.getLogger(MoveIteratorImpl.class.getSimpleName());
 
     private MoveList moveList;
 

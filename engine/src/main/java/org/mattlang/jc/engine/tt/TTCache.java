@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.tt;
 
+import static java.util.logging.Level.INFO;
 import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
 import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 
@@ -325,7 +326,9 @@ public final class TTCache {
     }
 
     public void updateAging(BoardRepresentation board) {
-        LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
+        if (LOGGER.isLoggable(INFO)) {
+            LOGGER.info("hits: " + cacheHits + "; fails:" + cacheMisses);
+        }
         halfMoveCounter = aging.updateAging(board);
         //		if (halfMoveCounter>512){
         //			halfMoveCounter=0;

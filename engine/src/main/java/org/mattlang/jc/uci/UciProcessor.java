@@ -2,6 +2,7 @@ package org.mattlang.jc.uci;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.Constants.MIN_DEPTH;
@@ -70,7 +71,9 @@ public class UciProcessor {
             CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, gameContext);
             // when the search stops regularly within its search time, deliver the best move
             result.thenAccept(move -> {
-                LOGGER.fine(String.format("future completed with best move: %s", move));
+                if (LOGGER.isLoggable(FINE)) {
+                    LOGGER.fine(String.format("future completed with best move: %s", move));
+                }
                 sendBestMove(gameState, move);
             });
 

@@ -2,7 +2,7 @@ package org.mattlang.jc.engine.search;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.*;
 import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
@@ -107,7 +107,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         SearchThreadContext stc = SearchThreadContexts.CONTEXTS.getContext(workerNumber);
 
-        LOGGER.info("iterative search on " + gameState.getFenStr());
+        if (LOGGER.isLoggable(INFO)) {
+            LOGGER.info("iterative search on " + gameState.getFenStr());
+        }
 
         watch = new StopWatch();
         watch.start();
@@ -202,7 +204,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     }
 
     private void logIsr(IterativeSearchResult isr) {
-        if (!isWorker) {
+        if (!isWorker && LOGGER.isLoggable(INFO)) {
             String bestMove = isr.getSavedMove() != null ? isr.getSavedMove().toStr() : "none";
             String rslt = isr.getRslt() != null ? isr.getRslt().toLogString() : "no results";
             LOGGER.info("best move: " + bestMove + " " + rslt);
@@ -311,8 +313,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, int currdepth) {
 
-        LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
-
+        if (LOGGER.isLoggable(FINE)) {
+            LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
+        }
         NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
                 optionalLastBestMove,
                 stc, gameState, gameContext,
@@ -322,7 +325,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         while (aspWindow.outsideWindow(rslt)) {
             aspWindow.widenWindow(rslt);
-            LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
+            if (LOGGER.isLoggable(FINE)) {
+                LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
+            }
             optionalLastBestMove = rslt.savedMove != null ? rslt.savedMove : optionalLastBestMove;
 
             rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
@@ -332,7 +337,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime);
         }
-        LOGGER.fine(format("aspiration stabilized: %s", aspWindow.descr()));
+        if (LOGGER.isLoggable(FINE)) {
+            LOGGER.fine(format("aspiration stabilized: %s", aspWindow.descr()));
+        }
         return rslt;
     }
 

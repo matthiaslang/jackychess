@@ -76,7 +76,9 @@ public class Gobbler {
         LineNumberReader r = new LineNumberReader(new InputStreamReader(in));
         while (!finished && !Thread.currentThread().isInterrupted()) {
             String line = r.readLine();
-            logger.fine(name + " IN: " + line);
+            if (logger.isLoggable(FINE)) {
+                logger.fine(name + " IN: " + line);
+            }
             if (line != null) {
                 inQueue.add(line);
             }

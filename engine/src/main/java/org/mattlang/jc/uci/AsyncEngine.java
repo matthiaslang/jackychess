@@ -1,5 +1,6 @@
 package org.mattlang.jc.uci;
 
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.SearchParameter.createMultiThread;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
@@ -72,10 +73,14 @@ public class AsyncEngine {
         CompletableFuture<Move> completableFuture = new CompletableFuture<>();
         Future<Move> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
-                logger.info(this + " try to acquire semaphore..");
+                if (logger.isLoggable(INFO)) {
+                    logger.info(this + " try to acquire semaphore..");
+                }
                 // acquire the semaphore, but do not wait endless in case the JVM or Thread gets interrupted
                 semaphore.tryAcquire(5, TimeUnit.SECONDS);
-                logger.info(this + " got semaphore, starting search");
+                if (logger.isLoggable(INFO)) {
+                    logger.info(this + " got semaphore, starting search");
+                }
 
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
@@ -102,9 +107,13 @@ public class AsyncEngine {
                 // this is the reason why we use tryAcquire
                 // with a timeout; otherwise we got from time to time "hanging" processes in linux and docker
                 // when e.g. clients like cutechess gets interrupted by the user.
-                logger.info(this + " releasing semaphore");
+                if (logger.isLoggable(INFO)) {
+                    logger.info(this + " releasing semaphore");
+                }
                 semaphore.release();
-                logger.info(this + " released semaphore");
+                if (logger.isLoggable(INFO)) {
+                    logger.info(this + " released semaphore");
+                }
             }
 
         });
@@ -119,9 +128,13 @@ public class AsyncEngine {
      */
     public Move stop() {
 
-        logger.info(this + " stopping search");
+        if (logger.isLoggable(INFO)) {
+            logger.info(this + " stopping search");
+        }
         if (future != null) {
-            logger.info(this + " stopping future");
+            if (logger.isLoggable(INFO)) {
+                logger.info(this + " stopping future");
+            }
             // fire and forget:
             // simply cancel the engine, we even do not wait till it properly stopped
             future.cancel(true);

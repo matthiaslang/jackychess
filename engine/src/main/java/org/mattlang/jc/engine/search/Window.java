@@ -1,5 +1,6 @@
 package org.mattlang.jc.engine.search;
 
+import static java.util.logging.Level.FINE;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 
@@ -64,7 +65,9 @@ public class Window {
         // in this case we at least stop aspiration search loop and log in the iterative deepening the
         // problematic case
         if (score <= ALPHA_START || score >= BETA_START) {
-            LOGGER.fine("Aspiration Window reached outer bounds! score = " + score);
+            if (LOGGER.isLoggable(FINE)) {
+                LOGGER.fine("Aspiration Window reached outer bounds! score = " + score);
+            }
             return false;
         }
 
