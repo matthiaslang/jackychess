@@ -74,7 +74,8 @@ public class Window {
         return score <= alpha || score >= beta;
     }
 
-    public void widenWindow(NegaMaxResult rslt) {
+
+    public boolean widenWindow(NegaMaxResult rslt) {
         wideningPhase++;
         int delta = wideningPhase * wideningPhase * WINDOW_MARGIN + WINDOW_MARGIN;
 
@@ -86,8 +87,10 @@ public class Window {
             if (betaWidened && LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
             }
+            return false;
         } else if (score >= beta) {
             beta = beta + delta + (score - beta);
+
             betaWidened = true;
             if (alphaWidened && LOGGER.isLoggable(Level.WARNING)) {
                 /**
@@ -96,14 +99,16 @@ public class Window {
                  */
                 LOGGER.warning("Search anomalie: Window widened in two directions!" + descr());
             }
+            return true;
         }
-
+        return false;
         // after n phases, set the full window:
-        if (wideningPhase > MAX_WIDENING_PHASES) {
-            alpha = ALPHA_START;
-            beta = BETA_START;
-        }
+//        if (wideningPhase > MAX_WIDENING_PHASES) {
+//            alpha = ALPHA_START;
+//            beta = BETA_START;
+//        }
     }
+
 
     public String descr() {
         return "lastscore: " + lastScore + " window[" + alpha + ", " + beta + "]";

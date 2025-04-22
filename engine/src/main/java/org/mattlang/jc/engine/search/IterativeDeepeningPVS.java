@@ -221,10 +221,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         long nps = duration == 0 ? nodesVisited : nodesVisited * 1000 / duration;
 
         UCI.instance.putCommand("info depth " + targetDepth +
-                " seldepth " + selDepth +
-                " score cp " + currMoveScore + " nodes " + nodesVisited
-                + " nps " + nps
-                + " time " + duration);
+                                " seldepth " + selDepth +
+                                " score cp " + currMoveScore + " nodes " + nodesVisited
+                                + " nps " + nps
+                                + " time " + duration);
         if (currMove != 0) {
             moveWrapper.fromLongEncoded(currMove);
             UCI.instance.putCommand("info currmove " + moveWrapper.toUCIString(gameState.getBoard()));
@@ -313,18 +313,26 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             Window aspWindow, GameState gameState, GameContext gameContext,
             long stopTime, int currdepth) {
 
+        int depthToUse = currdepth;
+
         if (LOGGER.isLoggable(FINE)) {
-            LOGGER.fine(format("aspiration start on depth %s %s", currdepth, aspWindow.descr()));
+            LOGGER.fine(format("aspiration start on depth %s %s", depthToUse, aspWindow.descr()));
         }
         NegaMaxResult rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
                 optionalLastBestMove,
                 stc, gameState, gameContext,
-                currdepth,
+                depthToUse,
                 aspWindow.getAlpha(), aspWindow.getBeta(),
                 stopTime);
 
         while (aspWindow.outsideWindow(rslt)) {
-            aspWindow.widenWindow(rslt);
+
+            /**
+             * Reduce depth if we widened over beta:
+             */
+            if (aspWindow.widenWindow(rslt)) {
+                depthToUse--;
+            }
             if (LOGGER.isLoggable(FINE)) {
                 LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
             }
@@ -333,7 +341,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             rslt = negaMaxAlphaBeta.searchWithScore(searchParams.getLegalMovesToSearch(),
                     optionalLastBestMove,
                     stc, gameState, gameContext,
-                    currdepth,
+                    depthToUse,
                     aspWindow.getAlpha(), aspWindow.getBeta(),
                     stopTime);
         }
@@ -357,12 +365,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             long hashfull = gameContext.ttCache.calcHashFull();
             //        long hashfull = gameContext.ttc.getUsagePercentage();
             UCI.instance.putCommand("info depth " + rslt.targetDepth +
-                    " seldepth " + rslt.selDepth +
-                    " score cp " + rslt.max + " nodes " + nodes
-                    + " hashfull " + hashfull
-                    + " nps " + nps
-                    + " time " + duration
-                    + " pv " + rslt.pvList.toPvStr(gameState.getBoard()));
+                                    " seldepth " + rslt.selDepth +
+                                    " score cp " + rslt.max + " nodes " + nodes
+                                    + " hashfull " + hashfull
+                                    + " nps " + nps
+                                    + " time " + duration
+                                    + " pv " + rslt.pvList.toPvStr(gameState.getBoard()));
             UCI.instance.putCommand("info currmove " + rslt.savedMove.toUCIString(gameState.getBoard()));
         }
     }
@@ -381,7 +389,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                 } else {
                     LOGGER.warning(
                             "depth: " + rslt.targetDepth + " Illegal PV Move " + move.toUCIString(board) + " in "
-                                    + rslt.toLogString());
+                            + rslt.toLogString());
                     break;
 
                 }
