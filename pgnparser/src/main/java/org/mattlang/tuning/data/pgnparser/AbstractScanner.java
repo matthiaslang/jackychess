@@ -8,16 +8,13 @@ import java.io.InputStream;
 
 import lombok.Getter;
 
-public class Scanner implements TextPosition {
+public abstract class AbstractScanner implements TextPosition {
 
     public static final char BRACKET_OPEN = '[';
     public static final char BRACKET_CLOSE = ']';
 
     public static final char CURL_BRACKET_OPEN = '{';
     public static final char CURL_BRACKET_CLOSE = '}';
-
-    public static final char SEMICOLON = ';';
-    public static final char COMMA = ',';
 
     public static final char DOT = '.';
     public static final char MULT = '*';
@@ -33,7 +30,7 @@ public class Scanner implements TextPosition {
     @Getter
     private int colNo = 1;
 
-    public Scanner(InputStream in) {
+    public AbstractScanner(InputStream in) {
         this.in = in;
         lineNo = 1;
         colNo = 1;
@@ -84,10 +81,6 @@ public class Scanner implements TextPosition {
             return OrdinarySymbol.BRACKET_CLOSE;
         case MULT:
             return Ending.UNTERMINATED;
-        case SEMICOLON:
-            return OrdinarySymbol.SEMICOLON;
-        case COMMA:
-            return OrdinarySymbol.COMMA;
         case CURL_BRACKET_OPEN:
             return readComment();
         case DOT:

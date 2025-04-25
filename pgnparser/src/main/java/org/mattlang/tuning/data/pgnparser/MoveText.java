@@ -1,10 +1,10 @@
 package org.mattlang.tuning.data.pgnparser;
 
 import static org.mattlang.tuning.data.pgnparser.AlgebraicNotation.determineFigureType;
-import static org.mattlang.tuning.data.pgnparser.AlgebraicNotation.toIndex;
 import static org.mattlang.tuning.data.pgnparser.PgnMoveDescrType.*;
 
 import org.mattlang.jc.board.FigureType;
+import org.mattlang.jc.board.IndexConversion;
 import org.mattlang.jc.uci.FenConstants;
 
 import lombok.Getter;
@@ -43,9 +43,16 @@ public class MoveText extends TextualSymbol {
      * the promoted figure. default ist Queen
      */
     private FigureType promotedFigureType = FigureType.Queen;
+
     private boolean checkHint;
     private boolean captureHint;
     private boolean checkMateHint;
+
+    /* parse helper fields */
+    private int currPos = -1;
+
+    private char matchedChar;
+    private String matchedString = "";
 
     public MoveText(String str, TextPosition textPosition) {
         super(str.trim(), textPosition);
@@ -72,36 +79,159 @@ public class MoveText extends TextualSymbol {
         }
     }
 
+    private void overreadHints() {
+        char curr = getCurrChar();
+        while (curr == ' ' || curr == '+' || curr == '#' || curr == 'x') {
+            currPos++;
+            if (currPos == getText().length()) {
+                break;
+            }
+            curr = getCurrChar();
+        }
+    }
+
+    private char getNextChar() {
+        char ch = getCurrChar();
+        currPos++;
+        return ch;
+    }
+
+    private char getCurrChar() {
+        if (currPos >= getText().length()) {
+            return '\n';
+        } else {
+            return getText().charAt(currPos);
+        }
+    }
+
+    private boolean checkMatch(boolean matchCondition) {
+        if (matchCondition) {
+            matchedChar = getNextChar();
+            matchedString += matchedChar;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean match(char ch) {
+        overreadHints();
+        return checkMatch(ch == getCurrChar());
+    }
+
+    private boolean matchDigit() {
+        overreadHints();
+        return checkMatch(Character.isDigit(getCurrChar()));
+    }
+
+    private boolean matchUpperLetter() {
+        overreadHints();
+        return checkMatch(Character.isUpperCase(getCurrChar()));
+    }
+
+    private boolean matchLowerLetter() {
+        overreadHints();
+        return checkMatch(Character.isLowerCase(getCurrChar()));
+    }
+
+    private String consumeMatchedStr() {
+        String str = matchedString;
+        matchedChar = '\n';
+        matchedString = "";
+        return str;
+    }
+
+    private char consumeMatchedChar() {
+        char ch = matchedChar;
+        matchedChar = '\n';
+        matchedString = "";
+        return ch;
+    }
+
     private void parseRegularMove() {
-        String s = getText();
 
-        if (s.contains("=")) {
-            int idx = s.indexOf("=");
-            char promFigChar = s.charAt(idx + 1);
-            promotedFigureType = determineFigureType(promFigChar);
-            // remove the "=" part from the string
-            s = s.replace("=" + promFigChar, "");
+        currPos = 0;
+
+        // parse optional figure letter:
+        parseFigureLetter();
+
+        // parse optional disambiguous symbols or the position:
+        int indexPos1 = parseDisambigousOrPos();
+        // parse an optional second position:
+        int indexPos2 = parseOptionalSecondPos();
+
+        // interpret now the one or two positions we got:
+        if (indexPos1 >= 0 && indexPos2 >= 0) {
+            fromSpec = IndexConversion.convert(indexPos1);
+            toIdx = indexPos2;
+        } else if (indexPos1 >= 0) {
+            toIdx = indexPos1;
+        } else if (indexPos2 >= 0) {
+            toIdx = indexPos2;
+        } else {
+            throw new PgnParserException("error parsing/ordering move indexes", this);
         }
 
-        String movespec = s.replace("+", ""); // replace check hint
-        movespec = movespec.replace("#", ""); // replace check hint
-
-        figure = AlgebraicNotation.determineFigureType(movespec);
-        String to = movespec.substring(movespec.length() - 2);
-
-        fromSpec = movespec.substring(0, movespec.length() - 2);
-        if (fromSpec.length() > 0 && Character.isUpperCase(fromSpec.charAt(0))) {
-            fromSpec = fromSpec.substring(1);
-        }
-        fromSpec = fromSpec.replace("x", "");
-        toIdx = toIndex(to);
-
-        // todo maybe use MoveImpl.isOnLastLine
+        // set promotion marker:
         if (figure == FigureType.Pawn && (toIdx <= 7 || toIdx >= 56)) {
             // mark as Promotion:
             promotion = true;
+        }
 
+        // now there could be a promotion info coming at last:
+        if (promotion) {
+            parsePromotionFigure();
         }
 
     }
+
+    private void parsePromotionFigure() {
+        if (match('=') && matchUpperLetter()) {
+            promotedFigureType = determineFigureType(consumeMatchedChar());
+        } else if (match('/') && matchUpperLetter()) {
+            promotedFigureType = determineFigureType(consumeMatchedChar());
+        } else if (match('(') && matchUpperLetter()) {
+            promotedFigureType = determineFigureType(consumeMatchedChar());
+        } else if (matchUpperLetter()) {
+            promotedFigureType = determineFigureType(consumeMatchedChar());
+        } else {
+            throw new PgnParserException("error parsing promotion part", this);
+        }
+    }
+
+    private int parseOptionalSecondPos() {
+        // now there should be the "to" pos or nothing if we have already a first pos:
+        if (matchLowerLetter()) {
+            if (matchDigit()) {
+                return IndexConversion.parsePos(consumeMatchedStr());
+            } else {
+                throw new PgnParserException("error parsing to move coordinate", this);
+            }
+        }
+        return -1;
+    }
+
+    private int parseDisambigousOrPos() {
+        if (matchLowerLetter()) {
+            // its either a disambiguous hint or a coordinate part:
+            if (matchDigit()) {
+                return IndexConversion.parsePos(consumeMatchedStr());
+            } else {
+                fromSpec = consumeMatchedStr();
+            }
+
+        } else if (matchDigit()) {
+            // its a "from" disambiguous hint:
+            fromSpec = consumeMatchedStr();
+        }
+        return -1;
+    }
+
+    private void parseFigureLetter() {
+        if (matchUpperLetter()) {
+            figure = AlgebraicNotation.determineFigureType(consumeMatchedChar());
+        } else {
+            figure = FigureType.Pawn;
+        }
+    }
+
 }

@@ -18,8 +18,12 @@ public class IndexConversion {
     }
 
     public static byte parsePos(String pos) {
-        int x = pos.charAt(0) - 'a';
-        int y = pos.charAt(1) - '0' - 1;
+        return parsePos(pos.charAt(0), pos.charAt(1));
+    }
+
+    public static byte parsePos(char char1, char char2) {
+        int x = char1 - 'a';
+        int y = char2 - '0' - 1;
         return (byte) (y * 8 + x);
     }
 

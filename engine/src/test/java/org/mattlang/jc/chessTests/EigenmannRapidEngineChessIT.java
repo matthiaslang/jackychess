@@ -1,15 +1,18 @@
 package org.mattlang.jc.chessTests;
 
+import static org.mattlang.jc.chesstests.EigenmannRapidEngineChess.EIGENMANN_RAPID;
+import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
+
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.TestTools;
-import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
-import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.Engine;
 
 /**
@@ -24,20 +27,18 @@ public class EigenmannRapidEngineChessIT {
 
     public static final int CHESS_SUITE_TEST_TIMEOUT = 1000 * 15;
 
-    @Parameterized.Parameters(name = "{index}: {2}")
-    public static Iterable<String[]> getEPDTests() {
-        return EpdParser.getEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+    @Parameterized.Parameters(name = "{index}: {0}")
+    public static Iterable<TestPosition> getEPDTests() {
+        return parseEPDTests(EIGENMANN_RAPID).stream()
+                .map(TestPosition::new)
+                .collect(Collectors.toList());
 
     }
 
-    private String position;
-    private String expectedBestMove;
-    private String testName;
+    private TestPosition testPosition;
 
-    public EigenmannRapidEngineChessIT(String position, String expectedBestMove, String testName) {
-        this.position = position;
-        this.expectedBestMove = expectedBestMove;
-        this.testName = testName;
+    public EigenmannRapidEngineChessIT(TestPosition testPosition) {
+        this.testPosition = testPosition;
     }
 
     @BeforeClass
@@ -49,7 +50,7 @@ public class EigenmannRapidEngineChessIT {
     public void testWithDefaultConfig() {
         // create engine
         Engine engine = new Engine();
-        EpdParsing.testPosition(engine, position, expectedBestMove);
+        ChessTestRun.testPosition(engine, testPosition);
     }
 
 }

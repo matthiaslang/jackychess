@@ -1,6 +1,9 @@
 package org.mattlang.jc.engine.evaluation;
 
+import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
@@ -13,9 +16,9 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
-import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.FenFlip;
+import org.mattlang.tuning.data.epdparser.EpdWithOpCodes;
 
 @RunWith(Parameterized.class)
 public class SymmetryOfEvaluationTest {
@@ -24,8 +27,11 @@ public class SymmetryOfEvaluationTest {
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Iterable<TestPosition> getEPDTests() {
-        List<TestPosition> positions = EpdParser.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
-        return positions;
+        List<EpdWithOpCodes> epds = parseEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+        return epds.stream()
+                .map(TestPosition::new)
+                .collect(Collectors.toList());
+
     }
 
     public SymmetryOfEvaluationTest(TestPosition testPosition) {

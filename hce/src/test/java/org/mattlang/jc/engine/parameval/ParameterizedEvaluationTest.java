@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine.parameval;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.chesstests.EigenmannRapidEngineChess.EIGENMANN_RAPID;
+import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +13,6 @@ import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chesstests.EigenmannRapidEngineChess;
-import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
@@ -64,7 +64,9 @@ public class ParameterizedEvaluationTest {
         // get an evaluation for tuning: no caching activated:
         ParameterizedEvaluation pe = ParameterizedEvaluation.createForTuning(new EvalConfig(),false);
 
-        List<TestPosition> positions = EpdParser.convertTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
+        List<TestPosition> positions= parseEPDTests(EIGENMANN_RAPID).stream()
+                .map(TestPosition::new)
+                .collect(Collectors.toList());
 
         List<BoardRepresentation> boards = positions.stream()
                 .map(p -> {

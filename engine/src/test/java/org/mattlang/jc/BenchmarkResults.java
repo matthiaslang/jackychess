@@ -1,6 +1,7 @@
 package org.mattlang.jc;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.mattlang.jc.engine.Configurator;
 
@@ -46,7 +47,7 @@ public class BenchmarkResults<T> {
         if (testPosition != null) {
             this.fenposition = testPosition.getFen();
             this.testName = testPosition.getName();
-            this.testExpectedBestMove = testPosition.getExpectedBestMove();
+            this.testExpectedBestMove = testPosition.getExpectedBestMoves().stream().map(b->b.toStr()).collect(Collectors.joining(","));
         }
         ConfigValues config = ConfigValues.getConfigValues();
         this.evaluateFunction = Configurator.determineEvalImplName();

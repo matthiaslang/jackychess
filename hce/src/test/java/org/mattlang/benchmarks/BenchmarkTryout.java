@@ -1,14 +1,16 @@
 package org.mattlang.benchmarks;
 
+import static org.mattlang.jc.chesstests.BratKoKopec.BRATKO_KOPEC;
+import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.chesstests.BratKoKopec;
-import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
+import org.mattlang.tuning.data.epdparser.EpdWithOpCodes;
 import org.openjdk.jmh.annotations.*;
 
 public class BenchmarkTryout {
@@ -32,9 +34,9 @@ public class BenchmarkTryout {
             boards.add(board);
             // add the brat co test positions:
             for (int i = 0; i < 10000; i++) {
-                for (String[] epdTest : EpdParser.getEPDTests(BratKoKopec.BRATKO_KOPEC)) {
+                for (EpdWithOpCodes epdTest : parseEPDTests(BRATKO_KOPEC)) {
                     BoardRepresentation board = new BitBoard();
-                    board.setFenPosition("position fen " + epdTest[0] + " 0 0");
+                    board.setFenPosition(epdTest.getEpd().getPositionFen());
                     boards.add(board);
                 }
             }

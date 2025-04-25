@@ -9,12 +9,12 @@ package org.mattlang.jc.chesstests;
 public class EigenmannRapidEngineChess {
 
     public static final String EIGENMANN_RAPID =
-            "r1bqk1r1/1p1p1n2/p1n2pN1/2p1b2Q/2P1Pp2/1PN5/PB4PP/R4RK1 w q - - bm Rxf4; id \"ERET 001 - Entlastung\";\n" +
+            "r1bqk1r1/1p1p1n2/p1n2pN1/2p1b2Q/2P1Pp2/1PN5/PB4PP/R4RK1 w q - bm Rxf4; id \"ERET 001 - Entlastung\";\n" +
                     "r1n2N1k/2n2K1p/3pp3/5Pp1/b5R1/8/1PPP4/8 w - - bm Ng6; id \"ERET 002 - Zugzwang\";\n" +
                     "r1b1r1k1/1pqn1pbp/p2pp1p1/P7/1n1NPP1Q/2NBBR2/1PP3PP/R6K w - - bm f5; id \"ERET 003 - Linienoeffnen\";\n"
                     +
                     "5b2/p2k1p2/P3pP1p/n2pP1p1/1p1P2P1/1P1KBN2/7P/8 w - - bm Nxg5; id \"ERET 004 - Endspiel\";\n" +
-                    "r3kbnr/1b3ppp/pqn5/1pp1P3/3p4/1BN2N2/PP2QPPP/R1BR2K1 w kq - - bm Bxf7; id \"ERET 005 - Laeuferopfer f7\";\n"
+                    "r3kbnr/1b3ppp/pqn5/1pp1P3/3p4/1BN2N2/PP2QPPP/R1BR2K1 w kq - bm Bxf7; id \"ERET 005 - Laeuferopfer f7\";\n"
                     +
                     "r2r2k1/1p1n1pp1/4pnp1/8/PpBRqP2/1Q2B1P1/1P5P/R5K1 b - - bm Nc5; id \"ERET 006 - Springeropfer\";\n"
                     +
@@ -73,7 +73,7 @@ public class EigenmannRapidEngineChess {
                     +
                     "r3kb1r/3n1ppp/p3p3/1p1pP2P/P3PBP1/4P3/1q2B3/R2Q1K1R b kq - bm Bc5; id \"ERET 040 - Koenigssicherheit\";\n"
                     +
-                    "3q1rk1/2nbppb1/pr1p1n1p/2pP1Pp1/2P1P2Q/2N2N2/1P2B1PP/R1B2RK1 w - - bm Nxg5; - id \"ERET 041 - Springeropfer\";\n"
+                    "3q1rk1/2nbppb1/pr1p1n1p/2pP1Pp1/2P1P2Q/2N2N2/1P2B1PP/R1B2RK1 w - - bm Nxg5;  id \"ERET 041 - Springeropfer\";\n"
                     +
                     "8/2k5/N3p1p1/2KpP1P1/b2P4/8/8/8 b - - bm Kb7; id \"ERET 042 - Endspiel\";\n" +
                     "2r1rbk1/1pqb1p1p/p2p1np1/P4p2/3NP1P1/2NP1R1Q/1P5P/R5BK w - - bm Nxf5; id \"ERET 043 - Springeropfer\";\n"
@@ -141,7 +141,7 @@ public class EigenmannRapidEngineChess {
                     +
                     "8/3P4/1p3b1p/p7/P7/1P3NPP/4p1K1/3k4 w - - bm g4; id \"ERET 082 - Endspiel\";\n" +
                     "3q1rk1/7p/rp1n4/p1pPbp2/P1P2pb1/1QN4P/1B2B1P1/1R3RK1 w - - bm Nb5; id \"ERET 083 - Abtausch\";\n" +
-                    "4r1k1/1r1np3/1pqp1ppB/p7/2b1P1PQ/2P2P2/P3B2R/3R2K1 w - - bm Bg7 Bg5; id \"ERET 084 - Koenigsangriff\";\n"
+                    "4r1k1/1r1np3/1pqp1ppB/p7/2b1P1PQ/2P2P2/P3B2R/3R2K1 w - - bm Bg7, Bg5; id \"ERET 084 - Koenigsangriff\";\n"
                     +
                     "r4rk1/q4bb1/p1R4p/3pN1p1/8/2N3P1/P4PP1/3QR1K1 w - - bm Ng4; id \"ERET 085 - Abtausch\";\n" +
                     "r3k2r/pp2pp1p/8/q2Pb3/2P5/4p3/B1Q2PPP/2R2RK1 w kq - bm c5; id \"ERET 086 - Qualitaetsopfer\";\n" +

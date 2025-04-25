@@ -13,6 +13,15 @@ public class Matcher implements TextPosition {
         this.scanner = scanner;
     }
 
+    public boolean checkNext(OrdinarySymbol ordinarySymbol) throws IOException {
+        if (scanner.hasNext()) {
+            if (scanner.getCurr() == ordinarySymbol) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean match(OrdinarySymbol ordinarySymbol) throws IOException {
         if (scanner.hasNext()) {
             if (scanner.getCurr() == ordinarySymbol) {
@@ -57,6 +66,24 @@ public class Matcher implements TextPosition {
             }
         }
         throw new PgnParserException("expecting move text!", scanner);
+    }
+
+    public <T extends TextualSymbol> T match(Class<T> clazz) throws IOException {
+        if (scanner.hasNext()) {
+            if (clazz.isInstance(scanner.getCurr())) {
+                return (T) scanner.next();
+            }
+        }
+        throw new PgnParserException("expecting " + clazz.getSimpleName() + "!", scanner);
+    }
+
+    public <T extends TextualSymbol> Optional<T> optMatch(Class<T> clazz) throws IOException {
+        if (scanner.hasNext()) {
+            if (clazz.isInstance(scanner.getCurr())) {
+                return Optional.of((T) scanner.next());
+            }
+        }
+        return empty();
     }
 
     public Optional<IntegerNumber> optMatchNumber() throws IOException {

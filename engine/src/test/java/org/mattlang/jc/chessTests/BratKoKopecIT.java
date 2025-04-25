@@ -1,16 +1,18 @@
 package org.mattlang.jc.chessTests;
 
 import static org.mattlang.jc.chesstests.BratKoKopec.BRATKO_KOPEC;
+import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.TestTools;
-import org.mattlang.jc.chesstests.EpdParser;
 import org.mattlang.jc.engine.Engine;
 
 /**
@@ -22,19 +24,17 @@ import org.mattlang.jc.engine.Engine;
 @RunWith(Parameterized.class)
 public class BratKoKopecIT {
 
-    @Parameterized.Parameters(name = "{index}: {2}")
-    public static Iterable<String[]> getEPDTests() {
-        return EpdParser.getEPDTests(BRATKO_KOPEC);
+    @Parameterized.Parameters(name = "{index}: {0}")
+    public static Iterable<TestPosition> getEPDTests() {
+        return parseEPDTests(BRATKO_KOPEC).stream()
+                .map(TestPosition::new)
+                .collect(Collectors.toList());
     }
 
-    private String position;
-    private String expectedBestMove;
-    private String testName;
+    private TestPosition testPosition;
 
-    public BratKoKopecIT(String position, String expectedBestMove, String testName) {
-        this.position = position;
-        this.expectedBestMove = expectedBestMove;
-        this.testName = testName;
+    public BratKoKopecIT(TestPosition testPosition) {
+        this.testPosition = testPosition;
     }
 
     @BeforeClass
@@ -46,7 +46,7 @@ public class BratKoKopecIT {
     public void testStable() {
         // create engine
         Engine engine = new Engine();
-        EpdParsing.testPosition(engine, position, expectedBestMove);
+        ChessTestRun.testPosition(engine, testPosition);
     }
 
 }
