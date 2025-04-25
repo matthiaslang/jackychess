@@ -3,6 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval.endgame;
 import static org.mattlang.jc.board.Square.SQ_A1;
 import static org.mattlang.jc.board.Tools.*;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.KxKEndgameFunction.VALUE_KNOWN_WIN;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -15,8 +16,6 @@ import org.mattlang.jc.material.Material;
  * defending king towards a corner square that our bishop attacks.
  */
 public class KBNvsKEndgameFunction implements EndgameFunction {
-
-    private static final int VALUE_KNOWN_WIN = 10000;
 
     private static final Material KBN_K = new Material("KBNk");
 

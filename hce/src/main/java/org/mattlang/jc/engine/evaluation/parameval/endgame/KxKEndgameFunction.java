@@ -18,7 +18,7 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluati
  */
 public class KxKEndgameFunction implements EndgameFunction {
 
-    private static final int VALUE_KNOWN_WIN = 10000;
+    public static final int VALUE_KNOWN_WIN = 10000;
 
     public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
             ParameterizedMaterialEvaluation matEvaluation) {

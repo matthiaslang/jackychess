@@ -4,6 +4,8 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.*;
 import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
+import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
+import static org.mattlang.jc.engine.evaluation.parameval.endgame.KxKEndgameFunction.VALUE_KNOWN_WIN;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
@@ -22,7 +24,6 @@ import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -246,7 +247,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         private final StopWatch roundWatch;
 
         public boolean isCheckMate() {
-            return Math.abs(Math.abs(rslt.directScore) - Weights.KING_WEIGHT) < 100;
+            return Math.abs(Math.abs(rslt.directScore) - KING_WEIGHT) < 100;
         }
 
         public boolean hasResults() {
@@ -332,9 +333,14 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
             /**
              * Reduce depth if we widened over beta:
+             * (but dont do it if we have a very hight score already)
              */
             if (aspWindow.widenWindow(rslt)) {
-                depthToUse--;
+                int reduce = Math.abs(rslt.max) <= VALUE_KNOWN_WIN / 2 ? 1 : 0;
+                depthToUse -= reduce;
+            } else {
+                // when widened over alpha, reset depth
+                depthToUse = currdepth;
             }
             if (LOGGER.isLoggable(FINE)) {
                 LOGGER.fine(format("aspiration widened to %s", aspWindow.descr()));
