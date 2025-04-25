@@ -103,25 +103,27 @@ public class SearchParameter {
     }
 
     public void log() {
-        UCILogger.log("Search Method: " + searchMethod.instance().getClass().getSimpleName()
-                + " Evaluation: " + Configurator.determineEvalImplName());
-        for (Map.Entry<UCIGroup, List<UCIOption>> entry : ConfigValues.getConfigValues()
-                .getAllOptions()
-                .getOptionsByGroup()
-                .entrySet()) {
-            UCIGroup group = entry.getKey();
-            List<UCIOption> opts = entry.getValue();
-            if (group != ConfigValues.getConfigValues().common) {
-                StringBuilder b = new StringBuilder();
-                b.append(group.getName()).append(": ");
-                b.append(opts.stream()
-                        .map(o -> o.getName() + ": " + o.getValue())
-                        .collect(Collectors.joining("; ")));
-                UCILogger.log(b.toString());
+        if (UCILogger.uciDebugMode) {
+            UCILogger.logDebug("Search Method: " + searchMethod.instance().getClass().getSimpleName()
+                               + " Evaluation: " + Configurator.determineEvalImplName());
+            for (Map.Entry<UCIGroup, List<UCIOption>> entry : ConfigValues.getConfigValues()
+                    .getAllOptions()
+                    .getOptionsByGroup()
+                    .entrySet()) {
+                UCIGroup group = entry.getKey();
+                List<UCIOption> opts = entry.getValue();
+                if (group != ConfigValues.getConfigValues().common) {
+                    StringBuilder b = new StringBuilder();
+                    b.append(group.getName()).append(": ");
+                    b.append(opts.stream()
+                            .map(o -> o.getName() + ": " + o.getValue())
+                            .collect(Collectors.joining("; ")));
+                    UCILogger.logDebug(b.toString());
 
-            } else {
-                for (UCIOption option : opts) {
-                    UCILogger.log(option.getName() + ": " + option.getValue());
+                } else {
+                    for (UCIOption option : opts) {
+                        UCILogger.logDebug(option.getName() + ": " + option.getValue());
+                    }
                 }
             }
         }

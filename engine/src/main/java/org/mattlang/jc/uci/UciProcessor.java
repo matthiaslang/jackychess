@@ -79,8 +79,16 @@ public class UciProcessor {
 
         } else if (CMD_STOP.equals(cmdStr)) {
             stop(gameState);
+        } else if (cmdStr.startsWith(CMD_DEBUG)) {
+            handleDebugMode(cmdStr);
         }
 
+    }
+
+    private void handleDebugMode(String cmdStr) {
+        String[] result = cmdStr.split("\\s");
+        String onOff = result.length >= 2 ? result[1] : "";
+        UCILogger.uciDebugMode = onOff.equals(CMD_DEBUG_ON);
     }
 
     private void stop(GameState gameState) {

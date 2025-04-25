@@ -13,6 +13,9 @@ public class UciKeyWords {
     public static final String CMD_UCINEWGAME = "ucinewgame";
     public static final String CMD_BESTMOVE = "bestmove";
     public static final String CMD_STOP = "stop";
+    public static final String CMD_DEBUG = "debug";
+    public static final String CMD_DEBUG_ON = "on";
+    public static final String CMD_DEBUG_OFF = "off";
     public static final String POSITION = "position";
     public static final String CMD_GO = "go";
     public static final String INFINITE = "infinite";

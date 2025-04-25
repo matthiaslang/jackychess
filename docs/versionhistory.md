@@ -1,5 +1,10 @@
 # Versions
 
+## 25.03RC04
+
+- changed aspiration window sizing and use depth limiting when reaching beta: ~7Elo
+- supporting uci debug mode
+
 ## 25.03RC03
 
 - move sorting: added capture history and continuation history with gravity bonus: ~30-40Elo

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.SearchParameter;
+import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
@@ -99,6 +100,7 @@ public class AsyncEngine {
             } catch (Throwable e) {
                 completableFuture.completeExceptionally(e);
                 logger.log(SEVERE, fmtSevere(searchParams, gameState, "error during async execution!"), e);
+                UCILogger.logDebugSevere(searchParams, gameState, "error during async execution!", e);
                 throw e;
             } finally {
                 // release the semaphore. according to the JVM specification in case of thread interruption or

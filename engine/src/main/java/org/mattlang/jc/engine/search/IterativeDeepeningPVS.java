@@ -110,6 +110,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         if (LOGGER.isLoggable(INFO)) {
             LOGGER.info("iterative search on " + gameState.getFenStr());
         }
+        if (!isWorker && UCILogger.uciDebugMode) {
+            UCILogger.logDebug(fmtSevere(searchParams, gameState, "starting iterative search"));
+        }
 
         watch = new StopWatch();
         watch.start();
