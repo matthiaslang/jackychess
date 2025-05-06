@@ -1,34 +1,39 @@
 # Versions
 
-## 25.03RC04
+## 25.04
+
+Official Version since 24.06
+Estimated Elo strength: ~2890, ~50 Elo stronger than 24.06.
+
+### 25.03RC04
 
 - changed aspiration window sizing and use depth limiting when reaching beta: ~7Elo
 - supporting uci debug mode
 
-## 25.03RC03
+### 25.03RC03
 
 - move sorting: added capture history and continuation history with gravity bonus: ~30-40Elo
 - move sorting: use best move from last iteration instead hash for sorting ply 1: ~3Elo
 
-## 25.03RC02
+### 25.03RC02
 
 - added some new eval parameters which bring after tuning ~15 Elos.
 
 
-## 25.02
+### 25.02
 
 - hce: removed material correction (obsolete due to complexity and drawByMaterial checks) 
 
-## 25.01T
+### 25.01T
 
 - internal changes: refactorings and impl of tuning command
 
-## 25.01D
+### 25.01D
 
 - support for uci "go depth" and "go nodes" 
 - uci option "maxThreads" changed in "Threads"
 
-## 25.01C
+### 25.01C
 
 - TT Cache rework
   - better distribution of hash values
@@ -36,13 +41,13 @@
 - Code Cleanup regarding search parameter
 - 
 
-## 25.01A
+### 25.01A
 
 - Support for uci go searchmoves directive
 - fixed bug with uci stop command returning bestmove twice
 - fixed bug when parsing unknown go directives....
 
-## 25.01
+### 25.01
 
 - Restructured the project and split into more maven modules to better separate tuning/test and engine code
 - fixed Early Queen evaluation, no elo gain though

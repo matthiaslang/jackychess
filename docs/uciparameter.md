@@ -19,6 +19,29 @@ indicates support for Chess960
 option name UCI_Chess960 type check default false
 ```
 
+### Option UCI_AnalyseMode
+
+indicates we are in Analysis Mode
+
+- default value: false
+
+
+#### Declaration
+
+```
+option name UCI_AnalyseMode type check default false
+```
+
+### Option UCI_EngineAbout
+
+uci engine about
+
+#### Declaration
+
+```
+option name UCI_EngineAbout type string default JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess
+```
+
 ## Caching
 
 Parameter for caching of information during search.
@@ -42,36 +65,6 @@ option name Hash type spin default 128 min 1 max 2048
 
 Parameter which limit the search or search time in some way.
 
-### Option thinktime
-
-the think time in milliseconds; this time is used if no other time restrictions are give by the uci go command.
-
-- min: 1000
-- max: 600000
-- default: 15000
-
-
-#### Declaration
-
-```
-option name thinktime type spin default 15000 min 1000 max 600000
-```
-
-### Option maxdepth
-
-the maximum search depth to use if there is enough search time
-
-- min: 3
-- max: 63
-- default: 63
-
-
-#### Declaration
-
-```
-option name maxdepth type spin default 63 min 3 max 63
-```
-
 ### Option quiescence
 
 the maximum search depth in quiescence
@@ -87,9 +80,9 @@ the maximum search depth in quiescence
 option name quiescence type spin default 63 min 0 max 63
 ```
 
-### Option maxThreads
+### Option Threads
 
-the maximum search threads when multi threading search is activated
+the maximum search threads to use for search
 
 - min: 1
 - max: 8
@@ -99,19 +92,6 @@ the maximum search threads when multi threading search is activated
 #### Declaration
 
 ```
-option name maxThreads type spin default 1 min 1 max 8
-```
-
-### Option searchalg
-
-the search algorithm to use.
-
-- default value: MULTITHREAD
-
-
-#### Declaration
-
-```
-option name searchalg type combo default MULTITHREAD var SINGLETHREAD var MULTITHREAD
+option name Threads type spin default 1 min 1 max 8
 ```
 

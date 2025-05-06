@@ -64,7 +64,7 @@ as java application itself and knows how to deal with it.
 Its not possible to install a java uci engine in Shredder directly via the user interface. You need to manually
 create a new *.eng file under c:\<your user>\AppData\Local\ShredderChess\GUI13\Engines folder or copy one of the existing.
 
-The file must contain the following rows, you need of course adjust the paths to your needs:
+Example *.eng file:
 
       [ENGINE]
       Name=Jacky Chess 24.06
@@ -106,18 +106,19 @@ on http://ccrl.chessdom.com/ccrl/404/:
 
 Here is a quick overview of my estimated rating and the results from the CCRL team (the numbers maybe outdated):
 
-| Version | Estimated Rating | CCRL Blitz | 40/15 | 40/2 FRC |
-|---------|------------------|------------|-------|----------|
-| 24.06   | 2840             | 2794       | 2847  |          |
-| 24.04   | 2800             | 2792       | 2781  | 2764     |
-| 23.12   | 2760             | 2695       | 2731  |          |
-| 23.06   | 2680             | 2688       | 2675  |          |
-| 0.14.3  | 2580             | 2595       | 2601  |          |
-| 0.13.1  | 2330             | --         | 2397  |          |
-| 0.13.0  | 2330             | 2388       | --    |          |
-| 0.12.0  | 2180             | 2284       | --    |          |
-| 0.10.0  | 2000             | 2119       | --    |          |
-| 0.9.14  | --               | 1453       | --    |          |
+| Version | Estimated Rating | Estimated Rating 4 Threads vs. 1 Thread | CCRL Blitz | 40/15 | 40/2 FRC |
+|---------|------------------|-----------------------------------------|------------|-------|----------|
+| 25.04   | 2890             | +150 Elo                                |            |       |          |
+| 24.06   | 2840             |                                         | 2794       | 2847  |          |
+| 24.04   | 2800             |                                         | 2792       | 2781  | 2764     |
+| 23.12   | 2760             |                                         | 2695       | 2731  |          |
+| 23.06   | 2680             |                                         | 2688       | 2675  |          |
+| 0.14.3  | 2580             |                                         | 2595       | 2601  |          |
+| 0.13.1  | 2330             |                                         | --         | 2397  |          |
+| 0.13.0  | 2330             |                                         | 2388       | --    |          |
+| 0.12.0  | 2180             |                                         | 2284       | --    |          |
+| 0.10.0  | 2000             |                                         | 2119       | --    |          |
+| 0.9.14  | --               |                                         | 1453       | --    |          |
 
 ## Copyright
 
