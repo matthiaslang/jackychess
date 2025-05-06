@@ -28,11 +28,13 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
-        return iterativeSearch(new SearchParameter(SearchParameter.DEFAULT_SEARCHTIME, maxDepth), gameState, gameContext).getSavedMove();
+        return iterativeSearch(new SearchParameter(SearchParameter.DEFAULT_SEARCHTIME, maxDepth), gameState,
+                gameContext).getSavedMove();
     }
 
     @Override
-    public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState, GameContext gameContext) {
+    public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState,
+            GameContext gameContext) {
 
         // start max-1 workerthreads
         List<Future<IterativeSearchResult>> futures = new ArrayList<>();
@@ -60,18 +62,21 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         }
     }
 
-    private Future<IterativeSearchResult> startWorker(int workerNumber, SearchParameter searchParams, GameState gameState, GameContext gameContext) {
+    private Future<IterativeSearchResult> startWorker(int workerNumber, SearchParameter searchParams,
+            GameState gameState, GameContext gameContext) {
         GameState copiedGame = gameState.copy();
         IterativeDeepeningPVS worker = new IterativeDeepeningPVS(workerNumber);
-        Future<IterativeSearchResult> result = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
+        return JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 return worker.iterativeSearch(searchParams, copiedGame, gameContext);
+            } catch (StopException stopException) {
+                // do not log stop exceptions as this is the normal case. just rethrow it:
+                throw stopException;
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error in worker thread!", e);
                 throw e;
             }
         });
-        return result;
     }
 
     @Override
