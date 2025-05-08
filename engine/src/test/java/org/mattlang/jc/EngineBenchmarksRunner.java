@@ -5,12 +5,14 @@ import static org.mattlang.jc.Benchmarks.benchmark;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BinaryOperator;
 
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
+import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCICheckOption;
 import org.mattlang.jc.uci.UCIOption;
@@ -48,16 +50,35 @@ public class EngineBenchmarksRunner {
         gameContext = new GameContext();
 
         for (TestPosition position : testPositions) {
-            results.add(benchmarkRun(position));
+            results.add(benchmarkRun(position, searchParameter));
         }
     }
 
     public void benchmarkSingleExecute(SearchParameter searchParameter) {
         gameContext = new GameContext();
         SearchThreadContexts.CONTEXTS.reset();
+        ArrayList<BenchmarkIterativeResults> resultsOfThisRun = new ArrayList<>();
 
         for (TestPosition position : testPositions) {
-            results.add(benchmarkRun(position, 1));
+            BenchmarkIterativeResults result = benchmarkRun(position, searchParameter, 1);
+        // for now only add agg results
+                        results.add(result);
+            resultsOfThisRun.add(result);
+        }
+
+        // add a aggregation result:
+        Optional<BenchmarkIterativeResults> agg =
+                resultsOfThisRun.stream().reduce(new BinaryOperator<BenchmarkIterativeResults>() {
+
+                    @Override
+                    public BenchmarkIterativeResults apply(BenchmarkIterativeResults b1,
+                            BenchmarkIterativeResults b2) {
+                        return new BenchmarkIterativeResults(b1, b2);
+                    }
+                });
+
+        if (agg.isPresent()) {
+            results.add(agg.get());
         }
     }
 
@@ -67,30 +88,36 @@ public class EngineBenchmarksRunner {
         EvalCache.instance.reset();
 
         for (TestPosition position : testPositions) {
-            results.add(benchmarkRun(name, position, 1));
+            results.add(benchmarkRun(name, position, searchParameter, 1));
         }
     }
 
-    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition) {
-        return benchmarkRun(testPosition, 10);
+    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition, SearchParameter searchParameter) {
+        return benchmarkRun(testPosition, searchParameter, 10);
     }
 
-    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition, int count) {
+    private BenchmarkIterativeResults benchmarkRun(TestPosition testPosition, SearchParameter searchParameter,
+            int count) {
 
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
-        System.out.println(engine.getBoard().toUniCodeStr());
+//        System.out.println(engine.getBoard().toUniCodeStr());
         String name = generateNameFromOptions();
+
+        // reset caches:
+        Caching.CACHING.getTtCache().reset();
+        SearchThreadContexts.CONTEXTS.reset();
 
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
-                () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
+                () -> engine.goIterative(searchParameter, state, gameContext), count);
         Map stats = new HashMap();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);
     }
 
-    private BenchmarkIterativeResults benchmarkRun(String name, TestPosition testPosition, int count) {
+    private BenchmarkIterativeResults benchmarkRun(String name, TestPosition testPosition,
+            SearchParameter searchParameter, int count) {
 
         Engine engine = new Engine();
         GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
@@ -98,7 +125,7 @@ public class EngineBenchmarksRunner {
 
         ExecResults<IterativeSearchResult> execResults = benchmark(
                 name,
-                () -> engine.goIterative(new SearchParameter(), state, gameContext), count);
+                () -> engine.goIterative(searchParameter, state, gameContext), count);
         Map stats = new HashMap();
 
         return new BenchmarkIterativeResults(name, execResults, stats, testPosition);

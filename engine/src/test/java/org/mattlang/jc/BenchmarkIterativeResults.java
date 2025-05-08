@@ -1,6 +1,7 @@
 package org.mattlang.jc;
 
 import static java.util.stream.Collectors.joining;
+import static org.mattlang.jc.AppConfiguration.APPCONFIG;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,8 +49,16 @@ public class BenchmarkIterativeResults extends BenchmarkResults<IterativeSearchR
                     "useMvvLvaSorting",  "useTTCache", "useKillerMoves", "useHistoryHeuristic",
                     "pvSearch", "aspiration", "useNullMoves", "staticNullMove", "useLateMoveReductions",
                     "deltaCutoff", "razoring",
-                    "moveListImpl", "move", "nodesVisited",
+                     "move", "nodesVisited",
                     "quiescenceNodesVisited", "ebfReport" };
+
+    public BenchmarkIterativeResults(BenchmarkIterativeResults b1, BenchmarkIterativeResults b2) {
+        super(APPCONFIG.getStringValue("TESTFEATURE").orElseThrow(), b1.getExecResult(), b1.stats, null);
+        nodesVisited=b1.getNodesVisited()+b2.getNodesVisited();
+        quiescenceNodesVisited=b1.getQuiescenceNodesVisited()+b2.getQuiescenceNodesVisited();
+
+
+    }
 
     public static void writeCsvReport(ArrayList<BenchmarkIterativeResults> results, String filename)
             throws IOException {
