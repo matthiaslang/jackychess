@@ -27,7 +27,7 @@ public class AlgebraicNotation {
      * @param algNotMove
      * @return
      */
-    private static Move convertToMove(BoardRepresentation board, Color color, MoveText algNotMove) {
+    private static Move convertToMove(BoardRepresentation board, Color color, ParsedMoveText algNotMove) {
         MoveValidator moveValidator = new MoveValidator();
 
         List<MoveImpl> allMoves =
@@ -35,21 +35,21 @@ public class AlgebraicNotation {
 
         List<MoveImpl> matching = allMoves.stream()
                 .filter(m -> m.getFigureType() == algNotMove.getFigure().figureCode
-                        && m.getToIndex() == algNotMove.getToIdx())
+                             && m.getToIndex() == algNotMove.getToIdx())
                 .collect(Collectors.toList());
 
         // further match for promotions to filter out the one with the right promoted figure:
         if (algNotMove.isPromotion()) {
             matching = matching.stream()
                     .filter(m -> m.isPromotion()
-                            && m.getPromotedFigure().figureType == algNotMove.getPromotedFigureType())
+                                 && m.getPromotedFigure().figureType == algNotMove.getPromotedFigureType())
                     .collect(Collectors.toList());
         }
 
         switch (matching.size()) {
         case 0:
             throw new PgnParserException(
-                    "Error Parsing Move " + algNotMove.getText() + ": no legal move seems to match!", algNotMove);
+                    "Error Parsing Move " + algNotMove.getMoveText().getText() + ": no legal move seems to match!", algNotMove.getMoveText());
         case 1:
             return matching.get(0);
         default:
@@ -62,16 +62,16 @@ public class AlgebraicNotation {
                 }
             }
             throw new PgnParserException(
-                    "Error Parsing Move " + algNotMove.getText() + ": cant identify move from ambiguous matching ones.."
-                            + board.toUniCodeStr(), algNotMove);
+                    "Error Parsing Move " + algNotMove.getMoveText().getText() + ": cant identify move from ambiguous matching ones.."
+                    + board.toUniCodeStr(), algNotMove.getMoveText());
         }
 
     }
 
     private static boolean matchesFromSpec(MoveImpl move, String fromSpec) {
         return rankOf(move.getFromIndex()) == rankFromSpec(fromSpec)
-                || fileOf(move.getFromIndex()) == fileFromSpec(fromSpec)
-                || move.getFromIndex() == posFromSpec(fromSpec);
+               || fileOf(move.getFromIndex()) == fileFromSpec(fromSpec)
+               || move.getFromIndex() == posFromSpec(fromSpec);
     }
 
     public static int posFromSpec(String fromSpec) {
@@ -114,17 +114,18 @@ public class AlgebraicNotation {
     /**
      * Converts a move in algebraic notation into a Move Object.
      *
-     * @param algNotMove
+     * @param moveText
      * @return
      */
-    public static Move moveFromAN(BoardRepresentation board, Color color, MoveText algNotMove) {
+    public static Move moveFromAN(BoardRepresentation board, Color color, MoveText moveText) {
+        ParsedMoveText algNotMove = new ParsedMoveText(moveText);
         switch (algNotMove.getType()) {
         case CASTLING_SHORT:
             MoveImpl castlingMove = createCastling(color == WHITE ?
                     board.getBoardCastlings().getCastlingWhiteShort() :
                     board.getBoardCastlings().getCastlingBlackShort());
             if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
-                throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
+                throw new PgnParserException("Invalid Parsed Move " + moveText.getText(), moveText);
             }
             return castlingMove;
         case CASTLING_LONG:
@@ -132,7 +133,7 @@ public class AlgebraicNotation {
                     board.getBoardCastlings().getCastlingWhiteLong() :
                     board.getBoardCastlings().getCastlingBlackLong());
             if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
-                throw new PgnParserException("Invalid Parsed Move " + algNotMove.getText(), algNotMove);
+                throw new PgnParserException("Invalid Parsed Move " + moveText.getText(), moveText);
             }
             return castlingMove;
         case NORMAL:

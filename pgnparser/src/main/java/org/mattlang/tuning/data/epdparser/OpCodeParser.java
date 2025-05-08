@@ -56,8 +56,7 @@ public class OpCodeParser {
         EnumMap<EpdOpCode, List<? extends TextualSymbol>> opCodes = new EnumMap<>(EpdOpCode.class);
 
         while (scanner.hasNext()) {
-            Word word = matcher.matchWord();
-            EpdOpCode opCode = parseOpCode(word);
+            EpdOpCode opCode = parseOpCode(parseOpCodeWord(matcher));
 
             List<? extends TextualSymbol> operand = parseOperand(opCode, matcher);
             matcher.expectSymbol(SEMICOLON);
@@ -69,6 +68,14 @@ public class OpCodeParser {
         }
 
         return new EpdOpCodesResult(opCodes);
+    }
+
+    private static TextualSymbol parseOpCodeWord(Matcher matcher) throws IOException {
+        Optional<Word> optWord = matcher.optMatch(Word.class);
+        if (optWord.isPresent()) {
+            return optWord.get();
+        }
+        return matcher.matchMoveText();
     }
 
     private static List<? extends TextualSymbol> parseOperand(EpdOpCode opCode, Matcher matcher) throws IOException {
@@ -106,7 +113,7 @@ public class OpCodeParser {
         throw new IllegalStateException("Unknown cardinality:" + opCode.cardinality);
     }
 
-    private static EpdOpCode parseOpCode(Word word) {
+    private static EpdOpCode parseOpCode(TextualSymbol word) {
         EpdOpCode opCode = strToOpCode.get(word.getText());
         if (opCode == null) {
             throw new PgnParserException("No valid Op Code:" + word.getText(), word);
