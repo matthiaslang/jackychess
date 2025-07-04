@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.IndexConversion;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -75,4 +76,15 @@ public class FenParserTest {
 
     }
 
+
+    @Test
+    public void testFisher960() {
+        FenParser p = new FenParser();
+        BoardRepresentation board = new BitBoard();
+        p.setPosition("position fen bbnqrnkr/pppppppp/8/8/8/8/PPPPPPPP/BBNQRNKR w HEhe - moves e2e4 b7b5 f2f4 c7c5 f1e3", board, true);
+        System.out.println(board.toUniCodeStr());
+
+        assertThat(board.getSiteToMove()).isEqualTo(Color.BLACK);
+
+    }
 }

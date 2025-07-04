@@ -117,4 +117,22 @@ public class UciInterfaceTest {
         communication.consumeAllInfo();
     }
 
+    @Test
+    public void doFisher960() throws InterruptedException, IOException {
+
+        communication.uciStartCommunication();
+
+        communication.write("ucinewgame");
+        communication.write("setoption name UCI_AnalyseMode value false");
+        communication.write("setoption name UCI_Chess960 value true");
+        communication.write("position fen bbnqrnkr/pppppppp/8/8/8/8/PPPPPPPP/BBNQRNKR w HEhe - moves e2e4 b7b5 f2f4 c7c5 f1e3");
+        communication.write("go wtime 1000 btime 1000 winc 0 binc 0 movestogo 1");
+
+        Thread.sleep(2000);
+
+        communication.expectBestmove("b8f4");
+        communication.consumeAllInfo();
+
+    }
+
 }

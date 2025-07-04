@@ -16,15 +16,6 @@ import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
 
-    public static final int FEN_INDEX_FIGURES = 2;
-    public static final int FEN_INDEX_SITE_TO_MOVE = 3;
-    public static final int FEN_INDEX_CASTLING = 4;
-    public static final int FEN_INDEX_ENPASSANT = 5;
-    public static final int FEN_INDEX_NO_HALFMOVES = 6;
-    public static final int FEN_INDEX_NEXT_MOVENUM = 7;
-    public static final int FEN_INDEX_MOVES_BY_STARTPOS = 2;
-    public static final int FEN_INDEX_MOVES_BY_FEN = 8;
-
     /**
      * Flag to be more lenient when parsing fens.
      */
@@ -35,44 +26,42 @@ public class FenParser {
     }
 
     public static GameState setPosition(String positionStr, BoardRepresentation board, boolean isChess960) {
-        if (!positionStr.startsWith("position")) {
+        UciStringParser parser = new UciStringParser(positionStr);
+
+        if (!parser.match("position")) {
             throw new FenParseException(
                     "Error Parsing fen position string: Not starting with 'position':" + positionStr);
         }
-        String[] splitted = positionStr.split(" ");
-        String fen = splitted[1];
-        int movesSection = FEN_INDEX_MOVES_BY_STARTPOS;
-        if ("startpos".equals(fen)) {
+
+        if (parser.match("startpos")) {
             board.setStartPosition();
 
-        } else if ("fen".equals(fen)) {
+        } else if (parser.match("fen")) {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
             // position fen rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 moves f1d3 a7a6 g1f3
-            String figures = splitted[FEN_INDEX_FIGURES];
-            String siteToMove = splitted[FEN_INDEX_SITE_TO_MOVE];
-            String rochade = splitted[FEN_INDEX_CASTLING];
-            String enpassant = splitted[FEN_INDEX_ENPASSANT];
-            String noHalfMoves = splitted[FEN_INDEX_NO_HALFMOVES];
-            String nextMoveNum = splitted[FEN_INDEX_NEXT_MOVENUM];
+            String figures = parser.match();
+            String siteToMove = parser.match();
+            String rochade = parser.match();
+            String enpassant = parser.match();
+            String noHalfMoves = !"moves".equals(parser.getCurr()) ? parser.match() : "-";
+            String nextMoveNum = !"moves".equals(parser.getCurr()) ? parser.match() : "-";
 
             board.setChess960(isChess960);
 
             setPosition(board, figures, siteToMove, rochade, enpassant, noHalfMoves, nextMoveNum);
 
-            movesSection = FEN_INDEX_MOVES_BY_FEN;
         } else {
             throw new FenParseException("fen position wrong: no 'position startpos' nor 'position fen' found!");
         }
 
-        if (splitted.length > movesSection) {
-            if ("moves".equals(splitted[movesSection])) {
-                for (int moveIndex = movesSection + 1; moveIndex < splitted.length; moveIndex++) {
-                    String moveStr = splitted[moveIndex];
-                    Move move = parseMove(board, moveStr);
-                    board.domove(move);
-                }
+        if (parser.match("moves")) {
+            while (parser.hasNext()) {
+                String moveStr = parser.match();
+                Move move = parseMove(board, moveStr);
+                board.domove(move);
             }
         }
+
         return new GameState(board, positionStr);
     }
 
@@ -160,8 +149,8 @@ public class FenParser {
     private static boolean istCastlingByKingToKingMove(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
         Figure figFrom = board.getFigure(movePos.getFrom());
         return figFrom.figureType == FigureType.King
-                && movePos.getFrom() == movePos.getTo()
-                && figFrom.color == board.getSiteToMove();
+               && movePos.getFrom() == movePos.getTo()
+               && figFrom.color == board.getSiteToMove();
     }
 
     private static Move castlingByKingCapturesRook(BoardRepresentation board, IndexConversion.MoveFromTo movePos) {
@@ -179,8 +168,8 @@ public class FenParser {
         Figure figFrom = board.getFigure(movePos.getFrom());
         Figure figTo = board.getFigure(movePos.getTo());
         return figFrom.figureType == FigureType.King
-                && figTo.figureType == FigureType.Rook
-                && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
+               && figTo.figureType == FigureType.Rook
+               && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
     private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm,
