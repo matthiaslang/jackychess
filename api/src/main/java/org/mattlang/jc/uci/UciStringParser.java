@@ -1,5 +1,7 @@
 package org.mattlang.jc.uci;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -8,7 +10,7 @@ import java.util.StringTokenizer;
  */
 public class UciStringParser {
 
-    StringTokenizer tokenizer;
+    private final StringTokenizer tokenizer;
     private String currToken;
 
     public static final String END = "\n";
@@ -18,13 +20,12 @@ public class UciStringParser {
         nextTok();
     }
 
-    public String nextTok() {
+    private void nextTok() {
         if (tokenizer.hasMoreTokens()) {
             currToken = tokenizer.nextToken();
         } else {
             currToken = END;
         }
-        return getCurr();
     }
 
     public String getCurr() {
@@ -49,4 +50,19 @@ public class UciStringParser {
         return curr;
     }
 
+    public long matchLong() {
+        return Long.parseLong(match());
+    }
+
+    public int matchInt() {
+        return Integer.parseInt(match());
+    }
+
+    public String[] collectRestTokens() {
+        List<String> tokens = new ArrayList<>();
+        while (hasNext()) {
+            tokens.add(match());
+        }
+        return tokens.toArray(new String[tokens.size()]);
+    }
 }

@@ -130,7 +130,7 @@ public class UciInterfaceTest {
 
         Thread.sleep(2000);
 
-        communication.expectBestmove("b8f4");
+        communication.expectBestmove("b8f4", "a8e4");
         communication.consumeAllInfo();
 
     }

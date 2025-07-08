@@ -8,7 +8,6 @@ import static org.mattlang.jc.Constants.MAX_PLY;
 import static org.mattlang.jc.Constants.MIN_DEPTH;
 import static org.mattlang.jc.uci.UciKeyWords.*;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -128,61 +127,39 @@ public class UciProcessor {
     }
 
     public GoParameter parseGoParams(String cmdStr) {
-        String[] result = cmdStr.split("\\s");
+        UciStringParser parser = new UciStringParser(cmdStr);
+
         GoParameter param = new GoParameter();
         // example: go wtime 567860 btime 584661 winc 0 binc 0 movestogo 39
-        int x = 0;
-        while (x < result.length) {
-            String tok = result[x];
-            if (CMD_GO.equals(tok)) {
+
+        while (parser.hasNext()) {
+            if (parser.match(CMD_GO)) {
                 // overread
-                x++;
-            } else if (INFINITE.equals(tok)) {
+            } else if (parser.match(INFINITE)) {
                 param.infinite = true;
-                x++;
-            } else if (WTIME.equals(tok)) {
-                x++;
-                param.wtime = Long.parseLong(result[x]);
-                x++;
-            } else if (BTIME.equals(tok)) {
-                x++;
-                param.btime = Long.parseLong(result[x]);
-                x++;
-            } else if (WINC.equals(tok)) {
-                x++;
-                param.winc = Long.parseLong(result[x]);
-                x++;
-            } else if (BINC.equals(tok)) {
-                x++;
-                param.binc = Long.parseLong(result[x]);
-                x++;
-            } else if (MOVESTOGO.equals(tok)) {
-                x++;
-                param.movestogo = Long.parseLong(result[x]);
-                x++;
-            } else if (MOVETIME.equals(tok)) {
-                x++;
-                param.movetime = Long.parseLong(result[x]);
-                x++;
-            } else if (MATE.equals(tok)) {
-                x++;
-                param.mate = Integer.parseInt(result[x]);
-                x++;
-            } else if (DEPTH.equals(tok)) {
-                x++;
-                param.depth = min(MAX_PLY - 1, max(MIN_DEPTH, Integer.parseInt(result[x])));
-                x++;
-            } else if (NODES.equals(tok)) {
-                x++;
-                param.nodes = Integer.parseInt(result[x]);
-                x++;
-            } else if (SEARCHMOVES.equals(tok)) {
-                x++;
-                param.searchMoves = Arrays.copyOfRange(result, x, result.length);
-                x = result.length;
+            } else if (parser.match(WTIME)) {
+                param.wtime = parser.matchLong();
+            } else if (parser.match(BTIME)) {
+                param.btime = parser.matchLong();
+            } else if (parser.match(WINC)) {
+                param.winc = parser.matchLong();
+            } else if (parser.match(BINC)) {
+                param.binc = parser.matchLong();
+            } else if (parser.match(MOVESTOGO)) {
+                param.movestogo = parser.matchLong();
+            } else if (parser.match(MOVETIME)) {
+                param.movetime = parser.matchLong();
+            } else if (parser.match(MATE)) {
+                param.mate = parser.matchInt();
+            } else if (parser.match(DEPTH)) {
+                param.depth = min(MAX_PLY - 1, max(MIN_DEPTH, parser.matchInt()));
+            } else if (parser.match(NODES)) {
+                param.nodes = parser.matchInt();
+            } else if (parser.match(SEARCHMOVES)) {
+                param.searchMoves = parser.collectRestTokens();
             } else {
                 // overread unknown token to not endless parse in loop
-                x++;
+                parser.match();
             }
         }
         return param;
