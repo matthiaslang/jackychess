@@ -64,14 +64,14 @@ else
   cat << EOF > ${ENGINESFILE}.insert
   {
     "workingDirectory": "/jackychess",
-    "command": "${BASHFILE}",
+    "command": "./${BASHFILE}",
     "name": "jacky${MVNVERSION}",
     "protocol": "uci",
     "options": [{"name": "Threads", "value": "1"}, {"name": "Hash","value": "128"}]
   },
     {
       "workingDirectory": "/jackychess",
-      "command": "${BASHFILE}",
+      "command": "./${BASHFILE}",
       "name": "jacky${MVNVERSION}4T",
       "protocol": "uci",
       "options": [{"name": "Threads", "value": "4"}, {"name": "Hash","value": "512"}]
@@ -109,7 +109,7 @@ fi
 
 # add the created jar to the git repository of the cutechess test project:
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$JARFILE
-git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/${BASHFILE}
+git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add --chmod=+x jackychess/${BASHFILE}
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  scripts/engines.json
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  versionlog.md
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git commit -m "testversion ${MVNVERSION}"
