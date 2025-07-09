@@ -24,10 +24,19 @@ cp -v engine/target/$JARFILE   $LOCALARENAFOLDER
 cp -v engine/target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 cp -v tuner/target/$TUNERJARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 
+# copy a bash file for starting the engine within cutechess
+BASHFILE=jc-${MVNVERSION}.sh
+cat << EOF > ${LOCALTESTPROJFOLDER}/jackychess/${BASHFILE}
+#!/bin/bash
+java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/logs -jar /jackychess/$JARFILE
+EOF
+chmod +x  ${LOCALTESTPROJFOLDER}/jackychess/${BASHFILE}
+
+
 # copy a windows bat file for the arena test folder with some log settings
 BATFILE=jc-${MVNVERSION}.bat
 cat << EOF > ../jcversions/${BATFILE}
-java  -Xmx2024M  -Djacky.logging.activate=true -Djacky.logging.dir=c:/logs  -Djacky.logging.level=INFO -Djacky.logging.file=jc-${MVNVERSION}  -jar ${JARFILE}
+java  -Djacky.logging.activate=true -Djacky.logging.dir=c:/logs  -Djacky.logging.level=INFO -Djacky.logging.file=jc-${MVNVERSION}  -jar ${JARFILE}
 
 EOF
 # convert windows lfs:
@@ -55,24 +64,17 @@ else
   cat << EOF > ${ENGINESFILE}.insert
   {
     "workingDirectory": "/jackychess",
-    "command": "java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/logs -jar /jackychess/$JARFILE",
+    "command": "${BASHFILE}",
     "name": "jacky${MVNVERSION}",
     "protocol": "uci",
     "options": [{"name": "Threads", "value": "1"}, {"name": "Hash","value": "128"}]
   },
     {
       "workingDirectory": "/jackychess",
-      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/logs -jar /jackychess/$JARFILE",
+      "command": "${BASHFILE}",
       "name": "jacky${MVNVERSION}4T",
       "protocol": "uci",
       "options": [{"name": "Threads", "value": "4"}, {"name": "Hash","value": "512"}]
-    },
-    {
-      "workingDirectory": "/jackychess",
-      "command": "java -Djacky.logging.activate=true -Djacky.logging.level=INFO -Duser.home=/logs -jar /jackychess/$JARFILE",
-      "name": "jacky${MVNVERSION}INFO",
-      "protocol": "uci",
-      "options": [{"name": "Threads", "value": "1"}, {"name": "Hash","value": "128"}]
     },
 EOF
 # insert the temp file after the first match of "[" in the config file:
@@ -107,6 +109,7 @@ fi
 
 # add the created jar to the git repository of the cutechess test project:
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$JARFILE
+git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/${BASHFILE}
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  scripts/engines.json
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  versionlog.md
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git commit -m "testversion ${MVNVERSION}"
