@@ -55,7 +55,7 @@ public class BenchmarkResults<T> {
         this.useTTCache = config.useTTCache.getValue();
         this.useKillerMoves = config.useKillerMoves.getValue();
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
-        this.pvSearch = config.activatePvsSearch.getValue();
+        this.pvSearch = true;
         this.maxQuiescence = config.maxQuiescence.getValue();
         this.aspiration = config.aspiration.getValue();
         this.useNullMoves = config.useNullMoves.getValue();

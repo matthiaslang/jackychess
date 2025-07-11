@@ -1,7 +1,20 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
-import lombok.Setter;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
+
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.*;
@@ -17,20 +30,8 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
-import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -79,7 +80,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private SearchListener searchListener;
 
-    private final boolean doPVSSearch = ConfigValues.getConfigValues().activatePvsSearch.getValue();
 
     private final boolean useNullMoves = ConfigValues.getConfigValues().useNullMoves.getValue();
     private final boolean staticNullMove = ConfigValues.getConfigValues().staticNullMove.getValue();
@@ -346,8 +346,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         try (MoveBoardIterator moveCursor = searchContext.genRegularMoves(ply, color, hashMove, parentMove, 0)) {
 
-            boolean firstChild = true;
-
             int searchedMoves = 0;
 
             int lastorder = Integer.MIN_VALUE;
@@ -419,15 +417,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     final int extension = 0;
                     int score;
 
-                    if (firstChild) {
-                        /**
-                         * do full search (for pvs search on the first move, or if pvs search is deactivated)
-                         */
-                        score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
-                        if (doPVSSearch) {
-                            firstChild = false;
-                        }
-                    } else {
+                    if (searchedMoves > 1) {
                         // pvs try 0 window
                         score = -negaMaximize(ply + 1, depth - 1 - r + extension, color.invert(), -max - 1, -max);
 
@@ -442,6 +432,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         if (max < score && score < beta) {
                             score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
                         }
+                    } else {
+                        /**
+                         * do full search (for pvs search on the first move, or if pvs search is deactivated)
+                         */
+                        score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
                     }
 
                     if (score > max) {

@@ -84,10 +84,6 @@ public class ConfigValues {
 
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
 
-    public final UCICheckOption activatePvsSearch = search.createCheckOpt("activatePvsSearch",
-            "should principal variation search be used",
-            true);
-
     public final UCIGroup moveOrder =
             allOptions.createInternalGroup("Move Order", "Parameter influencing the move order in alpha beta search");
 

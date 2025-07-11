@@ -39,12 +39,10 @@ public class MoveOrderingBenchmark {
 
         // pv sorting, pv search
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // pv sorting, pv search, mvvlva
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
@@ -65,7 +63,6 @@ public class MoveOrderingBenchmark {
 
         // everything on:
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
@@ -73,7 +70,6 @@ public class MoveOrderingBenchmark {
 
         // everything on + cache:
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
@@ -82,7 +78,6 @@ public class MoveOrderingBenchmark {
 
         // everything on + cache + aspiration:
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
@@ -92,7 +87,6 @@ public class MoveOrderingBenchmark {
 
         // "old" version: pv search, pv order, mmvla + cache:
         everythingOff();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useTTCache.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
@@ -107,7 +101,6 @@ public class MoveOrderingBenchmark {
 
     private void everythingOff() {
 
-        getConfigValues().activatePvsSearch.setValue(false);
         getConfigValues().useTTCache.setValue(false);
         getConfigValues().aspiration.setValue(false);
         getConfigValues().useKillerMoves.setValue(false);

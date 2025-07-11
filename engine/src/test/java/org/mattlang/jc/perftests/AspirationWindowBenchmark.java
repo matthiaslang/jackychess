@@ -36,25 +36,22 @@ public class AspirationWindowBenchmark {
 
         // no pvsearch, no aspiration
         everythingOn();
-        getConfigValues().activatePvsSearch.setValue(false);
+
         getConfigValues().aspiration.setValue(false);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only pv search:
         everythingOn();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().aspiration.setValue(false);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // pv search +  aspiration:
         everythingOn();
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().aspiration.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // aspiration without pv search:
         everythingOn();
-        getConfigValues().activatePvsSearch.setValue(false);
         getConfigValues().aspiration.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
@@ -68,7 +65,6 @@ public class AspirationWindowBenchmark {
     }
 
     private void everythingOn() {
-        getConfigValues().activatePvsSearch.setValue(true);
         getConfigValues().useTTCache.setValue(true);
         getConfigValues().aspiration.setValue(true);
         getConfigValues().useKillerMoves.setValue(true);
