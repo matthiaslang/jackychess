@@ -640,14 +640,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         checkTimeout();
 
         /* check with the evaluation function */
-        int x = eval;
-        if (x >= beta)
+        if (eval >= beta)
             return beta;
-        if (x > alpha)
-            alpha = x;
+        if (eval > alpha)
+            alpha = eval;
 
-        int bestValue = x;
-        final int futilityBase = x + 200;
+        int bestValue = eval;
+        final int futilityBase = eval + 200;
 
         int movecount = 0;
 
@@ -699,7 +698,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                 if (moveCursor.doValidMove()) {
                     movecount++;
-                    x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                    final int x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
                     if (x > bestValue) {
                         bestValue = x;
                         if (x > alpha) {
