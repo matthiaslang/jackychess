@@ -39,7 +39,7 @@ public class UciInterfaceTest {
         Thread.sleep(2000);
         communication.write("stop");
         Thread.sleep(2000);
-        communication.expectBestmove("e4d5");
+        communication.expectBestmove("e4d5", "f3e5");
 
         communication.consumeAllInfo();
     }
