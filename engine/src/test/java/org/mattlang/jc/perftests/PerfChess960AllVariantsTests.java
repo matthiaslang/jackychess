@@ -10,11 +10,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.perft.Perft;
 
@@ -24,8 +23,9 @@ import lombok.AllArgsConstructor;
  * PerfTests for fischer random chess.
  * https://www.chessprogramming.org/Chess960_Perft_Results
  */
-@RunWith(Parameterized.class)
-@Category(SlowTests.class)
+@ParameterizedClass
+@MethodSource("loadCombinations")
+@Tag("SlowTests")
 public class PerfChess960AllVariantsTests {
 
     private String fen;
@@ -53,7 +53,6 @@ public class PerfChess960AllVariantsTests {
         this.d6Comb = d6Comb;
     }
 
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection loadCombinations() throws IOException {
         return loadAllChess960Perfts().stream()
                 .map(c -> new Object[] { c.fen, c.d1, c.d2, c.d3, c.d4, c.d5, c.d6 })

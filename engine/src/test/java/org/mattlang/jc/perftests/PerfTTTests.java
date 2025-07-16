@@ -5,9 +5,8 @@ import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.GameState;
@@ -23,7 +22,7 @@ import org.mattlang.jc.util.Logging;
  * PerfTests
  * https://www.chessprogramming.org/Perft_Results
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class PerfTTTests {
 
     @Test

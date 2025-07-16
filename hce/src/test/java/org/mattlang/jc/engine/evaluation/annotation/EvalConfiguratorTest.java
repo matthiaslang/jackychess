@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.util.Logging;

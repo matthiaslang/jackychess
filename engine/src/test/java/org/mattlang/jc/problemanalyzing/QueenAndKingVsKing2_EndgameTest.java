@@ -2,7 +2,7 @@ package org.mattlang.jc.problemanalyzing;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;

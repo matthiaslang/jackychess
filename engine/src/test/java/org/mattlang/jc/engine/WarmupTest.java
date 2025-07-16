@@ -5,8 +5,8 @@ import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.Move;
@@ -14,7 +14,7 @@ import org.mattlang.jc.board.Move;
 public class WarmupTest {
 
     @Test
-    @Ignore
+    @Disabled
     public void testIterativeDeepening() throws IOException {
 
         TestTools.initUciEngineTest();

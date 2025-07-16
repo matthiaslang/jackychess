@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.moves.MoveImpl;
 

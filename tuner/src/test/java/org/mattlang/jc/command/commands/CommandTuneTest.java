@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -26,13 +26,13 @@ public class CommandTuneTest {
     @Test
     public void testTuningAndRetuning() throws IOException {
         Main.main(args("tune delta=0.001 threads 1 tuneAll exceptions=tuneMat,tunePst steps 50,20,5,1 "
-                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
+                       + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
 
         assertOutputFilesExist("target/tuning/tuneTest");
 
         // continue and retune further:
         Main.main(args("tune delta=0.0001 threads 1 tuneAll exceptions=tuneMat,tunePst steps 50,20,5,1 "
-                + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
+                       + "-o target/tuning/tuneTest src/test/resources/quiet-labeled_debug.epd"));
 
     }
 
@@ -43,14 +43,14 @@ public class CommandTuneTest {
      * @throws IOException
      */
     @Test
-    @Ignore
+    @Disabled
     public void testCompareMultithreadingTuning() throws IOException {
         Main.main(args("tune delta=0.001 threads 1 tuneMat tunePst steps 50,20,5,1 "
-                + "-o target/tuning/testthread1 src/test/resources/quiet-labeled.epd"));
+                       + "-o target/tuning/testthread1 src/test/resources/quiet-labeled.epd"));
 
         // do same again: should deliver the same results:
         Main.main(args("tune delta=0.001 threads 4 tuneMat tunePst steps 50,20,5,1 "
-                + "-o target/tuning/testthread4 src/test/resources/quiet-labeled.epd"));
+                       + "-o target/tuning/testthread4 src/test/resources/quiet-labeled.epd"));
         // check some result files: they should be equal:
         assertSameFileContent("target/tuning/testthread4", "target/tuning/testthread1");
 
@@ -59,34 +59,34 @@ public class CommandTuneTest {
     @Test
     public void testTuneOptimizingMode() throws IOException {
         Main.main(args("tune delta=0.0001 threads 1 tuneAll "
-                + "-o target/tuning/test1 src/test/resources/quiet-labeled_debug.epd"));
+                       + "-o target/tuning/test1 src/test/resources/quiet-labeled_debug.epd"));
 
         assertOutputFilesExist("target/tuning/test1");
 
         // do same again: should deliver the same results:
         Main.main(args("tune delta=0.0001 threads 1 tuneAll "
-                + "-o target/tuning/test2 src/test/resources/quiet-labeled_debug.epd"));
+                       + "-o target/tuning/test2 src/test/resources/quiet-labeled_debug.epd"));
         // check some result files: they should be equal:
         assertSameFileContent("target/tuning/test2", "target/tuning/test1");
 
         Main.main(args("tune delta=0.0001 threads 1 tuneAll optimizeMode "
-                + "-o target/tuning/testOpt src/test/resources/quiet-labeled_debug.epd"));
+                       + "-o target/tuning/testOpt src/test/resources/quiet-labeled_debug.epd"));
 
         assertSameFileContent("target/tuning/testOpt", "target/tuning/test1");
 
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testTuneOptimizingModeBig() throws IOException {
 
         Main.main(args("tune delta=0.00001 threads 4 tuneAll exceptions=tuneMat steps 50,20 "
-                + "-o target/tuning/test1 src/test/resources/quiet-labeled.epd"));
+                       + "-o target/tuning/test1 src/test/resources/quiet-labeled.epd"));
 
         assertOutputFilesExist("target/tuning/test1");
 
         Main.main(args("tune delta=0.00001 threads 4 tuneAll exceptions=tuneMat steps 50,20 optimizeMode "
-                + "-o target/tuning/testOpt src/test/resources/quiet-labeled.epd"));
+                       + "-o target/tuning/testOpt src/test/resources/quiet-labeled.epd"));
 
         assertSameFileContent("target/tuning/testOpt", "target/tuning/test1");
 

@@ -4,7 +4,7 @@ import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;

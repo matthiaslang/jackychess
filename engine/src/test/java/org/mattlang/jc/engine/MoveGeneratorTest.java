@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.Move;

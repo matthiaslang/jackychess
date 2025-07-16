@@ -4,7 +4,7 @@ import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.Benchmarks;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;

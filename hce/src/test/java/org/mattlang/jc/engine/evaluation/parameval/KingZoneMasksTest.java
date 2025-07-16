@@ -3,7 +3,7 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Color.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.StopWatch;
 
 public class KingZoneMasksTest {

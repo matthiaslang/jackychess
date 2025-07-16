@@ -1,6 +1,6 @@
 package org.mattlang.jc.moves;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveList;

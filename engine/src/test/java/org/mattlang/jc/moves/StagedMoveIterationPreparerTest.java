@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;

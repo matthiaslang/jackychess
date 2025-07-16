@@ -2,16 +2,15 @@ package org.mattlang.jc.perft;
 
 import static org.mattlang.jc.perft.SimplePerftIteratorSupplier.SIMPLE_PERFT_ITERATOR_SUPPLIER;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * A Perft Test.
  * It is tested with the a single staged simple move generation.
  * https://www.chessprogramming.org/Perft_Results
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class SimplePerfTests {
 
     @Test

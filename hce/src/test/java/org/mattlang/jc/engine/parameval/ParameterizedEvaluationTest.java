@@ -7,7 +7,7 @@ import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;

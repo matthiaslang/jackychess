@@ -3,7 +3,7 @@ package org.mattlang.jc.uci;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.uci.TimeCalc.determineTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.bitboard.BitBoard;

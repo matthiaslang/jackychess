@@ -5,9 +5,8 @@ import static org.mattlang.jc.SearchParameter.params;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
 import org.mattlang.jc.board.GameState;
@@ -24,7 +23,7 @@ import lombok.Data;
 /**
  * Testcode to analyze tt cache.
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class CachePerformanceTests {
 
     @Data
@@ -54,11 +53,11 @@ public class CachePerformanceTests {
 
         public void printInfo() {
             System.out.println("Cache: hits: " + cacheHits + " misses: " + cacheMisses + " noreplace: "
-                    + noReplaceCacheAlreadyBetter);
+                               + noReplaceCacheAlreadyBetter);
             System.out.println(
                     "Cache usage: " + usage + " precise usage: " + preciseUsage + " numFieldEntries: " + numFieldEntries
-                            + " max: " + numMaxEntries + " numField ratio permille: " + (numFieldEntries * 1000
-                            / numMaxEntries));
+                    + " max: " + numMaxEntries + " numField ratio permille: " + (numFieldEntries * 1000
+                                                                                 / numMaxEntries));
         }
 
         public void printHeuristic() {
@@ -73,7 +72,7 @@ public class CachePerformanceTests {
         TestTools.initUciEngineTest();
         System.setProperty("jacky.logging.activate", "false");
         Logging.initLogging();
-//        ConfigValues.getConfigValues().hash.setValue(256);
+        //        ConfigValues.getConfigValues().hash.setValue(256);
         Caching.CACHING.getTtCache().reset();
         GameContext gamecontext = new GameContext();
         // now starting engine:

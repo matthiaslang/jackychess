@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.BenchmarkIterativeResults;
 import org.mattlang.jc.EngineBenchmarksRunner;
 import org.mattlang.jc.SearchParameter;
@@ -26,7 +26,7 @@ import org.mattlang.jc.uci.UCI;
 /**
  * benchmarks different move ordering options to measure their performance.
  */
-@Ignore
+@Disabled
 public class MoveOrderingAnalyzer {
 
     public static final int MAX_DEPTH = 9;
@@ -53,7 +53,6 @@ public class MoveOrderingAnalyzer {
                 .map(TestPosition::new)
                 .collect(Collectors.toList());
 
-
         EngineBenchmarksRunner runner = new EngineBenchmarksRunner(positions);
 
         // normal run
@@ -76,7 +75,6 @@ public class MoveOrderingAnalyzer {
         getConfigValues().aspiration.setValue(true);
         runner.benchmarkSingleExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
-
         // check stability of results:
         Map<String, List<BenchmarkIterativeResults>> resultsByFen = runner.getResults().stream()
                 .filter(e -> e.getFenposition() != null)
@@ -95,7 +93,6 @@ public class MoveOrderingAnalyzer {
                     System.out.println("normal, nodes searched:      " + e.getNodesVisited());
                     System.out.println("normal, quiescence nodes searched:      " + e.getQuiescenceNodesVisited());
                 });
-
 
         runner.getResults().stream().filter(e -> e.getName().equals("ANewFeature"))
                 .findFirst()

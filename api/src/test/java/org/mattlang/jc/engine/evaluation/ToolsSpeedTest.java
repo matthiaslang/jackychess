@@ -1,16 +1,14 @@
 package org.mattlang.jc.engine.evaluation;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.Tools;
 
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class ToolsSpeedTest {
 
     public static final int MAXROUNDS = 1000000;
-
 
     @Test
     public void speedComparisonDistance() {
@@ -21,7 +19,7 @@ public class ToolsSpeedTest {
         for (int i = 0; i < MAXROUNDS; i++) {
             for (int j = 0; j < 64; j++) {
                 for (int k = 0; k < 64; k++) {
-                    result += Tools.calcDistance(j,k);
+                    result += Tools.calcDistance(j, k);
                 }
             }
 
@@ -34,7 +32,7 @@ public class ToolsSpeedTest {
         for (int i = 0; i < MAXROUNDS; i++) {
             for (int j = 0; j < 64; j++) {
                 for (int k = 0; k < 64; k++) {
-                    result += Tools.distance(j,k);
+                    result += Tools.distance(j, k);
                 }
             }
         }
@@ -53,7 +51,7 @@ public class ToolsSpeedTest {
         for (int i = 0; i < MAXROUNDS; i++) {
             for (int j = 0; j < 64; j++) {
                 for (int k = 0; k < 64; k++) {
-                    result += Tools.calcManhattanDistance(j,k);
+                    result += Tools.calcManhattanDistance(j, k);
                 }
             }
 
@@ -66,7 +64,7 @@ public class ToolsSpeedTest {
         for (int i = 0; i < MAXROUNDS; i++) {
             for (int j = 0; j < 64; j++) {
                 for (int k = 0; k < 64; k++) {
-                    result += Tools.manhattanDistance(j,k);
+                    result += Tools.manhattanDistance(j, k);
                 }
             }
         }

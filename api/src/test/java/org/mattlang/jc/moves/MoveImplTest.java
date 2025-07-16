@@ -2,7 +2,7 @@ package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitBoard;
 

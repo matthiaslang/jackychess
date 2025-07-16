@@ -1,6 +1,6 @@
 package org.mattlang.jc.engine.evaluation.parameval.functions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArrayFunctionTest {
 

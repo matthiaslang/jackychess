@@ -6,7 +6,7 @@ import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.Tools.fileOf;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedKingEvaluation.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.moves.MoveImpl;
 

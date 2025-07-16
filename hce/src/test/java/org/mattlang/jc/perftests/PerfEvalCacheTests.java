@@ -3,10 +3,8 @@ package org.mattlang.jc.perftests;
 import static org.mattlang.jc.perft.SimplePerftIteratorSupplier.SIMPLE_PERFT_ITERATOR_SUPPLIER;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -22,8 +20,7 @@ import org.mattlang.jc.perft.PerftConsumer;
  * afer a few million entries....
  * So this test will fail after some million cache hits... therefore it is not activated in pipeline
  */
-@Category(SlowTests.class)
-@Ignore
+@Disabled
 public class PerfEvalCacheTests {
 
     private final ParameterizedEvaluation evaluation = new ParameterizedEvaluation();

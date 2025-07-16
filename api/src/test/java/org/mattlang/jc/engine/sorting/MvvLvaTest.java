@@ -4,7 +4,7 @@ import static org.mattlang.jc.engine.sorting.MvvLva.calcMMVLVA;
 import static org.mattlang.jc.moves.MoveImpl.createNormalMove;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.moves.MoveImpl;

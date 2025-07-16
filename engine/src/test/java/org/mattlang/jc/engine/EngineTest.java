@@ -7,8 +7,8 @@ import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
@@ -56,7 +56,7 @@ public class EngineTest {
      * @throws IOException
      */
     @Test
-    @Ignore
+    @Disabled
     public void testNoSMP() throws IOException {
 
         System.setProperty(LOGGING_ACTIVATE, "false");
@@ -79,7 +79,7 @@ public class EngineTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testError() throws IOException {
 
         System.setProperty(LOGGING_ACTIVATE, "false");
@@ -108,7 +108,7 @@ public class EngineTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testLazySMP() throws IOException {
 
         System.setProperty(LOGGING_ACTIVATE, "false");

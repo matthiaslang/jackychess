@@ -5,7 +5,7 @@ import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.BenchmarkResults;
 import org.mattlang.jc.EngineBenchmarksRunner;
 import org.mattlang.jc.SearchParameter;

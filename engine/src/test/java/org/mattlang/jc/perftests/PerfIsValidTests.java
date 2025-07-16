@@ -3,9 +3,8 @@ package org.mattlang.jc.perftests;
 import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -16,7 +15,7 @@ import org.mattlang.jc.perft.PerftConsumer;
 /**
  * PerfTests to validate the boards.isValid method.
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class PerfIsValidTests {
 
     private boolean debug = false;

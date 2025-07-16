@@ -9,7 +9,7 @@ import static org.mattlang.jc.material.Material.W_ROOK_VAL;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.material.Material;

@@ -8,7 +8,7 @@ import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedPawnEvalu
 
 import org.assertj.core.presentation.Representation;
 import org.assertj.core.presentation.StandardRepresentation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.bitboard.BitBoard;
 

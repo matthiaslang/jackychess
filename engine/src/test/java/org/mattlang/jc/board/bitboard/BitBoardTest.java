@@ -5,8 +5,8 @@ import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.IndexConversion.parsePos;
 import static org.mattlang.jc.moves.TestTools.iterateMoves;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveList;
@@ -100,7 +100,7 @@ public class BitBoardTest {
     /**
      * Simple performance test of isvalidmove.
      */
-    @Ignore
+    @Disabled
     @Test
     public void validMovePerfTest() {
         BitBoard board = new BitBoard();

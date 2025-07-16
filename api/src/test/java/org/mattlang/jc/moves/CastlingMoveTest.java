@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.CastlingFields.*;
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.movegenerator.CastlingDef;
 
 public class CastlingMoveTest {

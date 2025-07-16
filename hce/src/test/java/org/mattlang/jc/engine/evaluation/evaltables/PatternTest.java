@@ -5,7 +5,7 @@ import static org.mattlang.jc.board.Color.*;
 
 import java.io.ByteArrayInputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;

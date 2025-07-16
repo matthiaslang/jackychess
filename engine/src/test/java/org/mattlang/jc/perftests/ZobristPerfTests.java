@@ -9,9 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.perft.Perft;
@@ -19,9 +18,8 @@ import org.mattlang.jc.zobrist.Zobrist;
 
 /**
  * PerfTests for zobrist hashing.
- *
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class ZobristPerfTests {
 
     @Test
@@ -36,12 +34,11 @@ public class ZobristPerfTests {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
 
-                    for(int j=0; j<100000000; j++)  {
+                    for (int j = 0; j < 100000000; j++) {
                         int hash = board.hashCode();
                         i[0] = hash;
                     }
                 });
-
 
         StopWatch zobristMeasure = benchmark(
                 "board3 zobrist hash",
@@ -49,7 +46,7 @@ public class ZobristPerfTests {
                     BitBoard board = new BitBoard();
                     board.setStartPosition();
 
-                    for(int j=0; j<100000000; j++)  {
+                    for (int j = 0; j < 100000000; j++) {
                         long zobristHash = board.getZobristHash();
                         l[0] = zobristHash;
                     }
@@ -61,8 +58,6 @@ public class ZobristPerfTests {
         Assertions.assertThat(zobristMeasure.getDuration()).isLessThan(hashMeasure.getDuration());
 
     }
-
-
 
     @Test
     public void compareSpeed() {
@@ -81,7 +76,7 @@ public class ZobristPerfTests {
                         i[0] = hash;
                     });
 
-                    perft.perft( board, WHITE, 6);
+                    perft.perft(board, WHITE, 6);
                 });
 
         StopWatch zobristMeasure = benchmark(
@@ -95,7 +90,7 @@ public class ZobristPerfTests {
                         l[0] = zobristHash;
                     });
 
-                    perft.perft( board, WHITE, 6);
+                    perft.perft(board, WHITE, 6);
                 });
 
         System.out.println("zobrist time: " + zobristMeasure.toString());
@@ -114,7 +109,6 @@ public class ZobristPerfTests {
 
     }
 
-
     @Test
     public void position2() {
         BitBoard board = new BitBoard();
@@ -132,7 +126,7 @@ public class ZobristPerfTests {
             // check pawn zobrist hash : incremental must be equal to calculated one:
             long zobristPawnHash = visitedBoard.getPawnKingZobristHash();
             long zobristPawnFromScratch = Zobrist.hashPawnsAndKings(visitedBoard);
-            if (zobristPawnHash!=zobristPawnFromScratch){
+            if (zobristPawnHash != zobristPawnFromScratch) {
                 System.out.println(visitedBoard.toUniCodeStr());
             }
             assertThat(zobristPawnHash).isEqualTo(zobristPawnFromScratch);
@@ -152,13 +146,12 @@ public class ZobristPerfTests {
             }
         });
 
-        perft.perft( board, WHITE, depth);
+        perft.perft(board, WHITE, depth);
 
         List<Map.Entry<Long, Set<String>>> collisions =
                 collisionMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
         assertThat(collisions).isEmpty();
     }
-
 
     @Test
     public void position3() {
@@ -169,7 +162,6 @@ public class ZobristPerfTests {
         assertNoCollisions(board, 6);
     }
 
-
     @Test
     public void position4() {
         BitBoard board = new BitBoard();
@@ -179,6 +171,5 @@ public class ZobristPerfTests {
         assertNoCollisions(board, 4);
 
     }
-
 
 }

@@ -2,10 +2,9 @@ package org.mattlang.jc.perftests;
 
 import static org.mattlang.jc.perftests.PerfTests.DEFAULT_SUPPLIER;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
@@ -19,8 +18,8 @@ import org.mattlang.jc.perft.PerftConsumer;
  * PerfTests to evaluate each position. Used to measure eval optimizations.
  * Ignored in pipelines, since it is only for local testing.
  */
-@Category(SlowTests.class)
-@Ignore
+@Tag("SlowTests")
+@Disabled
 public class PerfEvalTests {
 
     private final EvaluateFunction evaluation = Configurator.createConfiguredEvaluateFunction();

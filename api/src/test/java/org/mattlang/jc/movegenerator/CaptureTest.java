@@ -3,7 +3,7 @@ package org.mattlang.jc.movegenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mattlang.jc.board.Color.nWhite;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.bitboard.BitBoard;
 

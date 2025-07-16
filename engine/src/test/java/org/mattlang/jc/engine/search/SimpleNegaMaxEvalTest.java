@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;

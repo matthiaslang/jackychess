@@ -1,8 +1,7 @@
 package org.mattlang.jc.perftests;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.mattlang.SlowTests;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
@@ -17,7 +16,7 @@ import org.mattlang.jc.perft.PerftIteratorSupplier;
  * uses only one stage.
  * https://www.chessprogramming.org/Perft_Results
  */
-@Category(SlowTests.class)
+@Tag("SlowTests")
 public class PerfTests {
 
     public static final PerftIteratorSupplier DEFAULT_SUPPLIER = (depth, board, color) -> {

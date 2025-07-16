@@ -6,7 +6,7 @@ import static org.mattlang.jc.board.Color.nBlack;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.engine.evaluation.parameval.mobility.MobilityEvalResult.BLACK_KNIGHT_STARTPOS;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.evaluation.parameval.KingZoneMasks;
 

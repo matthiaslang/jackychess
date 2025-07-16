@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mattlang.jc.TestPosition;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -20,12 +18,13 @@ import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
 import org.mattlang.jc.tools.FenFlip;
 import org.mattlang.tuning.data.epdparser.EpdWithOpCodes;
 
-@RunWith(Parameterized.class)
+@ParameterizedClass
+@MethodSource("getEPDTests")
 public class SymmetryOfEvaluationTest {
 
-    private final TestPosition testPosition;
+    @org.junit.jupiter.params.Parameter(0)
+    private TestPosition testPosition;
 
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Iterable<TestPosition> getEPDTests() {
         List<EpdWithOpCodes> epds = parseEPDTests(EigenmannRapidEngineChess.EIGENMANN_RAPID);
         return epds.stream()
@@ -34,32 +33,12 @@ public class SymmetryOfEvaluationTest {
 
     }
 
-    public SymmetryOfEvaluationTest(TestPosition testPosition) {
-        this.testPosition = testPosition;
-    }
-
-    @Before
-    public void adjustEval() {
-        // override tempo parameter which is the only one breaking the symmetry:
-        //        System.setProperty("tempoMg", "0");
-        //        System.setProperty("tempoEg", "0");
-    }
-
-    @After
-    public void resetEval() {
-        // override tempo parameter which is the only one breaking the symmetry:
-        //        System.setProperty("opt.tempoMg", "1");
-        //        System.setProperty("opt.tempoEg", "1");
-    }
-
     /**
      * Tests Symmetry of Evaluation: Evaluation for white must be equal to evaluation for black for a flipped board.
      */
+
     @Test
     public void testSymmetry() {
-
-        //        System.setProperty("tempoMg", "0");
-        //        System.setProperty("tempoEg", "0");
 
         ParameterizedEvaluation evaluation = new ParameterizedEvaluation();
 

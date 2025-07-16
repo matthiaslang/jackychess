@@ -6,7 +6,7 @@ import static org.mattlang.jc.moves.TestTools.getAllMoves;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.moves.Tuple;

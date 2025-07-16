@@ -2,7 +2,7 @@ package org.mattlang.jc.movegenerator;
 
 import static org.mattlang.jc.board.BB.soutOne;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.BB;
 
 public class BBMoveGeneratorImplTest {
