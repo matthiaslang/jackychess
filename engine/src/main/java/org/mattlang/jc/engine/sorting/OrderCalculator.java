@@ -1,7 +1,8 @@
 package org.mattlang.jc.engine.sorting;
 
-import lombok.Getter;
-import org.mattlang.jc.ConfigValues;
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
@@ -9,8 +10,7 @@ import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.moves.MoveImpl;
 
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
+import lombok.Getter;
 
 @Getter
 public final class OrderCalculator {
@@ -51,7 +51,6 @@ public final class OrderCalculator {
     private Color color;
 
     private int ply;
-    private final boolean useMvvLva;
 
     private int hashMove;
     private int parentMove;
@@ -66,7 +65,6 @@ public final class OrderCalculator {
         this.continuationHistoryHeuristic = requireNonNull(stc.getContinuationHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
-        this.useMvvLva = ConfigValues.getConfigValues().useMvvLvaSorting.getValue();
     }
 
     public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
@@ -142,7 +140,7 @@ public final class OrderCalculator {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else if (m.isCapture()) {
-            int mvvLva = useMvvLva ? MvvLva.calcMMVLVA(m) : 0;
+            int mvvLva = MvvLva.calcMMVLVA(m);
 
             int heuristic = captureHeuristic.calcValue(m, color);
 

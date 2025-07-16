@@ -63,7 +63,7 @@ public class AspirationWindowBenchmark {
     private void everythingOn() {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
-        getConfigValues().useMvvLvaSorting.setValue(true);
+
     }
 
 }

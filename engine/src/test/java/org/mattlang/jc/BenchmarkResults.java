@@ -50,7 +50,7 @@ public class BenchmarkResults<T> {
         }
         ConfigValues config = ConfigValues.getConfigValues();
         this.evaluateFunction = Configurator.determineEvalImplName();
-        this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
+        this.useMvvLvaSorting = true;
         this.useKillerMoves = config.useKillerMoves.getValue();
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
         this.pvSearch = true;

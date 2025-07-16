@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -19,8 +21,7 @@ import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+import lombok.Getter;
 
 /**
  * Holds Information during a negamax Search.
@@ -33,8 +34,6 @@ public final class SearchContext {
 
     private boolean useHistoryHeuristic = ConfigValues.getConfigValues().useHistoryHeuristic.getValue();
     private boolean useKillerMoves = ConfigValues.getConfigValues().useKillerMoves.getValue();
-    private boolean useCounterMove = ConfigValues.getConfigValues().useCounterMoves.getValue();
-
     /**
      * The side that we are.
      */
@@ -252,9 +251,7 @@ public final class SearchContext {
                 killerMoves.addKiller(bestMove, ply);
             }
 
-            if (useCounterMove) {
-                counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
-            }
+            counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
         } else {
             captureHeuristic.update(color, moveCursor, depth);
         }
