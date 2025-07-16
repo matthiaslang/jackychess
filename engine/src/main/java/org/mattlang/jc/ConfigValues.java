@@ -72,7 +72,7 @@ public class ConfigValues {
 
     public final UCISpinOption hash = caching.createSpinOpt("Hash",
             "TT Hash Size in MB",
-            1, 2048, 128);
+            1, 1024*32, 128);
 
     {
         hash.setChangeListener(newValue -> Caching.CACHING.getTtCache().checkUpdateCacheSize());

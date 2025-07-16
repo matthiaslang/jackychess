@@ -134,12 +134,12 @@ public class UciCommunicationTester {
         expect("id author Matthias Lang");
 
         expect("option name quiescence type spin default 63 min 0 max 63");
-        expect("option name Threads type spin default 1 min 1 max 8");
+        expect("option name Threads type spin default 1 min 1 max 128");
         expect("option name UCI_Chess960 type check default false");
         expect("option name UCI_AnalyseMode type check default false");
         expect(
                 "option name UCI_EngineAbout type string default JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess");
-        expect("option name Hash type spin default 128 min 1 max 2048");
+        expect("option name Hash type spin default 128 min 1 max 32768");
 
         expect("uciok");
 
