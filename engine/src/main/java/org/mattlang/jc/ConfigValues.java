@@ -95,14 +95,5 @@ public class ConfigValues {
             "should mvv lva sorting be used for move ordering",
             true);
 
-    public final UCIGroup pruning =
-            allOptions.createInternalGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
-
-    public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
-            "should aspiration windows be used during iterative deepening",
-            true);
-
-    public final UCIGroup extensions =
-            allOptions.createInternalGroup("Extensions", "Parameter influencing the extension of the search tree");
 
 }

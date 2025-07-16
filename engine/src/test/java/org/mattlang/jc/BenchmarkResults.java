@@ -55,7 +55,7 @@ public class BenchmarkResults<T> {
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
         this.pvSearch = true;
         this.maxQuiescence = config.maxQuiescence.getValue();
-        this.aspiration = config.aspiration.getValue();
+        this.aspiration = true;
         this.useNullMoves = true;
         this.staticNullMove = true;
         this.razoring = true;

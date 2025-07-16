@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.StopWatch;
 import org.mattlang.jc.UCILogger;
@@ -64,8 +63,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     private boolean isWorker = false;
 
     private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
-
-    private boolean useAspirationWindow = ConfigValues.getConfigValues().aspiration.getValue();
 
     private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
@@ -275,7 +272,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         NegaMaxResult rslt = null;
 
-        if (useAspirationWindow && currdepth >= 3 && lastRoundResults.hasResults()) {
+        if (currdepth >= 3 && lastRoundResults.hasResults()) {
             aspWindow.limitWindow(lastRoundResults.getRslt());
             rslt = searchWithAspirationWindow(searchParams,
                     lastRoundResults.getOptionalBestMove(),

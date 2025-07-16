@@ -80,7 +80,6 @@ public class MoveOrderingBenchmark {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
-        getConfigValues().aspiration.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // "old" version: pv search, pv order, mmvla + cache:
@@ -98,7 +97,6 @@ public class MoveOrderingBenchmark {
 
     private void everythingOff() {
 
-        getConfigValues().aspiration.setValue(false);
         getConfigValues().useKillerMoves.setValue(false);
         getConfigValues().useHistoryHeuristic.setValue(false);
         getConfigValues().useMvvLvaSorting.setValue(false);

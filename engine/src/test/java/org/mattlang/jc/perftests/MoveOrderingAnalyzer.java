@@ -61,7 +61,6 @@ public class MoveOrderingAnalyzer {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
-        getConfigValues().aspiration.setValue(true);
         runner.benchmarkSingleExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         System.setProperty("TESTFEATURE", "ANewFeature");
@@ -70,7 +69,6 @@ public class MoveOrderingAnalyzer {
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useMvvLvaSorting.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);
-        getConfigValues().aspiration.setValue(true);
         runner.benchmarkSingleExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // check stability of results:
@@ -105,7 +103,6 @@ public class MoveOrderingAnalyzer {
 
     private void everythingOff() {
 
-        getConfigValues().aspiration.setValue(false);
         getConfigValues().useKillerMoves.setValue(false);
         getConfigValues().useHistoryHeuristic.setValue(false);
         getConfigValues().useMvvLvaSorting.setValue(false);
