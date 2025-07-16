@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.search;
 import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
 import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -32,8 +31,6 @@ public final class SearchContext {
 
     private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
-    private boolean useHistoryHeuristic = ConfigValues.getConfigValues().useHistoryHeuristic.getValue();
-    private boolean useKillerMoves = ConfigValues.getConfigValues().useKillerMoves.getValue();
     /**
      * The side that we are.
      */
@@ -242,14 +239,13 @@ public final class SearchContext {
     public void updateCutOffHeuristics(int ply, int depth, Color color, int grandparentMove, int parentMove, int bestMove,
             MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
-            if (useHistoryHeuristic) {
-                historyHeuristic.update(color, moveCursor, depth);
-            }
+
+            historyHeuristic.update(color, moveCursor, depth);
+
             continuationHistoryHeuristic.update(color, parentMove, moveCursor, depth);
             continuationHistoryHeuristic.update(color, grandparentMove, moveCursor, depth);
-            if (useKillerMoves) {
-                killerMoves.addKiller(bestMove, ply);
-            }
+
+            killerMoves.addKiller(bestMove, ply);
 
             counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
         } else {
@@ -259,9 +255,9 @@ public final class SearchContext {
 
     public void updateBadHeuristic(int depth, Color color, int grandparentMove, int parentMove, MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
-            if (useHistoryHeuristic) {
+
             historyHeuristic.updateBad(color, moveCursor, depth);
-        }
+
             continuationHistoryHeuristic.updateBad(color, parentMove, moveCursor, depth);
             continuationHistoryHeuristic.updateBad(color, grandparentMove, moveCursor, depth);
         } else {

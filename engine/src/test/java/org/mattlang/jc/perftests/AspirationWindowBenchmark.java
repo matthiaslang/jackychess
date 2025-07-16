@@ -1,7 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.ConfigValues.getConfigValues;
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -61,8 +59,7 @@ public class AspirationWindowBenchmark {
     }
 
     private void everythingOn() {
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
+
 
     }
 

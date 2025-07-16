@@ -72,24 +72,12 @@ public class ConfigValues {
 
     public final UCISpinOption hash = caching.createSpinOpt("Hash",
             "TT Hash Size in MB",
-            1, 1024*32, 128);
+            1, 1024 * 32, 128);
 
     {
         hash.setChangeListener(newValue -> Caching.CACHING.getTtCache().checkUpdateCacheSize());
     }
 
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
-
-    public final UCIGroup moveOrder =
-            allOptions.createInternalGroup("Move Order", "Parameter influencing the move order in alpha beta search");
-
-    public final UCICheckOption useHistoryHeuristic =
-            moveOrder.createCheckOpt("useHistoryHeuristic",
-                    "should history heuristic be used for move ordering",
-                    true);
-    public final UCICheckOption useKillerMoves = moveOrder.createCheckOpt("useKillerMoves",
-            "should killer moves heuristic be used for move ordering", true);
-
-
 
 }

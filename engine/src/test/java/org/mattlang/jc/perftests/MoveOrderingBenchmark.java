@@ -1,6 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.ConfigValues.getConfigValues;
 import static org.mattlang.jc.util.Logging.initLogging;
 
 import java.io.IOException;
@@ -51,30 +50,22 @@ public class MoveOrderingBenchmark {
 
         // only killer moves
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // only history heuristic
         everythingOff();
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on:
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on + cache:
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // everything on + cache + aspiration:
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // "old" version: pv search, pv order, mmvla + cache:
@@ -90,9 +81,6 @@ public class MoveOrderingBenchmark {
     }
 
     private void everythingOff() {
-
-        getConfigValues().useKillerMoves.setValue(false);
-        getConfigValues().useHistoryHeuristic.setValue(false);
 
     }
 

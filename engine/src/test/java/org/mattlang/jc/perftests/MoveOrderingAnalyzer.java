@@ -1,6 +1,5 @@
 package org.mattlang.jc.perftests;
 
-import static org.mattlang.jc.ConfigValues.getConfigValues;
 import static org.mattlang.jc.util.Logging.initLogging;
 import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
 
@@ -58,15 +57,11 @@ public class MoveOrderingAnalyzer {
         // normal run
         System.setProperty("TESTFEATURE", "NORMAL");
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkSingleExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         System.setProperty("TESTFEATURE", "ANewFeature");
         // run with a new feature
         everythingOff();
-        getConfigValues().useKillerMoves.setValue(true);
-        getConfigValues().useHistoryHeuristic.setValue(true);
         runner.benchmarkSingleExecute(new SearchParameter(TIMEOUT, MAX_DEPTH));
 
         // check stability of results:
@@ -101,8 +96,7 @@ public class MoveOrderingAnalyzer {
 
     private void everythingOff() {
 
-        getConfigValues().useKillerMoves.setValue(false);
-        getConfigValues().useHistoryHeuristic.setValue(false);
+
 
     }
 
