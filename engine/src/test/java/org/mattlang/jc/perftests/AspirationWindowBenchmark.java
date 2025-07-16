@@ -65,7 +65,6 @@ public class AspirationWindowBenchmark {
     }
 
     private void everythingOn() {
-        getConfigValues().useTTCache.setValue(true);
         getConfigValues().aspiration.setValue(true);
         getConfigValues().useKillerMoves.setValue(true);
         getConfigValues().useHistoryHeuristic.setValue(true);

@@ -78,10 +78,6 @@ public class ConfigValues {
         hash.setChangeListener(newValue -> Caching.CACHING.getTtCache().checkUpdateCacheSize());
     }
 
-    public final UCICheckOption useTTCache = internal.createCheckOpt("useTTCache",
-            "Flag, if the tt cache to store scores should be activated",
-            true);
-
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
 
     public final UCIGroup moveOrder =

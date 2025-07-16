@@ -30,7 +30,6 @@ public class BenchmarkResults<T> {
 
     private final String evaluateFunction;
     private final Boolean useMvvLvaSorting;
-    private final Boolean useTTCache;
     private final Boolean useKillerMoves;
     private final Boolean useHistoryHeuristic;
     private final Boolean pvSearch;
@@ -52,7 +51,6 @@ public class BenchmarkResults<T> {
         ConfigValues config = ConfigValues.getConfigValues();
         this.evaluateFunction = Configurator.determineEvalImplName();
         this.useMvvLvaSorting = config.useMvvLvaSorting.getValue();
-        this.useTTCache = config.useTTCache.getValue();
         this.useKillerMoves = config.useKillerMoves.getValue();
         this.useHistoryHeuristic = config.useHistoryHeuristic.getValue();
         this.pvSearch = true;
