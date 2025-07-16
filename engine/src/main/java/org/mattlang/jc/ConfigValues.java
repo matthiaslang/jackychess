@@ -97,47 +97,12 @@ public class ConfigValues {
 
     public final UCIGroup pruning =
             allOptions.createInternalGroup("Pruning", "Parameter influencing the pruning during alpha beta search");
-    public final UCICheckOption mateDistancePruning = internal.createCheckOpt("mateDistancePruning",
-            "should mate distance pruning be activated?",
-            true);
-
-    public final UCICheckOption internalIterativeDeepening = internal.createCheckOpt("iid",
-            "should internal iterative deepening be activated?",
-            true);
 
     public final UCICheckOption aspiration = pruning.createCheckOpt("aspiration",
             "should aspiration windows be used during iterative deepening",
             true);
-    public final UCICheckOption useNullMoves = pruning.createCheckOpt("useNullMoves",
-            "should null move pruning be used during search",
-            true);
-
-    public final UCICheckOption staticNullMove = pruning.createCheckOpt("staticNullMove",
-            "should static null move pruning be used during search",
-            true);
-
-    public final UCICheckOption razoring = pruning.createCheckOpt("razoring",
-            "should razoring be used during search",
-            true);
-
-    public final UCICheckOption futilityPruning = pruning.createCheckOpt("futilityPruning",
-            "should futility pruning be used during search",
-            true);
-
-    public final UCICheckOption deltaCutoff = pruning.createCheckOpt("deltaCutoff",
-            "should delta cutoff be used during quiescence search",
-            true);
-
-    public final UCICheckOption useLateMoveReductions =
-            pruning.createCheckOpt("useLateMoveReductions",
-                    "should late move reductions be used during search",
-                    true);
 
     public final UCIGroup extensions =
             allOptions.createInternalGroup("Extensions", "Parameter influencing the extension of the search tree");
 
-    public final UCICheckOption chessExtension =
-            extensions.createCheckOpt("useCheckExtension",
-                    "on check, extend the search depth",
-                    false);
 }

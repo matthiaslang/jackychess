@@ -68,10 +68,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private final int maxQuiescenceDepth = ConfigValues.getConfigValues().maxQuiescence.getValue();
 
-    private final boolean doChessExtension = ConfigValues.getConfigValues().chessExtension.getValue();
-    private final boolean mateDistancePruning = ConfigValues.getConfigValues().mateDistancePruning.getValue();
-    private final boolean iid = ConfigValues.getConfigValues().internalIterativeDeepening.getValue();
-
     private final PVTriangularArray pvArray = new PVTriangularArray();
 
     private long stopTime = 0;
@@ -81,12 +77,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private SearchListener searchListener;
 
 
-    private final boolean useNullMoves = ConfigValues.getConfigValues().useNullMoves.getValue();
-    private final boolean staticNullMove = ConfigValues.getConfigValues().staticNullMove.getValue();
-    private final boolean razoring = ConfigValues.getConfigValues().razoring.getValue();
-    private final boolean deltaCutOff = ConfigValues.getConfigValues().deltaCutoff.getValue();
-    private final boolean useLateMoveReductions = ConfigValues.getConfigValues().useLateMoveReductions.getValue();
-    private final boolean futilityPruning = ConfigValues.getConfigValues().futilityPruning.getValue();
+
 
     /**
      * parent moves. needs one more place than max ply to save the "following" move.
@@ -162,7 +153,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
          * gain expected, but it's a nice feature. Don't use it at the root,       *
          * since  this code  doesn't return a move, only a value.                  *
          **************************************************************************/
-        if (mateDistancePruning && ply != 1) {
+        if (ply != 1) {
             if (alpha < -mateValue)
                 alpha = -mateValue;
             if (beta > mateValue - 1)
@@ -222,8 +213,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              * EVAL PRUNING / STATIC NULL MOVE                                         *
              **************************************************************************/
 
-            if (staticNullMove
-                    && depth < STATIC_NULLMOVE_MARGIN.length
+            if (depth < STATIC_NULLMOVE_MARGIN.length
                     && abs(beta - 1) > ALPHA_START + 100) {
 
                 int eval_margin = STATIC_NULLMOVE_MARGIN[depth];
@@ -240,8 +230,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              * and we have non pawn material (because of zugzwang issues)
              * and we are not in check (also for zugzwang)
              */
-            if (useNullMoves &&
-                    depth > 2 &&
+            if (depth > 2 &&
                     searchContext.getNullMoveCounter() == 0 &&
                     searchContext.isNoZugzwang()
             ) {
@@ -298,8 +287,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              *  RAZORING - if a node is close to the leaf and its static score is low, *
              *  we drop directly to the quiescence search.                             *
              **************************************************************************/
-            if (razoring
-                    && tte == null
+            if (tte == null
                     && searchContext.getNullMoveCounter() == 0
                     && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
                     && depth < RAZORING_MARGIN.length
@@ -322,8 +310,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              *  so we set a flag allowing this pruning.                                *
              **************************************************************************/
 
-            if (futilityPruning &&
-                    //                ply > 3 &&
+            if (  //                ply > 3 &&
                     depth < FUTILITY_MARGIN.length
                     && abs(alpha) < 9000
                     && staticEval + FUTILITY_MARGIN[depth] <= alpha) {
@@ -339,7 +326,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
         int grandparentMove = ply <= 2 ? 0 : parentMoves[ply - 2];
 
-        if (iid && hashMove == 0) {
+        if (hashMove == 0) {
             doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
             hashMove = searchContext.probeTTHashMove();
         }
@@ -532,8 +519,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      */
     private int determineLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
             boolean areWeInCheck, boolean not_pv) {
-        if (useLateMoveReductions &&
-                searchedMoves > 1 &&
+        if (searchedMoves > 1 &&
                 depth > 2 &&
                 !moveCursor.isCapture() &&
                 !moveCursor.isPromotion() &&
@@ -677,8 +663,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                             continue;
                         }
 
-                        if (deltaCutOff
-                                && futilityBase + SEE.pieceVal(moveCursor.getCapturedFigure()) < alpha
+                        if (futilityBase + SEE.pieceVal(moveCursor.getCapturedFigure()) < alpha
                                 && searchContext.isOpeningOrMiddleGame()
                         ) {
                             statistics.deltaCutoffCount++;

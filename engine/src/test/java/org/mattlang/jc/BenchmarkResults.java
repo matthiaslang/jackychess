@@ -56,11 +56,11 @@ public class BenchmarkResults<T> {
         this.pvSearch = true;
         this.maxQuiescence = config.maxQuiescence.getValue();
         this.aspiration = config.aspiration.getValue();
-        this.useNullMoves = config.useNullMoves.getValue();
-        this.staticNullMove = config.staticNullMove.getValue();
-        this.razoring = config.razoring.getValue();
-        this.useLateMoveReductions = config.useLateMoveReductions.getValue();
-        this.deltaCutoff = config.deltaCutoff.getValue();
+        this.useNullMoves = true;
+        this.staticNullMove = true;
+        this.razoring = true;
+        this.useLateMoveReductions = true;
+        this.deltaCutoff = true;
 
     }
 
