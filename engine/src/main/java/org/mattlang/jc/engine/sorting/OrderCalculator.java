@@ -26,7 +26,7 @@ public final class OrderCalculator {
 
     public static final int HISTORY_SCORE = -1_000_000;
 
-    public static final int HISTORY_DIFF = 100_000;
+    public static final int HISTORY_DIFF = 499_000;
     public static final int QUIET = -HISTORY_DIFF;
 
     public static final int BAD_CAPTURES_SCORE = -500_000;

@@ -46,7 +46,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
-
     private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
     private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
 
@@ -75,9 +74,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private long nextUpdateTime = 0;
 
     private SearchListener searchListener;
-
-
-
 
     /**
      * parent moves. needs one more place than max ply to save the "following" move.
@@ -214,7 +210,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              **************************************************************************/
 
             if (depth < STATIC_NULLMOVE_MARGIN.length
-                    && abs(beta - 1) > ALPHA_START + 100) {
+                && abs(beta - 1) > ALPHA_START + 100) {
 
                 int eval_margin = STATIC_NULLMOVE_MARGIN[depth];
                 if (staticEval - eval_margin >= beta) {
@@ -231,8 +227,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              * and we are not in check (also for zugzwang)
              */
             if (depth > 2 &&
-                    searchContext.getNullMoveCounter() == 0 &&
-                    searchContext.isNoZugzwang()
+                searchContext.getNullMoveCounter() == 0 &&
+                searchContext.isNoZugzwang()
             ) {
                 int R = (depth > 6) ? 3 : 2;
 
@@ -262,7 +258,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             // well, and return early.
             // Idea from Stockfish
             if (depth >= 6 && staticEval >= beta - 100 - 20 * depth
-                    && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
+                && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
                 int probCutMargin = beta + 90;
                 int probCutCount = 0;
                 try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color,
@@ -288,10 +284,10 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
              *  we drop directly to the quiescence search.                             *
              **************************************************************************/
             if (tte == null
-                    && searchContext.getNullMoveCounter() == 0
-                    && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
-                    && depth < RAZORING_MARGIN.length
-                    && Math.abs(alpha) < KING_WEIGHT) {
+                && searchContext.getNullMoveCounter() == 0
+                && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
+                && depth < RAZORING_MARGIN.length
+                && Math.abs(alpha) < KING_WEIGHT) {
                 int razorMarginOfDepth = RAZORING_MARGIN[depth];
                 if (staticEval + razorMarginOfDepth < alpha) {
                     statistics.razoringTryCount++;
@@ -346,7 +342,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 if (BuildConstants.ASSERTIONS) {
                     LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + movedescr(moveCursor));
                     if (lastorder > moveCursor.getOrder() && lastorder != QUEEN_PROMOTION_SCORE
-                            && moveCursor.getOrder() != QUEEN_PROMOTION_SCORE) {
+                        && moveCursor.getOrder() != QUEEN_PROMOTION_SCORE) {
                         throw new IllegalStateException(
                                 "last order: " + lastorder + " > curr order: " + moveCursor.getOrder());
                     }
@@ -365,8 +361,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                 // todo the condition that it gives check is now out-commented...
                 if (applyFutilityPruning
-                        && searchedMoves > 0
-                        && quietMove
+                    && searchedMoves > 0
+                    && quietMove
                     //                        && moveCursor.getOrder() > OrderCalculator.KILLER_SCORE
                     /*&& !searchContext.isInCheck(color.invert())*/) {
                     statistics.futilityPruningCount++;
@@ -378,14 +374,14 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 if (pruneable && searchedMoves > 0 && !OrderCalculator.isRelevantMove(moveCursor.getOrder())) {
                     /* late move pruning */
                     if (quietMove
-                            && depth <= 4
-                            && searchedMoves >= depth * 3 + 3) {
+                        && depth <= 4
+                        && searchedMoves >= depth * 3 + 3) {
                         statistics.lateMovePruningCount++;
                         continue;
                     }
                     /** SEE Pruning*/
                     if (moveCursor.isCapture() && !moveCursor.isPromotion() && depth <= 6
-                            && SEE.see_ge(searchContext.getBoard(), moveCursor, -20 * depth * depth)) {
+                        && SEE.see_ge(searchContext.getBoard(), moveCursor, -20 * depth * depth)) {
                         statistics.seePruningCount++;
                         continue;
                     }
@@ -395,10 +391,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                     searchedMoves++;
 
+                    final boolean doWeGiveCheck = searchContext.isInCheck(color.invert());
                     /**
                      * Late move reduction
                      */
-                    final int r = determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, not_pv);
+                    final int r =
+                            determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, doWeGiveCheck,
+                                    not_pv);
 
                     // currently we do not support any extensions
                     final int extension = 0;
@@ -433,7 +432,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                         if (BuildConstants.ASSERTIONS) {
                             LOGGER.fine("ply: " + ply + " depth: " + depth + " found new bestmove: "
-                                    + toLongAlgebraic(moveCursor) + " score: " + max);
+                                        + toLongAlgebraic(moveCursor) + " score: " + max);
                         }
 
                         pvArray.set(bestMove, ply);
@@ -442,7 +441,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         if (max >= beta) {
                             if (BuildConstants.ASSERTIONS) {
                                 LOGGER.fine("ply: " + ply + " depth: " + depth + " found cut off: "
-                                        + toLongAlgebraic(moveCursor) + " score: " + max + " beta: " + beta);
+                                            + toLongAlgebraic(moveCursor) + " score: " + max + " beta: " + beta);
                             }
 
                             if (!areWeInCheck) {
@@ -482,7 +481,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         // shallow search to try and look for one
         // This is especially true at PV nodes and potential cut nodes
         if (!areWeInCheck
-                && ((is_pv && depth >= 7)
+            && ((is_pv && depth >= 7)
                 || (not_pv && depth >= 8))) {
             statistics.iterativeDeepeningCount++;
             int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
@@ -518,32 +517,40 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      * @return
      */
     private int determineLateMoveReduction(int searchedMoves, int depth, MoveCursor moveCursor,
-            boolean areWeInCheck, boolean not_pv) {
+            boolean areWeInCheck,
+            boolean doWeGiveCheck,
+            boolean not_pv) {
         if (searchedMoves > 1 &&
-                depth > 2 &&
-                !moveCursor.isCapture() &&
-                !moveCursor.isPromotion() &&
-                !isPawnPush(moveCursor) &&
-                //                moveCursor.getFigureType() != FigureType.Pawn.figureCode &&
-                //                moveCursor.getOrder() > OrderCalculator.KILLER_SCORE &&
-                !areWeInCheck) {
+            depth > 2 &&
+            !moveCursor.isCapture() &&
+            !moveCursor.isPromotion() &&
+            !isPawnPush(moveCursor)) {
 
             int reduction = LMR_TABLE[min(depth, 63)][min(searchedMoves, 63)];
 
             if (isHashMove(moveCursor.getOrder())
-                    || isKillerMove(moveCursor.getOrder())
-                    || isCounterMove(moveCursor.getOrder())) {
+                || isKillerMove(moveCursor.getOrder())
+                || isCounterMove(moveCursor.getOrder())) {
+                reduction--;
+            }
+
+            if (areWeInCheck || doWeGiveCheck) {
                 reduction--;
             }
             if (not_pv) {
                 reduction++;
             }
-            if (reduction <= 0) {
-                reduction = 0;
+
+            int heuristic = moveCursor.getOrder();
+            if (OrderCalculator.isHistory(heuristic)) {
+                int val = heuristic - HISTORY_SCORE;
+                // reduce for a good history score
+                if (val < 0) {
+                    reduction--;
+                }
             }
-            if (reduction > depth - 1) {
-                reduction = depth - 1;
-            }
+
+            reduction = AbstractHistory.clamp(reduction, 0, depth - 1);
 
             return reduction;
 
@@ -647,7 +654,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                 // skip low promotions
                 if (moveCursor.isPromotion()
-                        && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
+                    && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
                     statistics.skipLowPromotionsCount++;
                     continue;
                 }
@@ -664,7 +671,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         }
 
                         if (futilityBase + SEE.pieceVal(moveCursor.getCapturedFigure()) < alpha
-                                && searchContext.isOpeningOrMiddleGame()
+                            && searchContext.isOpeningOrMiddleGame()
                         ) {
                             statistics.deltaCutoffCount++;
                             continue;
@@ -713,7 +720,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         if (LOGGER.isLoggable(FINE)) {
             LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
         }
-        searchContext = new SearchContext(legalMovesToSearch, optionalLastBestMove, stc, gameState, context, depth, alpha);
+        searchContext =
+                new SearchContext(legalMovesToSearch, optionalLastBestMove, stc, gameState, context, depth, alpha);
 
         this.stopTime = stopTime;
         this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
@@ -753,8 +761,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
      */
     private static boolean noPawnPromotions(BoardRepresentation board) {
         return board.getSiteToMove() == Color.WHITE && (board.getBoard().getPawns(nWhite) & BB.rank7) == 0
-                || board.getSiteToMove() == Color.BLACK
-                && (board.getBoard().getPawns(nBlack) & BB.rank2) == 0;
+               || board.getSiteToMove() == Color.BLACK
+                  && (board.getBoard().getPawns(nBlack) & BB.rank2) == 0;
     }
 
     public void setIsWorker(boolean isWorker) {
