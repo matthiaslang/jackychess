@@ -1,5 +1,9 @@
 # Versions
 
+## 25.07
+
+- lmr: more criterias like history heuristic in reduction calculation: ~15Elo
+
 ## 25.04
 
 Official Version since 24.06
