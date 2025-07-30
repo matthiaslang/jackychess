@@ -80,9 +80,9 @@ public class ParsedMoveText {
         }
     }
 
-    private void overreadHints() {
+    private void overreadHintsAndDecorators() {
         char curr = getCurrChar();
-        while (curr == ' ' || curr == '+' || curr == '#' || curr == 'x') {
+        while (curr == ' ' || curr == '+' || curr == '#' || curr == 'x' || curr == '-') {
             currPos++;
             if (currPos == moveText.getText().length()) {
                 break;
@@ -115,22 +115,22 @@ public class ParsedMoveText {
     }
 
     private boolean match(char ch) {
-        overreadHints();
+        overreadHintsAndDecorators();
         return checkMatch(ch == getCurrChar());
     }
 
     private boolean matchDigit() {
-        overreadHints();
+        overreadHintsAndDecorators();
         return checkMatch(Character.isDigit(getCurrChar()));
     }
 
     private boolean matchUpperLetter() {
-        overreadHints();
+        overreadHintsAndDecorators();
         return checkMatch(Character.isUpperCase(getCurrChar()));
     }
 
     private boolean matchLowerLetter() {
-        overreadHints();
+        overreadHintsAndDecorators();
         return checkMatch(Character.isLowerCase(getCurrChar()));
     }
 

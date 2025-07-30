@@ -65,11 +65,8 @@ public class MoveToStringConverter {
             }
         }
         if (move.isPromotion()) {
-            char figureChar = Character.toLowerCase(move.getPromotedFigure().figureChar);
-            coords += figureChar;
-        }
-        if (move.isEnPassant()) {
-            coords += " e.p";
+            char figureChar = Character.toUpperCase(move.getPromotedFigure().figureChar);
+            coords += "=" + figureChar;
         }
 
         return coords;

@@ -13,6 +13,7 @@ import org.mattlang.tuning.data.pgnparser.PgnMove;
 
 import lombok.Getter;
 
+@Getter
 public class BoardAndMoves {
 
     private BoardRepresentation board = new BitBoard();
