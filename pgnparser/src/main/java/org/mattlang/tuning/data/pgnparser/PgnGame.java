@@ -8,6 +8,11 @@ import lombok.Getter;
 
 public class PgnGame {
 
+    public static final String TAG_RESULT = "Result";
+    public static final String TAG_FEN = "FEN";
+    public static final String TAG_SETUP = "SetUp";
+
+    @Getter
     private LinkedHashMap<String, String> tags = new LinkedHashMap<>();
 
     @Getter
@@ -26,7 +31,7 @@ public class PgnGame {
     }
 
     public Ending getResult() {
-        String result = getTag("Result");
+        String result = getTag(TAG_RESULT);
         return Ending.match(result);
     }
 
