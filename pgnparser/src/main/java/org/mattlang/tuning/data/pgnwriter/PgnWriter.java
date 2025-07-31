@@ -18,12 +18,12 @@ public class PgnWriter {
         writer.println();
         int movecounter = 1;
         for (PgnMove move : game.getMoves()) {
-            writeMove(writer, movecounter, move);
-            movecounter++;
             // lf after 3moves, except the last one:
-            if (movecounter % 3 == 0 && movecounter < game.getMoves().size()-1) {
+            if ((movecounter-1) % 3 == 0) {
                 writer.println();
             }
+            writeMove(writer, movecounter, move);
+            movecounter++;
         }
         // after the last one, write the result
         writeResult(writer, game.getResult());
