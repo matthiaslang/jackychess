@@ -29,7 +29,7 @@ public class BoardAndMoves {
     private Ending ending;
 
     public BoardAndMoves(PgnGame game) {
-        String fenStr = game.getTag("FEN");
+        String fenStr = game.getTag(PgnGame.TAG_FEN);
         if (fenStr != null) {
             board.setFenPosition(fenStr);
             startFen = fenStr;

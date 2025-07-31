@@ -2,7 +2,8 @@ package org.mattlang.tuning.data.builder;
 
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 import static org.mattlang.tuning.data.builder.EmptyPos.EMPTYPOS;
-import static org.mattlang.tuning.data.pgnparser.PgnGame.*;
+import static org.mattlang.tuning.data.pgnparser.PgnGame.TAG_FEN;
+import static org.mattlang.tuning.data.pgnparser.PgnGame.TAG_SETUP;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -50,7 +51,7 @@ public class PgnGameBuilder {
             }
             index++;
         }
-        builder.game.addTag(TAG_RESULT, boardAndMoves.getEnding().getPgnResultString());
+        builder.setEnding(boardAndMoves.getEnding());
         return builder;
     }
 
@@ -71,13 +72,9 @@ public class PgnGameBuilder {
         executeMoveOnBoard(move);
 
         // check ending
-        if (isCheckMate()) {
-            ending = board.getSiteToMove() == Color.BLACK ? Ending.MATE_WHITE : Ending.MATE_BLACK;
-        } else if (isStaleMate()) {
-            ending = Ending.DRAW;
-        }
-        if (ending != null) {
-            game.addTag(PgnGame.TAG_RESULT, ending.getPgnResultString());
+        Ending determinedEnding = determineEnding();
+        if (determinedEnding != null) {
+            setEnding(determinedEnding);
         }
 
         MoveDescr moveDescr = new MoveDescr(new MoveText(toLongAlgebraic(move), EMPTYPOS), null, ending);
@@ -85,11 +82,21 @@ public class PgnGameBuilder {
         return appendMoveDescr(moveDescr);
     }
 
+    private Ending determineEnding() {
+        Ending determinedEnding = null;
+        if (isCheckMate()) {
+            determinedEnding = board.getSiteToMove() == Color.BLACK ? Ending.MATE_WHITE : Ending.MATE_BLACK;
+        } else if (isStaleMate()) {
+            determinedEnding = Ending.DRAW;
+        }
+        return determinedEnding;
+    }
+
     public PgnGameBuilder addMove(Move move, Ending ending) {
 
         executeMoveOnBoard(move);
 
-        game.addTag(PgnGame.TAG_RESULT, ending.getPgnResultString());
+        setEnding(ending);
 
         MoveDescr moveDescr = new MoveDescr(new MoveText(toLongAlgebraic(move), EMPTYPOS), null, ending);
 
@@ -97,7 +104,7 @@ public class PgnGameBuilder {
     }
 
     private void executeMoveOnBoard(Move move) {
-        if (ending != null) {
+        if (ending != null && ending != Ending.UNTERMINATED) {
             throw new IllegalStateException("game already ended!");
         }
         // validate legality of move:
@@ -139,8 +146,48 @@ public class PgnGameBuilder {
     }
 
     private void finish() {
+        // add last white ply if any:
         if (white != null) {
             game.addMove(new PgnMove(white, null));
         }
+
+        if (ending == null) {
+            setEnding(Ending.UNTERMINATED);
+        }
+        if (ending == Ending.UNTERMINATED) {
+            updateUnterminated();
+        }
     }
+
+    private MoveDescr exchangeEnding(MoveDescr moveDescr, Ending ending) {
+        return new MoveDescr(moveDescr.getMoveText(), moveDescr.getComment(), ending);
+    }
+
+    /**
+     * set ending unterminated to last ply in the list.
+     */
+    private void updateUnterminated() {
+        PgnMove lastMove = game.getMoves().get(game.getMoves().size() - 1);
+        MoveDescr lastWhite = lastMove.getWhite();
+        MoveDescr lastBlack = lastMove.getBlack();
+        if (lastBlack != null) {
+            lastBlack = exchangeEnding(lastBlack, ending);
+        } else {
+            lastWhite = exchangeEnding(lastWhite, ending);
+        }
+
+        lastMove = new PgnMove(lastWhite, lastBlack);
+        game.getMoves().set(game.getMoves().size() - 1, lastMove);
+    }
+
+    private void setEnding(Ending ending) {
+        this.ending = ending;
+        addTag(PgnGame.TAG_RESULT, ending.getPgnResultString());
+    }
+
+    public void addTag(String tag, String value) {
+        game.addTag(tag, value);
+    }
+
+
 }

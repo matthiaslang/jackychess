@@ -1,6 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.board.Color.BLACK;
+import static org.mattlang.jc.board.Color.WHITE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.bitboard.BitBoard;
+import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.moves.MoveImpl;
+import org.mattlang.jc.util.MoveValidator;
 import org.mattlang.tuning.data.builder.BoardAndMoves;
 import org.mattlang.tuning.data.builder.PgnGameBuilder;
 import org.mattlang.tuning.data.pgnwriter.PgnWriter;
@@ -54,9 +61,27 @@ public class PgnParserTest {
     }
 
     @Test
-    public void testWrite() {
-//        PgnWriter writer = new PgnWriter();
-//        PgnGame game;
-//        String str = writer.gameToString(game);
+    public void testWrite() throws IOException {
+        BoardRepresentation board = new BitBoard();
+
+        board.setStartPosition();
+
+        MoveValidator moveValidator = new MoveValidator();
+        MoveList moves = moveValidator.generateLegalMoves(board, WHITE);
+        MoveImpl ply1 = new MoveImpl(moves.get(0));
+        board.domove(ply1);
+
+        moves = moveValidator.generateLegalMoves(board, BLACK);
+        MoveImpl ply2 = new MoveImpl(moves.get(0));
+        board.domove(ply2);
+
+        PgnGameBuilder builder = new PgnGameBuilder();
+        builder.addMove(ply1);
+        builder.addMove(ply2);
+        PgnGame game = builder.toGame();
+        PgnWriter writer = new PgnWriter();
+        String str = writer.gameToString(game);
+
+        System.out.println(str);
     }
 }
