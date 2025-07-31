@@ -167,17 +167,19 @@ public class PgnGameBuilder {
      * set ending unterminated to last ply in the list.
      */
     private void updateUnterminated() {
-        PgnMove lastMove = game.getMoves().get(game.getMoves().size() - 1);
-        MoveDescr lastWhite = lastMove.getWhite();
-        MoveDescr lastBlack = lastMove.getBlack();
-        if (lastBlack != null) {
-            lastBlack = exchangeEnding(lastBlack, ending);
-        } else {
-            lastWhite = exchangeEnding(lastWhite, ending);
-        }
+        if (game.getMoves().size() > 0) {
+            PgnMove lastMove = game.getMoves().get(game.getMoves().size() - 1);
+            MoveDescr lastWhite = lastMove.getWhite();
+            MoveDescr lastBlack = lastMove.getBlack();
+            if (lastBlack != null) {
+                lastBlack = exchangeEnding(lastBlack, ending);
+            } else {
+                lastWhite = exchangeEnding(lastWhite, ending);
+            }
 
-        lastMove = new PgnMove(lastWhite, lastBlack);
-        game.getMoves().set(game.getMoves().size() - 1, lastMove);
+            lastMove = new PgnMove(lastWhite, lastBlack);
+            game.getMoves().set(game.getMoves().size() - 1, lastMove);
+        }
     }
 
     private void setEnding(Ending ending) {
@@ -188,6 +190,5 @@ public class PgnGameBuilder {
     public void addTag(String tag, String value) {
         game.addTag(tag, value);
     }
-
 
 }
