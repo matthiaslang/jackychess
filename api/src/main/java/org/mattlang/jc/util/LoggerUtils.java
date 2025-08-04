@@ -6,22 +6,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.GameState;
 
 public class LoggerUtils {
-
-    public static String fmtSevere(SearchParameter searchParameter, GameState gameState, String msg) {
-        StringBuilder b = formatSevere(gameState, msg);
-        searchParameter.log(b);
-        return b.toString();
-    }
 
     public static String fmtSevere(GameState gameState, String msg) {
         return formatSevere(gameState, msg).toString();
     }
 
-    private static StringBuilder formatSevere(GameState gameState, String msg) {
+    public static StringBuilder formatSevere(GameState gameState, String msg) {
         StringBuilder b = new StringBuilder();
 
         b.append(msg).append("\n");

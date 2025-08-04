@@ -1,16 +1,21 @@
 package org.mattlang.tuning.data.builder;
 
+import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 import static org.mattlang.tuning.data.builder.EmptyPos.EMPTYPOS;
 import static org.mattlang.tuning.data.pgnparser.PgnGame.TAG_FEN;
 import static org.mattlang.tuning.data.pgnparser.PgnGame.TAG_SETUP;
 
+import java.util.logging.Logger;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
 import org.mattlang.tuning.data.pgnparser.*;
 
@@ -18,6 +23,8 @@ import org.mattlang.tuning.data.pgnparser.*;
  * Builder for a pgn game with move validation functionality.
  */
 public class PgnGameBuilder {
+
+    private Logger logger = Logger.getLogger(PgnGameBuilder.class.getSimpleName());
 
     private BoardRepresentation board = new BitBoard();
 
@@ -109,7 +116,9 @@ public class PgnGameBuilder {
         }
         // validate legality of move:
         if (!validator.isLegalMove(board, move, board.getSiteToMove())) {
-            throw new IllegalArgumentException("Illegal move!");
+            GameState gameState = new GameState(board);
+            logger.log(SEVERE, LoggerUtils.fmtSevere(gameState, "Illegal Move during pgn build! " + move.toStr()));
+            throw new IllegalArgumentException("Illegal move during pgn build! " + move.toStr());
         }
         // execute move on board:
         board.domove(move);

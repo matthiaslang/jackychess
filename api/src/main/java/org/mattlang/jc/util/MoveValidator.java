@@ -165,7 +165,7 @@ public class MoveValidator {
     public void generateLegalMoves(MoveList resultList, BoardRepresentation board, Color color) {
         resultList.reset(color);
         moveList.reset(color);
-        movegen.generate(board, board.getSiteToMove(), moveList);
+        movegen.generate(board, color, moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(board)) {
             while (iterator.doNextValidMove()) {

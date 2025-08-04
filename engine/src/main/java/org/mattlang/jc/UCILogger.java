@@ -1,6 +1,6 @@
 package org.mattlang.jc;
 
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

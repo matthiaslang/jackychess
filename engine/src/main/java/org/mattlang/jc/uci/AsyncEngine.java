@@ -3,7 +3,7 @@ package org.mattlang.jc.uci;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static org.mattlang.jc.SearchParameter.createMultiThread;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;

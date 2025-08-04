@@ -8,7 +8,7 @@ import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.KxKEndgameFunction.VALUE_KNOWN_WIN;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
-import static org.mattlang.jc.util.LoggerUtils.fmtSevere;
+import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -26,6 +26,7 @@ import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
+import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.AllArgsConstructor;
@@ -408,7 +409,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             BoardRepresentation board = gameState.getBoard().copy();
             boolean legal = moveValidator.isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
             if (!legal) {
-                LOGGER.log(SEVERE, fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
+                LOGGER.log(SEVERE, LoggerUtils.fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
             }
         }
     }
