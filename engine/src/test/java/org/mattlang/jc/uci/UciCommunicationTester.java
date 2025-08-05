@@ -139,6 +139,7 @@ public class UciCommunicationTester {
         expect("option name UCI_AnalyseMode type check default false");
         expect(
                 "option name UCI_EngineAbout type string default JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess");
+        expect("option name Ponder type check default false");
         expect("option name Hash type spin default 128 min 1 max 32768");
 
         expect("uciok");

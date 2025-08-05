@@ -5,6 +5,10 @@ import java.util.List;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.moves.MoveImpl;
 
+/**
+ * Result from a negamax search run.
+ * Immutable object.
+ */
 public class NegaMaxResult {
 
     /**
@@ -38,6 +42,8 @@ public class NegaMaxResult {
     public final int nodesVisited;
     public final int quiescenceNodesVisited;
 
+    public final int ponderMove;
+
     public NegaMaxResult(int directScore, List<Integer> pvMoves,
             SearchContext searchContext, int nodesVisited, int quiescenceNodesVisited) {
         this.directScore = directScore;
@@ -47,8 +53,10 @@ public class NegaMaxResult {
         } else {
             this.savedMove = null;
         }
+        // should we take the best move also from the pv, analogue like the ponder move?
+        this.ponderMove = pvMoves.size() >= 2 ? pvMoves.get(1) : 0;
         this.pvList = new PVList(pvMoves);
-        ;
+
         //        if (!pvList.getPvMoves().equals(pvMoves)){
         //             throw new IllegalStateException("hey here is something weird!")   ;
         //        }
@@ -59,26 +67,39 @@ public class NegaMaxResult {
         this.quiescenceNodesVisited = quiescenceNodesVisited;
     }
 
+    public NegaMaxResult(Move bestMove) {
+        this.savedMove = bestMove;
+
+        this.directScore = 0;
+        this.max = 0;
+        this.ponderMove =0;
+        this.pvList = null;
+        this.targetDepth =0;
+        this.selDepth = 0;
+        this.nodesVisited = 0;
+        this.quiescenceNodesVisited = 0;
+    }
+
     @Override
     public String toString() {
         return "NegaMaxResult{" +
-                "directScore=" + directScore +
-                ", max=" + max +
-                ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", pvList=" + pvList.toPvLogStr() +
-                ", targetDepth=" + targetDepth +
-                ", selDepth=" + selDepth +
-                '}';
+               "directScore=" + directScore +
+               ", max=" + max +
+               ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
+               ", pvList=" + pvList.toPvLogStr() +
+               ", targetDepth=" + targetDepth +
+               ", selDepth=" + selDepth +
+               '}';
     }
 
     public String toLogString() {
         return "[" +
-                "directScore=" + directScore +
-                ", max=" + max +
-                ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
-                ", pv=" + pvList.toPvLogStr() +
-                ", depth=" + targetDepth + "/" + selDepth +
-                ", nodes=" + nodesVisited + "/" + quiescenceNodesVisited +
-                ']';
+               "directScore=" + directScore +
+               ", max=" + max +
+               ", savedMove=" + (savedMove != null ? savedMove.toStr() : "") +
+               ", pv=" + pvList.toPvLogStr() +
+               ", depth=" + targetDepth + "/" + selDepth +
+               ", nodes=" + nodesVisited + "/" + quiescenceNodesVisited +
+               ']';
     }
 }

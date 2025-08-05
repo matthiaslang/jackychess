@@ -570,6 +570,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     private void checkTimeout() {
+        // in pondering mode, just continue searching endless until we got ponderhit or a stop:
+        if (Pondering.pondering) {
+            return;
+        }
+
         if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
             throw new TimeoutException();
         }

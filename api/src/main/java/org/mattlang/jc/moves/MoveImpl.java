@@ -341,6 +341,10 @@ public final class MoveImpl implements Move {
         return (byte) (byte) (move >>> OFFSET_TOINDEX & MASK_7);
     }
 
+    public static Figure getPromotedFigure(int move) {
+        return Figure.getFigureByCode(typeToPromotedFigure[getType(move)]);
+    }
+
     public static boolean isCapture(int move) {
         return getCapturedFigure(move) != 0;
     }

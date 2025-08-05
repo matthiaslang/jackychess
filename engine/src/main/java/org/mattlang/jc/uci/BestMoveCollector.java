@@ -4,26 +4,26 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.IterativeDeepeningListener;
+import org.mattlang.jc.engine.search.NegaMaxResult;
 
 /**
  * Collects the best move during asynchrone engine call.
  */
 public class BestMoveCollector implements IterativeDeepeningListener {
 
-    private AtomicReference<Move> bestMoveSoFar;
+    private AtomicReference<NegaMaxResult> bestMoveSoFar;
 
-    public BestMoveCollector(Move bestMoveSoFar) {
-        this.bestMoveSoFar = new AtomicReference<>(requireNonNull(bestMoveSoFar));
+    public BestMoveCollector(NegaMaxResult newBestRoundResult) {
+        this.bestMoveSoFar = new AtomicReference<>(requireNonNull(newBestRoundResult));
     }
 
     @Override
-    public void updateBestRoundMove(Move newBestMove) {
-        this.bestMoveSoFar.set(requireNonNull(newBestMove));
+    public void updateBestRoundMove(NegaMaxResult newBestRoundResult) {
+        this.bestMoveSoFar.set(requireNonNull(newBestRoundResult));
     }
 
-    public Move getBestMove() {
+    public NegaMaxResult getBestMove() {
         return bestMoveSoFar.get();
     }
 }

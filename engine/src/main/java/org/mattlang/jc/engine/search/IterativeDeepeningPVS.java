@@ -179,9 +179,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         return isr;
     }
 
-    private void callListener(Move move) {
+    private void callListener(NegaMaxResult negaMaxResult) {
         if (!isWorker) {
-            listener.updateBestRoundMove(move);
+            listener.updateBestRoundMove(negaMaxResult);
         }
     }
 
@@ -292,7 +292,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         if (rslt.savedMove != null) {
             lastCurrMove = rslt.savedMove.getMoveInt();
             printRoundInfo(gameContext, gameState, rslt, watch, negaMaxAlphaBeta);
-            callListener(rslt.savedMove);
+            callListener(rslt);
             validate(gameState, rslt);
         } else {
             // todo why does this happen that no best move gets returned from nega max search...

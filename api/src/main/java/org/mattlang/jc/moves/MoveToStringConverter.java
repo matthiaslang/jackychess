@@ -38,6 +38,22 @@ public class MoveToStringConverter {
         return coords;
     }
 
+    public static String toUCIString(int move, BoardRepresentation board) {
+        String coords = convert(MoveImpl.getFromIndex(move)) + convert(MoveImpl.getToIndex(move));
+        if (MoveImpl.isPromotion(move)) {
+            char figureChar = Character.toLowerCase(MoveImpl.getPromotedFigure(move).figureChar);
+            coords += figureChar;
+        }
+        // in chess960 we code a castling move as king captures rook to make it distinct.
+        // otherwise in some chess960 positions it could not be distinguished between a normal king move.
+        if (board.isChess960() && MoveImpl.isCastling(move)) {
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(MoveImpl.getCastlingType(move));
+            coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
+        }
+
+        return coords;
+    }
+
     /**
      * Returns a long algebraic like representation. Maybe not complete to standard... as it is currently only
      * used for debugging
