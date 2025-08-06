@@ -13,6 +13,11 @@ import org.mattlang.jc.board.Move;
  */
 public class MoveToStringConverter {
 
+    /**
+     * UCI representation for a null move.
+     */
+    public static final String UCI_NULL_MOVE = "0000";
+
     public static String toStr(Move move) {
         String coords = convert(move.getFromIndex()) + convert(move.getToIndex());
         if (move.isPromotion()) {
@@ -39,6 +44,10 @@ public class MoveToStringConverter {
     }
 
     public static String toUCIString(int move, BoardRepresentation board) {
+        if (move == 0) {
+            return UCI_NULL_MOVE;
+        }
+
         String coords = convert(MoveImpl.getFromIndex(move)) + convert(MoveImpl.getToIndex(move));
         if (MoveImpl.isPromotion(move)) {
             char figureChar = Character.toLowerCase(MoveImpl.getPromotedFigure(move).figureChar);
