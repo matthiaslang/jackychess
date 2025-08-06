@@ -53,7 +53,7 @@ public class UciProcessor {
         }
     }
 
-    public void processCmd(String cmdStr) {
+    private void processCmd(String cmdStr) {
         cmdStr = cmdStr.trim();
         if (CMD_UCI.equals(cmdStr)) {
             identifyYourself();
