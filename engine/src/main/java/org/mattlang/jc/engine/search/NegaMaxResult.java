@@ -15,7 +15,7 @@ import org.mattlang.jc.util.IntList;
  * Result from a negamax search run.
  * Immutable object.
  */
-public class NegaMaxResult {
+public final class NegaMaxResult {
 
     /**
      * direct score result from negamax. (could be theoretically different to max).
@@ -63,9 +63,6 @@ public class NegaMaxResult {
         this.ponderMove = pvMoves.size() >= 2 ? pvMoves.get(1) : 0;
         this.pvList = pvMoves;
 
-        //        if (!pvList.getPvMoves().equals(pvMoves)){
-        //             throw new IllegalStateException("hey here is something weird!")   ;
-        //        }
         this.targetDepth = searchContext.getTargetDepth();
         this.selDepth = searchContext.getSelDepth();
 
