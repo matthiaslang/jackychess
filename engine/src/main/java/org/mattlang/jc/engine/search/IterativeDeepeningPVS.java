@@ -376,7 +376,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                                     + " hashfull " + hashfull
                                     + " nps " + nps
                                     + " time " + duration
-                                    + " pv " + rslt.pvList.toPvStr(gameState.getBoard()));
+                                    + " pv " + rslt.toPvStr(gameState.getBoard()));
             UCI.instance.putCommand("info currmove " + rslt.savedMove.toUCIString(gameState.getBoard()));
         }
     }
@@ -386,7 +386,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             BoardRepresentation board = gameState.getBoard().copy();
 
             Color who2Move = gameState.getWho2Move();
-            for (Move move : rslt.pvList.getPvMoves()) {
+            for (Move move : rslt.getPvMoves()) {
 
                 boolean legal = moveValidator.isLegalMove(board, move, who2Move);
 
