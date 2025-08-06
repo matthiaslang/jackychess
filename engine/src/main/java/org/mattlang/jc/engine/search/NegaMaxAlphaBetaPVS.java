@@ -570,17 +570,20 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     private void checkTimeout() {
+        // if we got interrupted, e.g. by a uci stop, then stop:
+        if (Thread.interrupted()) {
+            throw new StopException();
+        }
         // in pondering mode, just continue searching endless until we got ponderhit or a stop:
         if (Pondering.pondering) {
             return;
         }
 
+        // otherwise check if search time is over:
         if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
             throw new TimeoutException();
         }
-        if (Thread.interrupted()) {
-            throw new StopException();
-        }
+
         if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
             updateListener();
             nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
