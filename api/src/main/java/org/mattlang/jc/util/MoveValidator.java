@@ -84,7 +84,7 @@ public class MoveValidator {
                     LOGGER.warning(
                             "Illegal PV Move encountered during pv enrichment " + moveWrapper.toUCIString(board));
                 }
-                pvs.cutToSize(i + 1);
+                pvs.cutToSize(i);
                 break;
             }
             who2Move = who2Move.invert();
