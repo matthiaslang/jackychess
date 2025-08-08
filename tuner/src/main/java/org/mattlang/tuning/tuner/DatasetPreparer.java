@@ -94,9 +94,10 @@ public class DatasetPreparer {
         }
     }
 
+
+
     public static FenEntry parseFen(String line) {
         BoardRepresentation board = new BitBoard();
-        boolean isCcrlPgenEncoding = line.contains("pgn=");
 
         Ending ending;
         if (line.contains("\"1/2-1/2\"") || line.contains("pgn=0.5")) {
@@ -118,11 +119,20 @@ public class DatasetPreparer {
         } else if (line.contains("[1.0]")) {
             line = line.replace("[1.0]", "");
             ending = Ending.MATE_WHITE;
+        } else if (line.contains("1.0")) {
+            line = line.replace("1.0", "");
+            ending = Ending.MATE_WHITE;
         } else if (line.contains("[0.5]")) {
             line = line.replace("[0.5]", "");
             ending = Ending.DRAW;
+        } else if (line.contains("0.5")) {
+            line = line.replace("0.5", "");
+            ending = Ending.DRAW;
         } else if (line.contains("[0.0]")) {
             line = line.replace("[0.0]", "");
+            ending = Ending.MATE_BLACK;
+        } else if (line.contains("0.0")) {
+            line = line.replace("0.0", "");
             ending = Ending.MATE_BLACK;
         } else {
             throw new RuntimeException("Error Parsing pgn file: no ending could be found in " + line);
