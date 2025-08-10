@@ -1,7 +1,5 @@
 package org.mattlang.jc.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,31 +64,33 @@ public class MoveValidator {
      * @return
      */
 
-    public List<Integer> validateAndCorrectPvList(List<Integer> pvs, GameState gameState) {
+    public IntList validateAndCorrectPvList(IntList pvs, GameState gameState) {
 
         // play and validate all pv moves:
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
-        ArrayList<Integer> validatedPvs = new ArrayList<>();
+        MoveImpl moveWrapper = new MoveImpl("a1a1");
+        for (int i = 0; i < pvs.size(); i++) {
 
-        for (int moveI : pvs) {
+            int moveI = pvs.get(i);
 
             boolean legal = isLegalMove(board, moveI, who2Move);
-            MoveImpl move = new MoveImpl(moveI);
             if (legal) {
-                board.domove(move);
-                validatedPvs.add(moveI);
+                moveWrapper.fromLongEncoded(moveI);
+                board.domove(moveWrapper);
             } else {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toUCIString(board));
+                    LOGGER.warning(
+                            "Illegal PV Move encountered during pv enrichment " + moveWrapper.toUCIString(board));
                 }
+                pvs.cutToSize(i);
                 break;
             }
             who2Move = who2Move.invert();
         }
 
-        return validatedPvs;
+        return pvs;
     }
 
     /**

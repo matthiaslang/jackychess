@@ -33,7 +33,7 @@ public class QueenAndKingVsKing2_EndgameTest {
                 itDeep.iterativeSearch(SearchParameter.params(6000000, maxDepth), gameState, new GameContext());
 
         // execute moves on board of pv:
-        for (Move move : itResult.getRslt().pvList.getPvMoves()) {
+        for (Move move : itResult.getRslt().getPvMoves()) {
             Color siteToMove = gameState.getBoard().getSiteToMove();
             gameState.getBoard().domove(move);
 

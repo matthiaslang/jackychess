@@ -12,7 +12,6 @@ import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.BuildConstants;
@@ -28,6 +27,7 @@ import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
+import org.mattlang.jc.util.IntList;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.Getter;
@@ -570,12 +570,20 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     private void checkTimeout() {
-        if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
-            throw new TimeoutException();
-        }
+        // if we got interrupted, e.g. by a uci stop, then stop:
         if (Thread.interrupted()) {
             throw new StopException();
         }
+        // in pondering mode, just continue searching endless until we got ponderhit or a stop:
+        if (Pondering.pondering) {
+            return;
+        }
+
+        // otherwise check if search time is over:
+        if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
+            throw new TimeoutException();
+        }
+
         if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
             updateListener();
             nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
@@ -730,7 +738,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
-        List<Integer> pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
+        IntList pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
 
         NegaMaxResult rslt = new NegaMaxResult(directScore,
                 pvMoves, searchContext, statistics.nodesVisited,

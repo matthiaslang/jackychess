@@ -18,6 +18,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.search.IterativeDeepeningListener;
 import org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS;
+import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.uci.GameContext;
@@ -151,9 +152,9 @@ public class EngineTest {
         engine.registerListener(new IterativeDeepeningListener() {
 
             @Override
-            public void updateBestRoundMove(Move bestMove) {
-                System.out.println("new best move of round: " + bestMove.toStr());
-                bestm[0] = bestMove;
+            public void updateBestRoundMove(NegaMaxResult negaMaxResult) {
+                System.out.println("new best move of round: " + negaMaxResult.savedMove.toStr());
+                bestm[0] = negaMaxResult.savedMove;
             }
         });
         SearchParameter params = params(60000, 8);
@@ -181,9 +182,9 @@ public class EngineTest {
         engine.registerListener(new IterativeDeepeningListener() {
 
             @Override
-            public void updateBestRoundMove(Move bestMove) {
-                System.out.println("new best move of round: " + bestMove.toStr());
-                bestm[0] = bestMove;
+            public void updateBestRoundMove(NegaMaxResult negaMaxResult) {
+                System.out.println("new best move of round: " + negaMaxResult.savedMove.toStr());
+                bestm[0] = negaMaxResult.savedMove;
             }
         });
         MoveValidator moveValidator = new MoveValidator();

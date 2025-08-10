@@ -1,5 +1,7 @@
 package org.mattlang.jc.uci;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -7,8 +9,10 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.mattlang.jc.AppConfiguration;
@@ -28,6 +32,12 @@ public class UciCommunicationTester {
 
     private Gobbler gobbler;
 
+    private AtomicInteger uciProtocolCounter = new AtomicInteger(0);
+
+    private LinkedBlockingQueue<String> inQueue = new LinkedBlockingQueue<>();
+
+    private boolean finished = false;
+
     private PrintStream outputToUciEngine;
 
     public UciCommunicationTester() {
@@ -44,8 +54,6 @@ public class UciCommunicationTester {
             return; // already initialized
         }
         LOGGER.info("initialize Uci Communication");
-        //        System.setProperty(LOGGING_ACTIVATE, "true");
-        //        System.setProperty(LOG_UCI, "true");
         Logging.initLogging();
         gobbler = new Gobbler("Comm. Tester");
 
@@ -67,16 +75,42 @@ public class UciCommunicationTester {
         inThread.start();
         LOGGER.info("attach piped streams");
         gobbler.attachStreams(input, output2);
+        startGobbleCollectThread();
+    }
+
+    private void startGobbleCollectThread() {
+        Thread inThread = new Thread(
+                () -> {
+                    while (!finished) {
+                        Optional<String> optCmd = gobbler.readCommand();
+                        if (optCmd.isPresent()) {
+                            String readValue = optCmd.get();
+                            inQueue.add(readValue);
+
+                            printUCI("engine", readValue);
+                        }
+                    }
+                }, "Uci Communication Tester Input Gobbler Thread ");
+        inThread.start();
     }
 
     public void write(String ucicmd) throws IOException {
         init();
-        System.out.println("UCI> " + ucicmd);
         outputToUciEngine.println(ucicmd);
+        printUCI("client", ucicmd);
     }
 
-    public void expectBestmove(String ...bestMoves) throws IOException {
+    public void expectBestmove(String... bestMoves) throws IOException {
+        Set<BestmoveExpectation> theBestMoves =
+                Arrays.stream(bestMoves).map(BestmoveExpectation::bestmoveWithPonder).collect(toSet());
+        expectBestmove(theBestMoves.toArray(new BestmoveExpectation[0]));
+    }
+
+    public void expectBestmove(BestmoveExpectation... bestMoves) throws IOException {
         init();
+        Set<String> theBestMoves =
+                Arrays.stream(bestMoves).map(BestmoveExpectation::toUCIStringExpectation).collect(toSet());
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         while (stopWatch.getCurrDuration() < 5 * 100000) {
@@ -88,8 +122,6 @@ public class UciCommunicationTester {
                     continue;
                 }
                 if (result.startsWith("bestmove ")) {
-                   Set<String> theBestMoves =
-                            Arrays.stream(bestMoves).map(b -> "bestmove " + b).collect(Collectors.toSet());
                     Assertions.assertThat(optCmd.get()).isIn(theBestMoves);
                     return;
                 }
@@ -104,16 +136,12 @@ public class UciCommunicationTester {
      * @return
      */
     private Optional<String> read() {
-        Optional<String> readResult = gobbler.readCommand();
-        if (readResult.isEmpty()) {
-            // maybe got timeout, therefore try one read again:
-            readResult = gobbler.readCommand();
+        try {
+            String readResult = inQueue.poll(2000, TimeUnit.MILLISECONDS);
+            return Optional.ofNullable(readResult);
+        } catch (InterruptedException e) {
+            return Optional.empty();
         }
-        if (readResult.isPresent()) {
-            System.out.println("UCI< " + readResult.get());
-        }
-
-        return readResult;
     }
 
     public void expect(String expectedUciString) throws IOException {
@@ -121,16 +149,18 @@ public class UciCommunicationTester {
         Optional<String> readResult = read();
         // now we really expect a result and exactly that string:
         Assertions.assertThat(readResult).isPresent();
-        Assertions.assertThat(readResult.get()).isEqualTo(expectedUciString);
+        Assertions.assertThat(readResult).contains(expectedUciString);
     }
 
     public void uciStartCommunication() throws IOException, InterruptedException {
+        init();
+        reset();
 
         write("uci");
 
         String version = AppConfiguration.getAppProps().getProperty("version");
 
-        expect("id name JackyChess "+ version);
+        expect("id name JackyChess " + version);
         expect("id author Matthias Lang");
 
         expect("option name quiescence type spin default 63 min 0 max 63");
@@ -139,6 +169,7 @@ public class UciCommunicationTester {
         expect("option name UCI_AnalyseMode type check default false");
         expect(
                 "option name UCI_EngineAbout type string default JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess");
+        expect("option name Ponder type check default false");
         expect("option name Hash type spin default 128 min 1 max 32768");
 
         expect("uciok");
@@ -146,6 +177,18 @@ public class UciCommunicationTester {
         write("isready");
         Thread.sleep(2000);
         expect("readyok");
+
+        // standard options, no pondering, no analysis:
+        write("setoption name Ponder value false");
+        write("setoption name UCI_AnalyseMode value false");
+    }
+
+    /**
+     * Resets its state, cleaning up anything from previous tests:
+     */
+    private void reset() {
+        inQueue.clear();
+        uciProtocolCounter.set(0);
     }
 
     public void consumeAllInfo() throws IOException {
@@ -164,5 +207,20 @@ public class UciCommunicationTester {
                 Assertions.fail("unexpected read command: " + readResult.get());
             }
         }
+    }
+
+    /**
+     * Write out uci protocol for logging.
+     * Writes with a counter to understand better the order of asynchronous protocol communication and a who is the
+     * source
+     * of the sent protocol.
+     *
+     * @param who
+     * @param uciprotocol
+     */
+    private void printUCI(String who, String uciprotocol) {
+        int counter = uciProtocolCounter.incrementAndGet();
+        String formattedCounter = String.format("%03d", counter);
+        System.out.println(formattedCounter + " " + who + ": " + uciprotocol);
     }
 }

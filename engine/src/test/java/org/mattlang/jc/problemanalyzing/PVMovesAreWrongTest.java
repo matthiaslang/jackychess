@@ -52,7 +52,7 @@ public class PVMovesAreWrongTest {
         MoveValidator moveValidator = new MoveValidator();
 
         Color who2Move = gameState.getWho2Move();
-        for (Move move : itResult.getRslt().pvList.getPvMoves()) {
+        for (Move move : itResult.getRslt().getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
             boolean legal = moveValidator.isLegalMove(board, move, who2Move);
@@ -101,7 +101,7 @@ public class PVMovesAreWrongTest {
         MoveValidator moveValidator = new MoveValidator();
 
         Color who2Move = gameState.getWho2Move();
-        for (Move move : itResult.getRslt().pvList.getPvMoves()) {
+        for (Move move : itResult.getRslt().getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
             boolean legal = moveValidator.isLegalMove(board, move, who2Move);

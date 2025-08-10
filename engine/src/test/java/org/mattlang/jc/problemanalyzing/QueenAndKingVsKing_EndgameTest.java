@@ -36,7 +36,7 @@ public class QueenAndKingVsKing_EndgameTest {
                 itDeep.iterativeSearch(SearchParameter.params(2000, maxDepth), gameState, new GameContext());
 
         // execute moves on board of pv:
-        for (Move move : itResult.getRslt().pvList.getPvMoves()) {
+        for (Move move : itResult.getRslt().getPvMoves()) {
             gameState.getBoard().domove(move);
 
             System.out.println(move.toStr());
