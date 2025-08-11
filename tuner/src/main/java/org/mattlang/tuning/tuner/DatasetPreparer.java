@@ -15,10 +15,9 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.command.Main;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.util.MoveValidator;
 import org.mattlang.tuning.BitBoardForTuning;
@@ -32,8 +31,6 @@ public class DatasetPreparer {
     private final OptParameters params;
 
     private ParameterizedEvaluation parameterizedEvaluation = new ParameterizedEvaluation();
-
-    private CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     public static Random rand = new Random(47L);
 
@@ -264,7 +261,7 @@ public class DatasetPreparer {
     }
 
     private boolean isCheck(BoardRepresentation board) {
-        return checkChecker.isInChess(board, WHITE) || checkChecker.isInChess(board, BLACK);
+        return Captures.canKingCaptured(board, WHITE) || Captures.canKingCaptured(board, BLACK);
     }
 
     private boolean isEvalUsingEndGameFunction(BoardRepresentation board) {

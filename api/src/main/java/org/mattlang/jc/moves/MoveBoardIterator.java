@@ -3,10 +3,9 @@ package org.mattlang.jc.moves;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.MoveIterator;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
@@ -15,8 +14,6 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
 
     private MoveIterator moveIterator;
     private BoardRepresentation board;
-
-    private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     private Color siteToMove;
 
@@ -27,7 +24,7 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     private int currMove;
     private int orderOfCurrentMove;
 
-    private MoveImpl currMoveObj = new MoveImpl("a1a2");
+    private final MoveImpl currMoveObj = new MoveImpl("a1a2");
 
     public MoveBoardIterator() {
     }
@@ -59,7 +56,7 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         }
         if (moveIterator.hasNext()) {
             doMove();
-            while (checkChecker.isInChess(board, siteToMove)) {
+            while (Captures.canKingCaptured(board, siteToMove)) {
                 undoMove();
                 if (moveIterator.hasNext()) {
                     doMove();
@@ -102,7 +99,7 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         }
         board.domove(currMoveObj);
         moveDone = true;
-        return !checkChecker.isInChess(board, siteToMove);
+        return !Captures.canKingCaptured(board, siteToMove);
     }
 
     private void undoMove() {
