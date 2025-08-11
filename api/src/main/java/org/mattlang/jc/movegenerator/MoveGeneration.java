@@ -26,15 +26,10 @@ public final class MoveGeneration {
 
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
+        long occupancy = bb.getPieces();
+        long empty = ~occupancy;
 
         genPawnMoves(bb, empty, collector, side);
-
-        long occupancy = ownFigsMask | opponentFigsMask;
 
         genBishopQuiets(side, collector, bb, occupancy, empty);
 
@@ -130,11 +125,8 @@ public final class MoveGeneration {
 
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(xside.invert());
-        long opponentFigsMask = bb.getColorMask(xside);
-        long occupancy = ownFigsMask | opponentFigsMask;
+        long opponentFigsMask = bb.getColorMask(side.invert());
+        long occupancy = bb.getPieces();
 
         genPawnCaptureMoves(board, collector, side);
 
@@ -375,11 +367,7 @@ public final class MoveGeneration {
     public static void generatePawnMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(xside.invert());
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
+        long empty = ~bb.getPieces();
 
         genPawnMoves(bb, empty, collector, side);
         genPawnCaptureMoves(board, collector, side);
@@ -388,13 +376,9 @@ public final class MoveGeneration {
     public static void generateRookMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
-
-        long occupancy = ownFigsMask | opponentFigsMask;
+        long opponentFigsMask = bb.getColorMask(side.invert());
+        long occupancy = bb.getPieces();
+        long empty = ~occupancy;
 
         genRookQuiets(side, collector, bb, occupancy, empty);
         genRookAttacks(side, collector, bb, occupancy, opponentFigsMask);
@@ -403,13 +387,10 @@ public final class MoveGeneration {
     public static void generateBishopMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
+        long opponentFigsMask = bb.getColorMask(side.invert());
 
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
-
-        long occupancy = ownFigsMask | opponentFigsMask;
+        long occupancy = bb.getPieces();
+        long empty = ~occupancy;
 
         genBishopQuiets(side, collector, bb, occupancy, empty);
         genBishopAttacks(side, collector, bb, occupancy, opponentFigsMask);
@@ -418,13 +399,10 @@ public final class MoveGeneration {
     public static void generateQueenMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
+        long opponentFigsMask = bb.getColorMask(side.invert());
 
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
-
-        long occupancy = ownFigsMask | opponentFigsMask;
+        long occupancy = bb.getPieces();
+        long empty = ~occupancy;
 
         genQueenQuiets(side, collector, bb, occupancy, empty);
         genQueenAttacks(side, collector, bb, occupancy, opponentFigsMask);
@@ -434,11 +412,8 @@ public final class MoveGeneration {
     public static void generateKnightMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
+        long opponentFigsMask = bb.getColorMask(side.invert());
+        long empty = ~bb.getPieces();
 
         genKnightQuiets(side, collector, bb, empty);
         genKnightAttacks(side, collector, bb, opponentFigsMask);
@@ -448,11 +423,8 @@ public final class MoveGeneration {
     public static void generateKingMoves(BoardRepresentation board, Color side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        Color xside = side.invert();  /* the side not to move */
-
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
-        long empty = ~ownFigsMask & ~opponentFigsMask;
+        long opponentFigsMask = bb.getColorMask(side.invert());
+        long empty = ~bb.getPieces();
 
         genKingQuiets(side, collector, bb, empty);
         generateCastlingMoves(board, board.getBoardCastlings(), side, collector);
