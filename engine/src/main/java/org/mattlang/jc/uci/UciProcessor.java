@@ -70,6 +70,7 @@ public class UciProcessor {
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
+            gameState.appendGoCmd(cmdStr);
             Pondering.pondering = goParams.pondering;
             CompletableFuture<NegaMaxResult> result = asyncEngine.start(gameState, goParams, gameContext);
             // when the search stops regularly within its search time, deliver the best move

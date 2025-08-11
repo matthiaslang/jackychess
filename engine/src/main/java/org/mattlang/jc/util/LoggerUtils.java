@@ -26,7 +26,8 @@ public class LoggerUtils {
 
         b.append(msg).append("\n");
 
-        b.append("FEN POS: ").append(gameState.getFenStr()).append("\n");
+        b.append("UCI Fen: ").append(gameState.getFenStr()).append("\n");
+        b.append("UCI Go : ").append(gameState.getGoCmd()).append("\n");
         b.append(gameState.getWho2Move() + " to move\n");
 
         b.append("Board: \n" + gameState.getBoard().toUniCodeStr() + "\n");
