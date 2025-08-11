@@ -3,13 +3,11 @@ package org.mattlang.jc.util;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
 import org.mattlang.jc.engine.sorting.MvvLva;
+import org.mattlang.jc.movegenerator.MoveGeneration;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -43,7 +41,29 @@ public class MoveValidator {
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
         moveList.reset(who2Move);
-        movegen.generate(board, who2Move, moveList);
+        // gen the moves for the respective move type to check:
+        switch (MoveImpl.getFigureType(move)) {
+        case FigureConstants.FT_PAWN:
+            MoveGeneration.generatePawnMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_ROOK:
+            MoveGeneration.generateRookMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_BISHOP:
+            MoveGeneration.generateBishopMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_QUEEN:
+            MoveGeneration.generateQueenMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_KNIGHT:
+            MoveGeneration.generateKnightMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_KING:
+            MoveGeneration.generateKingMoves(board, who2Move, moveList);
+            break;
+        default:
+            throw new IllegalStateException("Illegal Move to check!");
+        }
 
         try (MoveBoardIterator iterator = iterateMoves(board)) {
             while (iterator.doNextValidMove()) {
