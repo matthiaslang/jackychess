@@ -38,8 +38,9 @@ public class PVTriangularArray {
 
     public IntList getPvMoves() {
         IntList result = new IntList(MAX_PLY);
+        int[] arr0 = array[0];
         for (int i = 0; i < MAX_PLY; i++) {
-            int pv = array[0][i];
+            int pv = arr0[i];
             if (pv != 0) {
                 result.add(pv);
             } else {

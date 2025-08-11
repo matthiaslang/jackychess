@@ -1,5 +1,8 @@
 package org.mattlang.jc.moves;
 
+import java.util.logging.Logger;
+
+import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
@@ -11,6 +14,8 @@ import org.mattlang.jc.movegenerator.Captures;
  * Helper to iterate over a move list and do/undo the moves in a loop.
  */
 public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
+
+    private static final Logger LOGGER = Logger.getLogger(MoveBoardIterator.class.getSimpleName());
 
     private MoveIterator moveIterator;
     private BoardRepresentation board;
@@ -24,6 +29,8 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     private int currMove;
     private int orderOfCurrentMove;
 
+    private int lastorder = Integer.MIN_VALUE;
+
     private final MoveImpl currMoveObj = new MoveImpl("a1a2");
 
     public MoveBoardIterator() {
@@ -34,6 +41,9 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         this.board = board;
         siteToMove = board.getSiteToMove();
         nextStepped = false;
+        if (BuildConstants.ASSERTIONS) {
+            lastorder = Integer.MIN_VALUE;
+        }
     }
 
     public void init(MoveIterator moveIterator, BoardRepresentation board) {
@@ -42,6 +52,9 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         siteToMove = board.getSiteToMove();
         moveDone = false;
         nextStepped = false;
+        if (BuildConstants.ASSERTIONS) {
+            lastorder = Integer.MIN_VALUE;
+        }
     }
 
     /**
@@ -117,6 +130,15 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         currMove = moveIterator.next();
         orderOfCurrentMove = moveIterator.getOrder();
         currMoveObj.fromLongEncoded(currMove);
+
+        if (BuildConstants.ASSERTIONS) {
+            LOGGER.fine(" traversing move " + currMoveObj.toStr());
+            if (lastorder > orderOfCurrentMove) {
+                throw new IllegalStateException(
+                        "last order: " + lastorder + " > curr order: " + orderOfCurrentMove);
+            }
+            lastorder = orderOfCurrentMove;
+        }
     }
 
     @Override
