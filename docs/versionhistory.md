@@ -1,5 +1,10 @@
 # Versions
 
+## 25.08
+
+- support for UCI pondering
+- code cleanup regarding move validation, maybe gaining some elos..
+
 ## 25.07
 
 - lmr: more criterias like history heuristic in reduction calculation: ~15Elo
