@@ -22,14 +22,8 @@ public class IterativeSearchResult {
     }
 
     private Move findLastSavedMove(List<IterativeDeepeningPVS.IterativeRoundResult> rounds) {
-        for (int i = rounds.size() - 1; i >= 0; i--) {
-            IterativeDeepeningPVS.IterativeRoundResult round = rounds.get(i);
-            if (round.getRslt() != null && round.getRslt().savedMove != null) {
-                return round.getRslt().savedMove;
-            }
-        }
-        // todo that should probably never be the case; only if we had 0 time to search?
-        return null;
+        NegaMaxResult result = findLastResult(rounds);
+        return result != null ? result.savedMove : null;
     }
 
     private NegaMaxResult findLastResult(List<IterativeDeepeningPVS.IterativeRoundResult> rounds) {

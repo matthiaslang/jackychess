@@ -66,16 +66,18 @@ public class ProgressInfo {
             overallAdjPerHour = ((double) progress.numParamAdjusted) / seconds * 60 * 60;
         }
 
-        String progressInfoTxt =
+        String progressInfoTxt = String.format(
                 stopWatch.getFormattedCurrDuration()
-                        + ": iteration " + progress.paramIterationRound
-                        + ": change tries " + progress.round +
-                        ", step " + step +
-                        ", adj: " + adjOfProgressInterval
-                        + ", adj total: " + progress.numParamAdjusted
-                        + "; Error: " + progress.bestE
-                        + ", overall adj/h: " + overallAdjPerHour
-                        + ", adj/h: " + adjPerHour;
+                + ": step % 3d, iteration % 3d : change tries % 6d, adj: % 4d, adj total: % 4d; Error: % 2.15f, overall adj/h: % 4.2f, adj/h: % 4.2f",
+                step,
+                progress.paramIterationRound,
+                progress.round,
+                adjOfProgressInterval,
+                progress.numParamAdjusted,
+                progress.bestE,
+                overallAdjPerHour,
+                adjPerHour);
+
         consoleOut(progressInfoTxt);
         parameterSet.writeParamDescr(outputDir);
 

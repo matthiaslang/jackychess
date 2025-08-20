@@ -20,8 +20,11 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Configurator;
+import org.mattlang.jc.engine.search.NegaMaxResult;
+import org.mattlang.jc.engine.search.Pondering;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
+import org.mattlang.jc.moves.MoveToStringConverter;
 
 public class UciProcessor {
 
@@ -50,7 +53,7 @@ public class UciProcessor {
         }
     }
 
-    public void processCmd(String cmdStr) {
+    private void processCmd(String cmdStr) {
         cmdStr = cmdStr.trim();
         if (CMD_UCI.equals(cmdStr)) {
             identifyYourself();
@@ -67,20 +70,29 @@ public class UciProcessor {
             parseOption(cmdStr);
         } else if (cmdStr.startsWith("go ")) {
             GoParameter goParams = parseGoParams(cmdStr);
-            CompletableFuture<Move> result = asyncEngine.start(gameState, goParams, gameContext);
+            gameState.appendGoCmd(cmdStr);
+            Pondering.pondering = goParams.pondering;
+            CompletableFuture<NegaMaxResult> result = asyncEngine.start(gameState, goParams, gameContext);
             // when the search stops regularly within its search time, deliver the best move
-            result.thenAccept(move -> {
+            result.thenAccept(negaMaxResult -> {
                 if (LOGGER.isLoggable(FINE)) {
-                    LOGGER.fine(String.format("future completed with best move: %s", move));
+                    LOGGER.fine(String.format("future completed with best move: %s", negaMaxResult.savedMove));
                 }
-                sendBestMove(gameState, move);
+                sendBestMove(gameState, negaMaxResult);
             });
 
         } else if (CMD_STOP.equals(cmdStr)) {
             stop(gameState);
+        } else if (CMD_PONDERHIT.equals(cmdStr)) {
+            ponderhit(gameState);
         } else if (cmdStr.startsWith(CMD_DEBUG)) {
             handleDebugMode(cmdStr);
         }
+
+    }
+
+    private void ponderhit(GameState gameState) {
+        Pondering.pondering = false;
 
     }
 
@@ -92,7 +104,7 @@ public class UciProcessor {
 
     private void stop(GameState gameState) {
         LOGGER.info("got uci stop, stopping async running engine...");
-        Move bestMove = asyncEngine.stop();
+        NegaMaxResult bestMove = asyncEngine.stop();
         sendBestMove(gameState, bestMove);
     }
 
@@ -137,6 +149,8 @@ public class UciProcessor {
                 // overread
             } else if (parser.match(INFINITE)) {
                 param.infinite = true;
+            } else if (parser.match(PONDER)) {
+                param.pondering = true;
             } else if (parser.match(WTIME)) {
                 param.wtime = parser.matchLong();
             } else if (parser.match(BTIME)) {
@@ -186,8 +200,15 @@ public class UciProcessor {
         UCI.instance.putCommand(CMD_UCIOK);
     }
 
-    private void sendBestMove(GameState gameState, Move bestMove) {
-        UCI.instance.putCommand(CMD_BESTMOVE + " " + bestMove.toUCIString(gameState.getBoard()));
+    private void sendBestMove(GameState gameState, NegaMaxResult negaMaxResult) {
+        Move bestMove = negaMaxResult.savedMove;
+        if (ConfigValues.getConfigValues().ponder.getValue()) {
+            String ponderMoveStr = MoveToStringConverter.toUCIString(negaMaxResult.ponderMove, gameState.getBoard());
+            UCI.instance.putCommand(CMD_BESTMOVE + " " + bestMove.toUCIString(gameState.getBoard())
+                                    + " ponder " +  ponderMoveStr);
+        } else {
+            UCI.instance.putCommand(CMD_BESTMOVE + " " + bestMove.toUCIString(gameState.getBoard()));
+        }
     }
 
     // analyse:

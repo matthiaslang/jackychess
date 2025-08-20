@@ -1,6 +1,5 @@
 package org.mattlang.jc.play;
 
-import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.play.EndStatus.*;
 
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
+import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -42,18 +42,17 @@ public class Playing {
 
         startPosition = engine.getBoard().copy();
 
-        GameContext gameContextPlayerWhite = new GameContext();
-        GameContext gameContextPlayerBlack = new GameContext();
-
-        GameStatusResult currentState = checkGameStatus(engine.getBoard());
+        GameStatusResult currentState = checkGameStatus(engine.getBoard().copy());
 
         while (!currentState.isEnd()) {
 
             String moveInfo = engine.getBoard().getSiteToMove() + " Ply: " + playedMoves.size();
             System.out.println(moveInfo);
 
-            GameContext gameContext =
-                    engine.getBoard().getSiteToMove() == WHITE ? gameContextPlayerWhite : gameContextPlayerBlack;
+            // reset all static data
+            SearchThreadContexts.CONTEXTS.reset();
+            GameContext gameContext = new GameContext();
+            // iterative search
             IterativeSearchResult result =
                     engine.goIterative(params, new GameState(engine.getBoard()), gameContext);
             Move move = result.getSavedMove();
@@ -66,7 +65,7 @@ public class Playing {
             System.out.println(moveInfo + " Move " + move);
             System.out.println(engine.getBoard().toUniCodeStr());
 
-            currentState = checkGameStatus(engine.getBoard());
+            currentState = checkGameStatus(engine.getBoard().copy());
         }
 
         System.out.println("Played Moves: " + playedMoves);
@@ -80,7 +79,7 @@ public class Playing {
         // first check all strange states of the board:
         if (checkChecker.isInChess(board, board.getSiteToMove().invert())) {
             System.out.println("Illegal Chess State or Move! " + board.getSiteToMove().invert()
-                    + " is after his move still in check!");
+                               + " is after his move still in check!");
             return new GameStatusResult(WEIRD_STATE);
         }
 

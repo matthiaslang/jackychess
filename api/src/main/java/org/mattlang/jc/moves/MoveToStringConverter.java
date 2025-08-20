@@ -13,6 +13,11 @@ import org.mattlang.jc.board.Move;
  */
 public class MoveToStringConverter {
 
+    /**
+     * UCI representation for a null move.
+     */
+    public static final String UCI_NULL_MOVE = "0000";
+
     public static String toStr(Move move) {
         String coords = convert(move.getFromIndex()) + convert(move.getToIndex());
         if (move.isPromotion()) {
@@ -32,6 +37,26 @@ public class MoveToStringConverter {
         // otherwise in some chess960 positions it could not be distinguished between a normal king move.
         if (board.isChess960() && move.isCastling()) {
             CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(move.getCastlingType());
+            coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
+        }
+
+        return coords;
+    }
+
+    public static String toUCIString(int move, BoardRepresentation board) {
+        if (move == 0) {
+            return UCI_NULL_MOVE;
+        }
+
+        String coords = convert(MoveImpl.getFromIndex(move)) + convert(MoveImpl.getToIndex(move));
+        if (MoveImpl.isPromotion(move)) {
+            char figureChar = Character.toLowerCase(MoveImpl.getPromotedFigure(move).figureChar);
+            coords += figureChar;
+        }
+        // in chess960 we code a castling move as king captures rook to make it distinct.
+        // otherwise in some chess960 positions it could not be distinguished between a normal king move.
+        if (board.isChess960() && MoveImpl.isCastling(move)) {
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(MoveImpl.getCastlingType(move));
             coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
         }
 

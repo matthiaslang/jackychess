@@ -5,6 +5,7 @@ package org.mattlang.jc.uci;
  */
 public class GoParameter {
     public boolean infinite;
+    public boolean pondering;
     public long wtime;
     public long btime;
     public long winc;

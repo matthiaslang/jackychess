@@ -7,7 +7,6 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
@@ -15,7 +14,7 @@ import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 import org.mattlang.jc.engine.evaluation.Weights;
 import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.engine.tt.TTResult;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
@@ -28,8 +27,6 @@ import lombok.Getter;
  */
 
 public final class SearchContext {
-
-    private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     /**
      * The side that we are.
@@ -163,7 +160,7 @@ public final class SearchContext {
     }
 
     public boolean isInCheck(Color color) {
-        return checkChecker.isInChess(board, color);
+        return Captures.canKingCaptured(board, color);
     }
 
     public void storeTT(Color color, int max, int alpha, int beta, int depth,

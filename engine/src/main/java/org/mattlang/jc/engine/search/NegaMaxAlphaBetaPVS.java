@@ -12,7 +12,6 @@ import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
 import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
 import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mattlang.jc.BuildConstants;
@@ -28,6 +27,7 @@ import org.mattlang.jc.engine.tt.TTResult;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
+import org.mattlang.jc.util.IntList;
 import org.mattlang.jc.util.MoveValidator;
 
 import lombok.Getter;
@@ -198,12 +198,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         if (pruneable) {
 
-            int staticEval = searchContext.eval(color);
-
-            // use tt value as eval if possible
-            if (canRefineEval(tte, staticEval)) {
-                staticEval = tte.getScore();
-            }
+            final int staticEval = getRefinedStaticEval(color, tte);
 
             /**************************************************************************
              * EVAL PRUNING / STATIC NULL MOVE                                         *
@@ -230,7 +225,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 searchContext.getNullMoveCounter() == 0 &&
                 searchContext.isNoZugzwang()
             ) {
-                int R = (depth > 6) ? 3 : 2;
+                final int R = (depth > 6) ? 3 : 2;
 
                 searchContext.doPrepareNullMove();
                 int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1);
@@ -259,7 +254,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             // Idea from Stockfish
             if (depth >= 6 && staticEval >= beta - 100 - 20 * depth
                 && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
-                int probCutMargin = beta + 90;
+                final int probCutMargin = beta + 90;
                 int probCutCount = 0;
                 try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color,
                         hashMove, 0,
@@ -288,7 +283,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
                 && depth < RAZORING_MARGIN.length
                 && Math.abs(alpha) < KING_WEIGHT) {
-                int razorMarginOfDepth = RAZORING_MARGIN[depth];
+                final int razorMarginOfDepth = RAZORING_MARGIN[depth];
                 if (staticEval + razorMarginOfDepth < alpha) {
                     statistics.razoringTryCount++;
                     int val = quiesce(ply + 1, -1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
@@ -319,8 +314,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         pvArray.reset(ply);
 
-        int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
-        int grandparentMove = ply <= 2 ? 0 : parentMoves[ply - 2];
+        final int parentMove = ply <= 1 ? 0 : parentMoves[ply - 1];
+        final int grandparentMove = ply <= 2 ? 0 : parentMoves[ply - 2];
 
         if (hashMove == 0) {
             doInternalIterativeDeepening(ply, depth, color, alpha, beta, not_pv, areWeInCheck);
@@ -331,8 +326,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
             int searchedMoves = 0;
 
-            int lastorder = Integer.MIN_VALUE;
-
             if (BuildConstants.ASSERTIONS) {
                 LOGGER.fine("ply: " + ply + " depth: " + depth + " hashmove: " + hashMove + " start traversion");
             }
@@ -341,12 +334,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                 if (BuildConstants.ASSERTIONS) {
                     LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + movedescr(moveCursor));
-                    if (lastorder > moveCursor.getOrder() && lastorder != QUEEN_PROMOTION_SCORE
-                        && moveCursor.getOrder() != QUEEN_PROMOTION_SCORE) {
-                        throw new IllegalStateException(
-                                "last order: " + lastorder + " > curr order: " + moveCursor.getOrder());
-                    }
-                    lastorder = moveCursor.getOrder();
                 }
 
                 parentMoves[ply] = moveCursor.getMoveInt();
@@ -570,12 +557,20 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     private void checkTimeout() {
-        if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
-            throw new TimeoutException();
-        }
+        // if we got interrupted, e.g. by a uci stop, then stop:
         if (Thread.interrupted()) {
             throw new StopException();
         }
+        // in pondering mode, just continue searching endless until we got ponderhit or a stop:
+        if (Pondering.pondering) {
+            return;
+        }
+
+        // otherwise check if search time is over:
+        if (stopTime != 0 && System.currentTimeMillis() > stopTime) {
+            throw new TimeoutException();
+        }
+
         if (!isWorker && searchListener != null && nextUpdateTime != 0 && System.currentTimeMillis() > nextUpdateTime) {
             updateListener();
             nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
@@ -730,7 +725,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
 
-        List<Integer> pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
+        IntList pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
 
         NegaMaxResult rslt = new NegaMaxResult(directScore,
                 pvMoves, searchContext, statistics.nodesVisited,
@@ -743,7 +738,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return statistics.nodesVisited;
     }
 
-    public static boolean canRefineEval(final TTResult tte, final int eval) {
+    private static boolean canRefineEval(final TTResult tte, final int eval) {
         if (tte != null) {
             int score = tte.getScore();
             if (tte.isExact() || tte.isUpperBound() && score < eval || tte.isLowerBound() && score > eval) {
@@ -751,6 +746,16 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             }
         }
         return false;
+    }
+
+    private int getRefinedStaticEval(Color color, TTResult tte) {
+        int staticEval = searchContext.eval(color);
+
+        // use tt value as eval if possible
+        if (canRefineEval(tte, staticEval)) {
+            staticEval = tte.getScore();
+        }
+        return staticEval;
     }
 
     /**

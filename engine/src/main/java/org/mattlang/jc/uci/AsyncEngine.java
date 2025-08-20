@@ -15,9 +15,10 @@ import org.mattlang.jc.JCExecutors;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
+import org.mattlang.jc.engine.search.IterativeSearchResult;
+import org.mattlang.jc.engine.search.NegaMaxResult;
 import org.mattlang.jc.engine.search.SearchException;
 import org.mattlang.jc.engine.search.StopException;
 import org.mattlang.jc.util.MoveValidator;
@@ -29,7 +30,7 @@ public class AsyncEngine {
     /**
      * "inner" future which is asynchronously executed. This future can be cancelled.
      */
-    private Future<Move> future;
+    private Future<NegaMaxResult> future;
 
     private MoveValidator moveValidator = new MoveValidator();
 
@@ -49,7 +50,7 @@ public class AsyncEngine {
      */
     private Semaphore semaphore = new Semaphore(1, true);
 
-    public CompletableFuture<Move> start(GameState gameState, GoParameter goParams,
+    public CompletableFuture<NegaMaxResult> start(GameState gameState, GoParameter goParams,
             GameContext gameContext) {
 
         // parameter/typ SearchConfig with legalmovestosearch, timeout, etc....?
@@ -57,7 +58,7 @@ public class AsyncEngine {
 
         // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
-        bestMoveCollector = new BestMoveCollector(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch));
+        bestMoveCollector = new BestMoveCollector(new NegaMaxResult(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch)));
 
         // init the search parameters, eval functions, etc:
 
@@ -71,8 +72,8 @@ public class AsyncEngine {
         }
 
         // start the engine in a separate thread, delivering the result in a future
-        CompletableFuture<Move> completableFuture = new CompletableFuture<>();
-        Future<Move> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
+        CompletableFuture<NegaMaxResult> completableFuture = new CompletableFuture<>();
+        Future<NegaMaxResult> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 if (logger.isLoggable(INFO)) {
                     logger.info(this + " try to acquire semaphore..");
@@ -85,9 +86,11 @@ public class AsyncEngine {
 
                 Engine engine = new Engine();
                 engine.registerListener(bestMoveCollector);
-                Move move = engine.go(searchParams, gameState, gameContext);
-                completableFuture.complete(move);
-                return move;
+                IterativeSearchResult result =
+                        engine.goIterative(searchParams, gameState, gameContext);
+
+                completableFuture.complete(result.getRslt());
+                return result.getRslt();
             } catch (SearchException se) {
                 completableFuture.completeExceptionally(se);
                 logger.log(SEVERE, se.toStringAllInfos(), se);
@@ -128,7 +131,7 @@ public class AsyncEngine {
      *
      * @return
      */
-    public Move stop() {
+    public NegaMaxResult stop() {
 
         if (logger.isLoggable(INFO)) {
             logger.info(this + " stopping search");

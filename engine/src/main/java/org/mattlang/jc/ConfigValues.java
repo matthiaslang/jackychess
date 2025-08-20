@@ -67,6 +67,10 @@ public class ConfigValues {
             "uci engine about",
             "JackyChess by Matthias Lang, see https://github.com/matthiaslang/jackychess");
 
+    public final UCICheckOption ponder = variants.createCheckOpt("Ponder",
+            "ponder mode",
+            false);
+
     public final UCIGroup caching =
             allOptions.createGroup("Caching", "Parameter for caching of information during search.");
 

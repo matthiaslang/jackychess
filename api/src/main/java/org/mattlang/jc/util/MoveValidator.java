@@ -1,17 +1,13 @@
 package org.mattlang.jc.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
+import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
 import org.mattlang.jc.engine.sorting.MvvLva;
+import org.mattlang.jc.movegenerator.MoveGeneration;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.MoveImpl;
@@ -45,7 +41,29 @@ public class MoveValidator {
     public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
 
         moveList.reset(who2Move);
-        movegen.generate(board, who2Move, moveList);
+        // gen the moves for the respective move type to check:
+        switch (MoveImpl.getFigureType(move)) {
+        case FigureConstants.FT_PAWN:
+            MoveGeneration.generatePawnMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_ROOK:
+            MoveGeneration.generateRookMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_BISHOP:
+            MoveGeneration.generateBishopMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_QUEEN:
+            MoveGeneration.generateQueenMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_KNIGHT:
+            MoveGeneration.generateKnightMoves(board, who2Move, moveList);
+            break;
+        case FigureConstants.FT_KING:
+            MoveGeneration.generateKingMoves(board, who2Move, moveList);
+            break;
+        default:
+            throw new IllegalStateException("Illegal Move to check!");
+        }
 
         try (MoveBoardIterator iterator = iterateMoves(board)) {
             while (iterator.doNextValidMove()) {
@@ -66,31 +84,33 @@ public class MoveValidator {
      * @return
      */
 
-    public List<Integer> validateAndCorrectPvList(List<Integer> pvs, GameState gameState) {
+    public IntList validateAndCorrectPvList(IntList pvs, GameState gameState) {
 
         // play and validate all pv moves:
         BoardRepresentation board = gameState.getBoard().copy();
 
         Color who2Move = gameState.getWho2Move();
-        ArrayList<Integer> validatedPvs = new ArrayList<>();
+        MoveImpl moveWrapper = new MoveImpl("a1a1");
+        for (int i = 0; i < pvs.size(); i++) {
 
-        for (int moveI : pvs) {
+            int moveI = pvs.get(i);
 
             boolean legal = isLegalMove(board, moveI, who2Move);
-            MoveImpl move = new MoveImpl(moveI);
             if (legal) {
-                board.domove(move);
-                validatedPvs.add(moveI);
+                moveWrapper.fromLongEncoded(moveI);
+                board.domove(moveWrapper);
             } else {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning("Illegal PV Move encountered during pv enrichment " + move.toUCIString(board));
+                    LOGGER.warning(
+                            "Illegal PV Move encountered during pv enrichment " + moveWrapper.toUCIString(board));
                 }
+                pvs.cutToSize(i);
                 break;
             }
             who2Move = who2Move.invert();
         }
 
-        return validatedPvs;
+        return pvs;
     }
 
     /**

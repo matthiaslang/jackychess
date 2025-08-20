@@ -1,10 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-
 import static org.mattlang.jc.Constants.MAX_PLY;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.mattlang.jc.util.IntList;
 
 /**
  * Triangular Array to store the PVs during recursive search.
@@ -38,10 +36,11 @@ public class PVTriangularArray {
         }
     }
 
-    public List<Integer> getPvMoves() {
-        ArrayList<Integer> result = new ArrayList();
+    public IntList getPvMoves() {
+        IntList result = new IntList(MAX_PLY);
+        int[] arr0 = array[0];
         for (int i = 0; i < MAX_PLY; i++) {
-            int pv = array[0][i];
+            int pv = arr0[i];
             if (pv != 0) {
                 result.add(pv);
             } else {
