@@ -103,7 +103,7 @@ GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
 
  ## Results
 
- EOF
+EOF
 
 
  cat << EOF > ${VERSIONLOGFILE}.insert
