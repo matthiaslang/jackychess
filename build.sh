@@ -16,6 +16,7 @@ LOCALARENAFOLDER=../jcversions/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
 ENGINESFILE=${LOCALTESTPROJFOLDER}/scripts/engines.json
 VERSIONLOGFILE=${LOCALTESTPROJFOLDER}/versionlog.md
+DETAILEDVERSIONLOGFILE=${LOCALTESTPROJFOLDER}/results/resultoverview/jacky${MVNVERSION}.md
 SHREDDERENGFILE=engine/target/jackychess-${MVNVERSION}.eng
 
 # copy to our folders where the test programs have access:
@@ -84,6 +85,27 @@ EOF
 # write some version infos into the version log file
 GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
 
+ cat << EOF > $DETAILEDVERSIONLOGFILE
+ # $JARFILE
+
+ - Tag $TAGNAME
+ - Branch ${CURRBRANCH}
+ - Git Describe $GITDESCR
+ - Maven Version ${MVNVERSION}
+ - Cutechess name: jacky${MVNVERSION}
+
+
+ ## Changes compared to develop
+
+ \`\`\`
+ $GITLOG
+ \`\`\`
+
+ ## Results
+
+ EOF
+
+
  cat << EOF > ${VERSIONLOGFILE}.insert
 # $JARFILE
 
@@ -91,6 +113,7 @@ GITLOG=$(git log develop..${CURRBRANCH}  --pretty=oneline)
 - Branch ${CURRBRANCH}
 - Git Describe $GITDESCR
 - Maven Version ${MVNVERSION}
+- Cutechess name: jacky${MVNVERSION}
 
 
 ## Changes compared to develop
@@ -112,6 +135,7 @@ git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  j
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add --chmod=+x jackychess/${BASHFILE}
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  scripts/engines.json
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  versionlog.md
+git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  results/resultoverview/jacky${MVNVERSION}.md
 git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git commit -m "testversion ${MVNVERSION}"
 #git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git add  jackychess/$TUNERJARFILE
 
