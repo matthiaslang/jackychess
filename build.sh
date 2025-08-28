@@ -124,6 +124,8 @@ $GITLOG
 
 ## Results
 
+---
+
 EOF
 
 echo -e "$(cat ${VERSIONLOGFILE}.insert)\n$(cat ${VERSIONLOGFILE})" > ${VERSIONLOGFILE}
