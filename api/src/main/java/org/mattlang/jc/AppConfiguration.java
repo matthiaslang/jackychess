@@ -68,4 +68,12 @@ public class AppConfiguration {
     public static Properties getAppProps() {
         return appProps;
     }
+
+    public int getIntValue(String propName, int defaultVal) {
+        Optional<String> optStr = getStringValue(propName);
+        if (optStr.isPresent()) {
+           return Integer.parseInt(optStr.get());
+        }
+        return defaultVal;
+    }
 }
