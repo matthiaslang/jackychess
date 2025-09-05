@@ -1,9 +1,5 @@
 package org.mattlang.jc.engine.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
@@ -17,14 +13,16 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SimpleNegaMaxEvalTest {
 
     @Test
     public void analyzePattProblem() throws IOException {
         Logging.initLogging();
         UCI.instance.attachStreams();
-
-        ConfigValues.getConfigValues().maxQuiescence.setValue(0);
 
         BoardRepresentation board = Configurator.createBoard();
         GameState gameState = board.setFenPosition(

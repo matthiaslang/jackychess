@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
-
+import lombok.Getter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -19,7 +17,8 @@ import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import lombok.Getter;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
 /**
  * Holds Information during a negamax Search.
@@ -120,11 +119,9 @@ public final class SearchContext {
         counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
-    public void adjustSelDepth(int depth) {
-        // depth is negative inside quiescence; now update selDepth to the maximum of quiescence depth we have
-        // ever used in this round:
-        if (targetDepth - depth > selDepth) {
-            selDepth = targetDepth - depth;
+    public void adjustSelDepth(int ply) {
+        if (ply > selDepth) {
+            selDepth = ply;
         }
     }
 

@@ -1,21 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
-import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
-
-import java.util.logging.Logger;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
@@ -30,8 +17,20 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.IntList;
 import org.mattlang.jc.util.MoveValidator;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.logging.Logger;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -64,8 +63,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             }
         }
     }
-
-    private final int maxQuiescenceDepth = ConfigValues.getConfigValues().maxQuiescence.getValue();
 
     private final PVTriangularArray pvArray = new PVTriangularArray();
 
@@ -161,7 +158,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         }
 
         if (depth == 0) {
-            return quiesce(ply + 1, -1, color, alpha, beta);
+            return quiesce(ply + 1, color, alpha, beta);
         }
 
         int hashMove = 0;
@@ -286,7 +283,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 final int razorMarginOfDepth = RAZORING_MARGIN[depth];
                 if (staticEval + razorMarginOfDepth < alpha) {
                     statistics.razoringTryCount++;
-                    int val = quiesce(ply + 1, -1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
+                    int val = quiesce(ply + 1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
                     if (val + razorMarginOfDepth <= alpha) {
                         statistics.razoringPruningCount++;
                         return val;
@@ -586,11 +583,12 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         );
     }
 
-    private int quiesce(final int ply, final int depth, final Color color, int alpha, int beta) {
+    private int quiesce(final int ply, final Color color, int alpha, int beta) {
         statistics.nodesVisited++;
         if (statistics.nodesVisited > maxNodes) {
             throw new TimeoutException();
         }
+
         if (searchContext.isDrawByMaterial()) {
             return Weights.REPETITION_WEIGHT;
         }
@@ -621,7 +619,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         final int eval = searchContext.eval(color);
 
         /* are we too deep? */
-        if (depth < -maxQuiescenceDepth) {
+        if (ply > MAX_PLY_INDEX - 1) {
             return eval;
         }
 
@@ -641,7 +639,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color, hashMove, 0,
                 0)) {
             statistics.quiescenceNodesVisited++;
-            searchContext.adjustSelDepth(depth);
+            searchContext.adjustSelDepth(ply);
 
             /* loop through the capture moves */
 
@@ -685,7 +683,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                 if (moveCursor.doValidMove()) {
                     movecount++;
-                    final int x = -quiesce(ply + 1, depth - 1, color.invert(), -beta, -alpha);
+                    final int x = -quiesce(ply + 1, color.invert(), -beta, -alpha);
                     if (x > bestValue) {
                         bestValue = x;
                         if (x > alpha) {

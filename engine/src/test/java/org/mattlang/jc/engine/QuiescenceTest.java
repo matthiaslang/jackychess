@@ -1,9 +1,5 @@
 package org.mattlang.jc.engine;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.SearchParameter;
@@ -13,6 +9,10 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class QuiescenceTest {
 
     @Test
@@ -20,8 +20,6 @@ public class QuiescenceTest {
 
         Logging.initLogging();
         UCI.instance.attachStreams();
-
-        ConfigValues.getConfigValues().maxQuiescence.setValue(5);
 
         // now starting engine:
         Engine engine = new Engine();

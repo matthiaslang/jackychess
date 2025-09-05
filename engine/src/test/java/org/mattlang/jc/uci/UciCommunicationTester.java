@@ -1,6 +1,9 @@
 package org.mattlang.jc.uci;
 
-import static java.util.stream.Collectors.toSet;
+import org.assertj.core.api.Assertions;
+import org.mattlang.jc.AppConfiguration;
+import org.mattlang.jc.StopWatch;
+import org.mattlang.jc.util.Logging;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -14,10 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import org.assertj.core.api.Assertions;
-import org.mattlang.jc.AppConfiguration;
-import org.mattlang.jc.StopWatch;
-import org.mattlang.jc.util.Logging;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Helper class to test the engine via the uci communication.
@@ -163,7 +163,6 @@ public class UciCommunicationTester {
         expect("id name JackyChess " + version);
         expect("id author Matthias Lang");
 
-        expect("option name quiescence type spin default 63 min 0 max 63");
         expect("option name Threads type spin default 1 min 1 max 128");
         expect("option name UCI_Chess960 type check default false");
         expect("option name UCI_AnalyseMode type check default false");

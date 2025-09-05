@@ -1,17 +1,17 @@
 package org.mattlang.jc.uci;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UciProcessorTest {
 
     @Test
     public void optionsParsing() {
         UciProcessor ucip = new UciProcessor();
-        ucip.parseOption("setoption name quiescence value 16");
-        assertThat(ConfigValues.getConfigValues().maxQuiescence.getValue()).isEqualTo(16);
+        ucip.parseOption("setoption name Threads value 16");
+        assertThat(ConfigValues.getConfigValues().maxThreads.getValue()).isEqualTo(16);
         ConfigValues.resetConfigValues();
     }
 

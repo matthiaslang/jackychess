@@ -1,12 +1,10 @@
 package org.mattlang.jc;
 
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.Constants.MAX_THREADS;
-
+import lombok.Getter;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.*;
 
-import lombok.Getter;
+import static org.mattlang.jc.Constants.MAX_THREADS;
 
 /**
  * Contains all UCI Parameters as well as internal development relevant configurations.
@@ -37,11 +35,6 @@ public class ConfigValues {
 
     public final UCIGroup limits =
             allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
-
-    public final UCISpinOption maxQuiescence =
-            limits.createSpinOpt("quiescence",
-                    "the maximum search depth in quiescence",
-                    0, MAX_PLY - 1, MAX_PLY - 1);
 
     public final UCISpinOption maxThreads = limits.createSpinOpt("Threads",
             "the maximum search threads to use for search",

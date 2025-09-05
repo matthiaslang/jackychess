@@ -1,11 +1,10 @@
 package org.mattlang.jc;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import lombok.Getter;
 import org.mattlang.jc.engine.Configurator;
 
-import lombok.Getter;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 public class BenchmarkResults<T> {
@@ -54,7 +53,7 @@ public class BenchmarkResults<T> {
         this.useKillerMoves = true;
         this.useHistoryHeuristic = true;
         this.pvSearch = true;
-        this.maxQuiescence = config.maxQuiescence.getValue();
+        this.maxQuiescence =0;
         this.aspiration = true;
         this.useNullMoves = true;
         this.staticNullMove = true;
