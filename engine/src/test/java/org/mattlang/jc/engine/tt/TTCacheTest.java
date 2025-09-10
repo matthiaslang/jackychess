@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.tt;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TTCacheTest {
 
@@ -122,6 +122,11 @@ public class TTCacheTest {
         ConfigValues.getConfigValues().hash.setValue(9);
         Caching.CACHING.getTtCache().checkUpdateCacheSize();
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
+
+        // testing int overflow problem: commented out, to not allocate 2gb during tests
+//        ConfigValues.getConfigValues().hash.setValue(2048);
+//        Caching.CACHING.getTtCache().checkUpdateCacheSize();
+//        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(2048L * 1024 * 1024);
 
         ConfigValues.resetConfigValues();
     }

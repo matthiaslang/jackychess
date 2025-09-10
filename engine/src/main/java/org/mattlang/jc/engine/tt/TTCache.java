@@ -1,18 +1,17 @@
 package org.mattlang.jc.engine.tt;
 
-import static java.util.logging.Level.INFO;
-import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
-import static org.mattlang.jc.engine.tt.TTResult.toFlag;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
+import lombok.Getter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 
-import lombok.Getter;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.INFO;
+import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
+import static org.mattlang.jc.engine.tt.TTResult.toFlag;
 
 /**
  * Cache using only a long array to be faster and more memory efficient.
@@ -39,6 +38,7 @@ public final class TTCache {
     private static final int BUCKET_CHUNK_SIZE = BUCKET_SIZE * SLOT_SIZE;
 
     private static final int BYTE_SIZE_SLOT = 8 * SLOT_SIZE;
+    public static final long MEGABYTE = 1024 * 1024;
 
     // key, value
     private long[] keys;
@@ -91,8 +91,8 @@ public final class TTCache {
     }
 
     public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
-        int slots = mb * 1024 * 1024 / sizeOfSlot;
-        int bits = (int) (Math.log(slots) / Math.log(2));
+        long slots = mb * MEGABYTE / sizeOfSlot;
+        int bits =  (int) (Math.log(slots) / Math.log(2));
         LOGGER.info("cache of " + mb + "MB: setting cache to " + slots + " slots, " + bits + " bits");
         return bits;
     }
@@ -226,7 +226,7 @@ public final class TTCache {
     /**
      * Gives a raw statistical usage by inspecting the first 1000 entries.
      * If the cache is well distributing the values this gives a good match of the overall usage.
-     *
+     * <p>
      * It counts only "empty" slots and identifies "very old slots", so the statistic is not completely up to date, but
      * good enough to give a hint on the cache usage.
      *
@@ -321,7 +321,7 @@ public final class TTCache {
     }
 
     public void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
-            int move) {
+                             int move) {
         addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move);
     }
 
@@ -345,8 +345,8 @@ public final class TTCache {
         return getUsagePercentage();
     }
 
-    public int getCacheSize() {
-        return keys.length * 8;
+    public long getCacheSize() {
+        return keys.length * 8L;
     }
 
     public void resetStatistics() {

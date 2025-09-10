@@ -1,10 +1,6 @@
 package org.mattlang.jc.perftests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.SearchParameter.params;
-
-import java.io.IOException;
-
+import lombok.Data;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
@@ -18,7 +14,10 @@ import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.Logging;
 
-import lombok.Data;
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.SearchParameter.params;
 
 /**
  * Testcode to analyze tt cache.
@@ -32,10 +31,10 @@ public class CachePerformanceTests {
         private final int noReplaceCacheAlreadyBetter;
         private final long cacheMisses;
         private final long cacheHits;
-        private final int cacheSize;
+        private final long cacheSize;
         private final long usage;
         private final int numFieldEntries;
-        private final int numMaxEntries;
+        private final long numMaxEntries;
         private final long preciseUsage;
         private final int[] heuristic;
 
