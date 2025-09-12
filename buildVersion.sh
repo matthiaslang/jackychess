@@ -21,4 +21,4 @@ git commit -m "Version $NEWMVNVERSION"
 git push
 
 # building test version
-bash ./build.sh
+./build.sh createTag

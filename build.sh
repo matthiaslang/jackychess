@@ -2,6 +2,9 @@
 
 # helper script to easy create test versions used in my local arena or cutechess environment
 
+
+CREATETAGARG=$1
+
 # build
 mvn clean package -DskipTests
 
@@ -49,12 +52,13 @@ chmod +x  ../jcversions/${BATFILE}
 #GITDESCR=$(git describe --tags)
 GITDESCR=$(git rev-parse --short HEAD)
 
+if [ "$CREATETAGARG" == "createTag" ]
+then
 TAGNAME=${MVNVERSION}_${GITDESCR}
-
 echo "creating tag"
 git tag ${TAGNAME}
 
-
+fi
 
 # add the new version to the cutechess engines.json in our test project
 if grep -q "$JARFILE" "$ENGINESFILE"; then

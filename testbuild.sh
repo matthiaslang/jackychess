@@ -29,7 +29,7 @@ git commit -m "testversion $MVNTESTVERSION"
 git push --set-upstream origin $TESTBRANCHNAME
 
 # building test version
-bash ./build.sh
+./build.sh doNotCreateTag
 
 
 # checkout original source branch
