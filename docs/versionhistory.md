@@ -1,11 +1,16 @@
 # Versions
 
-## 25.08
+### 25.08.1
+
+- code cleanup quiescence code
+- fixed int overflow issue when setting cache to more than 2024 MB. 
+
+### 25.08
 
 - support for UCI pondering
 - code cleanup regarding move validation, maybe gaining some elos..
 
-## 25.07
+### 25.07
 
 - lmr: more criterias like history heuristic in reduction calculation: ~15Elo
 
