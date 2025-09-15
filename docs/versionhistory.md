@@ -1,5 +1,8 @@
 # Versions
 
+### 25.09
+
+- add singular extensions: after a lot of experiments and misunderstandings I got it to work and it gives ~60 Elos.
 ### 25.08.1
 
 - code cleanup quiescence code

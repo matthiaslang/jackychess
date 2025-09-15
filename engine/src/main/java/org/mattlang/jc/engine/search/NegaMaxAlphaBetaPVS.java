@@ -1,7 +1,20 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
-import lombok.Setter;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
+
+import java.util.logging.Logger;
+
+import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.engine.AlphaBetaSearchMethod;
@@ -17,20 +30,9 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.IntList;
 import org.mattlang.jc.util.MoveValidator;
 
-import java.util.logging.Logger;
+import lombok.Getter;
+import lombok.Setter;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY;
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
-import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 /**
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
@@ -40,13 +42,13 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
-    private static final int[] RAZORING_MARGIN = { 0, 240, 280, 300 };
+    private static final int[] RAZORING_MARGIN = {0, 240, 280, 300};
 
     public static final int ALPHA_START = -1000000000;
     public static final int BETA_START = +1000000000;
 
-    private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
-    private static final int[] FUTILITY_MARGIN = { 0, 80, 170, 270, 380, 500, 630 };
+    private static final int[] STATIC_NULLMOVE_MARGIN = {0, 60, 130, 210, 300, 400, 510};
+    private static final int[] FUTILITY_MARGIN = {0, 80, 170, 270, 380, 500, 630};
 
     /**
      * predefined LMR reductions per depth and performed moves.
@@ -54,6 +56,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private static final int[][] LMR_TABLE = new int[64][64];
     public static final int UPDATE_INTERVAL = 1000 * 3;
     private static final int MAX_QUIESCENCE_TT_PLY = 64;
+
+    public static final int TT_RESEARCH_MARGIN = 141;
 
     static {
         // Ethereal LMR formula with depth and number of performed moves
@@ -73,9 +77,15 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     private SearchListener searchListener;
 
     /**
-     * parent moves. needs one more place than max ply to save the "following" move.
+     * parent moves.
      */
-    private final int[] parentMoves = new int[MAX_PLY + 1];
+    private final int[] parentMoves = new int[MAX_PLY_INDEX];
+
+    /**
+     * excluded moves marker from a nested singular search.
+     */
+    private final int[] excludedMoves = new int[MAX_PLY_INDEX];
+
 
     private SearchContext searchContext;
 
@@ -88,6 +98,8 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     @Setter
     private int maxNodes = Integer.MAX_VALUE;
+
+    private static final int SE_DEPTH = AppConfiguration.APPCONFIG.getIntValue("seDepth", 8);
 
     public NegaMaxAlphaBetaPVS() {
         reset();
@@ -114,21 +126,30 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
     }
 
     private int negaMaximize(final int ply, final int depth, final Color color,
-            int alpha, int beta) {
+                             int alpha, int beta, boolean cutnode) {
 
         /**
          * Return immediately if it is a repetition or draw by material.
          * By draw by material we only immediately return on higher plys because otherwise we would not return a move.
          */
 
-        if (searchContext.isDrawByMaterial() && ply != 1) {
-            statistics.drawByMaterialDetected++;
-            return Weights.REPETITION_WEIGHT;
-        }
+        if (ply != 1) {
+            if (searchContext.isDrawByMaterial()) {
+                statistics.drawByMaterialDetected++;
+                return Weights.REPETITION_WEIGHT;
+            }
 
-        if (searchContext.isRepetition() && ply != 1) {
-            statistics.drawByRepetionDetected++;
-            return searchContext.evaluateRepetition(color);
+            if (searchContext.isRepetition()) {
+                statistics.drawByRepetionDetected++;
+                return searchContext.evaluateRepetition(color);
+            }
+
+            // if we are too deep, we need to stop here:
+            if (ply >= MAX_PLY_INDEX) {
+                final boolean areWeInCheck = searchContext.isInCheck(color);
+                return areWeInCheck ? 0 : searchContext.eval(color);
+            }
+
         }
 
         final int mateValue = KING_WEIGHT - ply;
@@ -138,6 +159,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             throw new TimeoutException();
         }
         final boolean not_pv = abs(beta - alpha) <= 1;
+
+        final int excludedMove = excludedMoves[ply];
+        final boolean singularSearch = excludedMove != 0;
 
         /**************************************************************************
          * MATE DISTANCE PRUNING, a minor improvement that helps to shave off some *
@@ -162,24 +186,39 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         }
 
         int hashMove = 0;
+        int hashScore = 0;
+        int hashDepth = 0;
+        boolean isLowerBoundOrExact = false;
 
-        TTResult tte = searchContext.getTTEntry();
+
+        // prove tt cache. skip that for singular seach
+        TTResult tte = singularSearch ? null : searchContext.getTTEntry();
         if (tte != null) {
-            if (tte.getDepth() >= depth && ply != 1) {
-                if (tte.isExact()) {// stored value is exact
+            if (tte.getDepth() >= depth
+                && ply != 1
+                && (depth == 1 || not_pv)
+                && (cutnode || tte.getScore() <= alpha)) {
+
+                if (tte.isExact()
+                    || tte.isLowerBound() && tte.getScore() >= beta
+                    || tte.isUpperBound() && tte.getScore() <= alpha) {// stored value is exact
                     statistics.ttPruningCount++;
                     return tte.getAdjustedScore(ply);
-                } else if (tte.isLowerBound() && tte.getScore() > alpha)
-                    alpha = tte.getAdjustedScore(ply); // update lowerbound alpha if needed
-                else if (tte.isUpperBound() && tte.getScore() < beta)
-                    beta = tte.getAdjustedScore(ply); // update upperbound beta if needed
-                if (alpha >= beta) {
-                    statistics.ttPruningCount++;
-                    return tte.getAdjustedScore(ply); // if lowerbound surpasses upperbound
                 }
+            }
+            isLowerBoundOrExact = tte.isLowerBound() || tte.isExact();
+
+            if (not_pv
+                && tte.getDepth() >= depth - 1
+                && tte.isUpperBound()
+                && cutnode || tte.getScore() <= alpha
+                              && tte.getScore() + TT_RESEARCH_MARGIN <= alpha) {
+                return alpha;
             }
 
             hashMove = tte.getMove();
+            hashScore = tte.getScore();
+            hashDepth = tte.getDepth();
         }
 
         checkTimeout();
@@ -197,100 +236,101 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
             final int staticEval = getRefinedStaticEval(color, tte);
 
-            /**************************************************************************
-             * EVAL PRUNING / STATIC NULL MOVE                                         *
-             **************************************************************************/
+            if (!singularSearch) {
+                /**************************************************************************
+                 * EVAL PRUNING / STATIC NULL MOVE                                         *
+                 **************************************************************************/
 
-            if (depth < STATIC_NULLMOVE_MARGIN.length
-                && abs(beta - 1) > ALPHA_START + 100) {
+                if (depth < STATIC_NULLMOVE_MARGIN.length
+                    && abs(beta - 1) > ALPHA_START + 100) {
 
-                int eval_margin = STATIC_NULLMOVE_MARGIN[depth];
-                if (staticEval - eval_margin >= beta) {
-                    statistics.staticNullMovePruningCount++;
-                    return staticEval;
-                }
-            }
-
-            /**
-             * null move reduction:
-             * only, for non pv nodes,
-             * and no null move has already been chosen in this row
-             * and we have non pawn material (because of zugzwang issues)
-             * and we are not in check (also for zugzwang)
-             */
-            if (depth > 2 &&
-                searchContext.getNullMoveCounter() == 0 &&
-                searchContext.isNoZugzwang()
-            ) {
-                final int R = (depth > 6) ? 3 : 2;
-
-                searchContext.doPrepareNullMove();
-                int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1);
-                searchContext.undoNullMove();
-                statistics.nullMoveTryCount++;
-                if (eval >= beta) {
-                    statistics.nullMovePruningCount++;
-                    if (depth >= 10) {
-                        // do verification at high depths:
-                        int verifyScore = negaMaximize(ply + 1, depth - R, color.invert(), beta + 1, beta);
-                        searchContext.resetNullMoveCounter();
-                        if (verifyScore >= beta)
-                            return verifyScore;
-                    } else {
-                        searchContext.resetNullMoveCounter();
-                        return eval;
+                    int eval_margin = STATIC_NULLMOVE_MARGIN[depth];
+                    if (staticEval - eval_margin >= beta) {
+                        statistics.staticNullMovePruningCount++;
+                        return staticEval;
                     }
                 }
-                searchContext.resetKillers(ply + 1);
-            }
 
-            // ProbCut
-            // If a winning capture scores much higher than beta on a shallow search,
-            // then we can assume a beta cutoff would happen on the full search as
-            // well, and return early.
-            // Idea from Stockfish
-            if (depth >= 6 && staticEval >= beta - 100 - 20 * depth
-                && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
-                final int probCutMargin = beta + 90;
-                int probCutCount = 0;
-                try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color,
-                        hashMove, 0,
-                        probCutMargin - staticEval)) {
-                    while (moveCursor.nextMove() && probCutCount < 3) {
-                        if (moveCursor.doValidMove()) {
-                            probCutCount++;
-                            if (moveCursor.getMoveInt() != hashMove) {
-                                int score =
-                                        -negaMaximize(ply + 1, depth - depth / 4 - 4, color.invert(), -probCutMargin,
-                                                -probCutMargin + 1);
-                                if (score >= probCutMargin)
-                                    return score;
+                /**
+                 * null move reduction:
+                 * only, for non pv nodes,
+                 * and no null move has already been chosen in this row
+                 * and we have non pawn material (because of zugzwang issues)
+                 * and we are not in check (also for zugzwang)
+                 */
+                if (depth > 2 &&
+                    searchContext.getNullMoveCounter() == 0 &&
+                    searchContext.isNoZugzwang()
+                ) {
+                    final int R = (depth > 6) ? 3 : 2;
+
+                    searchContext.doPrepareNullMove();
+                    int eval = -negaMaximize(ply + 1, depth - R, color.invert(), -beta, -beta + 1, !cutnode);
+                    searchContext.undoNullMove();
+                    statistics.nullMoveTryCount++;
+                    if (eval >= beta) {
+                        statistics.nullMovePruningCount++;
+                        if (depth >= 10) {
+                            // do verification at high depths:
+                            int verifyScore = negaMaximize(ply + 1, depth - R, color.invert(), beta + 1, beta, !cutnode);
+                            searchContext.resetNullMoveCounter();
+                            if (verifyScore >= beta)
+                                return verifyScore;
+                        } else {
+                            searchContext.resetNullMoveCounter();
+                            return eval;
+                        }
+                    }
+                    searchContext.resetKillers(ply + 1);
+                }
+
+                // ProbCut
+                // If a winning capture scores much higher than beta on a shallow search,
+                // then we can assume a beta cutoff would happen on the full search as
+                // well, and return early.
+                // Idea from Stockfish
+                if (depth >= 6 && staticEval >= beta - 100 - 20 * depth
+                    && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY) {
+                    final int probCutMargin = beta + 90;
+                    int probCutCount = 0;
+                    try (MoveBoardIterator moveCursor = searchContext.genQuiescenceMoves(ply, color,
+                            hashMove, 0,
+                            probCutMargin - staticEval)) {
+                        while (moveCursor.nextMove() && probCutCount < 3) {
+                            if (moveCursor.doValidMove()) {
+                                probCutCount++;
+                                if (moveCursor.getMoveInt() != hashMove) {
+                                    int score =
+                                            -negaMaximize(ply + 1, depth - depth / 4 - 4, color.invert(), -probCutMargin,
+                                                    -probCutMargin + 1, !cutnode);
+                                    if (score >= probCutMargin)
+                                        return score;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            /**************************************************************************
-             *  RAZORING - if a node is close to the leaf and its static score is low, *
-             *  we drop directly to the quiescence search.                             *
-             **************************************************************************/
-            if (tte == null
-                && searchContext.getNullMoveCounter() == 0
-                && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
-                && depth < RAZORING_MARGIN.length
-                && Math.abs(alpha) < KING_WEIGHT) {
-                final int razorMarginOfDepth = RAZORING_MARGIN[depth];
-                if (staticEval + razorMarginOfDepth < alpha) {
-                    statistics.razoringTryCount++;
-                    int val = quiesce(ply + 1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
-                    if (val + razorMarginOfDepth <= alpha) {
-                        statistics.razoringPruningCount++;
-                        return val;
+                /**************************************************************************
+                 *  RAZORING - if a node is close to the leaf and its static score is low, *
+                 *  we drop directly to the quiescence search.                             *
+                 **************************************************************************/
+                if (tte == null
+                    && searchContext.getNullMoveCounter() == 0
+                    && noPawnPromotions(searchContext.getBoard()) // no pawns to promote in one move
+                    && depth < RAZORING_MARGIN.length
+                    && Math.abs(alpha) < KING_WEIGHT) {
+                    final int razorMarginOfDepth = RAZORING_MARGIN[depth];
+                    if (staticEval + razorMarginOfDepth < alpha) {
+                        statistics.razoringTryCount++;
+                        int val = quiesce(ply + 1, color, alpha - razorMarginOfDepth, alpha - razorMarginOfDepth + 1);
+                        if (val + razorMarginOfDepth <= alpha) {
+                            statistics.razoringPruningCount++;
+                            return val;
+                        }
                     }
                 }
             }
-
             /**************************************************************************
              *  Decide  if FUTILITY PRUNING  is  applicable. If we are not in check,   *
              *  not searching for a checkmate and eval is below (alpha - margin), it   *
@@ -333,6 +373,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                     LOGGER.fine("ply: " + ply + " depth: " + depth + " traversing move " + movedescr(moveCursor));
                 }
 
+                // skip excluded move from singular search:
+                if (moveCursor.getMoveInt() == excludedMove) {
+                    continue;
+                }
+
                 parentMoves[ply] = moveCursor.getMoveInt();
 
                 /**********************************************************************
@@ -370,12 +415,33 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         continue;
                     }
                 }
+                int extension = 0;
 
+                // Singular extensions
+                // If the TT move appears to be much better than all others, extend the move
+                if (ply > 1
+                    && depth >= SE_DEPTH
+                    && hashMove == moveCursor.getMoveInt()
+                    && abs(hashScore) < VALUE_TB_WIN_IN_MAX_PLY
+                    && isLowerBoundOrExact
+                    //&& !not_pv
+                    //&& (nodeType == CUT_NODE || nodeType == PV_NODE)
+                    && hashDepth >= depth - 3) {
+
+                    // The window is lowered more for higher depths
+                    extension = determineSingularExtensions(not_pv, ply, depth, hashMove, color, hashScore, cutnode);
+
+                }
                 if (moveCursor.doValidMove()) {
 
                     searchedMoves++;
 
                     final boolean doWeGiveCheck = searchContext.isInCheck(color.invert());
+                    //                if (!doMovecountpruning && dowegivecheck && SEE.see_ge(searchContext.getBoard(), moveCursor, 0)){
+                    //                    extension++;
+                    //                }
+
+
                     /**
                      * Late move reduction
                      */
@@ -383,30 +449,31 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                             determineLateMoveReduction(searchedMoves, depth, moveCursor, areWeInCheck, doWeGiveCheck,
                                     not_pv);
 
-                    // currently we do not support any extensions
-                    final int extension = 0;
+//                    if (r > 0) {
+//                        extension = 0;
+//                    }
                     int score;
 
                     if (searchedMoves > 1) {
                         // pvs try 0 window
-                        score = -negaMaximize(ply + 1, depth - 1 - r + extension, color.invert(), -max - 1, -max);
+                        score = -negaMaximize(ply + 1, depth - 1 - r + extension, color.invert(), -max - 1, -max, true);
 
                         // research if the reduced search did not fail low
                         if (r > 0 && score > max) {
-                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -max - 1, -max);
+                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -max - 1, -max, !cutnode);
                         }
 
                         /**
                          * do a full window search in pvs search if score is out of our max, beta window:
                          */
                         if (max < score && score < beta) {
-                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
+                            score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max, false);
                         }
                     } else {
                         /**
                          * do full search (for pvs search on the first move, or if pvs search is deactivated)
                          */
-                        score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max);
+                        score = -negaMaximize(ply + 1, depth - 1 + extension, color.invert(), -beta, -max, false);
                     }
 
                     if (score > max) {
@@ -416,7 +483,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
                         if (BuildConstants.ASSERTIONS) {
                             LOGGER.fine("ply: " + ply + " depth: " + depth + " found new bestmove: "
-                                        + toLongAlgebraic(moveCursor) + " score: " + max);
+                                    + toLongAlgebraic(moveCursor) + " score: " + max);
                         }
 
                         pvArray.set(bestMove, ply);
@@ -425,7 +492,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                         if (max >= beta) {
                             if (BuildConstants.ASSERTIONS) {
                                 LOGGER.fine("ply: " + ply + " depth: " + depth + " found cut off: "
-                                            + toLongAlgebraic(moveCursor) + " score: " + max + " beta: " + beta);
+                                        + toLongAlgebraic(moveCursor) + " score: " + max + " beta: " + beta);
                             }
 
                             if (!areWeInCheck) {
@@ -447,14 +514,42 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             statistics.noCutOffFoundCount++;
 
             if (searchedMoves == 0) {
+                if (singularSearch) {
+                    return alpha;
+                }
                 return determineCheckMateOrPatt(ply, areWeInCheck);
             }
         }
 
         // save score and best move info in tt:
-        searchContext.storeTT(color, max, alpha, beta, depth, bestMove);
-
+        if (!singularSearch) {
+            searchContext.storeTT(color, max, alpha, beta, depth, bestMove);
+        }
         return max;
+    }
+
+    private int determineSingularExtensions(boolean not_pv, int ply, int depth, int hashMove, Color color, int hashScore, boolean cutnode) {
+
+        // The window is lowered more for higher depths
+        int seWindow = hashScore - depth;
+        //        int seWindow = hashScore - 2*depth;
+        // Do a reduced search for fail-low confirmation
+        int seDepth = depth / 2 - 1;
+
+        int extension = 0;
+
+        excludedMoves[ply + 1] = hashMove;
+        int score = negaMaximize(ply + 1, seDepth, color, seWindow - 1, seWindow, cutnode);
+        excludedMoves[ply + 1] = 0;
+
+        if (score < seWindow) {
+            if (not_pv && score < seWindow - 16) {
+                extension = 2;
+            } else
+                extension = 1;
+        }
+
+        return extension;
     }
 
     private void doInternalIterativeDeepening(int ply, int depth, Color color, int alpha, int beta, boolean not_pv,
@@ -469,7 +564,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
                 || (not_pv && depth >= 8))) {
             statistics.iterativeDeepeningCount++;
             int iidDepth = is_pv ? depth - depth / 2 - 1 : (depth - 2) / 2;
-            negaMaximize(ply, iidDepth, color, alpha, beta);
+            negaMaximize(ply, iidDepth, color, alpha, beta, true);
 
         }
     }
@@ -711,7 +806,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             int alpha, int beta, long stopTime) {
 
         if (LOGGER.isLoggable(FINE)) {
-            LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[] { depth, alpha, beta });
+            LOGGER.log(FINE, "negamax search depth {0} [{1} - {2}]", new Object[]{depth, alpha, beta});
         }
         searchContext =
                 new SearchContext(legalMovesToSearch, optionalLastBestMove, stc, gameState, context, depth, alpha);
@@ -720,8 +815,11 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         this.nextUpdateTime = System.currentTimeMillis() + UPDATE_INTERVAL;
 
         pvArray.reset();
+        for (int i = 0; i < excludedMoves.length; i++) {
+            excludedMoves[i] = 0;
+        }
 
-        int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta);
+        int directScore = negaMaximize(1, depth, gameState.getWho2Move(), alpha, beta, false);
 
         IntList pvMoves = moveValidator.validateAndCorrectPvList(pvArray.getPvMoves(), gameState);
 
