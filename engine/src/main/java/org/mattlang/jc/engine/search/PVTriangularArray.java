@@ -2,6 +2,8 @@ package org.mattlang.jc.engine.search;
 
 import static org.mattlang.jc.Constants.MAX_PLY;
 
+import java.util.Arrays;
+
 import org.mattlang.jc.util.IntList;
 
 /**
@@ -10,9 +12,9 @@ import org.mattlang.jc.util.IntList;
 public class PVTriangularArray {
 
     /**
-     * Moves of the triangular array.
+     * Moves of the triangular array. We save only MAX_PLY pvs, regardless if we search deeper due to extensions.
      */
-    private int[][] array = new int[MAX_PLY][MAX_PLY];
+    private final int[][] array = new int[MAX_PLY][MAX_PLY];
 
     /**
      * Sets a PV found in ply ply.
@@ -22,16 +24,18 @@ public class PVTriangularArray {
      * @param ply
      */
     public void set(int bestMove, int ply) {
-        int index = ply - 1;
-        int[] rowForPly = array[index];
-        int[] rowForUnderPly = array[index + 1];
+        if (ply < MAX_PLY - 1) {
+            int index = ply - 1;
+            int[] rowForPly = array[index];
+            int[] rowForUnderPly = array[index + 1];
 
-        rowForPly[0] = bestMove;
-        // copy over the next deeper ply. if we reach a 0 value, we stop ( but after copying the 0 value as end marker).
-        for (int i = 0; i < MAX_PLY - 1; i++) {
-            rowForPly[i + 1] = rowForUnderPly[i];
-            if (rowForUnderPly[i] == 0) {
-                break;
+            rowForPly[0] = bestMove;
+            // copy over the next deeper ply. if we reach a 0 value, we stop ( but after copying the 0 value as end marker).
+            for (int i = 0; i < MAX_PLY - 1; i++) {
+                rowForPly[i + 1] = rowForUnderPly[i];
+                if (rowForUnderPly[i] == 0) {
+                    break;
+                }
             }
         }
     }
@@ -52,9 +56,7 @@ public class PVTriangularArray {
 
     public void reset() {
         for (int i = 0; i < MAX_PLY; i++) {
-            for (int j = 0; j < MAX_PLY; j++) {
-                array[i][j] = 0;
-            }
+            Arrays.fill(array[i], 0);
         }
     }
 
@@ -68,8 +70,10 @@ public class PVTriangularArray {
      */
     public void reset(int ply) {
         int index = ply - 1;
-        int[] rowForPly = array[index];
-        // mark as empty:
-        rowForPly[0] = 0;
+        if (index < MAX_PLY) {
+            int[] rowForPly = array[index];
+            // mark as empty:
+            rowForPly[0] = 0;
+        }
     }
 }
