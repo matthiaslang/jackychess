@@ -1,6 +1,7 @@
 package org.mattlang.jc.moves;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.moves.MoveImpl.PAWN_PROMOTION_W_QUEEN;
 
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Figure;
@@ -19,12 +20,21 @@ public class MoveImplTest {
 
         m = MoveImpl.createEnPassant(50, 60, Figure.B_Bishop.figureCode);
         l = m.toLongEncoded();
+        assertThat(MoveImpl.createEnPassantMove(50,60,Figure.B_Bishop.figureCode)).isEqualTo(l);
+
+        assertThat(m.getSpecialType()).isZero();
+        assertThat(MoveImpl.getSpecialType(l)).isZero();
 
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
 
         m = MoveImpl.createPromotion(0, 63, Figure.B_Queen.figureCode, Figure.W_Queen);
         l = m.toLongEncoded();
+        assertThat(m.isPromotion()).isTrue();
+        assertThat(m.getSpecialType()).isEqualTo(PAWN_PROMOTION_W_QUEEN);
+        assertThat(m.getPromotedFigure()).isEqualTo(Figure.W_Queen);
+        assertThat(MoveImpl.isPromotion(l)).isTrue();
+        assertThat(MoveImpl.getSpecialType(l)).isEqualTo(PAWN_PROMOTION_W_QUEEN);
 
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);

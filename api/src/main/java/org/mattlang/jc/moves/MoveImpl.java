@@ -21,25 +21,43 @@ import lombok.Getter;
  *
  * A move can be encoded in an int value:
  *
- * type: 0-14: 7 bits : contains type, but also promotion figure, en passant capture pos
- * figureType: 5 bits
- * fromINdex: 7 bits
- * toIndex: 7 bits
- * capturedFigure: 5 bits
- * == 31 bits
+ * Encoding:
+ *
+ * type info:
+ * 0 = normal
+ * 1= promotion
+ * 2=castling
+ * 3= e.p
+ * ==== 2 bit
+ *
+ * special info:
+ * 3 bit == 8 promo infos, 4 castling infos... empty otherwise
+ *
+ * === 5 bit
+ * figureType: 4 bit
+ * fromIndex: 6 bit
+ * toIndex: 6 bit
+ * capturedFigure: 4 bit
+ *
+ * === 24 bit
  */
 @Getter
 public final class MoveImpl implements Move {
 
+    public static final byte MASK_2 = 0b11;
+    public static final byte MASK_3 = 0b111;
+    public static final byte SPECIAL_TYPE_MASK_3 = 0b11100;
     public static final byte MASK_4 = 0b1111;
     public static final byte MASK_5 = 0b11111;
+    public static final byte MASK_6 = 0b111111;
     public static final byte MASK_7 = 0b1111111;
 
     public static final int NOT_SORTED = Integer.MAX_VALUE;
-    public static final int OFFSET_FIGURETYPE = 7;
-    public static final int OFFSET_CAPTUREDFIGURE = 26;
-    public static final int OFFSET_TOINDEX = 19;
-    public static final int OFFSET_FROMINDEX = 12;
+    public static final int OFFSET_SPECIALTYPE = 2;
+    public static final int OFFSET_FIGURETYPE = 5;
+    public static final int OFFSET_CAPTUREDFIGURE = 21;
+    public static final int OFFSET_TOINDEX = 15;
+    public static final int OFFSET_FROMINDEX = 9;
 
     private byte figureType;
 
@@ -58,24 +76,55 @@ public final class MoveImpl implements Move {
      */
     private byte type = NORMAL_MOVE;
 
-    public static final byte NORMAL_MOVE = 1;
+    /*
+     * Encoding:
+     *
+     * type info:
+     * 0 = normal
+     * 1= promotion
+     * 2=castling
+     * 3= e.p
+     * ==== 2 bit
+     *
+     * special info:
+     * 3 bit == 8 promo infos, 4 castling infos... empty otherwise
+     *
+     * === 5 bit
+     * figureType: 4 bit
+     * fromIndex: 6 bit
+     * toIndex: 6 bit
+     * capturedFigure: 4 bit
+     *
+     * === 24 bit
+     *
+     *
+     * */
 
-    public static final byte PAWN_PROMOTION_W_KNIGHT = 2;
-    public static final byte PAWN_PROMOTION_W_BISHOP = 3;
-    public static final byte PAWN_PROMOTION_W_ROOK = 4;
-    public static final byte PAWN_PROMOTION_W_QUEEN = 5;
+    /**
+     * type info, contained in 2 bit.
+     */
+    public static final byte NORMAL_MOVE = 0;
+    public static final byte PROMOTION_MOVE = 1;
+    public static final byte CASTLING_MOVE = 2;
+    public static final byte ENPASSANT_MOVE = 3;
 
-    public static final byte PAWN_PROMOTION_B_KNIGHT = 6;
-    public static final byte PAWN_PROMOTION_B_BISHOP = 7;
-    public static final byte PAWN_PROMOTION_B_ROOK = 8;
-    public static final byte PAWN_PROMOTION_B_QUEEN = 9;
+    /**
+     * extended info depending on type. 3 bit 8 values:
+     */
+    public static final byte PAWN_PROMOTION_W_KNIGHT = 0;
+    public static final byte PAWN_PROMOTION_W_BISHOP = 1;
+    public static final byte PAWN_PROMOTION_W_ROOK = 2;
+    public static final byte PAWN_PROMOTION_W_QUEEN = 3;
 
-    public static final byte CASTLING_WHITE_LONG = 10;
-    public static final byte CASTLING_WHITE_SHORT = 11;
-    public static final byte CASTLING_BLACK_SHORT = 12;
-    public static final byte CASTLING_BLACK_LONG = 13;
+    public static final byte PAWN_PROMOTION_B_KNIGHT = 4;
+    public static final byte PAWN_PROMOTION_B_BISHOP = 5;
+    public static final byte PAWN_PROMOTION_B_ROOK = 6;
+    public static final byte PAWN_PROMOTION_B_QUEEN = 7;
 
-    public static final byte ENPASSANT_MOVE = 14;
+    public static final byte CASTLING_WHITE_LONG = 0;
+    public static final byte CASTLING_WHITE_SHORT = 1;
+    public static final byte CASTLING_BLACK_SHORT = 2;
+    public static final byte CASTLING_BLACK_LONG = 3;
 
     private static byte typeToPromotedFigure[] = new byte[PAWN_PROMOTION_B_QUEEN + 1];
 
@@ -90,7 +139,7 @@ public final class MoveImpl implements Move {
         typeToPromotedFigure[PAWN_PROMOTION_B_QUEEN] = Figure.B_Queen.figureCode;
     }
 
-    private static byte promotedFigureToType[] = new byte[127];
+    private static byte promotedFigureToType[] = new byte[Figure.B_Queen.figureCode + 1];
 
     static {
         promotedFigureToType[Figure.W_Knight.figureCode] = PAWN_PROMOTION_W_KNIGHT;
@@ -115,19 +164,9 @@ public final class MoveImpl implements Move {
         toIndex = parsePos((moveStr.substring(2, 4)));
     }
 
-    public MoveImpl(byte figureType, int from, int to, byte capturedFigure) {
-        this.figureType = figureType;
-        this.fromIndex = (byte) from;
-        this.toIndex = (byte) to;
-        this.capturedFigure = capturedFigure;
-
-        if (BuildConstants.ASSERTIONS) {
-            doAssertions();
-        }
-    }
-
-    public MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure) {
+    private MoveImpl(byte type, byte figureType, int from, int to, byte capturedFigure) {
         this.type = type;
+
         this.figureType = figureType;
         this.fromIndex = (byte) from;
         this.toIndex = (byte) to;
@@ -138,19 +177,13 @@ public final class MoveImpl implements Move {
         }
     }
 
-    private MoveImpl(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        this(FigureConstants.FT_PAWN, from, to, capturedFigure);
-        this.type = promotedFigureToType[promotedFigure.figureCode];
-    }
-
-    private MoveImpl(int from, int to, byte capturedFigure) {
-        this(FigureConstants.FT_PAWN, from, to, capturedFigure);
-        this.type = (byte) (ENPASSANT_MOVE);
+    public MoveImpl(byte figureType, int from, int to, byte capturedFigure) {
+        this(NORMAL_MOVE, figureType, from, to, capturedFigure);
     }
 
     private MoveImpl(CastlingMove castlingMove) {
+        this.type = toType(CASTLING_MOVE, castlingMove.getType());
         this.figureType = FT_KING;
-        this.type = castlingMove.getType();
         this.fromIndex = castlingMove.getKingFrom();
         this.toIndex = castlingMove.getKingTo();
 
@@ -159,16 +192,21 @@ public final class MoveImpl implements Move {
         }
     }
 
+    private static byte toType(byte basicType, byte specialType) {
+        return (byte) (basicType & 0xff | (specialType << OFFSET_SPECIALTYPE));
+    }
+
     public static MoveImpl createCastling(CastlingMove castlingMove) {
         return new MoveImpl(castlingMove);
     }
 
     public static MoveImpl createPromotion(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        return new MoveImpl(from, to, capturedFigure, promotedFigure);
+        return new MoveImpl(toType(PROMOTION_MOVE, promotedFigureToType[promotedFigure.figureCode]),
+                FigureConstants.FT_PAWN,from, to, capturedFigure);
     }
 
     public static MoveImpl createEnPassant(int from, int to, byte capturedFigure) {
-        return new MoveImpl(from, to, capturedFigure);
+        return new MoveImpl(ENPASSANT_MOVE, FigureConstants.FT_PAWN, from, to, capturedFigure);
     }
 
     public final static int createNormalMove(byte figureType, int fromIndex, int toIndex, byte capturedFigure) {
@@ -177,19 +215,21 @@ public final class MoveImpl implements Move {
     }
 
     public final static int createCastlingMove(CastlingMove castlingMove) {
-        return longRepresentation(castlingMove.getType(), FT_KING, castlingMove.getKingFrom(),
+        return longRepresentation(toType(CASTLING_MOVE, castlingMove.getType()),
+                FT_KING, castlingMove.getKingFrom(),
                 castlingMove.getKingTo(),
                 (byte) 0);
     }
 
     public final static int createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        return longRepresentation(promotedFigureToType[promotedFigure.figureCode],
+        return longRepresentation(
+                toType(PROMOTION_MOVE, promotedFigureToType[promotedFigure.figureCode]),
                 FigureConstants.FT_PAWN, (byte) from, (byte) to,
                 capturedFigure);
     }
 
     public final static int createEnPassantMove(int from, int to, byte capturedFigure) {
-        return longRepresentation((byte) (ENPASSANT_MOVE), FigureConstants.FT_PAWN, (byte) from,
+        return longRepresentation(ENPASSANT_MOVE, FigureConstants.FT_PAWN, (byte) from,
                 (byte) to,
                 capturedFigure);
     }
@@ -214,29 +254,38 @@ public final class MoveImpl implements Move {
 
     @Override
     public boolean isEnPassant() {
-        return type >= ENPASSANT_MOVE;
+        return getBasicType() == ENPASSANT_MOVE;
     }
 
     @Override
     public boolean isCastling() {
-        return type >= CASTLING_WHITE_LONG && type <= CASTLING_BLACK_LONG;
+        return getBasicType() == CASTLING_MOVE;
     }
 
     @Override
     public boolean isPromotion() {
-        return type >= PAWN_PROMOTION_W_KNIGHT && type <= PAWN_PROMOTION_B_QUEEN;
+        return getBasicType() == PROMOTION_MOVE;
     }
 
     public boolean isQueenPromotion() {
-        return type == PAWN_PROMOTION_W_QUEEN || type == PAWN_PROMOTION_B_QUEEN;
+        return isPromotion() && getSpecialType() == PAWN_PROMOTION_W_QUEEN
+               || getSpecialType() == PAWN_PROMOTION_B_QUEEN;
+    }
+
+    public byte getSpecialType() {
+        return (byte) ((type & SPECIAL_TYPE_MASK_3) >> OFFSET_SPECIALTYPE);
+    }
+
+    public byte getBasicType() {
+        return (byte) (type & MASK_2);
     }
 
     public Figure getPromotedFigure() {
-        return Figure.getFigureByCode(typeToPromotedFigure[type]);
+        return Figure.getFigureByCode(typeToPromotedFigure[getSpecialType()]);
     }
 
     public byte getPromotedFigureByte() {
-        return typeToPromotedFigure[type];
+        return typeToPromotedFigure[getSpecialType()];
     }
 
     @Override
@@ -251,7 +300,7 @@ public final class MoveImpl implements Move {
 
     @Override
     public byte getCastlingType() {
-        return type;
+        return getSpecialType();
     }
 
     @Override
@@ -277,7 +326,7 @@ public final class MoveImpl implements Move {
             return false;
         MoveImpl move = (MoveImpl) o;
         return figureType == move.figureType && fromIndex == move.fromIndex && toIndex == move.toIndex
-                && capturedFigure == move.capturedFigure && type == move.type;
+               && capturedFigure == move.capturedFigure && type == move.type;
     }
 
     @Override
@@ -286,13 +335,11 @@ public final class MoveImpl implements Move {
     }
 
     public int toLongEncoded() {
-        int l = (int) type & MASK_7 |
-                (int) figureType << OFFSET_FIGURETYPE |
-                (int) fromIndex << OFFSET_FROMINDEX |
-                (int) toIndex << OFFSET_TOINDEX |
-                (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
-
-        return l;
+        return (int) type & MASK_5 |
+               (int) figureType << OFFSET_FIGURETYPE |
+               (int) fromIndex << OFFSET_FROMINDEX |
+               (int) toIndex << OFFSET_TOINDEX |
+               (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
     }
 
     public static int longRepresentation(byte type, byte figureType, byte fromIndex, byte toIndex,
@@ -305,20 +352,20 @@ public final class MoveImpl implements Move {
             assertFigureCodeOrEmpty(capturedFigure);
         }
 
-        return (int) type & MASK_7 |
-                (int) figureType << OFFSET_FIGURETYPE |
-                (int) fromIndex << OFFSET_FROMINDEX |
-                (int) toIndex << OFFSET_TOINDEX |
-                (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
+        return (int) type & MASK_5 |
+               (int) figureType << OFFSET_FIGURETYPE |
+               (int) fromIndex << OFFSET_FROMINDEX |
+               (int) toIndex << OFFSET_TOINDEX |
+               (int) capturedFigure << OFFSET_CAPTUREDFIGURE;
     }
 
     public void fromLongEncoded(int l) {
-        type = (byte) (l & MASK_7);
-        figureType = (byte) (l >>> OFFSET_FIGURETYPE & MASK_5);
-        fromIndex = (byte) (l >>> OFFSET_FROMINDEX & MASK_7);
-        toIndex = (byte) (l >>> OFFSET_TOINDEX & MASK_7);
+        type = getType(l);
+        figureType = getFigureType(l);
+        fromIndex = getFromIndex(l);
+        toIndex = getToIndex(l);
 
-        capturedFigure = (byte) (l >>> OFFSET_CAPTUREDFIGURE & MASK_5);
+        capturedFigure = getCapturedFigure(l);
 
         if (BuildConstants.ASSERTIONS) {
             doAssertions();
@@ -326,23 +373,23 @@ public final class MoveImpl implements Move {
     }
 
     public static byte getCapturedFigure(int move) {
-        return (byte) (move >>> OFFSET_CAPTUREDFIGURE & MASK_5);
+        return (byte) (move >>> OFFSET_CAPTUREDFIGURE & MASK_4);
     }
 
     public static byte getFigureType(int move) {
-        return (byte) (move >>> OFFSET_FIGURETYPE & MASK_5);
+        return (byte) (move >>> OFFSET_FIGURETYPE & MASK_4);
     }
 
     public static byte getFromIndex(int move) {
-        return (byte) (byte) (move >>> OFFSET_FROMINDEX & MASK_7);
+        return (byte) (byte) (move >>> OFFSET_FROMINDEX & MASK_6);
     }
 
     public static byte getToIndex(int move) {
-        return (byte) (byte) (move >>> OFFSET_TOINDEX & MASK_7);
+        return (byte) (byte) (move >>> OFFSET_TOINDEX & MASK_6);
     }
 
     public static Figure getPromotedFigure(int move) {
-        return Figure.getFigureByCode(typeToPromotedFigure[getType(move)]);
+        return Figure.getFigureByCode(typeToPromotedFigure[getSpecialType(move)]);
     }
 
     public static boolean isCapture(int move) {
@@ -350,29 +397,66 @@ public final class MoveImpl implements Move {
     }
 
     public static boolean isPromotion(int move) {
-        return getType(move) >= PAWN_PROMOTION_W_KNIGHT && getType(move) <= PAWN_PROMOTION_B_QUEEN;
+        return getBasicType(move) == PROMOTION_MOVE;
     }
 
     private static byte getType(int move) {
-        return (byte) (move & MASK_7);
+        return (byte) (move & MASK_5);
+    }
+
+    public static byte getBasicType(int move) {
+        return (byte) (move & MASK_2);
+    }
+
+    public static byte getSpecialType(int move) {
+        return (byte) ((move & SPECIAL_TYPE_MASK_3) >> OFFSET_SPECIALTYPE);
     }
 
     public static boolean isEnPassant(int move) {
-        return getType(move) >= ENPASSANT_MOVE;
+        return getBasicType(move) == ENPASSANT_MOVE;
     }
 
     public static boolean isCastling(int move) {
-        return getType(move) >= CASTLING_WHITE_LONG && getType(move) <= CASTLING_BLACK_LONG;
+        return getBasicType(move) == CASTLING_MOVE;
     }
 
     public static byte getCastlingType(int move) {
-        return getType(move);
+        return getSpecialType(move);
     }
 
     private void doAssertions() {
+
+        assertionIsOneOf(type & MASK_2, NORMAL_MOVE, PROMOTION_MOVE, CASTLING_MOVE, ENPASSANT_MOVE);
+        byte special = getSpecialType();
+        switch (type & MASK_2) {
+        case NORMAL_MOVE:
+            assertion(special == 0, "special must be 0 for normal moves!");
+            break;
+        case PROMOTION_MOVE:
+            assertion(special >= PAWN_PROMOTION_W_KNIGHT && special <= PAWN_PROMOTION_B_QUEEN,
+                    "no valid special type for promotion!");
+            break;
+        case CASTLING_MOVE:
+            assertion(special >= CASTLING_WHITE_LONG && special <= CASTLING_BLACK_LONG,
+                    "no valid special type for castling!");
+            break;
+        case ENPASSANT_MOVE:
+            assertion(special == 0, "special must be 0 for en passant moves!");
+            break;
+        }
+
         assertFigureType(figureType);
         assertFieldNum(fromIndex);
         assertFieldNum(toIndex);
         assertFigureCodeOrEmpty(capturedFigure);
+
+        // conversion consistency
+        int encoded = toLongEncoded();
+
+        assertion(type == MoveImpl.getType(encoded), "conversion consistency failed!");
+        assertion(figureType == MoveImpl.getFigureType(encoded), "conversion consistency failed!");
+        assertion(fromIndex == MoveImpl.getFromIndex(encoded), "conversion consistency failed!");
+        assertion(toIndex == MoveImpl.getToIndex(encoded), "conversion consistency failed!");
+        assertion(capturedFigure == MoveImpl.getCapturedFigure(encoded), "conversion consistency failed!");
     }
 }

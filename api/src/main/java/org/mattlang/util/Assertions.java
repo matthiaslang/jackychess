@@ -44,7 +44,7 @@ public class Assertions {
                 B_Rook.figureCode, B_Queen.figureCode, B_King.figureCode);
     }
 
-    private static void assertionIsOneOf(int val, int... oneOfThisVals) {
+    public static void assertionIsOneOf(int val, int... oneOfThisVals) {
         if (BuildConstants.ASSERTIONS) {
             for (int oneOfThisVal : oneOfThisVals) {
                 if (val == oneOfThisVal) {
