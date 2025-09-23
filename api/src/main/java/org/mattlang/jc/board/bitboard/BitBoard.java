@@ -251,7 +251,7 @@ public final class BitBoard implements BoardRepresentation {
         }
     }
 
-    private void whiteRookCastlingCheck(int pos){
+    private void whiteRookCastlingCheck(int pos) {
         if (pos == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.removeRight(WHITE_LONG);
@@ -263,7 +263,7 @@ public final class BitBoard implements BoardRepresentation {
         }
     }
 
-    private void blackRookCastlingCheck(int pos){
+    private void blackRookCastlingCheck(int pos) {
         if (pos == boardCastlings.getCastlingBlackLong().getRookFrom()) {
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.removeRight(BLACK_LONG);
@@ -326,7 +326,7 @@ public final class BitBoard implements BoardRepresentation {
             return false;
         BitBoard bitBoard = (BitBoard) o;
         return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos && board.equals(bitBoard.board)
-                && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
+               && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
@@ -433,7 +433,11 @@ public final class BitBoard implements BoardRepresentation {
 
         pushHistory();
 
-        if (move.isCastling()) {
+        switch (move.getBasicType()) {
+        case MoveImpl.NORMAL_MOVE:
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
+            break;
+        case MoveImpl.CASTLING_MOVE:
             /**
              * do a castling move by unsetting the rook and the king, and then setting the rook/king again.
              * We do this instead direkt moving, since this would not work in case of fisher random in all cases, e.g. when
@@ -455,14 +459,16 @@ public final class BitBoard implements BoardRepresentation {
                 removeBlackCastlingRights();
             }
             resetEnPassant();
-        } else if (move.isEnPassant()) {
+            break;
+        case MoveImpl.ENPASSANT_MOVE:
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), (byte) 0);
             set(getEnPassantCapturePos(move), FigureConstants.FT_EMPTY);
-        } else if (move.isPromotion()) {
+            break;
+        case MoveImpl.PROMOTION_MOVE:
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
             set(move.getToIndex(), move.getPromotedFigureByte());
-        } else {
-            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
+            break;
+
         }
 
         switchSiteToMove();
@@ -618,8 +624,8 @@ public final class BitBoard implements BoardRepresentation {
             }
             long allPieces = board.getPieces();
             if (figureType == FT_BISHOP
-                    || figureType == FT_ROOK
-                    || figureType == FT_QUEEN) {
+                || figureType == FT_ROOK
+                || figureType == FT_QUEEN) {
                 if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
                     return false;
                 }

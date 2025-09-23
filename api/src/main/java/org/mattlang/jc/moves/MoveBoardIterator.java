@@ -197,6 +197,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
+    public boolean isQueenPromotion() {
+        return currMoveObj.isQueenPromotion();
+    }
+
+    @Override
     public byte getFigureType() {
         return currMoveObj.getFigureType();
     }

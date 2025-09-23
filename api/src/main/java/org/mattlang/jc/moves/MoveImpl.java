@@ -108,15 +108,19 @@ public final class MoveImpl implements Move {
     /**
      * extended info depending on type. 3 bit 8 values:
      */
-    public static final byte PAWN_PROMOTION_W_KNIGHT = 0;
-    public static final byte PAWN_PROMOTION_W_BISHOP = 1;
-    public static final byte PAWN_PROMOTION_W_ROOK = 2;
-    public static final byte PAWN_PROMOTION_W_QUEEN = 3;
+    public static final byte PAWN_PROMOTION_W_KNIGHT = 0b00;
+    public static final byte PAWN_PROMOTION_W_BISHOP = 0b01;
+    public static final byte PAWN_PROMOTION_W_ROOK = 0b10;
+    public static final byte PAWN_PROMOTION_W_QUEEN = 0b11;
 
-    public static final byte PAWN_PROMOTION_B_KNIGHT = 4;
-    public static final byte PAWN_PROMOTION_B_BISHOP = 5;
-    public static final byte PAWN_PROMOTION_B_ROOK = 6;
-    public static final byte PAWN_PROMOTION_B_QUEEN = 7;
+    public static final byte PAWN_PROMOTION_B_KNIGHT = PAWN_PROMOTION_W_KNIGHT + 0b100;
+    public static final byte PAWN_PROMOTION_B_BISHOP = PAWN_PROMOTION_W_BISHOP + 0b100;
+    public static final byte PAWN_PROMOTION_B_ROOK = PAWN_PROMOTION_W_ROOK + 0b100;
+    public static final byte PAWN_PROMOTION_B_QUEEN = PAWN_PROMOTION_W_QUEEN + 0b100;
+
+    public static final byte TYPE_PROMOTION_QUEEN_MASK =     (byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_QUEEN << OFFSET_SPECIALTYPE));
+
+
 
     public static final byte CASTLING_WHITE_LONG = 0;
     public static final byte CASTLING_WHITE_SHORT = 1;
@@ -251,8 +255,7 @@ public final class MoveImpl implements Move {
     }
 
     public boolean isQueenPromotion() {
-        return isPromotion() && getSpecialType() == PAWN_PROMOTION_W_QUEEN
-               || getSpecialType() == PAWN_PROMOTION_B_QUEEN;
+        return (type & TYPE_PROMOTION_QUEEN_MASK) == TYPE_PROMOTION_QUEEN_MASK;
     }
 
     public byte getSpecialType() {
@@ -381,6 +384,10 @@ public final class MoveImpl implements Move {
 
     public static boolean isPromotion(int move) {
         return getBasicType(move) == PROMOTION_MOVE;
+    }
+
+    public static boolean isQueenPromotion(int move) {
+        return (move & TYPE_PROMOTION_QUEEN_MASK) == TYPE_PROMOTION_QUEEN_MASK;
     }
 
     private static byte getType(int move) {

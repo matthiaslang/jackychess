@@ -34,6 +34,8 @@ public class MoveImplTest {
         assertThat(m.getSpecialType()).isEqualTo(PAWN_PROMOTION_W_QUEEN);
         assertThat(m.getPromotedFigure()).isEqualTo(Figure.W_Queen);
         assertThat(MoveImpl.isPromotion(l)).isTrue();
+        assertThat(m.isQueenPromotion()).isTrue();
+        assertThat(MoveImpl.isQueenPromotion(l)).isTrue();
         assertThat(MoveImpl.getSpecialType(l)).isEqualTo(PAWN_PROMOTION_W_QUEEN);
 
         m2 = new MoveImpl(l);

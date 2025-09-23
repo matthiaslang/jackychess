@@ -37,6 +37,8 @@ public interface Move {
 
     Figure getPromotedFigure();
 
+    boolean isQueenPromotion();
+
     /**
      * Representation of the move as int value.
      */
