@@ -45,14 +45,11 @@ import lombok.Getter;
 public final class MoveImpl implements Move {
 
     public static final byte MASK_2 = 0b11;
-    public static final byte MASK_3 = 0b111;
     public static final byte SPECIAL_TYPE_MASK_3 = 0b11100;
     public static final byte MASK_4 = 0b1111;
     public static final byte MASK_5 = 0b11111;
     public static final byte MASK_6 = 0b111111;
-    public static final byte MASK_7 = 0b1111111;
 
-    public static final int NOT_SORTED = Integer.MAX_VALUE;
     public static final int OFFSET_SPECIALTYPE = 2;
     public static final int OFFSET_FIGURETYPE = 5;
     public static final int OFFSET_CAPTUREDFIGURE = 21;
