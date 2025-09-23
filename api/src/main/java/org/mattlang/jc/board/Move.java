@@ -33,6 +33,8 @@ public interface Move {
 
     boolean isPromotion();
 
+    byte getBasicType();
+
     Figure getPromotedFigure();
 
     /**

@@ -9,6 +9,7 @@ import static org.mattlang.jc.board.FigureType.Pawn;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
+import static org.mattlang.jc.moves.MoveImpl.*;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.moves.CastlingMove;
@@ -105,13 +106,13 @@ public class FenParser {
         char lastChar = moveStr.charAt(moveStr.length() - 1);
         switch (lastChar) {
         case 'q':
-            return createPawnPromotion(movePos, W_Queen, B_Queen, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_QUEEN, PAWN_PROMOTION_B_QUEEN, captureFig);
         case 'r':
-            return createPawnPromotion(movePos, W_Rook, B_Rook, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_ROOK, PAWN_PROMOTION_B_ROOK, captureFig);
         case 'n':
-            return createPawnPromotion(movePos, W_Knight, B_Knight, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_KNIGHT, PAWN_PROMOTION_B_KNIGHT, captureFig);
         case 'b':
-            return createPawnPromotion(movePos, W_Bishop, B_Bishop, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_BISHOP, PAWN_PROMOTION_B_KNIGHT, captureFig);
         }
 
         // en passant:
@@ -172,10 +173,10 @@ public class FenParser {
                && figFrom.color == figTo.color && figFrom.color == board.getSiteToMove();
     }
 
-    private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, Figure wProm, Figure bProm,
+    private static Move createPawnPromotion(IndexConversion.MoveFromTo parsed, byte wProm, byte bProm,
             byte captureFig) {
-        Figure figure = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
-        return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, figure);
+        byte promotionSpecialType = parsed.getTo() >= 56 && parsed.getTo() <= 63 ? wProm : bProm;
+        return MoveImpl.createPromotion(parsed.getFrom(), parsed.getTo(), captureFig, promotionSpecialType);
     }
 
     private static void setPosition(BoardRepresentation board, String figures, String siteToMove, String rochade,

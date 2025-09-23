@@ -136,20 +136,6 @@ public final class MoveImpl implements Move {
         typeToPromotedFigure[PAWN_PROMOTION_B_QUEEN] = Figure.B_Queen.figureCode;
     }
 
-    private static byte promotedFigureToType[] = new byte[Figure.B_Queen.figureCode + 1];
-
-    static {
-        promotedFigureToType[Figure.W_Knight.figureCode] = PAWN_PROMOTION_W_KNIGHT;
-        promotedFigureToType[Figure.W_Bishop.figureCode] = PAWN_PROMOTION_W_BISHOP;
-        promotedFigureToType[Figure.W_Rook.figureCode] = PAWN_PROMOTION_W_ROOK;
-        promotedFigureToType[Figure.W_Queen.figureCode] = PAWN_PROMOTION_W_QUEEN;
-
-        promotedFigureToType[Figure.B_Knight.figureCode] = PAWN_PROMOTION_B_KNIGHT;
-        promotedFigureToType[Figure.B_Bishop.figureCode] = PAWN_PROMOTION_B_BISHOP;
-        promotedFigureToType[Figure.B_Rook.figureCode] = PAWN_PROMOTION_B_ROOK;
-        promotedFigureToType[Figure.B_Queen.figureCode] = PAWN_PROMOTION_B_QUEEN;
-    }
-
     public MoveImpl(int l) {
         fromLongEncoded(l);
     }
@@ -190,15 +176,15 @@ public final class MoveImpl implements Move {
     }
 
     private static byte toType(byte basicType, byte specialType) {
-        return (byte) (basicType & 0xff | (specialType << OFFSET_SPECIALTYPE));
+        return (byte) (basicType | (specialType << OFFSET_SPECIALTYPE));
     }
 
     public static MoveImpl createCastling(CastlingMove castlingMove) {
         return new MoveImpl(castlingMove);
     }
 
-    public static MoveImpl createPromotion(int from, int to, byte capturedFigure, Figure promotedFigure) {
-        return new MoveImpl(toType(PROMOTION_MOVE, promotedFigureToType[promotedFigure.figureCode]),
+    public static MoveImpl createPromotion(int from, int to, byte capturedFigure, byte promotionSpecialType) {
+        return new MoveImpl(toType(PROMOTION_MOVE, promotionSpecialType),
                 FigureConstants.FT_PAWN,from, to, capturedFigure);
     }
 
@@ -218,9 +204,9 @@ public final class MoveImpl implements Move {
                 (byte) 0);
     }
 
-    public final static int createPromotionMove(int from, int to, byte capturedFigure, Figure promotedFigure) {
+    public final static int createPromotionMove(int from, int to, byte capturedFigure, byte promotionSpecialType) {
         return longRepresentation(
-                toType(PROMOTION_MOVE, promotedFigureToType[promotedFigure.figureCode]),
+                toType(PROMOTION_MOVE, promotionSpecialType),
                 FigureConstants.FT_PAWN, (byte) from, (byte) to,
                 capturedFigure);
     }

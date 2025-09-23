@@ -28,7 +28,7 @@ public class MoveImplTest {
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
 
-        m = MoveImpl.createPromotion(0, 63, Figure.B_Queen.figureCode, Figure.W_Queen);
+        m = MoveImpl.createPromotion(0, 63, Figure.B_Queen.figureCode, PAWN_PROMOTION_W_QUEEN);
         l = m.toLongEncoded();
         assertThat(m.isPromotion()).isTrue();
         assertThat(m.getSpecialType()).isEqualTo(PAWN_PROMOTION_W_QUEEN);

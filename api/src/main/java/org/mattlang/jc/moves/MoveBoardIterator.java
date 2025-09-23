@@ -172,6 +172,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
+    public byte getBasicType() {
+        return currMoveObj.getBasicType();
+    }
+
+    @Override
     public boolean isEnPassant() {
         return currMoveObj.isEnPassant();
     }

@@ -2,7 +2,6 @@ package org.mattlang.jc.engine;
 
 import static org.mattlang.jc.Constants.MAX_MOVES;
 import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
 import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
@@ -65,10 +64,10 @@ public final class MoveList {
         }
 
         if (isOnLastLine(to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Queen : B_Queen));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Rook : B_Rook));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Bishop : B_Bishop));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Knight : B_Knight));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_QUEEN : PAWN_PROMOTION_B_QUEEN));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_ROOK : PAWN_PROMOTION_B_ROOK));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_BISHOP : PAWN_PROMOTION_B_BISHOP));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_KNIGHT : PAWN_PROMOTION_B_KNIGHT));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
