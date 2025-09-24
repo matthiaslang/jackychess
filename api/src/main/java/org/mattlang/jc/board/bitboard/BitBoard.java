@@ -499,16 +499,20 @@ public final class BitBoard implements BoardRepresentation {
         if (move.getCapturedFigure() != 0) {
             board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
         }
-        if (move.isEnPassant()) {
+        switch (move.getBasicType()) {
+        case MoveImpl.ENPASSANT_MOVE:
             // override the "default" overrider field with empty..
             board.setEmpty(move.getToIndex());
             // because we have the special en passant capture pos which we need to reset with the captured figure
             board.set(getEnPassantCapturePos(move), move.getCapturedFigure());
-        } else if (move.isPromotion()) {
+            break;
+        case MoveImpl.PROMOTION_MOVE:
             Figure promotedFigure = getFigure(move.getFromIndex());
             byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
             board.set(move.getFromIndex(), pawn);
-        } else if (move.isCastling()) {
+            break;
+
+        case MoveImpl.CASTLING_MOVE:
             CastlingMove castlingMove = getCastlingMove(move);
 
             /**
@@ -522,7 +526,7 @@ public final class BitBoard implements BoardRepresentation {
 
             board.setOnEmptyField(castlingMove.getRookFrom(), rook);
             board.setOnEmptyField(castlingMove.getKingFrom(), king);
-
+            break;
         }
 
         siteToMove = siteToMove.invert();
