@@ -489,24 +489,38 @@ public final class BitBoard implements BoardRepresentation {
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
 
         byte figureType = move.getFigureType();
-        if (move.isPromotion()) {
-            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
-        }
-        if (!move.isCastling()) {
-            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
-        }
 
-        if (move.getCapturedFigure() != 0) {
-            board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
-        }
+
         switch (move.getBasicType()) {
+        case MoveImpl.NORMAL_MOVE:
+
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+            if (move.getCapturedFigure() != 0) {
+                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            }
+            break;
         case MoveImpl.ENPASSANT_MOVE:
+
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+
+            if (move.getCapturedFigure() != 0) {
+                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            }
+
             // override the "default" overrider field with empty..
             board.setEmpty(move.getToIndex());
             // because we have the special en passant capture pos which we need to reset with the captured figure
             board.set(getEnPassantCapturePos(move), move.getCapturedFigure());
             break;
         case MoveImpl.PROMOTION_MOVE:
+            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
+
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+
+            if (move.getCapturedFigure() != 0) {
+                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            }
+
             Figure promotedFigure = getFigure(move.getFromIndex());
             byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
             board.set(move.getFromIndex(), pawn);
