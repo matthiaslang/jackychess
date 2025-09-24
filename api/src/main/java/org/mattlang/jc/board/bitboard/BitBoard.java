@@ -490,32 +490,23 @@ public final class BitBoard implements BoardRepresentation {
 
         byte figureType = move.getFigureType();
 
-
         switch (move.getBasicType()) {
         case MoveImpl.NORMAL_MOVE:
-
-            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
             if (move.getCapturedFigure() != 0) {
                 board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
             }
             break;
         case MoveImpl.ENPASSANT_MOVE:
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
 
-            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
-
-            if (move.getCapturedFigure() != 0) {
-                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
-            }
-
-            // override the "default" overrider field with empty..
-            board.setEmpty(move.getToIndex());
-            // because we have the special en passant capture pos which we need to reset with the captured figure
+            // set the special en passant capture pos which we need to reset with the captured figure
             board.set(getEnPassantCapturePos(move), move.getCapturedFigure());
             break;
         case MoveImpl.PROMOTION_MOVE:
             figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
 
-            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
 
             if (move.getCapturedFigure() != 0) {
                 board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
