@@ -741,8 +741,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             while (moveCursor.nextMove()) {
 
                 // skip low promotions
-                if (moveCursor.isPromotion()
-                    && moveCursor.getPromotedFigure().figureType != FigureType.Queen) {
+                if (moveCursor.isPromotion() && !moveCursor.isQueenPromotion()) {
                     statistics.skipLowPromotionsCount++;
                     continue;
                 }
