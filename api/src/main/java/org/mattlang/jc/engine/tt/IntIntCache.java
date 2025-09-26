@@ -12,23 +12,22 @@ public final class IntIntCache {
 
     public static final int NORESULT = 1000000;
 
-    private int[] zobrists;
+    private long[] zobrists;
     private int[] scores;
 
     public IntIntCache(int bitSize) {
         this.bitSize = bitSize;
         capacity = 1 << bitSize;
-        zobrists = new int[capacity];
+        zobrists = new long[capacity];
         scores = new int[capacity];
     }
 
     public int find(long zobristHash) {
         int index = h0(zobristHash);
-        int partialZ = h1(zobristHash);
         long xorKey = zobrists[index];
         int score = scores[index];
 
-        if ((xorKey ^ score) == partialZ) {
+        if ((xorKey ^ score) == zobristHash) {
             return score;
         }
 
@@ -39,17 +38,10 @@ public final class IntIntCache {
         return (int) (key & (capacity - 1));
     }
 
-    private int h1(long key) {
-        return (int) ((key >> 32) & (capacity - 1));
-    }
-
     public void save(long zobristHash, int score) {
         int index = h0(zobristHash);
-        int partialZ = h1(zobristHash);
-
-        zobrists[index] = partialZ ^ score;
+        zobrists[index] = zobristHash ^ score;
         scores[index] = score;
-
     }
 
     public void reset() {
