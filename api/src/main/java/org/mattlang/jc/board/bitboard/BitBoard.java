@@ -1,11 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.FigureConstants.*;
-
-import java.util.Objects;
-
+import lombok.Getter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.material.Material;
@@ -14,7 +9,11 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
-import lombok.Getter;
+import java.util.Objects;
+
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 public final class BitBoard implements BoardRepresentation {
 
@@ -616,7 +615,7 @@ public final class BitBoard implements BoardRepresentation {
                 return false;
             }
         } else if (MoveImpl.isCastling(aMove)) {
-            if (!boardCastlings.getCastlingMove(MoveImpl.getCastlingType(aMove)).getDef().check(this)) {
+            if (!boardCastlings.getCastlingMove(MoveImpl.getType(aMove)).getDef().check(this)) {
                 return false;
             }
         } else {
@@ -706,7 +705,7 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     private CastlingMove getCastlingMove(Move move) {
-        return boardCastlings.getCastlingMove(move.getCastlingType());
+        return boardCastlings.getCastlingMove(move.getType());
     }
 
     /**

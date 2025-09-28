@@ -1,12 +1,12 @@
 package org.mattlang.jc.moves;
 
-import static org.mattlang.jc.board.IndexConversion.convert;
-import static org.mattlang.jc.moves.MoveImpl.CASTLING_BLACK_LONG;
-import static org.mattlang.jc.moves.MoveImpl.CASTLING_WHITE_LONG;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
+
+import static org.mattlang.jc.board.IndexConversion.convert;
+import static org.mattlang.jc.moves.MoveImpl.CASTLING_BLACK_LONG_TYPE;
+import static org.mattlang.jc.moves.MoveImpl.CASTLING_WHITE_LONG_TYPE;
 
 /**
  * Methods to convert Moves to String representations.
@@ -36,7 +36,7 @@ public class MoveToStringConverter {
         // in chess960 we code a castling move as king captures rook to make it distinct.
         // otherwise in some chess960 positions it could not be distinguished between a normal king move.
         if (board.isChess960() && move.isCastling()) {
-            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(move.getCastlingType());
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(move.getType());
             coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
         }
 
@@ -56,7 +56,7 @@ public class MoveToStringConverter {
         // in chess960 we code a castling move as king captures rook to make it distinct.
         // otherwise in some chess960 positions it could not be distinguished between a normal king move.
         if (board.isChess960() && MoveImpl.isCastling(move)) {
-            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(MoveImpl.getCastlingType(move));
+            CastlingMove castlingMove = board.getBoardCastlings().getCastlingMove(MoveImpl.getType(move));
             coords = convert(castlingMove.getKingFrom()) + convert(castlingMove.getRookFrom());
         }
 
@@ -71,7 +71,7 @@ public class MoveToStringConverter {
      */
     public static String toLongAlgebraic(Move move) {
         if (move.isCastling()) {
-            if (move.getCastlingType() == CASTLING_WHITE_LONG || move.getCastlingType() == CASTLING_BLACK_LONG) {
+            if (move.getType() == CASTLING_WHITE_LONG_TYPE || move.getType() == CASTLING_BLACK_LONG_TYPE) {
                 return "O-O-O";
             } else {
                 return "O-O";

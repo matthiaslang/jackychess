@@ -1,18 +1,17 @@
 package org.mattlang.jc.moves;
 
-import static org.mattlang.jc.board.FigureConstants.FT_KING;
-import static org.mattlang.jc.board.IndexConversion.parsePos;
-import static org.mattlang.util.Assertions.*;
-
-import java.util.Objects;
-
+import lombok.Getter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.Move;
 
-import lombok.Getter;
+import java.util.Objects;
+
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
+import static org.mattlang.util.Assertions.*;
 
 /**
  * Represents a move on the board.
@@ -122,10 +121,15 @@ public final class MoveImpl implements Move {
 
 
 
-    public static final byte CASTLING_WHITE_LONG = 0;
-    public static final byte CASTLING_WHITE_SHORT = 1;
-    public static final byte CASTLING_BLACK_SHORT = 2;
-    public static final byte CASTLING_BLACK_LONG = 3;
+    private static final byte CASTLING_WHITE_LONG = 0;
+    private static final byte CASTLING_WHITE_SHORT = 1;
+    private static final byte CASTLING_BLACK_SHORT = 2;
+    private static final byte CASTLING_BLACK_LONG = 3;
+
+    public static final byte CASTLING_WHITE_LONG_TYPE =(byte) (CASTLING_MOVE | (CASTLING_WHITE_LONG << OFFSET_SPECIALTYPE));
+    public static final byte CASTLING_WHITE_SHORT_TYPE =(byte) (CASTLING_MOVE | (CASTLING_WHITE_SHORT << OFFSET_SPECIALTYPE));
+    public static final byte CASTLING_BLACK_SHORT_TYPE =(byte) (CASTLING_MOVE | (CASTLING_BLACK_SHORT << OFFSET_SPECIALTYPE));
+    public static final byte CASTLING_BLACK_LONG_TYPE =(byte) (CASTLING_MOVE | (CASTLING_BLACK_LONG << OFFSET_SPECIALTYPE));
 
     private static byte typeToPromotedFigure[] = new byte[PAWN_PROMOTION_B_QUEEN + 1];
 
@@ -169,7 +173,7 @@ public final class MoveImpl implements Move {
     }
 
     private MoveImpl(CastlingMove castlingMove) {
-        this.type = toType(CASTLING_MOVE, castlingMove.getType());
+        this.type = castlingMove.getType();
         this.figureType = FT_KING;
         this.fromIndex = castlingMove.getKingFrom();
         this.toIndex = castlingMove.getKingTo();
@@ -202,7 +206,7 @@ public final class MoveImpl implements Move {
     }
 
     public final static int createCastlingMove(CastlingMove castlingMove) {
-        return longRepresentation(toType(CASTLING_MOVE, castlingMove.getType()),
+        return longRepresentation(castlingMove.getType(),
                 FT_KING, castlingMove.getKingFrom(),
                 castlingMove.getKingTo(),
                 (byte) 0);
@@ -241,7 +245,7 @@ public final class MoveImpl implements Move {
 
     @Override
     public boolean isEnPassant() {
-        return getBasicType() == ENPASSANT_MOVE;
+        return getType() == ENPASSANT_MOVE;
     }
 
     @Override
@@ -282,11 +286,6 @@ public final class MoveImpl implements Move {
     @Override
     public String toString() {
         return toStr();
-    }
-
-    @Override
-    public byte getCastlingType() {
-        return getSpecialType();
     }
 
     @Override
@@ -390,7 +389,7 @@ public final class MoveImpl implements Move {
         return (move & TYPE_PROMOTION_QUEEN_MASK) == TYPE_PROMOTION_QUEEN_MASK;
     }
 
-    private static byte getType(int move) {
+    public static byte getType(int move) {
         return (byte) (move & MASK_5);
     }
 
@@ -403,15 +402,11 @@ public final class MoveImpl implements Move {
     }
 
     public static boolean isEnPassant(int move) {
-        return getBasicType(move) == ENPASSANT_MOVE;
+        return getType(move) == ENPASSANT_MOVE;
     }
 
     public static boolean isCastling(int move) {
         return getBasicType(move) == CASTLING_MOVE;
-    }
-
-    public static byte getCastlingType(int move) {
-        return getSpecialType(move);
     }
 
     private void doAssertions() {

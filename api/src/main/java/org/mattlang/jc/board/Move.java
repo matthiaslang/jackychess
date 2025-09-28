@@ -46,5 +46,5 @@ public interface Move {
 
     byte getPromotedFigureByte();
 
-    byte getCastlingType();
+    byte getType();
 }
