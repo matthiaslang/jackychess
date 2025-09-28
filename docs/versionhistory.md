@@ -1,5 +1,11 @@
 # Versions
 
+### unnamed
+
+- fixing eval cache using full hash key to prevent wrong cache its. The effect is only very minor during play,
+  but nevertheless it makes it a bit more accurate, giving some more elos in long turnaments.
+
+
 ### 25.09
 
 - add singular extensions: after a lot of experiments and misunderstandings I got it to work and it gives ~60 Elos.
