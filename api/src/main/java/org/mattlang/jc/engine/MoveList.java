@@ -53,7 +53,7 @@ public final class MoveList {
     }
 
     public static boolean isOnLastLine(int to) {
-        return to >= 56 && to <= 63 || to >= 0 && to <= 7;
+        return to >= 56 || to <= 7;
     }
 
     public void genPawnMove(int from, int to, byte capturedFigure) {
