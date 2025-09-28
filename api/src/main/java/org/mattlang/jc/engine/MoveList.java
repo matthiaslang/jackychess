@@ -1,5 +1,16 @@
 package org.mattlang.jc.engine;
 
+import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.mattlang.jc.Constants.MAX_MOVES;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
@@ -7,17 +18,6 @@ import static org.mattlang.jc.board.FigureConstants.W_PAWN;
 import static org.mattlang.jc.moves.MoveImpl.*;
 import static org.mattlang.util.Assertions.assertFieldNum;
 import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
 
 public final class MoveList {
 
@@ -64,10 +64,10 @@ public final class MoveList {
         }
 
         if (isOnLastLine(to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_QUEEN : PAWN_PROMOTION_B_QUEEN));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_ROOK : PAWN_PROMOTION_B_ROOK));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_BISHOP : PAWN_PROMOTION_B_BISHOP));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_KNIGHT : PAWN_PROMOTION_B_KNIGHT));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 

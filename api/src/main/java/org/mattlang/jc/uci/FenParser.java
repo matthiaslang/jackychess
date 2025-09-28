@@ -1,5 +1,9 @@
 package org.mattlang.jc.uci;
 
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
+
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.Figure.*;
@@ -10,10 +14,6 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
-
-import org.mattlang.jc.board.*;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
 
@@ -106,13 +106,13 @@ public class FenParser {
         char lastChar = moveStr.charAt(moveStr.length() - 1);
         switch (lastChar) {
         case 'q':
-            return createPawnPromotion(movePos, PAWN_PROMOTION_W_QUEEN, PAWN_PROMOTION_B_QUEEN, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_QUEEN_TYPE, PAWN_PROMOTION_B_QUEEN_TYPE, captureFig);
         case 'r':
-            return createPawnPromotion(movePos, PAWN_PROMOTION_W_ROOK, PAWN_PROMOTION_B_ROOK, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_ROOK_TYPE, PAWN_PROMOTION_B_ROOK_TYPE, captureFig);
         case 'n':
-            return createPawnPromotion(movePos, PAWN_PROMOTION_W_KNIGHT, PAWN_PROMOTION_B_KNIGHT, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_KNIGHT_TYPE, PAWN_PROMOTION_B_KNIGHT_TYPE, captureFig);
         case 'b':
-            return createPawnPromotion(movePos, PAWN_PROMOTION_W_BISHOP, PAWN_PROMOTION_B_KNIGHT, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_BISHOP_TYPE, PAWN_PROMOTION_B_KNIGHT_TYPE, captureFig);
         }
 
         // en passant:

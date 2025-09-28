@@ -107,19 +107,17 @@ public final class MoveImpl implements Move {
     /**
      * extended info depending on type. 3 bit 8 values:
      */
-    public static final byte PAWN_PROMOTION_W_KNIGHT = 0b00;
-    public static final byte PAWN_PROMOTION_W_BISHOP = 0b01;
-    public static final byte PAWN_PROMOTION_W_ROOK = 0b10;
-    public static final byte PAWN_PROMOTION_W_QUEEN = 0b11;
+    private static final byte PAWN_PROMOTION_W_KNIGHT = 0b00;
+    private static final byte PAWN_PROMOTION_W_BISHOP = 0b01;
+    private static final byte PAWN_PROMOTION_W_ROOK = 0b10;
+    private static final byte PAWN_PROMOTION_W_QUEEN = 0b11;
 
-    public static final byte PAWN_PROMOTION_B_KNIGHT = PAWN_PROMOTION_W_KNIGHT + 0b100;
-    public static final byte PAWN_PROMOTION_B_BISHOP = PAWN_PROMOTION_W_BISHOP + 0b100;
-    public static final byte PAWN_PROMOTION_B_ROOK = PAWN_PROMOTION_W_ROOK + 0b100;
-    public static final byte PAWN_PROMOTION_B_QUEEN = PAWN_PROMOTION_W_QUEEN + 0b100;
+    private static final byte PAWN_PROMOTION_B_KNIGHT = PAWN_PROMOTION_W_KNIGHT + 0b100;
+    private static final byte PAWN_PROMOTION_B_BISHOP = PAWN_PROMOTION_W_BISHOP + 0b100;
+    private static final byte PAWN_PROMOTION_B_ROOK = PAWN_PROMOTION_W_ROOK + 0b100;
+    private static final byte PAWN_PROMOTION_B_QUEEN = PAWN_PROMOTION_W_QUEEN + 0b100;
 
     public static final byte TYPE_PROMOTION_QUEEN_MASK =     (byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_QUEEN << OFFSET_SPECIALTYPE));
-
-
 
     private static final byte CASTLING_WHITE_LONG = 0;
     private static final byte CASTLING_WHITE_SHORT = 1;
@@ -130,6 +128,17 @@ public final class MoveImpl implements Move {
     public static final byte CASTLING_WHITE_SHORT_TYPE =(byte) (CASTLING_MOVE | (CASTLING_WHITE_SHORT << OFFSET_SPECIALTYPE));
     public static final byte CASTLING_BLACK_SHORT_TYPE =(byte) (CASTLING_MOVE | (CASTLING_BLACK_SHORT << OFFSET_SPECIALTYPE));
     public static final byte CASTLING_BLACK_LONG_TYPE =(byte) (CASTLING_MOVE | (CASTLING_BLACK_LONG << OFFSET_SPECIALTYPE));
+
+
+    public static final byte PAWN_PROMOTION_W_KNIGHT_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_KNIGHT << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_W_BISHOP_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_BISHOP << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_W_ROOK_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_ROOK << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_W_QUEEN_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_QUEEN << OFFSET_SPECIALTYPE));
+
+    public static final byte PAWN_PROMOTION_B_KNIGHT_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_B_KNIGHT << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_B_BISHOP_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_B_BISHOP << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_B_ROOK_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_B_ROOK << OFFSET_SPECIALTYPE));
+    public static final byte PAWN_PROMOTION_B_QUEEN_TYPE =(byte) (PROMOTION_MOVE | (PAWN_PROMOTION_B_QUEEN << OFFSET_SPECIALTYPE));
 
     private static byte typeToPromotedFigure[] = new byte[PAWN_PROMOTION_B_QUEEN + 1];
 
@@ -183,16 +192,12 @@ public final class MoveImpl implements Move {
         }
     }
 
-    private static byte toType(byte basicType, byte specialType) {
-        return (byte) (basicType | (specialType << OFFSET_SPECIALTYPE));
-    }
-
     public static MoveImpl createCastling(CastlingMove castlingMove) {
         return new MoveImpl(castlingMove);
     }
 
     public static MoveImpl createPromotion(int from, int to, byte capturedFigure, byte promotionSpecialType) {
-        return new MoveImpl(toType(PROMOTION_MOVE, promotionSpecialType),
+        return new MoveImpl(promotionSpecialType,
                 FigureConstants.FT_PAWN,from, to, capturedFigure);
     }
 
@@ -214,7 +219,7 @@ public final class MoveImpl implements Move {
 
     public final static int createPromotionMove(int from, int to, byte capturedFigure, byte promotionSpecialType) {
         return longRepresentation(
-                toType(PROMOTION_MOVE, promotionSpecialType),
+                promotionSpecialType,
                 FigureConstants.FT_PAWN, (byte) from, (byte) to,
                 capturedFigure);
     }

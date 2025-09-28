@@ -1,11 +1,11 @@
 package org.mattlang.jc.moves;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.moves.MoveImpl.PAWN_PROMOTION_W_QUEEN;
-
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.bitboard.BitBoard;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.moves.MoveImpl.PAWN_PROMOTION_W_QUEEN_TYPE;
 
 public class MoveImplTest {
 
@@ -28,15 +28,15 @@ public class MoveImplTest {
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
 
-        m = MoveImpl.createPromotion(0, 63, Figure.B_Queen.figureCode, PAWN_PROMOTION_W_QUEEN);
+        m = MoveImpl.createPromotion(0, 63, Figure.B_Queen.figureCode, PAWN_PROMOTION_W_QUEEN_TYPE);
         l = m.toLongEncoded();
         assertThat(m.isPromotion()).isTrue();
-        assertThat(m.getSpecialType()).isEqualTo(PAWN_PROMOTION_W_QUEEN);
+        assertThat(m.getSpecialType()).isEqualTo(PAWN_PROMOTION_W_QUEEN_TYPE);
         assertThat(m.getPromotedFigure()).isEqualTo(Figure.W_Queen);
         assertThat(MoveImpl.isPromotion(l)).isTrue();
         assertThat(m.isQueenPromotion()).isTrue();
         assertThat(MoveImpl.isQueenPromotion(l)).isTrue();
-        assertThat(MoveImpl.getSpecialType(l)).isEqualTo(PAWN_PROMOTION_W_QUEEN);
+        assertThat(MoveImpl.getSpecialType(l)).isEqualTo(PAWN_PROMOTION_W_QUEEN_TYPE);
 
         m2 = new MoveImpl(l);
         assertThat(m2).isEqualTo(m);
