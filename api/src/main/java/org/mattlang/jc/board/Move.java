@@ -33,7 +33,11 @@ public interface Move {
 
     boolean isPromotion();
 
+    byte getBasicType();
+
     Figure getPromotedFigure();
+
+    boolean isQueenPromotion();
 
     /**
      * Representation of the move as int value.
@@ -42,5 +46,5 @@ public interface Move {
 
     byte getPromotedFigureByte();
 
-    byte getCastlingType();
+    byte getType();
 }

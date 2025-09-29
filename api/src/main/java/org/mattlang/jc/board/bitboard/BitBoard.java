@@ -1,11 +1,6 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.FigureConstants.*;
-
-import java.util.Objects;
-
+import lombok.Getter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.material.Material;
@@ -14,7 +9,11 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
-import lombok.Getter;
+import java.util.Objects;
+
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.FigureConstants.*;
 
 public final class BitBoard implements BoardRepresentation {
 
@@ -251,7 +250,7 @@ public final class BitBoard implements BoardRepresentation {
         }
     }
 
-    private void whiteRookCastlingCheck(int pos){
+    private void whiteRookCastlingCheck(int pos) {
         if (pos == boardCastlings.getCastlingWhiteLong().getRookFrom()) {
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.removeRight(WHITE_LONG);
@@ -263,7 +262,7 @@ public final class BitBoard implements BoardRepresentation {
         }
     }
 
-    private void blackRookCastlingCheck(int pos){
+    private void blackRookCastlingCheck(int pos) {
         if (pos == boardCastlings.getCastlingBlackLong().getRookFrom()) {
             zobristHash = Zobrist.updateCastling(zobristHash, getCastlingRights());
             castlingRights.removeRight(BLACK_LONG);
@@ -326,7 +325,7 @@ public final class BitBoard implements BoardRepresentation {
             return false;
         BitBoard bitBoard = (BitBoard) o;
         return enPassantMoveTargetPos == bitBoard.enPassantMoveTargetPos && board.equals(bitBoard.board)
-                && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
+               && castlingRights.equals(bitBoard.castlingRights) && siteToMove == bitBoard.siteToMove;
     }
 
     @Override
@@ -433,7 +432,11 @@ public final class BitBoard implements BoardRepresentation {
 
         pushHistory();
 
-        if (move.isCastling()) {
+        switch (move.getBasicType()) {
+        case MoveImpl.NORMAL_MOVE:
+            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
+            break;
+        case MoveImpl.CASTLING_MOVE:
             /**
              * do a castling move by unsetting the rook and the king, and then setting the rook/king again.
              * We do this instead direkt moving, since this would not work in case of fisher random in all cases, e.g. when
@@ -455,14 +458,16 @@ public final class BitBoard implements BoardRepresentation {
                 removeBlackCastlingRights();
             }
             resetEnPassant();
-        } else if (move.isEnPassant()) {
+            break;
+        case MoveImpl.ENPASSANT_MOVE:
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), (byte) 0);
             set(getEnPassantCapturePos(move), FigureConstants.FT_EMPTY);
-        } else if (move.isPromotion()) {
+            break;
+        case MoveImpl.PROMOTION_MOVE:
             move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
             set(move.getToIndex(), move.getPromotedFigureByte());
-        } else {
-            move(move.getFigureType(), move.getFromIndex(), move.getToIndex(), move.getCapturedFigure());
+            break;
+
         }
 
         switchSiteToMove();
@@ -483,26 +488,35 @@ public final class BitBoard implements BoardRepresentation {
         boolean isWhiteFigure = (board.getColorMask(nWhite) & fromMask) != 0;
 
         byte figureType = move.getFigureType();
-        if (move.isPromotion()) {
-            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
-        }
-        if (!move.isCastling()) {
-            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack, (byte) 0);
-        }
 
-        if (move.getCapturedFigure() != 0) {
-            board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
-        }
-        if (move.isEnPassant()) {
-            // override the "default" overrider field with empty..
-            board.setEmpty(move.getToIndex());
-            // because we have the special en passant capture pos which we need to reset with the captured figure
+        switch (move.getBasicType()) {
+        case MoveImpl.NORMAL_MOVE:
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
+            if (move.getCapturedFigure() != 0) {
+                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            }
+            break;
+        case MoveImpl.ENPASSANT_MOVE:
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
+
+            // set the special en passant capture pos which we need to reset with the captured figure
             board.set(getEnPassantCapturePos(move), move.getCapturedFigure());
-        } else if (move.isPromotion()) {
+            break;
+        case MoveImpl.PROMOTION_MOVE:
+            figureType = (byte) (move.getPromotedFigureByte() & MASK_OUT_COLOR);
+
+            board.move(move.getToIndex(), move.getFromIndex(), figureType, isWhiteFigure ? nWhite : nBlack);
+
+            if (move.getCapturedFigure() != 0) {
+                board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
+            }
+
             Figure promotedFigure = getFigure(move.getFromIndex());
             byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
             board.set(move.getFromIndex(), pawn);
-        } else if (move.isCastling()) {
+            break;
+
+        case MoveImpl.CASTLING_MOVE:
             CastlingMove castlingMove = getCastlingMove(move);
 
             /**
@@ -516,7 +530,7 @@ public final class BitBoard implements BoardRepresentation {
 
             board.setOnEmptyField(castlingMove.getRookFrom(), rook);
             board.setOnEmptyField(castlingMove.getKingFrom(), king);
-
+            break;
         }
 
         siteToMove = siteToMove.invert();
@@ -601,7 +615,7 @@ public final class BitBoard implements BoardRepresentation {
                 return false;
             }
         } else if (MoveImpl.isCastling(aMove)) {
-            if (!boardCastlings.getCastlingMove(MoveImpl.getCastlingType(aMove)).getDef().check(this)) {
+            if (!boardCastlings.getCastlingMove(MoveImpl.getType(aMove)).getDef().check(this)) {
                 return false;
             }
         } else {
@@ -618,8 +632,8 @@ public final class BitBoard implements BoardRepresentation {
             }
             long allPieces = board.getPieces();
             if (figureType == FT_BISHOP
-                    || figureType == FT_ROOK
-                    || figureType == FT_QUEEN) {
+                || figureType == FT_ROOK
+                || figureType == FT_QUEEN) {
                 if ((BB.IN_BETWEEN[from][to] & allPieces) != 0) {
                     return false;
                 }
@@ -691,7 +705,7 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     private CastlingMove getCastlingMove(Move move) {
-        return boardCastlings.getCastlingMove(move.getCastlingType());
+        return boardCastlings.getCastlingMove(move.getType());
     }
 
     /**

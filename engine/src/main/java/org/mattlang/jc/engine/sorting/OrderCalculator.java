@@ -140,18 +140,15 @@ public final class OrderCalculator {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else if (m.isCapture()) {
-            int mvvLva = MvvLva.calcMMVLVA(m);
+            int score = -MvvLva.calcMMVLVAShort(m);
 
             int heuristic = captureHeuristic.calcValue(m, color);
-
-            int score = 0;
 
             score -= heuristic / 4;
 
             int captFigType = m.getCapturedFigure() & MASK_OUT_COLOR;
             score -= MVVAUGMENT[captFigType];
 
-            score -= mvvLva;
             boolean goodSee = SEE.see_ge(board, m, captureMargin);
             if (goodSee) {
                 score += GOOD_CAPTURES_SCORE;

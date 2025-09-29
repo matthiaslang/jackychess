@@ -1,24 +1,23 @@
 package org.mattlang.jc.engine;
 
-import static org.mattlang.jc.Constants.MAX_MOVES;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.Figure.*;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
-import static org.mattlang.jc.moves.MoveImpl.*;
-import static org.mattlang.util.Assertions.assertFieldNum;
-import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
+import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.board.Color;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
+import static org.mattlang.jc.Constants.MAX_MOVES;
+import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.moves.MoveImpl.*;
+import static org.mattlang.util.Assertions.assertFieldNum;
+import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
 
 public final class MoveList {
 
@@ -54,7 +53,7 @@ public final class MoveList {
     }
 
     public static boolean isOnLastLine(int to) {
-        return to >= 56 && to <= 63 || to >= 0 && to <= 7;
+        return to >= 56 || to <= 7;
     }
 
     public void genPawnMove(int from, int to, byte capturedFigure) {
@@ -65,10 +64,10 @@ public final class MoveList {
         }
 
         if (isOnLastLine(to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Queen : B_Queen));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Rook : B_Rook));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Bishop : B_Bishop));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? W_Knight : B_Knight));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 

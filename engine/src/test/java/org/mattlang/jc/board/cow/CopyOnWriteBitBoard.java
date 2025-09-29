@@ -1,13 +1,6 @@
 package org.mattlang.jc.board.cow;
 
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BitBoard.FEN_START_POSITION;
-import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
-
-import java.util.Objects;
-
+import lombok.Getter;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -18,7 +11,13 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
-import lombok.Getter;
+import java.util.Objects;
+
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BitBoard.FEN_START_POSITION;
+import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
 
 /**
  * Example Board variant which does "copy on write" on doMoves and on undoMove it just switches
@@ -583,7 +582,7 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
                 return false;
             }
         } else if (MoveImpl.isCastling(aMove)) {
-            if (!boardCastlings.getCastlingMove(MoveImpl.getCastlingType(aMove)).getDef().check(this)) {
+            if (!boardCastlings.getCastlingMove(MoveImpl.getType(aMove)).getDef().check(this)) {
                 return false;
             }
         } else {
@@ -673,7 +672,7 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
     }
 
     private CastlingMove getCastlingMove(Move move) {
-        return boardCastlings.getCastlingMove(move.getCastlingType());
+        return boardCastlings.getCastlingMove(move.getType());
     }
 
     /**

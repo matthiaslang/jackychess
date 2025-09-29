@@ -1,7 +1,5 @@
 package org.mattlang.jc.moves;
 
-import java.util.logging.Logger;
-
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
@@ -9,6 +7,8 @@ import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.MoveIterator;
 import org.mattlang.jc.movegenerator.Captures;
+
+import java.util.logging.Logger;
 
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
@@ -152,8 +152,8 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     }
 
     @Override
-    public byte getCastlingType() {
-        return currMoveObj.getCastlingType();
+    public byte getType() {
+        return currMoveObj.getType();
     }
 
     @Override
@@ -169,6 +169,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     @Override
     public boolean isPromotion() {
         return currMoveObj.isPromotion();
+    }
+
+    @Override
+    public byte getBasicType() {
+        return currMoveObj.getBasicType();
     }
 
     @Override
@@ -189,6 +194,11 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     @Override
     public Figure getPromotedFigure() {
         return currMoveObj.getPromotedFigure();
+    }
+
+    @Override
+    public boolean isQueenPromotion() {
+        return currMoveObj.isQueenPromotion();
     }
 
     @Override

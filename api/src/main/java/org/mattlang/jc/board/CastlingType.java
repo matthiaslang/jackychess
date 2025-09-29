@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import lombok.Getter;
+
 import static org.mattlang.jc.board.CastlingFields.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
@@ -7,16 +9,14 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.MoveImpl.*;
 
-import lombok.Getter;
-
 @Getter
 public enum CastlingType {
 
-    WHITE_LONG(WHITE, LONG, CASTLING_WHITE_LONG, cWKingTargetPos, cWRookTargetPos),
-    WHITE_SHORT(WHITE, SHORT, CASTLING_WHITE_SHORT, gWKingTargetPos, gWRookTargetPos),
+    WHITE_LONG(WHITE, LONG, CASTLING_WHITE_LONG_TYPE, cWKingTargetPos, cWRookTargetPos),
+    WHITE_SHORT(WHITE, SHORT, CASTLING_WHITE_SHORT_TYPE, gWKingTargetPos, gWRookTargetPos),
 
-    BLACK_LONG(BLACK, LONG, CASTLING_BLACK_LONG, cBKingTargetPos, cBRookTargetPos),
-    BLACK_SHORT(BLACK, SHORT, CASTLING_BLACK_SHORT, gBKingTargetPos, gBRookTargetPos);
+    BLACK_LONG(BLACK, LONG, CASTLING_BLACK_LONG_TYPE, cBKingTargetPos, cBRookTargetPos),
+    BLACK_SHORT(BLACK, SHORT, CASTLING_BLACK_SHORT_TYPE, gBKingTargetPos, gBRookTargetPos);
 
     private final Color color;
 

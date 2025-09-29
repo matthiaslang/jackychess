@@ -1,11 +1,11 @@
 package org.mattlang.jc.board.bitboard;
 
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.moves.MoveImpl.*;
-
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.CastlingType;
 import org.mattlang.jc.moves.CastlingMove;
+
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.moves.MoveImpl.*;
 
 /**
  * Contains the move-relevant classes for castlings.
@@ -41,13 +41,13 @@ public final class BoardCastlings {
 
     public CastlingMove getCastlingMove(byte type) {
         switch (type) {
-        case CASTLING_WHITE_LONG:
+        case CASTLING_WHITE_LONG_TYPE:
             return castlingWhiteLong;
-        case CASTLING_WHITE_SHORT:
+        case CASTLING_WHITE_SHORT_TYPE:
             return castlingWhiteShort;
-        case CASTLING_BLACK_SHORT:
+        case CASTLING_BLACK_SHORT_TYPE:
             return castlingBlackShort;
-        case CASTLING_BLACK_LONG:
+        case CASTLING_BLACK_LONG_TYPE:
             return castlingBlackLong;
         }
         throw new IllegalStateException("no castling move!");

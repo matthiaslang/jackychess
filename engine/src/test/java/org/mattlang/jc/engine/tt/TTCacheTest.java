@@ -1,12 +1,12 @@
 package org.mattlang.jc.engine.tt;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TTCacheTest {
 
@@ -17,13 +17,15 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.storeTTEntry(board, Color.WHITE, 500, 300, 900, 7, 0);
+        cache.storeTTEntry(board, Color.WHITE, -500, -900, -300, 7, 345);
 
         TTResult entry = new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
         assertThat(entry).isNotNull();
 
         assertThat(entry.getDepth()).isEqualTo(7);
+        assertThat(entry.getScore()).isEqualTo(-500);
+        assertThat(entry.getMove()).isEqualTo(345);
         assertThat(entry.isExact()).isTrue();
 
     }

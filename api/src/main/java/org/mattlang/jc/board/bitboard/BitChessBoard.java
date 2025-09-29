@@ -301,8 +301,18 @@ public class BitChessBoard {
             colorBB[opponentColor(color)] ^= toBB;       // update color bitboard by captured piece
         }
 
-        //occupiedBB            ^=  fromBB;     // update occupied, only from becomes empty
-        //emptyBB               ^=  fromBB;     // update empty bitboard
+        if (BuildConstants.ASSERTIONS) {
+            doAssertions();
+        }
+    }
+
+    public void move(int from, int to, byte figType, int color) {
+
+        long fromBB = 1L << from;
+        long toBB = 1L << to;
+        long fromToBB = fromBB ^ toBB; // |+
+        pieceBB[figType] ^= fromToBB;   // update piece bitboard
+        colorBB[color] ^= fromToBB;   // update white or black color bitboard
 
         if (BuildConstants.ASSERTIONS) {
             doAssertions();

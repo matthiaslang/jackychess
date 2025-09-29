@@ -3,7 +3,6 @@ package org.mattlang.jc.engine.sorting;
 import static org.mattlang.jc.board.FigureConstants.FT_QUEEN;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
-import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.Move;
 
 /**
@@ -42,10 +41,16 @@ public class MvvLva {
         }
         // weight "high" promotions (queen promotion);
         // all other promotions are mostly not of interest(bishop & rook are redundant to queen; Knight is mostly not desirable)
-        if (move.isPromotion() && move.getPromotedFigure().figureType == FigureType.Queen) {
+        if (move.isQueenPromotion()) {
             weight += (FT_QUEEN + 1) * 6;
         }
         return weight;
+    }
+
+    public static int calcMMVLVAShort(Move move) {
+        int captFigType = move.getCapturedFigure() & MASK_OUT_COLOR;
+        // for a capture build the difference to order for good and bad captures:
+        return captFigType * 6 - move.getFigureType();
     }
 
 }
