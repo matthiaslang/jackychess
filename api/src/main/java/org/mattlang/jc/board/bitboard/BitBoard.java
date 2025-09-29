@@ -1,6 +1,11 @@
 package org.mattlang.jc.board.bitboard;
 
-import lombok.Getter;
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.FigureConstants.*;
+
+import java.util.Objects;
+
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.material.Material;
@@ -9,11 +14,7 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
-import java.util.Objects;
-
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.FigureConstants.*;
+import lombok.Getter;
 
 public final class BitBoard implements BoardRepresentation {
 
@@ -511,8 +512,7 @@ public final class BitBoard implements BoardRepresentation {
                 board.setOnEmptyField(move.getToIndex(), move.getCapturedFigure());
             }
 
-            Figure promotedFigure = getFigure(move.getFromIndex());
-            byte pawn = promotedFigure.color == Color.WHITE ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
+            byte pawn = isWhiteFigure ? Figure.W_Pawn.figureCode : Figure.B_Pawn.figureCode;
             board.set(move.getFromIndex(), pawn);
             break;
 

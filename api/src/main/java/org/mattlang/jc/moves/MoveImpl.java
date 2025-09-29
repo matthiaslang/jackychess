@@ -1,17 +1,18 @@
 package org.mattlang.jc.moves;
 
-import lombok.Getter;
+import static org.mattlang.jc.board.FigureConstants.FT_KING;
+import static org.mattlang.jc.board.IndexConversion.parsePos;
+import static org.mattlang.util.Assertions.*;
+
+import java.util.Objects;
+
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureConstants;
 import org.mattlang.jc.board.Move;
 
-import java.util.Objects;
-
-import static org.mattlang.jc.board.FigureConstants.FT_KING;
-import static org.mattlang.jc.board.IndexConversion.parsePos;
-import static org.mattlang.util.Assertions.*;
+import lombok.Getter;
 
 /**
  * Represents a move on the board.
@@ -43,17 +44,17 @@ import static org.mattlang.util.Assertions.*;
 @Getter
 public final class MoveImpl implements Move {
 
-    public static final byte MASK_2 = 0b11;
-    public static final byte SPECIAL_TYPE_MASK_3 = 0b11100;
-    public static final byte MASK_4 = 0b1111;
-    public static final byte MASK_5 = 0b11111;
-    public static final byte MASK_6 = 0b111111;
+    private static final byte MASK_2 = 0b11;
+    private static final byte SPECIAL_TYPE_MASK_3 = 0b11100;
+    private static final byte MASK_4 = 0b1111;
+    private static final byte MASK_5 = 0b11111;
+    private static final byte MASK_6 = 0b111111;
 
-    public static final int OFFSET_SPECIALTYPE = 2;
-    public static final int OFFSET_FIGURETYPE = 5;
-    public static final int OFFSET_CAPTUREDFIGURE = 21;
-    public static final int OFFSET_TOINDEX = 15;
-    public static final int OFFSET_FROMINDEX = 9;
+    private static final int OFFSET_SPECIALTYPE = 2;
+    private static final int OFFSET_FIGURETYPE = 5;
+    private static final int OFFSET_CAPTUREDFIGURE = 21;
+    private static final int OFFSET_TOINDEX = 15;
+    private static final int OFFSET_FROMINDEX = 9;
 
     private byte figureType;
 
@@ -117,7 +118,7 @@ public final class MoveImpl implements Move {
     private static final byte PAWN_PROMOTION_B_ROOK = PAWN_PROMOTION_W_ROOK + 0b100;
     private static final byte PAWN_PROMOTION_B_QUEEN = PAWN_PROMOTION_W_QUEEN + 0b100;
 
-    public static final byte TYPE_PROMOTION_QUEEN_MASK =     (byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_QUEEN << OFFSET_SPECIALTYPE));
+    private static final byte TYPE_PROMOTION_QUEEN_MASK =     (byte) (PROMOTION_MOVE | (PAWN_PROMOTION_W_QUEEN << OFFSET_SPECIALTYPE));
 
     private static final byte CASTLING_WHITE_LONG = 0;
     private static final byte CASTLING_WHITE_SHORT = 1;
