@@ -4,7 +4,7 @@
 
 - fixing eval cache using full hash key to prevent wrong cache its. The effect is only very minor during play,
   but nevertheless it makes it a bit more accurate, giving some more elos in long turnaments.
-
+- refactored move encoding using 24bits and clearer encoding scheme (may bring a few elos due to easier code)
 
 ### 25.09
 
