@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
 
 public class TTCacheTest {
@@ -17,12 +16,13 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.storeTTEntry(board, Color.WHITE, -500, -900, -300, 7, 345);
+        cache.storeTTEntry(board, -1, -500, -900, -300, 7, 345, -33);
 
         TTResult entry = new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
         assertThat(entry).isNotNull();
 
+        assertThat(entry.getEval()).isEqualTo(-33);
         assertThat(entry.getDepth()).isEqualTo(7);
         assertThat(entry.getScore()).isEqualTo(-500);
         assertThat(entry.getMove()).isEqualTo(345);
@@ -37,7 +37,7 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 400000);
+        cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 400000, 0);
 
         board.switchSiteToMove();
         assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache.NORESULT);
@@ -61,7 +61,7 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 0);
+        cache.addValue(board.getZobristHash(), -500, 5, TTResult.EXACT_VALUE, 0, 0);
 
         board.switchSiteToMove();
         assertThat(cache.getValue(board.getZobristHash())).isEqualTo(TTCache.NORESULT);

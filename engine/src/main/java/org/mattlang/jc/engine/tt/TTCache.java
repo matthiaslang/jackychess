@@ -1,17 +1,17 @@
 package org.mattlang.jc.engine.tt;
 
-import lombok.Getter;
-import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
+import static java.util.logging.Level.INFO;
+import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
+import static org.mattlang.jc.engine.tt.TTResult.*;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
-import static org.mattlang.jc.Constants.DEFAULT_CACHE_SIZE_MB;
-import static org.mattlang.jc.engine.tt.TTResult.toFlag;
+import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.board.BoardRepresentation;
+
+import lombok.Getter;
 
 /**
  * Cache using only a long array to be faster and more memory efficient.
@@ -40,10 +40,14 @@ public final class TTCache {
     private static final int BYTE_SIZE_SLOT = 8 * SLOT_SIZE;
     public static final long MEGABYTE = 1024 * 1024;
 
+    private static final long STATIC_EVAL_MASK = 0xffff000000000000L;
+    //    private static final long AGE_MASK            = 0x0000ffff00000000L;
+    private static final long ZOBRIST_PART_MASK = 0x0000ffffffffffffL;
+
     // key, value
     private long[] keys;
 
-    private TTAging aging = new TTAging();
+    private final TTAging aging = new TTAging();
 
     private int halfMoveCounter = 0;
 
@@ -92,7 +96,7 @@ public final class TTCache {
 
     public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
         long slots = mb * MEGABYTE / sizeOfSlot;
-        int bits =  (int) (Math.log(slots) / Math.log(2));
+        int bits = (int) (Math.log(slots) / Math.log(2));
         LOGGER.info("cache of " + mb + "MB: setting cache to " + slots + " slots, " + bits + " bits");
         return bits;
     }
@@ -121,22 +125,29 @@ public final class TTCache {
     }
 
     public long getValue(final long key) {
+        final int index = findIndex(key);
+        if (index == -1) {
+            return NORESULT;
+        }
+        return keys[index + 1];
+    }
 
+    public int findIndex(final long key) {
         final int index = getIndex(key);
-
+        final long partialKey = partialKey(key);
         for (int i = index; i < index + BUCKET_CHUNK_SIZE; i += SLOT_SIZE) {
             long xorKey = keys[i];
             long value = keys[i + 1];
-            if ((xorKey ^ value) == key) {
+            if (partialKey(xorKey ^ value) == partialKey) {
                 if (BuildConstants.STATS_ACTIVATED) {
                     cacheHits++;
                 }
-                return value;
+                return i;
             }
         }
 
         cacheMisses++;
-        return NORESULT;
+        return -1;
     }
 
     /**
@@ -152,8 +163,8 @@ public final class TTCache {
         return (int) (index % indexPlaces) * BUCKET_CHUNK_SIZE;
     }
 
-    public void addValue(final long key, int score, final int depth, final int flag, final int move) {
-
+    public void addValue(final long key, int score, final int depth, final int flag, final int move, int eval) {
+        final long partialKey = partialKey(key);
         final int index = getIndex(key);
         long replacedDepth = Integer.MAX_VALUE;
         int replaceIndex = index;
@@ -169,16 +180,24 @@ public final class TTCache {
             }
 
             long currentValue = keys[i + 1];
-
             int currentDepth = getDepth(currentValue);
-            if ((xorKey ^ currentValue) == key) {
+            if (partialKey(xorKey ^ currentValue) == partialKey) {
                 if (currentDepth > depth && flag != TTResult.EXACT_VALUE) {
                     if (BuildConstants.STATS_ACTIVATED) {
                         noReplaceCacheAlreadyBetter++;
                     }
+                    // at least save an eval if we have one:
+                    if (flag == ONLY_EVAL) {
+                        keys[replaceIndex] = createKeyContent(key, eval) ^ currentValue;
+                    }
                     return;
                 }
                 replaceIndex = i;
+                // preserve existing evals if we do not have a new one on direct key matches:
+                int savedEval = getStaticEval(xorKey ^ currentValue);
+                if (savedEval != NO_HASH_EVAL && eval == NO_HASH_EVAL) {
+                    eval = savedEval;
+                }
                 break;
             }
 
@@ -191,7 +210,48 @@ public final class TTCache {
 
         final long value = createValue(score, move, flag, depth);
 
-        keys[replaceIndex] = key ^ value;
+        keys[replaceIndex] = createKeyContent(key, eval) ^ value;
+        keys[replaceIndex + 1] = value;
+    }
+
+    private static long partialKey(long key) {
+        return key & ZOBRIST_PART_MASK;
+    }
+
+    private static long createKeyContent(long key, int staticEval) {
+        return (key & ZOBRIST_PART_MASK) | ((long) (staticEval & 0xFFFF) << 48);
+    }
+
+    public static int getStaticEval(long key) {
+        return (short) ((key & STATIC_EVAL_MASK) >>> 48);
+    }
+
+    public void addValueByTTIndex(final long key, final int replaceIndex, int score, final int depth, final int flag,
+            final int move, int eval) {
+        long currentValue = keys[replaceIndex + 1];
+        int currentDepth = getDepth(currentValue);
+
+        if (currentDepth > depth && flag != TTResult.EXACT_VALUE) {
+            if (BuildConstants.STATS_ACTIVATED) {
+                noReplaceCacheAlreadyBetter++;
+            }
+            // at least save an eval if we have one:
+            if (flag == ONLY_EVAL) {
+                keys[replaceIndex] = createKeyContent(key, eval) ^ currentValue;
+            }
+            return;
+        }
+
+        // preserve existing evals if we do not have a new one on direct key matches:
+        long xorKey = keys[replaceIndex];
+        int savedEval = getStaticEval(xorKey ^ currentValue);
+        if (savedEval != NO_HASH_EVAL && eval == NO_HASH_EVAL) {
+            eval = savedEval;
+        }
+
+        final long value = createValue(score, move, flag, depth);
+
+        keys[replaceIndex] = createKeyContent(key, eval) ^ value;
         keys[replaceIndex + 1] = value;
     }
 
@@ -219,8 +279,8 @@ public final class TTCache {
     public String toString(long ttValue) {
         return "score=" + getScore(ttValue) + /*" " + new MoveWrapper(getMove(ttValue)) +*/ " depth=" + getDepth(
                 ttValue)
-                + " flag="
-                + getFlag(ttValue);
+               + " flag="
+               + getFlag(ttValue);
     }
 
     /**
@@ -304,12 +364,16 @@ public final class TTCache {
     }
 
     public boolean findEntry(TTResult result, BoardRepresentation board) {
-        long v = getValue(board.getZobristHash());
-        if (v != NORESULT) {
+        int index = findIndex(board.getZobristHash());
+        if (index != -1) {
+            long xorKey = keys[index];
+            long v = keys[index + 1];
             result.setDepth(getDepth(v));
             result.setType((byte) getFlag(v));
             result.setScore(getScore(v));
             result.setMove(getMove(v));
+            result.setEval(getStaticEval(xorKey ^ v));
+            result.setIndex(index);
             return true;
         }
         return false;
@@ -320,9 +384,18 @@ public final class TTCache {
         return v != NORESULT ? getMove(v) : 0;
     }
 
-    public void storeTTEntry(BoardRepresentation currBoard, Color color, int max, int alpha, int beta, int depth,
-                             int move) {
-        addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move);
+    public void storeTTEntry(BoardRepresentation currBoard, int ttIndex, int max, int alpha, int beta, int depth,
+            int move, int eval) {
+        //        if (ttIndex != -1) {
+        //            addValueByTTIndex(currBoard.getZobristHash(), ttIndex, max, depth, toFlag(max, alpha, beta), move, eval);
+        //        } else {
+        addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move, eval);
+        //        }
+    }
+
+    public void storeTTEntry(BoardRepresentation currBoard, int ttIndex, int depth,
+            int eval) {
+        addValue(currBoard.getZobristHash(), 0, depth, ONLY_EVAL, 0, eval);
     }
 
     public void updateAging(BoardRepresentation board) {

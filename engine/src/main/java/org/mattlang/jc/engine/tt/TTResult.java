@@ -10,14 +10,21 @@ import lombok.Data;
 @Data
 public final class TTResult {
 
+    public static final byte ONLY_EVAL = 0;
     public static final byte EXACT_VALUE = 1;
     public static final byte LOWERBOUND = 2;
     public static final byte UPPERBOUND = 3;
+
+    public static final int NO_HASH_EVAL=Integer.MIN_VALUE;
 
     private byte type;
     private int depth;
     private int score;
     private int move;
+    private int eval;
+
+    /** the source index.*/
+    private int index;
 
     public boolean isExact() {
         return type == EXACT_VALUE;

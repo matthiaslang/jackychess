@@ -15,7 +15,6 @@ import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurator;
 import org.mattlang.jc.engine.evaluation.parameval.endgame.EndGameRules;
 import org.mattlang.jc.engine.search.SearchThreadContextCache;
-import org.mattlang.jc.engine.tt.IntIntCache;
 import org.mattlang.jc.material.Material;
 
 import lombok.Getter;
@@ -81,7 +80,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Getter
     private TuningCache tuningCache = new TuningCache();
 
-    private IntIntCache evalCache = EvalCache.instance;
 
     private PawnCache pawnCache = PawnCache.EMPTY_CACHE;
 
@@ -152,13 +150,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     @Override
     public int eval(BoardRepresentation currBoard, Color who2Move) {
 
-        if (caching) {
-            int cachedResult = evalCache.find(currBoard.getZobristHash());
-            if (cachedResult != IntIntCache.NORESULT) {
-                return cachedResult;
-            }
-        }
-
         if (forTuning && optimizeMode) {
             return evalForTuningOptimizedMode(currBoard, who2Move);
         }
@@ -178,9 +169,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
                 Color weaker = stronger.invert();
 
                 int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
-                if (caching) {
-                    evalCache.save(currBoard.getZobristHash(), score);
-                }
+
                 return score;
             }
         }
@@ -212,7 +201,6 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         score = score * who2mov;
 
         if (caching) {
-            evalCache.save(currBoard.getZobristHash(), score);
             if (result.getPawnEntry() == null) {
                 pawnCache.save(currBoard.getPawnKingZobristHash(), result);
             }

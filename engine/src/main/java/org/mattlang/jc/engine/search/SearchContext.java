@@ -1,6 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-import lombok.Getter;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -17,8 +19,7 @@ import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
+import lombok.Getter;
 
 /**
  * Holds Information during a negamax Search.
@@ -74,7 +75,7 @@ public final class SearchContext {
 
     private HistoryHeuristic historyHeuristic = null;
 
-    private ContinuationHistoryHeuristic continuationHistoryHeuristic=null;
+    private ContinuationHistoryHeuristic continuationHistoryHeuristic = null;
 
     private CaptureHeuristic captureHeuristic = null;
 
@@ -115,7 +116,7 @@ public final class SearchContext {
         killerMoves = stc.getKillerMoves();
         historyHeuristic = stc.getHistoryHeuristic();
         continuationHistoryHeuristic = stc.getContinuationHistoryHeuristic();
-        captureHeuristic= stc.getCaptureHeuristic();
+        captureHeuristic = stc.getCaptureHeuristic();
         counterMoveHeuristic = stc.getCounterMoveHeuristic();
     }
 
@@ -160,9 +161,13 @@ public final class SearchContext {
         return Captures.canKingCaptured(board, color);
     }
 
-    public void storeTT(Color color, int max, int alpha, int beta, int depth,
-            int move) {
-        ttCache.storeTTEntry(board, color, max, alpha, beta, depth, move);
+    public void storeTT(int ttIndex, int max, int alpha, int beta, int depth,
+            int move, int eval) {
+        ttCache.storeTTEntry(board, ttIndex, max, alpha, beta, depth, move, eval);
+    }
+
+    public void storeTT(int ttIndex, int depth, int eval) {
+        ttCache.storeTTEntry(board, ttIndex, depth, eval);
     }
 
     public TTResult getTTEntry() {
@@ -188,7 +193,8 @@ public final class SearchContext {
         StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         if (ply == 1) {
             int bestMoveForSorting = optionalLastBestMove != 0 ? optionalLastBestMove : hashMove;
-            preparer.prepareFirstPly(stc, board, color, legalMovesToSearch, bestMoveForSorting, parentMove, captureMargin);
+            preparer.prepareFirstPly(stc, board, color, legalMovesToSearch, bestMoveForSorting, parentMove,
+                    captureMargin);
         } else {
             preparer.prepare(stc, NORMAL, board, color, ply, hashMove, parentMove, captureMargin);
         }
@@ -230,7 +236,8 @@ public final class SearchContext {
     }
 
     // todo test that not in check because those heuristics make only for quiet pos sense...?
-    public void updateCutOffHeuristics(int ply, int depth, Color color, int grandparentMove, int parentMove, int bestMove,
+    public void updateCutOffHeuristics(int ply, int depth, Color color, int grandparentMove, int parentMove,
+            int bestMove,
             MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
 
