@@ -78,25 +78,6 @@ public class TTCacheTest {
     }
 
     @Test
-    public void testIntCaches() {
-
-        IntIntCache intIntCache = new IntIntCache(20);
-
-        BoardRepresentation board = new BitBoard();
-        board.setStartPosition();
-
-        intIntCache.save(board.getZobristHash(), -500);
-
-        board.switchSiteToMove();
-        assertThat(intIntCache.find(board.getZobristHash())).isEqualTo(IntIntCache.NORESULT);
-        board.switchSiteToMove();
-
-        int entry = intIntCache.find(board.getZobristHash());
-        assertThat(entry).isEqualTo(-500);
-
-    }
-
-    @Test
     public void testSizeCalc() {
         assertThat(TTCache.determineCacheBitSizeFromMb(128, 16)).isEqualTo(23);
 

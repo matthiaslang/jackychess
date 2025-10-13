@@ -9,7 +9,6 @@ import java.util.function.BinaryOperator;
 
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.Engine;
-import org.mattlang.jc.engine.evaluation.parameval.EvalCache;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
 import org.mattlang.jc.engine.tt.Caching;
@@ -85,7 +84,6 @@ public class EngineBenchmarksRunner {
     public void benchmarkSingleExecute(String name, SearchParameter searchParameter) {
         gameContext = new GameContext();
         SearchThreadContexts.CONTEXTS.reset();
-        EvalCache.instance.reset();
 
         for (TestPosition position : testPositions) {
             results.add(benchmarkRun(name, position, searchParameter, 1));
