@@ -16,7 +16,7 @@ public class TTCacheTest {
         BoardRepresentation board = new BitBoard();
         board.setStartPosition();
 
-        cache.storeTTEntry(board, -1, -500, -900, -300, 7, 345, -33);
+        cache.storeTTEntry(board, -500, -900, -300, 7, 345, -33);
 
         TTResult entry = new TTResult();
         assertThat(cache.findEntry(entry, board)).isTrue();
@@ -107,9 +107,9 @@ public class TTCacheTest {
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
 
         // testing int overflow problem: commented out, to not allocate 2gb during tests
-//        ConfigValues.getConfigValues().hash.setValue(2048);
-//        Caching.CACHING.getTtCache().checkUpdateCacheSize();
-//        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(2048L * 1024 * 1024);
+        //        ConfigValues.getConfigValues().hash.setValue(2048);
+        //        Caching.CACHING.getTtCache().checkUpdateCacheSize();
+        //        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(2048L * 1024 * 1024);
 
         ConfigValues.resetConfigValues();
     }

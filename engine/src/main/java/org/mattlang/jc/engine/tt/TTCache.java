@@ -226,35 +226,6 @@ public final class TTCache {
         return (short) ((key & STATIC_EVAL_MASK) >>> 48);
     }
 
-    public void addValueByTTIndex(final long key, final int replaceIndex, int score, final int depth, final int flag,
-            final int move, int eval) {
-        long currentValue = keys[replaceIndex + 1];
-        int currentDepth = getDepth(currentValue);
-
-        if (currentDepth > depth && flag != TTResult.EXACT_VALUE) {
-            if (BuildConstants.STATS_ACTIVATED) {
-                noReplaceCacheAlreadyBetter++;
-            }
-            // at least save an eval if we have one:
-            if (flag == ONLY_EVAL) {
-                keys[replaceIndex] = createKeyContent(key, eval) ^ currentValue;
-            }
-            return;
-        }
-
-        // preserve existing evals if we do not have a new one on direct key matches:
-        long xorKey = keys[replaceIndex];
-        int savedEval = getStaticEval(xorKey ^ currentValue);
-        if (savedEval != NO_HASH_EVAL && eval == NO_HASH_EVAL) {
-            eval = savedEval;
-        }
-
-        final long value = createValue(score, move, flag, depth);
-
-        keys[replaceIndex] = createKeyContent(key, eval) ^ value;
-        keys[replaceIndex + 1] = value;
-    }
-
     public static int getScore(final long value) {
         return (int) (value >> SCORE);
     }
@@ -373,7 +344,6 @@ public final class TTCache {
             result.setScore(getScore(v));
             result.setMove(getMove(v));
             result.setEval(getStaticEval(xorKey ^ v));
-            result.setIndex(index);
             return true;
         }
         return false;
@@ -384,16 +354,12 @@ public final class TTCache {
         return v != NORESULT ? getMove(v) : 0;
     }
 
-    public void storeTTEntry(BoardRepresentation currBoard, int ttIndex, int max, int alpha, int beta, int depth,
+    public void storeTTEntry(BoardRepresentation currBoard, int max, int alpha, int beta, int depth,
             int move, int eval) {
-        //        if (ttIndex != -1) {
-        //            addValueByTTIndex(currBoard.getZobristHash(), ttIndex, max, depth, toFlag(max, alpha, beta), move, eval);
-        //        } else {
         addValue(currBoard.getZobristHash(), max, depth, toFlag(max, alpha, beta), move, eval);
-        //        }
     }
 
-    public void storeTTEntry(BoardRepresentation currBoard, int ttIndex, int depth,
+    public void storeTTEval(BoardRepresentation currBoard, int depth,
             int eval) {
         addValue(currBoard.getZobristHash(), 0, depth, ONLY_EVAL, 0, eval);
     }

@@ -194,7 +194,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         TTResult ttProbe = searchContext.getTTEntry();
         final int hashEval = ttProbe != null ? ttProbe.getEval() : NO_HASH_EVAL;
-        final int ttIndex = ttProbe != null ? ttProbe.getIndex() : -1;
 
         int currEval = hashEval;
 
@@ -242,7 +241,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         if (pruneable) {
 
-            final int staticEval = hashEval != NO_HASH_EVAL ? hashEval : getRefinedStaticEval(ttIndex, color, depth, tte);
+            final int staticEval = hashEval != NO_HASH_EVAL ? hashEval : getRefinedStaticEval(color, depth, tte);
             currEval = staticEval;
 
 
@@ -533,7 +532,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
         // save score and best move info in tt:
         if (!singularSearch) {
-            searchContext.storeTT(ttIndex, max, alpha, beta, depth, bestMove, currEval);
+            searchContext.storeTT(max, alpha, beta, depth, bestMove, currEval);
         }
         return max;
     }
@@ -705,7 +704,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         int hashMove = 0;
         final TTResult tte = searchContext.getTTEntry();
         final int hashEval = tte != null ? tte.getEval() : NO_HASH_EVAL;
-        final int ttIndex = tte != null ? tte.getIndex() : -1;
 
         if (tte != null && tte.getType() != ONLY_EVAL) {
             hashMove = tte.getMove();
@@ -728,7 +726,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             eval = hashEval;
         else {
             eval = searchContext.eval(color);
-            searchContext.storeTT(ttIndex, 0, eval);
+            searchContext.storeTTEval(0, eval);
         }
         /* are we too deep? */
         if (ply > MAX_PLY_INDEX - 1) {
@@ -860,14 +858,14 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return false;
     }
 
-    private int getRefinedStaticEval(int ttIndex, Color color,int depth, TTResult tte) {
+    private int getRefinedStaticEval(Color color,int depth, TTResult tte) {
         int staticEval = searchContext.eval(color);
 
         // use tt value as eval if possible
         if (canRefineEval(tte, staticEval)) {
             staticEval = tte.getScore();
         }
-        searchContext.storeTT(ttIndex, depth, staticEval);
+        searchContext.storeTTEval(depth, staticEval);
         // save the calculated
         return staticEval;
     }

@@ -161,13 +161,13 @@ public final class SearchContext {
         return Captures.canKingCaptured(board, color);
     }
 
-    public void storeTT(int ttIndex, int max, int alpha, int beta, int depth,
+    public void storeTT(int max, int alpha, int beta, int depth,
             int move, int eval) {
-        ttCache.storeTTEntry(board, ttIndex, max, alpha, beta, depth, move, eval);
+        ttCache.storeTTEntry(board, max, alpha, beta, depth, move, eval);
     }
 
-    public void storeTT(int ttIndex, int depth, int eval) {
-        ttCache.storeTTEntry(board, ttIndex, depth, eval);
+    public void storeTTEval(int depth, int eval) {
+        ttCache.storeTTEval(board, depth, eval);
     }
 
     public TTResult getTTEntry() {

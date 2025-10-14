@@ -62,7 +62,7 @@ public class PerfTTTests {
         int[] hits = new int[1];
 
         perft.setVisitor((visitedBoard, color, d, cursor) -> {
-            ttCache.storeTTEntry(visitedBoard, -1, 0, 0, 0, d, 0, 0);
+            ttCache.storeTTEntry(visitedBoard, 0, 0, 0, d, 0, 0);
             count[0]++;
         });
 

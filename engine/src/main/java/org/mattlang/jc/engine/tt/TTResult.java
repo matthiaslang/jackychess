@@ -23,9 +23,6 @@ public final class TTResult {
     private int move;
     private int eval;
 
-    /** the source index.*/
-    private int index;
-
     public boolean isExact() {
         return type == EXACT_VALUE;
     }
