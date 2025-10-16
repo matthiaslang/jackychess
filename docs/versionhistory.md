@@ -1,5 +1,10 @@
 # Versions
 
+### 25.09.2
+
+- use tt cache to save eval as part of the payload. the xorKey is therefore reduced by 16bit. This may better scale
+  the cache memory instead of using a separate (small) eval cache inside the evaluation function.
+
 ### 25.09.1
 
 - fixing eval cache using full hash key to prevent wrong cache its. The effect is only very minor during play,
