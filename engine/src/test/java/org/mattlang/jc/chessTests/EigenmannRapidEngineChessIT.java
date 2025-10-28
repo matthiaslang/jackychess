@@ -36,10 +36,6 @@ public class EigenmannRapidEngineChessIT {
     @org.junit.jupiter.params.Parameter(0)
     private TestPosition testPosition;
 
-    public EigenmannRapidEngineChessIT(TestPosition testPosition) {
-        this.testPosition = testPosition;
-    }
-
     @BeforeParameterizedClassInvocation
     public static void init() throws IOException {
         TestTools.initUciEngineTest();
