@@ -44,6 +44,12 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
+    /**
+     * Maximum recursion depth in number of plies: the maximum -2 to have one for the current iteration and probably one
+     * for an extension.
+     */
+    private static final int MAX_PLY_NEGAMAXDEPTH = MAX_PLY_INDEX - 2;
+
     private static final int[] RAZORING_MARGIN = {0, 240, 280, 300};
 
     public static final int ALPHA_START = -1000000000;
@@ -147,9 +153,9 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             }
 
             // if we are too deep, we need to stop here:
-            if (ply >= MAX_PLY_INDEX) {
+            if (ply >= MAX_PLY_NEGAMAXDEPTH) {
                 final boolean areWeInCheck = searchContext.isInCheck(color);
-                return areWeInCheck ? 0 : searchContext.eval(color);
+                return areWeInCheck ? PATT_WEIGHT : searchContext.eval(color);
             }
 
         }
@@ -729,7 +735,7 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
             searchContext.storeTTEval(0, eval);
         }
         /* are we too deep? */
-        if (ply > MAX_PLY_INDEX - 1) {
+        if (ply >= MAX_PLY_NEGAMAXDEPTH) {
             return eval;
         }
 
