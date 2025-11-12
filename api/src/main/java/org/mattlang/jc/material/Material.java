@@ -81,7 +81,7 @@ public class Material implements Comparable<Material> {
             if (figure != Figure.EMPTY) {
                 byte figureCode = figure.figureCode;
                 material +=
-                        Long.bitCount(bb.getPieceSet(figure.figureType.figureCode, figure.color)) * MATS[figureCode];
+                        Long.bitCount(bb.getPieceSet(figure.figureType.figureCode, figure.color.ordinal())) * MATS[figureCode];
             }
         }
     }

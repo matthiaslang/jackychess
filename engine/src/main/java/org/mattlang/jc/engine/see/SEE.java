@@ -83,13 +83,13 @@ public class SEE {
         //        assert(color_of(piece_on(from)) == sideToMove);
         BitChessBoard b = bitBoard.getBoard();
         long occupied = b.getPieces() ^ from ^ to;
-        Color stm = bitBoard.getSiteToMove();
+        int stm = bitBoard.getSiteToMove().ordinal();
         long attackers = MoveGeneration.attackersTo(posto, occupied, bitBoard);
         long stmAttackers, bb;
         int res = 1;
 
         while (true) {
-            stm = stm.invert();
+            stm = Color.invert(stm);
             attackers &= occupied;
 
             // If stm has no more attackers then give up: stm loses

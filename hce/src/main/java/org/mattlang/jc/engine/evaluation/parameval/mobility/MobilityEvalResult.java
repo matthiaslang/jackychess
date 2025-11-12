@@ -2,8 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval.mobility;
 
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.BB.*;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_KING;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.board.Tools.rankOf;
@@ -83,7 +83,7 @@ public class MobilityEvalResult {
     private int oppKingPos;
     private long ownPawns;
     private long oppPawns;
-    private Color side;
+    private int side;
 
     public MobilityEvalResult() {
     }
@@ -147,19 +147,19 @@ public class MobilityEvalResult {
         }
     }
 
-    public void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, Color side) {
+    public void evalEarlyDevelopedQueen(long queenBB, long bishopBB, long knightBB, int side) {
 
         /**************************************************************************
          *  A queen should not be developed too early                              *
          **************************************************************************/
 
         if (earlyQueenPenalty != 0) {
-            if ((side == WHITE && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
+            if ((side == nWhite && (queenBB & WHITE_QUEEN_DEVELOPED_MASK) != 0)) {
 
                 positionalThemes -=
                         (bitCount(WHITE_BISHOPS_STARTPOS & bishopBB) + bitCount(WHITE_KNIGHT_STARTPOS & knightBB))
                                 * earlyQueenPenalty;
-            } else if ((side == BLACK && (queenBB & BLACK_QUEEN_DEVELOPED_MASK) != 0)) {
+            } else if ((side == nBlack && (queenBB & BLACK_QUEEN_DEVELOPED_MASK) != 0)) {
 
                 positionalThemes -=
                         (bitCount(BLACK_BISHOPS_STARTPOS & bishopBB) + bitCount(BLACK_KNIGHT_STARTPOS & knightBB))
@@ -169,8 +169,8 @@ public class MobilityEvalResult {
         }
     }
 
-    public void init(Color side, BitChessBoard bb) {
-        Color xside = side.invert();
+    public void init(int side, BitChessBoard bb) {
+        int xside = Color.invert(side);
 
         this.side=side;
 
@@ -181,33 +181,33 @@ public class MobilityEvalResult {
 
         long oppKingMask = bb.getPieceSet(FT_KING, xside);
         oppKingPos = Long.numberOfTrailingZeros(oppKingMask);
-        oppKingZone = KingZoneMasks.getKingZoneMask(xside.ordinal(), oppKingPos);
-
-        // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
-        long oppPawnAttacs = createOpponentPawnAttacs(bb, side);
-        noOppPawnAttacs = ~oppPawnAttacs;
+        oppKingZone = KingZoneMasks.getKingZoneMask(xside, oppKingPos);
 
         ownPawns = bb.getPieceSet(FT_PAWN, side);
         oppPawns = bb.getPieceSet(FT_PAWN, xside);
+
+        // opponents pawn attacs. we exclude fields under opponents pawn attack from our mobility
+        long oppPawnAttacs = createOpponentPawnAttacs(side);
+        noOppPawnAttacs = ~oppPawnAttacs;
+
+
     }
 
     /**
      * Creates opponents pawn attacs.
      *
-     * @param bb
      * @param side
      * @return
      */
-    private static long createOpponentPawnAttacs(BitChessBoard bb, Color side) {
-        long otherPawns = side == WHITE ? bb.getPieceSet(FT_PAWN, BLACK) : bb.getPieceSet(FT_PAWN, WHITE);
+    private  long createOpponentPawnAttacs(int side) {
 
-        if (side == WHITE) {
-            long capturesEast = BB.bPawnWestAttacks(otherPawns);
-            long capturesWest = BB.bPawnEastAttacks(otherPawns);
+        if (side == nWhite) {
+            long capturesEast = BB.bPawnWestAttacks(oppPawns);
+            long capturesWest = BB.bPawnEastAttacks(oppPawns);
             return capturesEast | capturesWest;
         } else {
-            long capturesEast = BB.wPawnWestAttacks(otherPawns);
-            long capturesWest = BB.wPawnEastAttacks(otherPawns);
+            long capturesEast = BB.wPawnWestAttacks(oppPawns);
+            long capturesWest = BB.wPawnEastAttacks(oppPawns);
             return capturesEast | capturesWest;
         }
     }

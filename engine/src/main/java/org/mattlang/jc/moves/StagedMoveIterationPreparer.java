@@ -142,7 +142,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 nextStage();
 
                 int currSize = moveList.size();
-                MoveGeneration.generateAttacks(board, color, moveList);
+                MoveGeneration.generateAttacks(board, color.ordinal(), moveList);
                 if (currSize == moveList.size()) {
                     // not captures at all: overstep next step:
                     nextStage();
@@ -208,7 +208,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case PREPARE_STAGE_REST:
                 nextStage();
                 int start = moveList.size();
-                MoveGeneration.generateQuiets(board, color, moveList);
+                MoveGeneration.generateQuiets(board, color.ordinal(), moveList);
                 createQuietSortOrders(start);
                 if (movelistPos < moveList.size()) {
                     theNextMove = sortToFront(movelistPos);
@@ -241,7 +241,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case PREPARE_STAGE_QUIESCENCE_REST:
                 nextStage();
                 start = moveList.size();
-                generator.generate(GenMode.QUIESCENCE, board, color, moveList);
+                generator.generate(GenMode.QUIESCENCE, board, color.ordinal(), moveList);
                 createSortOrders(start);
                 if (movelistPos < moveList.size()) {
                     theNextMove = sortToFront(movelistPos);

@@ -4,8 +4,8 @@ public enum Color {
     WHITE((byte) 0),
     BLACK((byte) 8);
 
-    public static final int nWhite = Color.WHITE.ordinal();
-    public static final int nBlack = Color.BLACK.ordinal();
+    public static final int nWhite = 0;
+    public static final int nBlack = 1;
 
     public final byte code;
 

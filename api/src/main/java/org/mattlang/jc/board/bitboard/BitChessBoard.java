@@ -19,7 +19,7 @@ import org.mattlang.jc.board.*;
  * Encapsulates a bit board representation via 64 field access (as in existing 64 byte representation).
  * Of course this needs then step-by-step been refactored to make real use of all the bitboard benefits.
  */
-public class BitChessBoard {
+public final class BitChessBoard {
 
     public static final int INSERT_START_POS = (7 - 0) * 8 + 0;
 
@@ -49,9 +49,6 @@ public class BitChessBoard {
         return pieceBB[pt] & colorBB[color];
     }
 
-    public long getPieceSet(int pt, Color color) {
-        return pieceBB[pt] & colorBB[color == WHITE ? nWhite : nBlack];
-    }
 
     public int getKnightsCount() {
         return Long.bitCount(pieceBB[FT_KNIGHT]);
@@ -77,15 +74,7 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_KNIGHT, color));
     }
 
-    public int getKnightsCount(Color color) {
-        return Long.bitCount(getPieceSet(FT_KNIGHT, color));
-    }
-
     public int getPawnsCount(int color) {
-        return Long.bitCount(getPieceSet(FT_PAWN, color));
-    }
-
-    public int getPawnsCount(Color color) {
         return Long.bitCount(getPieceSet(FT_PAWN, color));
     }
 
@@ -93,23 +82,11 @@ public class BitChessBoard {
         return Long.bitCount(getPieceSet(FT_BISHOP, color));
     }
 
-    public int getBishopsCount(Color color) {
-        return Long.bitCount(getPieceSet(FT_BISHOP, color));
-    }
-
     public int getRooksCount(int color) {
         return Long.bitCount(getPieceSet(FT_ROOK, color));
     }
 
-    public int getRooksCount(Color color) {
-        return Long.bitCount(getPieceSet(FT_ROOK, color));
-    }
-
     public int getQueensCount(int color) {
-        return Long.bitCount(getPieceSet(FT_QUEEN, color));
-    }
-
-    public int getQueensCount(Color color) {
         return Long.bitCount(getPieceSet(FT_QUEEN, color));
     }
 
@@ -121,15 +98,7 @@ public class BitChessBoard {
         return getPieceSet(FT_PAWN);
     }
 
-    public long getPawns(Color color) {
-        return getPieceSet(FT_PAWN, color);
-    }
-
     public long getKnights(int color) {
-        return getPieceSet(FT_KNIGHT, color);
-    }
-
-    public long getKnights(Color color) {
         return getPieceSet(FT_KNIGHT, color);
     }
 
@@ -137,15 +106,7 @@ public class BitChessBoard {
         return getPieceSet(FT_BISHOP, color);
     }
 
-    public long getBishops(Color color) {
-        return getPieceSet(FT_BISHOP, color);
-    }
-
     public long getRooks(int color) {
-        return getPieceSet(FT_ROOK, color);
-    }
-
-    public long getRooks(Color color) {
         return getPieceSet(FT_ROOK, color);
     }
 
@@ -155,14 +116,6 @@ public class BitChessBoard {
 
     public long getKings(int color) {
         return getPieceSet(FT_KING, color);
-    }
-
-    public long getKings(Color color) {
-        return getPieceSet(FT_KING, color);
-    }
-
-    public long getColorMask(Color color) {
-        return color == WHITE ? colorBB[nWhite] : colorBB[nBlack];
     }
 
     public long getColorMask(int color) {
@@ -367,10 +320,10 @@ public class BitChessBoard {
             }
         }
 
-        if (getKings(WHITE) == 0L) {
+        if (getKings(nWhite) == 0L) {
             throw new AssertionError("Inconsistency: white king mask is 0!");
         }
-        if (getKings(BLACK) == 0L) {
+        if (getKings(nBlack) == 0L) {
             throw new AssertionError("Inconsistency: black king mask is 0!");
         }
     }
@@ -381,7 +334,7 @@ public class BitChessBoard {
             for (FigureType type : FigureType.values()) {
                 if (type != FigureType.EMPTY) {
                     byte figureCode = type.figureCode;
-                    long mask = getPieceSet(figureCode, color);
+                    long mask = getPieceSet(figureCode, color.ordinal());
 
                     masks.add(createMask(mask, color.name() + " " + type.figureChar));
                 }

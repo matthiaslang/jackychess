@@ -41,7 +41,7 @@ public class SimplePerftIteratorSupplier implements PerftIteratorSupplier {
         MoveList moveList = moveLists[depth];
         moveList.reset(color);
 
-        generator.generate(GenMode.NORMAL, board, color, moveList);
+        generator.generate(GenMode.NORMAL, board, color.ordinal(), moveList);
 
         iterators[depth].init(moveList, 0);
         moveBoardIterators[depth].init(iterators[depth], board);

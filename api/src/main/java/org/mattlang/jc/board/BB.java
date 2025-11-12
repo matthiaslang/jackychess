@@ -1,6 +1,6 @@
 package org.mattlang.jc.board;
 
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.nWhite;
 
 import java.util.Arrays;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * Static bitboard stuff.
  */
-public class BB {
+public final class BB {
 
     public static long fileFromChar(char ch) {
         switch (Character.toUpperCase(ch)) {
@@ -371,8 +371,8 @@ public class BB {
     /**
      * returns the squares attacked by pawns of the given color  from the squares in the given bitboard.
      */
-    public static long pawnAttacks(Color color, long b) {
-        return color == WHITE ? noWeOne(b) | noEaOne(b) : soWeOne(b) | soEaOne(b);
+    public static long pawnAttacks(int color, long b) {
+        return color == nWhite ? noWeOne(b) | noEaOne(b) : soWeOne(b) | soEaOne(b);
     }
 
     public static String toStrBoard(long bb) {

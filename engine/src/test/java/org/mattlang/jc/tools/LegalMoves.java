@@ -26,7 +26,7 @@ public class LegalMoves {
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
         CheckChecker checkChecker = new BBCheckCheckerImpl();
 
-        movegen.generate(board, color, moveList);
+        movegen.generate(board, color.ordinal(), moveList);
 
         MoveList result = new MoveList();
         MoveImpl wrapper = new MoveImpl("a1a1");

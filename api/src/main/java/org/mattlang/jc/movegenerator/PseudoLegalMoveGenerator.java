@@ -1,7 +1,6 @@
 package org.mattlang.jc.movegenerator;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 
 /**
@@ -17,7 +16,7 @@ public class PseudoLegalMoveGenerator {
      * @param moveList the resulting move list. given as argument. The Caller should reuse the movelist as much
      *                 as possible to prevent garbage collection
      */
-    public void generate(BoardRepresentation board, Color side, MoveList moveList) {
+    public void generate(BoardRepresentation board, int side, MoveList moveList) {
         MoveGeneration.generateAttacks(board, side, moveList);
         MoveGeneration.generateQuiets(board, side, moveList);
     }
@@ -33,7 +32,7 @@ public class PseudoLegalMoveGenerator {
      */
     public void generate(GenMode mode,
             BoardRepresentation board,
-            Color side, MoveList moveList) {
+            int side, MoveList moveList) {
 
         switch (mode) {
         case NORMAL:

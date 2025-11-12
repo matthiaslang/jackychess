@@ -3,7 +3,8 @@ package org.mattlang.jc.engine.evaluation.parameval;
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.BB.CenterFiles;
 import static org.mattlang.jc.board.BB.soutOne;
-import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 import static org.mattlang.jc.engine.evaluation.parameval.MgEgScore.createMgEgScore;
@@ -22,8 +23,7 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
 
     @Override
     public int eval(EvalResult result, BoardRepresentation bitBoard) {
-        int score = createMgEgScore(space(result, bitBoard, WHITE) - space(result, bitBoard, BLACK), 0);
-        return score;
+        return createMgEgScore(space(result, bitBoard, nWhite) - space(result, bitBoard, nBlack), 0);
     }
 
     /**
@@ -32,21 +32,21 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
      * on ranks 2 to 4. Completely safe squares behind a friendly pawn are counted twice.
      * Finally, the space bonus is multiplied by a weight which decreases according to occupancy.
      */
-    private int space(EvalResult result, BoardRepresentation bitBoard, Color us) {
+    private int space(EvalResult result, BoardRepresentation bitBoard, int us) {
         BitChessBoard bb = bitBoard.getBoard();
 
         // Early exit if, for example, both queens or 6 minor pieces have been exchanged
         //        if (pos.non_pawn_material() < SpaceThreshold)
         //            return SCORE_ZERO;
 
-        Color Them = us.invert();
+        int Them = Color.invert(us);
 
-        long SpaceMask = us == WHITE ? WHITE_CENTERFILES : BLACK_CENTERFILES;
+        long SpaceMask = us == nWhite ? WHITE_CENTERFILES : BLACK_CENTERFILES;
 
         // Find the available squares for our pieces inside the area defined by SpaceMask
         long safe = SpaceMask
-                & ~bb.getPawns(us)
-                & ~result.getAttacks(Them, FT_PAWN);
+                    & ~bb.getPawns(us)
+                    & ~result.getAttacks(Them, FT_PAWN);
 
         long behind = calcBehind(us, bb);
 
@@ -61,15 +61,15 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
         return score;
     }
 
-    private static long calcBehind(Color us, BitChessBoard bb) {
+    private static long calcBehind(int us, BitChessBoard bb) {
         // Find all squares which are at most three squares behind some friendly pawn
         long behind = bb.getPawns(us);
         switch (us) {
-        case WHITE:
+        case nWhite:
             behind |= soutOne(behind);
             behind |= soutOne(soutOne(behind));
             break;
-        case BLACK:
+        case nBlack:
             behind |= BB.nortOne(behind);
             behind |= BB.nortOne(BB.nortOne(behind));
             break;
@@ -77,20 +77,20 @@ public class ParameterizedSpaceEvaluation implements EvalComponent {
         return behind;
     }
 
-    private static int calcBlockedCount(Color us, BitChessBoard bb) {
+    private static int calcBlockedCount(int us, BitChessBoard bb) {
         // todo: refactor: blocked (white/black) Pawns are already calculated during pawn evaluation
         long blockedPawns = calcBlockedPawns(us, bb);
         int blocked_count = bitCount(blockedPawns);
         return blocked_count;
     }
 
-    private static long calcBlockedPawns(Color us, BitChessBoard bb) {
+    private static long calcBlockedPawns(int us, BitChessBoard bb) {
         long blockedPawns = 0L;
         switch (us) {
-        case WHITE:
+        case nWhite:
             blockedPawns = soutOne(bb.getPawns(nBlack)) & bb.getPawns(nWhite);
             break;
-        case BLACK:
+        case nBlack:
             blockedPawns = BB.nortOne(bb.getPawns(nWhite)) & bb.getPawns(nBlack);
             break;
         }

@@ -4,7 +4,6 @@ import static org.mattlang.jc.board.Tools.*;
 import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_WIN_IN_MAX_PLY;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 
@@ -20,7 +19,8 @@ public class KxKEndgameFunction implements EndgameFunction {
 
     public static final int VALUE_KNOWN_WIN = 10000;
 
-    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
+    @Override
+    public int evaluate(BoardRepresentation board, int stronger, int weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -58,6 +58,6 @@ public class KxKEndgameFunction implements EndgameFunction {
         //                && (pos.pieces(strongSide, BISHOP) &  DarkSquares)))
         //            result = std::min(result + VALUE_KNOWN_WIN, VALUE_TB_WIN_IN_MAX_PLY - 1);
         //
-        return stronger == board.getSiteToMove() ? result : -result;
+        return stronger == board.getSiteToMove().ordinal() ? result : -result;
     }
 }

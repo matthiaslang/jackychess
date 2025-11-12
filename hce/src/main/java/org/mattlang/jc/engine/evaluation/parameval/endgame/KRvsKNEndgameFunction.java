@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.Tools.push_to_edge;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.material.Material;
@@ -18,7 +17,8 @@ public class KRvsKNEndgameFunction implements EndgameFunction {
 
     private static final Material KR_KN = new Material("KRkn");
 
-    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
+    @Override
+    public int evaluate(BoardRepresentation board, int stronger, int weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -28,7 +28,7 @@ public class KRvsKNEndgameFunction implements EndgameFunction {
         int weakKing = Long.numberOfTrailingZeros(bb.getKings(weaker));
         int weakKnight = Long.numberOfTrailingZeros(bb.getKnights(weaker));
         int result = push_to_edge(weakKing) + push_away(weakKing, weakKnight);
-        return stronger == board.getSiteToMove() ? result : -result;
+        return stronger == board.getSiteToMove().ordinal() ? result : -result;
 
     }
 }

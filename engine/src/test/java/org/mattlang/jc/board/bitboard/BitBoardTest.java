@@ -37,7 +37,7 @@ public class BitBoardTest {
         // positive check, that all legal moves are "valid" moves:
         MoveList moveList = new MoveList();
         moveList.reset(Color.WHITE);
-        movegen.generate(board, Color.WHITE, moveList);
+        movegen.generate(board, Color.WHITE.ordinal(), moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {
@@ -46,7 +46,7 @@ public class BitBoardTest {
         }
 
         moveList.reset(Color.BLACK);
-        movegen.generate(board, Color.BLACK, moveList);
+        movegen.generate(board, Color.BLACK.ordinal(), moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {

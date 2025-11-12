@@ -1,5 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.engine.TuningCache.EvalComponentName.*;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.RECALCED_EVAL;
 import static org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation.TuningCacheAction.USED_CACHED_EVAL;
@@ -165,8 +167,8 @@ public class ParameterizedEvaluation implements EvaluateFunction {
             EndGameRules endGameRule = matchesRule(currBoard, materialScore);
             if (endGameRule != null) {
 
-                Color stronger = materialScore > 0 ? Color.WHITE : Color.BLACK;
-                Color weaker = stronger.invert();
+                final int stronger = materialScore > 0 ? nWhite : nBlack;
+                final int weaker = Color.invert(stronger);
 
                 int score = endGameRule.getEndgameFunction().evaluate(currBoard, stronger, weaker, matEvaluation);
 

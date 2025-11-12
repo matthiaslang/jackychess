@@ -2,7 +2,8 @@ package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
 import static org.mattlang.jc.board.BB.*;
-import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.Tools.distance;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
@@ -134,8 +135,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long occupancy = bb.getColorMask(nWhite) | bb.getColorMask(nBlack);
 
         // this update also the attacks information of each piece type
-        evalMobilityAndAttacks(result, bb, Color.WHITE, occupancy);
-        evalMobilityAndAttacks(result, bb, Color.BLACK, occupancy);
+        evalMobilityAndAttacks(result, bb, nWhite, occupancy);
+        evalMobilityAndAttacks(result, bb, nBlack, occupancy);
 
     }
 
@@ -144,25 +145,25 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         bResult.clear();
     }
 
-    private void evalMobilityAndAttacks(EvalResult evalResult, BitChessBoard bb, Color side, long occupancy) {
+    private void evalMobilityAndAttacks(EvalResult evalResult, BitChessBoard bb, int side, long occupancy) {
 
-        MobilityEvalResult result = side == WHITE ? wResult : bResult;
+        MobilityEvalResult result = side == nWhite ? wResult : bResult;
         result.init(side, bb);
 
-        int otherSide = side.invert().ordinal();
+        int otherSide = Color.invert(side);
 
         int ourKingPos = Long.numberOfTrailingZeros(bb.getKings(side));
         int enemyKingPos = Long.numberOfTrailingZeros(bb.getKings(otherSide));
 
         long whitePawns = bb.getPieceSet(FT_PAWN, nWhite);
         long blackPawns = bb.getPieceSet(FT_PAWN, nBlack);
-        long enemyPawns = side == WHITE ? blackPawns : whitePawns;
+        long enemyPawns = side == nWhite ? blackPawns : whitePawns;
 
         long blackPawnAttacs = createBlackPawnAttacs(blackPawns);
         long whitePawnAttacs = createWhitePawnAttacs(whitePawns);
-        long ourPawnAttacks = side == WHITE ? whitePawnAttacs : blackPawnAttacs;
+        long ourPawnAttacks = side == nWhite ? whitePawnAttacs : blackPawnAttacs;
 
-        final long outpostRanksMasks = side == WHITE ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
+        final long outpostRanksMasks = side == nWhite ? rank4 | rank5 | rank6 : rank3 | rank4 | rank5;
 
         final long ourBishopBB = bb.getPieceSet(FT_BISHOP, side);
         long bishopBB = ourBishopBB;
@@ -171,7 +172,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             long attacks = genBishopAttacs(bishop, occupancy);
 
-            evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_BISHOP, side);
             result.countFigureMobilityVals(paramsBishop, bishop, attacks, true);
 
             result.eval += kingProtectorBishop * Tools.distance(bishop, ourKingPos);
@@ -186,7 +187,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             // Apply a bonus if the knight is on an outpost square, and cannot be attacked
             // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
-            long frontAdjacentPawnAttackers = frontOutposts[bishop][side.ordinal()] & enemyPawns;
+            long frontAdjacentPawnAttackers = frontOutposts[bishop][side] & enemyPawns;
 
             final long bishopMask = 1L << bishop;
             if ((outpostRanksMasks & bishopMask) != 0 && frontAdjacentPawnAttackers == 0L) {
@@ -204,7 +205,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             bishopBB &= bishopBB - 1;
         }
 
-        long blockedPawns = side == WHITE ?
+        long blockedPawns = side == nWhite ?
                 calcBlockedWhitePawns(whitePawns, blackPawns) :
                 calcBlockedBlackPawns(whitePawns, blackPawns);
 
@@ -226,7 +227,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
             final int knight = Long.numberOfTrailingZeros(knightBB);
             long knightAttack = BB.getKnightAttacs(knight);
 
-            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
+            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side);
             result.countFigureMobilityVals(paramsKnight, knight, knightAttack, true);
 
             result.eval += kingProtectorKnight * Tools.distance(knight, ourKingPos);
@@ -239,7 +240,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             // Apply a bonus if the knight is on an outpost square, and cannot be attacked
             // by an enemy pawn. Increase the bonus if one of our pawns supports the knight
-            long frontAdjacentPawnAttackers = frontOutposts[knight][side.ordinal()] & enemyPawns;
+            long frontAdjacentPawnAttackers = frontOutposts[knight][side] & enemyPawns;
 
             long knightMask = 1L << knight;
             if ((outpostRanksMasks & knightMask) != 0 && frontAdjacentPawnAttackers == 0L) {
@@ -259,8 +260,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         }
 
         // calc Shielded minors: minors behind own pawns
-        final long pawns = side == WHITE ? BB.soutOne(whitePawns) : BB.nortOne(blackPawns);
-        final long ranks = side == WHITE ? rank2 | rank3 | rank4 : rank7 | rank6 | rank5;
+        final long pawns = side == nWhite ? BB.soutOne(whitePawns) : BB.nortOne(blackPawns);
+        final long ranks = side == nWhite ? rank2 | rank3 | rank4 : rank7 | rank6 | rank5;
 
         result.eval += shieldMinorBonus * bitCount(pawns & (ourKnightBB | ourBishopBB) & ranks);
 
@@ -273,7 +274,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             long attacks = genRookAttacs(rook, occupancy);
 
-            evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_ROOK, side);
             result.countFigureMobilityVals(paramsRook, rook, attacks, true);
 
             result.rookOpenFiles(rook);
@@ -288,7 +289,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
             long attacks = genRookAttacs(queen, occupancy) | genBishopAttacs(queen, occupancy);
 
-            evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_QUEEN, side);
             result.countFigureMobilityVals(paramsQueen, queen, attacks, false);
 
             queenBB &= queenBB - 1;
@@ -299,19 +300,19 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         long kingAttack = BB.getKingAttacs(king);
 
-        evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
+        evalResult.updateAttacks(kingAttack, FT_KING, side);
         result.countFigureMobilityVals(paramsKing, king, kingAttack, false);
 
     }
 
-    private void evalAttacks(EvalResult evalResult, BitChessBoard bb, Color side, long occupancy) {
+    private void evalAttacks(EvalResult evalResult, BitChessBoard bb, int side, long occupancy) {
 
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
-        ;
+
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
             long attacks = genBishopAttacs(bishop, occupancy);
-            evalResult.updateAttacks(attacks, FT_BISHOP, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_BISHOP, side);
 
             bishopBB &= bishopBB - 1;
         }
@@ -320,7 +321,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
             long knightAttack = BB.getKnightAttacs(knight);
-            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side.ordinal());
+            evalResult.updateAttacks(knightAttack, FT_KNIGHT, side);
 
             knightBB &= knightBB - 1;
         }
@@ -329,7 +330,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (rookBB != 0) {
             final int rook = Long.numberOfTrailingZeros(rookBB);
             long attacks = genRookAttacs(rook, occupancy);
-            evalResult.updateAttacks(attacks, FT_ROOK, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_ROOK, side);
 
             rookBB &= rookBB - 1;
         }
@@ -338,7 +339,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         while (queenBB != 0) {
             final int queen = Long.numberOfTrailingZeros(queenBB);
             long attacks = genRookAttacs(queen, occupancy) | genBishopAttacs(queen, occupancy);
-            evalResult.updateAttacks(attacks, FT_QUEEN, side.ordinal());
+            evalResult.updateAttacks(attacks, FT_QUEEN, side);
 
             queenBB &= queenBB - 1;
         }
@@ -348,7 +349,7 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
 
         long kingAttack = BB.getKingAttacs(king);
 
-        evalResult.updateAttacks(kingAttack, FT_KING, side.ordinal());
+        evalResult.updateAttacks(kingAttack, FT_KING, side);
 
     }
 
@@ -395,8 +396,8 @@ public class ParameterizedMobilityEvaluation implements EvalComponent {
         long occupancy = bb.getColorMask(nWhite) | bb.getColorMask(nBlack);
 
         // this update also the attacks information of each piece type
-        evalAttacks(result, bb, Color.WHITE, occupancy);
-        evalAttacks(result, bb, Color.BLACK, occupancy);
+        evalAttacks(result, bb, nWhite, occupancy);
+        evalAttacks(result, bb, nBlack, occupancy);
     }
 
     private long pawnAdvance(long pawns, int color) {

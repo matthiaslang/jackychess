@@ -5,7 +5,6 @@ import static org.mattlang.jc.board.Tools.relativeRank;
 import static org.mattlang.jc.engine.evaluation.parameval.endgame.EndgameFunction.assertMat;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedMaterialEvaluation;
 import org.mattlang.jc.material.Material;
@@ -18,7 +17,8 @@ public class KNNvsKPEndgameFunction implements EndgameFunction {
 
     public static final Material KNN_KP = new Material("KNNkp");
 
-    public int evaluate(BoardRepresentation board, Color stronger, Color weaker,
+    @Override
+    public int evaluate(BoardRepresentation board, int stronger, int weaker,
             ParameterizedMaterialEvaluation matEvaluation) {
 
         BitChessBoard bb = board.getBoard();
@@ -32,7 +32,7 @@ public class KNNvsKPEndgameFunction implements EndgameFunction {
                 + 2 * push_to_edge(weakKing)
                 - 10 * relativeRank(weaker, weakPawn);
 
-        return stronger == board.getSiteToMove() ? result : -result;
+        return stronger == board.getSiteToMove().ordinal() ? result : -result;
     }
 
 }

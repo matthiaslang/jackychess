@@ -61,8 +61,8 @@ class QbbPerft2 {
         Color siteToMove = board.getSiteToMove();
         moveList.reset(siteToMove);
 
-        MoveGeneration.generateAttacks(board, siteToMove, moveList);
-        MoveGeneration.generateQuiets(board, siteToMove, moveList);
+        MoveGeneration.generateAttacks(board, siteToMove.ordinal(), moveList);
+        MoveGeneration.generateQuiets(board, siteToMove.ordinal(), moveList);
 
 //         do testwise sorting to test how much time this takes...
 //        OrderCalculator oc = SearchThreadContexts.CONTEXTS.getContext(1).getOrderCalculator();

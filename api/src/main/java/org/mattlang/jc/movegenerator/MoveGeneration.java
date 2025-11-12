@@ -3,8 +3,8 @@ package org.mattlang.jc.movegenerator;
 
 import static org.mattlang.jc.board.BB.getKingAttacs;
 import static org.mattlang.jc.board.BB.getKnightAttacs;
-import static org.mattlang.jc.board.Color.BLACK;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
@@ -22,7 +22,7 @@ import org.mattlang.jc.moves.CastlingMove;
  */
 public final class MoveGeneration {
 
-    public static void generateQuiets(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateQuiets(BoardRepresentation board, int side, MoveList collector) {
 
         BitChessBoard bb = board.getBoard();
 
@@ -44,7 +44,7 @@ public final class MoveGeneration {
         generateCastlingMoves(board, board.getBoardCastlings(), side, collector);
     }
 
-    private static void genKingQuiets(Color side, MoveList collector, BitChessBoard bb, long empty) {
+    private static void genKingQuiets(int side, MoveList collector, BitChessBoard bb, long empty) {
         long kingBB = bb.getPieceSet(FT_KING, side);
         final int king = Long.numberOfTrailingZeros(kingBB);
 
@@ -52,7 +52,7 @@ public final class MoveGeneration {
         collector.genQuietMoves(FT_KING, king, quietMoves);
     }
 
-    private static void genKnightQuiets(Color side, MoveList collector, BitChessBoard bb, long empty) {
+    private static void genKnightQuiets(int side, MoveList collector, BitChessBoard bb, long empty) {
         long knightBB = bb.getPieceSet(FT_KNIGHT, side);
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
@@ -64,7 +64,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genQueenQuiets(Color side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
+    private static void genQueenQuiets(int side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
         long queenBB = bb.getPieceSet(FT_QUEEN, side);
         while (queenBB != 0) {
             final int queen = Long.numberOfTrailingZeros(queenBB);
@@ -76,7 +76,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genBishopQuiets(Color side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
+    private static void genBishopQuiets(int side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
         while (bishopBB != 0) {
             final int bishop = Long.numberOfTrailingZeros(bishopBB);
@@ -88,7 +88,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genRookQuiets(Color side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
+    private static void genRookQuiets(int side, MoveList collector, BitChessBoard bb, long occupancy, long empty) {
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
             final int rook = Long.numberOfTrailingZeros(rookBB);
@@ -100,15 +100,15 @@ public final class MoveGeneration {
         }
     }
 
-    private static void generateCastlingMoves(BoardRepresentation board, BoardCastlings boardCastlings, Color side,
+    private static void generateCastlingMoves(BoardRepresentation board, BoardCastlings boardCastlings, int side,
             MoveList collector) {
         switch (side) {
-        case WHITE:
+        case nWhite:
             addCheckCastling(board, boardCastlings.getCastlingWhiteLong(), collector);
             addCheckCastling(board, boardCastlings.getCastlingWhiteShort(), collector);
 
             break;
-        case BLACK:
+        case nBlack:
             addCheckCastling(board, boardCastlings.getCastlingBlackShort(), collector);
             addCheckCastling(board, boardCastlings.getCastlingBlackLong(), collector);
             break;
@@ -121,11 +121,11 @@ public final class MoveGeneration {
         }
     }
 
-    public static void generateAttacks(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateAttacks(BoardRepresentation board, int side, MoveList collector) {
 
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
         long occupancy = bb.getPieces();
 
         genPawnCaptureMoves(board, collector, side);
@@ -142,7 +142,7 @@ public final class MoveGeneration {
 
     }
 
-    private static void genKingAttacks(Color side, MoveList collector, BitChessBoard bb, long opponentFigsMask) {
+    private static void genKingAttacks(int side, MoveList collector, BitChessBoard bb, long opponentFigsMask) {
         long kingBB = bb.getPieceSet(FT_KING, side);
         final int king = Long.numberOfTrailingZeros(kingBB);
 
@@ -150,7 +150,7 @@ public final class MoveGeneration {
         genAttacks(collector, FT_KING, king, attacks, bb);
     }
 
-    private static void genKnightAttacks(Color side, MoveList collector, BitChessBoard bb, long opponentFigsMask) {
+    private static void genKnightAttacks(int side, MoveList collector, BitChessBoard bb, long opponentFigsMask) {
         long knightBB = bb.getPieceSet(FT_KNIGHT, side);
         while (knightBB != 0) {
             final int knight = Long.numberOfTrailingZeros(knightBB);
@@ -162,7 +162,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genQueenAttacks(Color side, MoveList collector, BitChessBoard bb, long occupancy,
+    private static void genQueenAttacks(int side, MoveList collector, BitChessBoard bb, long occupancy,
             long opponentFigsMask) {
         long queenBB = bb.getPieceSet(FT_QUEEN, side);
         while (queenBB != 0) {
@@ -175,7 +175,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genBishopAttacks(Color side, MoveList collector, BitChessBoard bb, long occupancy,
+    private static void genBishopAttacks(int side, MoveList collector, BitChessBoard bb, long occupancy,
             long opponentFigsMask) {
         long bishopBB = bb.getPieceSet(FT_BISHOP, side);
         while (bishopBB != 0) {
@@ -188,7 +188,7 @@ public final class MoveGeneration {
         }
     }
 
-    private static void genRookAttacks(Color side, MoveList collector, BitChessBoard bb, long occupancy,
+    private static void genRookAttacks(int side, MoveList collector, BitChessBoard bb, long occupancy,
             long opponentFigsMask) {
         long rookBB = bb.getPieceSet(FT_ROOK, side);
         while (rookBB != 0) {
@@ -201,13 +201,13 @@ public final class MoveGeneration {
         }
     }
 
-    public static void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveList collector, Color side) {
+    public static void genPawnCaptureMoves(BoardRepresentation bitBoard, MoveList collector, int side) {
         BitChessBoard bb = bitBoard.getBoard();
         long pawns = bb.getPieceSet(FT_PAWN, side);
 
-        long otherPieces = side == WHITE ? bb.getColorMask(BLACK) : bb.getColorMask(WHITE);
+        long otherPieces = side == nWhite ? bb.getColorMask(nBlack) : bb.getColorMask(nWhite);
 
-        if (side == WHITE) {
+        if (side == nWhite) {
             long capturesEast = pawns & BB.bPawnWestAttacks(otherPieces);
 
             genPawnCaptures(collector, bb, capturesEast, 9);
@@ -258,10 +258,10 @@ public final class MoveGeneration {
         }
     }
 
-    public static void genPawnMoves(BitChessBoard bb, long empty, MoveList collector, Color side) {
+    private static void genPawnMoves(BitChessBoard bb, long empty, MoveList collector, int side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
 
-        if (side == WHITE) {
+        if (side == nWhite) {
             long singlePushTargets = BB.wSinglePushTargets(pawns, empty);
 
             collector.genPawnQuiets(singlePushTargets, -8);
@@ -295,11 +295,11 @@ public final class MoveGeneration {
         }
     }
 
-    public static void genPawnQuietPromotions(BitChessBoard bb, MoveList collector, Color side) {
+    public static void genPawnQuietPromotions(BitChessBoard bb, MoveList collector, int side) {
         long pawns = bb.getPieceSet(FT_PAWN, side);
-        long empty = ~(bb.getColorMask(WHITE) | bb.getColorMask(BLACK));
+        long empty = ~(bb.getColorMask(nWhite) | bb.getColorMask(nBlack));
 
-        if (side == WHITE) {
+        if (side == nWhite) {
             long singlePushTargets = BB.wSinglePushTargets(pawns & BB.rank7, empty);
             while (singlePushTargets != 0) {
                 final int toIndex = Long.numberOfTrailingZeros(singlePushTargets);
@@ -326,7 +326,7 @@ public final class MoveGeneration {
      * @param side
      * @return
      */
-    private static long genPawnAttacs(BoardRepresentation bitBoard, int s, Color side) {
+    private static long genPawnAttacs(BoardRepresentation bitBoard, int s, int side) {
 
         long sMask = 1L << s;
         BitChessBoard bb = bitBoard.getBoard();
@@ -336,7 +336,7 @@ public final class MoveGeneration {
 
         long allAttacks = 0L;
 
-        if (side == WHITE) {
+        if (side == nWhite) {
             long capturesEast = pawns & BB.bPawnWestAttacks(otherPieces);
             long capturesWest = pawns & BB.bPawnEastAttacks(otherPieces);
             allAttacks = capturesEast | capturesWest;
@@ -356,15 +356,15 @@ public final class MoveGeneration {
     public static long attackersTo(int s, long occupied, BoardRepresentation bitBoard) {
 
         BitChessBoard bb = bitBoard.getBoard();
-        return (genPawnAttacs(bitBoard, s, WHITE))
-               | (genPawnAttacs(bitBoard, s, BLACK))
+        return (genPawnAttacs(bitBoard, s, nWhite))
+               | (genPawnAttacs(bitBoard, s, nBlack))
                | (getKnightAttacs(s) & bb.getPieceSet(FT_KNIGHT))
                | (genRookAttacs(s, occupied) & (bb.getPieceSet(FT_ROOK) | bb.getPieceSet(FT_QUEEN)))
                | (genBishopAttacs(s, occupied) & (bb.getPieceSet(FT_BISHOP) | bb.getPieceSet(FT_QUEEN)))
                | (getKingAttacs(s) & bb.getPieceSet(FT_KING));
     }
 
-    public static void generatePawnMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generatePawnMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
         long empty = ~bb.getPieces();
@@ -373,10 +373,10 @@ public final class MoveGeneration {
         genPawnCaptureMoves(board, collector, side);
     }
 
-    public static void generateRookMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateRookMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
         long occupancy = bb.getPieces();
         long empty = ~occupancy;
 
@@ -384,10 +384,10 @@ public final class MoveGeneration {
         genRookAttacks(side, collector, bb, occupancy, opponentFigsMask);
     }
 
-    public static void generateBishopMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateBishopMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
 
         long occupancy = bb.getPieces();
         long empty = ~occupancy;
@@ -396,10 +396,10 @@ public final class MoveGeneration {
         genBishopAttacks(side, collector, bb, occupancy, opponentFigsMask);
     }
 
-    public static void generateQueenMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateQueenMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
 
         long occupancy = bb.getPieces();
         long empty = ~occupancy;
@@ -409,10 +409,10 @@ public final class MoveGeneration {
 
     }
 
-    public static void generateKnightMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateKnightMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
         long empty = ~bb.getPieces();
 
         genKnightQuiets(side, collector, bb, empty);
@@ -420,10 +420,10 @@ public final class MoveGeneration {
 
     }
 
-    public static void generateKingMoves(BoardRepresentation board, Color side, MoveList collector) {
+    public static void generateKingMoves(BoardRepresentation board, int side, MoveList collector) {
         BitChessBoard bb = board.getBoard();
 
-        long opponentFigsMask = bb.getColorMask(side.invert());
+        long opponentFigsMask = bb.getColorMask(Color.invert(side));
         long empty = ~bb.getPieces();
 
         genKingQuiets(side, collector, bb, empty);

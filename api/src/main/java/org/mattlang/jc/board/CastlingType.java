@@ -1,13 +1,13 @@
 package org.mattlang.jc.board;
 
-import lombok.Getter;
-
 import static org.mattlang.jc.board.CastlingFields.*;
 import static org.mattlang.jc.board.Color.BLACK;
 import static org.mattlang.jc.board.Color.WHITE;
 import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.MoveImpl.*;
+
+import lombok.Getter;
 
 @Getter
 public enum CastlingType {
@@ -39,9 +39,9 @@ public enum CastlingType {
         this.castlingBitMask = createMask(color, rochadeType);
     }
 
-    public static CastlingType of(Color color, RochadeType rochadeType) {
+    public static CastlingType of(int color, RochadeType rochadeType) {
         for (CastlingType castlingType : CastlingType.values()) {
-            if (castlingType.getColor() == color && castlingType.getRochadeType() == rochadeType) {
+            if (castlingType.getColor().ordinal() == color && castlingType.getRochadeType() == rochadeType) {
                 return castlingType;
             }
         }

@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
 
@@ -90,15 +91,15 @@ public final class EvalResult {
 
     public void updatePawnAttacs(BitChessBoard bb) {
 
-        long wPawns = bb.getPieceSet(FT_PAWN, WHITE);
-        long bPieces = bb.getColorMask(BLACK);
+        long wPawns = bb.getPieceSet(FT_PAWN, nWhite);
+        long bPieces = bb.getColorMask(nBlack);
 
         long capturesEast = wPawns & BB.bPawnWestAttacks(bPieces);
         long capturesWest = wPawns & BB.bPawnEastAttacks(bPieces);
         updateAttacks(capturesEast | capturesWest, FT_PAWN, nWhite);
 
-        long bPawns = bb.getPieceSet(FT_PAWN, BLACK);
-        long wPieces = bb.getColorMask(WHITE);
+        long bPawns = bb.getPieceSet(FT_PAWN, nBlack);
+        long wPieces = bb.getColorMask(nWhite);
 
         capturesEast = bPawns & BB.wPawnWestAttacks(wPieces);
         capturesWest = bPawns & BB.wPawnEastAttacks(wPieces);
@@ -109,14 +110,6 @@ public final class EvalResult {
 
     public long getAttacks(int color, byte figureType) {
         return attacks[color][figureType];
-    }
-
-    public long getAttacks(Color color, byte figureType) {
-        return attacks[color.ordinal()][figureType];
-    }
-
-    public long getDoubleAttacks(Color color) {
-        return doubleAttacks[color.ordinal()];
     }
 
     public long getDoubleAttacks(int color) {

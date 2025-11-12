@@ -13,7 +13,7 @@ public interface EndgameFunction {
 
     static final Logger logger = Logger.getLogger(EndgameFunction.class.getName());
 
-    int evaluate(BoardRepresentation board, Color stronger, Color weaker,
+    int evaluate(BoardRepresentation board, int stronger, int weaker,
             ParameterizedMaterialEvaluation matEvaluation);
 
     public static void assertMat(BoardRepresentation board, Material expectedMat) {
@@ -32,8 +32,8 @@ public interface EndgameFunction {
 
     }
 
-    public static void assertMat(BoardRepresentation board, Color color, int expectedMat) {
-        int mat = color == Color.WHITE ? board.getMaterial().getWhiteMat() : board.getMaterial().getBlackAsWhitePart();
+    public static void assertMat(BoardRepresentation board, int color, int expectedMat) {
+        int mat = color == Color.nWhite ? board.getMaterial().getWhiteMat() : board.getMaterial().getBlackAsWhitePart();
         if (mat == expectedMat) {
             return;
         }

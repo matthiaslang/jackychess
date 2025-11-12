@@ -1,7 +1,8 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
 import static java.lang.Long.bitCount;
-import static org.mattlang.jc.board.Color.WHITE;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.*;
 
 import org.mattlang.jc.board.BB;
@@ -56,15 +57,15 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
 
     @Override
     public int eval(EvalResult result, BoardRepresentation bitBoard) {
-        int whiteThreats = evalThreads(result, bitBoard.getBoard(), WHITE);
-        int blackThreats = evalThreads(result, bitBoard.getBoard(), Color.BLACK);
+        int whiteThreats = evalThreads(result, bitBoard.getBoard(), nWhite);
+        int blackThreats = evalThreads(result, bitBoard.getBoard(), nBlack);
         return whiteThreats - blackThreats;
     }
 
-    private int evalThreads(EvalResult result, BitChessBoard bb, Color us) {
-        Color them = us.invert();
+    private int evalThreads(EvalResult result, BitChessBoard bb, int us) {
+        int them = Color.invert(us);
 
-        long TRank3BB = (us == WHITE ? BB.rank3 : BB.rank6);
+        long TRank3BB = (us == nWhite ? BB.rank3 : BB.rank6);
 
         int eval = 0;
 
@@ -129,11 +130,11 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
 
         // Find squares where our pawns can push on the next move
         switch (us) {
-        case WHITE:
+        case nWhite:
             b = BB.nortOne(bb.getPawns(us)) & ~bb.getPieces();
             b |= BB.nortOne(b & TRank3BB) & ~bb.getPieces();
             break;
-        case BLACK:
+        case nBlack:
             b = BB.soutOne(bb.getPawns(us)) & ~bb.getPieces();
             b |= BB.soutOne(b & TRank3BB) & ~bb.getPieces();
             break;
@@ -151,7 +152,7 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         if (bb.getQueensCount(them) == 1) {
             int queenImbalance = bb.getQueensCount() == 1 ? 1 : 0;
 
-            int s = Long.numberOfTrailingZeros(bb.getQueens(them.ordinal()));
+            int s = Long.numberOfTrailingZeros(bb.getQueens(them));
             safe = getMobilityArea(result, bb, us)
                     & ~bb.getPawns(us)
                     & ~stronglyProtected;
@@ -169,20 +170,19 @@ public class ParameterizedThreatsEvaluation implements EvalComponent {
         return eval;
     }
 
-    private long getMobilityArea(EvalResult result, BitChessBoard bb, Color us) {
-        long LowRanks = (us == WHITE ? BB.rank2 | BB.rank3 : BB.rank7 | BB.rank6);
+    private long getMobilityArea(EvalResult result, BitChessBoard bb, int us) {
+        long LowRanks = (us == nWhite ? BB.rank2 | BB.rank3 : BB.rank7 | BB.rank6);
 
         // Find our pawns that are blocked or on the first two ranks
-        long shifted = us == WHITE ? BB.soutOne(bb.getPieces()) : BB.nortOne(bb.getPieces());
+        long shifted = us == nWhite ? BB.soutOne(bb.getPieces()) : BB.nortOne(bb.getPieces());
         long b = bb.getPawns(us) & (shifted | LowRanks);
 
         // Squares occupied by those pawns, by our king or queen, by blockers to attacks on our king
         // or controlled by enemy pawns are excluded from the mobility area.
 
-        // todo poor mans impl without taking blockers and pawn attacks into account
-        return ~(b | bb.getKings(us) | bb.getQueens(
-                us.ordinal()) | result.getAttacks(us.invert(),
-                FT_PAWN)/*| pos.blockers_for_king(Us) | pe->pawn_attacks(Them)*/);
+        // todo poor mans impl without taking blockers into account
+        return ~(b | bb.getKings(us) | bb.getQueens(us) | result.getAttacks(Color.invert(us), FT_PAWN)
+                /*| pos.blockers_for_king(Us) */);
     }
 
 }

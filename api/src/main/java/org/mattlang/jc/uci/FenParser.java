@@ -1,9 +1,5 @@
 package org.mattlang.jc.uci;
 
-import org.mattlang.jc.board.*;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
-
 import static org.mattlang.jc.board.CastlingType.*;
 import static org.mattlang.jc.board.Color.*;
 import static org.mattlang.jc.board.Figure.*;
@@ -14,6 +10,10 @@ import static org.mattlang.jc.board.RochadeType.LONG;
 import static org.mattlang.jc.board.RochadeType.SHORT;
 import static org.mattlang.jc.moves.CastlingMove.createCastlingMove;
 import static org.mattlang.jc.moves.MoveImpl.*;
+
+import org.mattlang.jc.board.*;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
 
 public class FenParser {
 
@@ -201,7 +201,7 @@ public class FenParser {
         if (!"-".equals(rochade)) {
             if (rochade.contains("K")) {
                 int wKingPos = board.getKingPos(nWhite);
-                long rooks = board.getBoard().getRooks(WHITE);
+                long rooks = board.getBoard().getRooks(nWhite);
                 try {
                     int rook = searchBiggerRook(wKingPos, rooks);
 
@@ -215,7 +215,7 @@ public class FenParser {
             }
             if (rochade.contains("Q")) {
                 int wKingPos = board.getKingPos(nWhite);
-                long rooks = board.getBoard().getRooks(WHITE);
+                long rooks = board.getBoard().getRooks(nWhite);
                 try {
                     int rook = searchSmallerRook(wKingPos, rooks);
 
@@ -229,7 +229,7 @@ public class FenParser {
             }
             if (rochade.contains("k")) {
                 int bKingPos = board.getKingPos(nBlack);
-                long rooks = board.getBoard().getRooks(BLACK);
+                long rooks = board.getBoard().getRooks(nBlack);
                 try {
                     int rook = searchBiggerRook(bKingPos, rooks);
 
@@ -243,7 +243,7 @@ public class FenParser {
             }
             if (rochade.contains("q")) {
                 int bKingPos = board.getKingPos(nBlack);
-                long rooks = board.getBoard().getRooks(BLACK);
+                long rooks = board.getBoard().getRooks(nBlack);
                 try {
                     int rook = searchSmallerRook(bKingPos, rooks);
 
@@ -266,10 +266,10 @@ public class FenParser {
         for (int i = 0; i < rochade.length(); i++) {
             char ch = rochade.charAt(i);
             if (isSchredderCastlingSym(ch)) {
-                Color color = Character.isLowerCase(ch) ? BLACK : WHITE;
+                int color = Character.isLowerCase(ch) ? nBlack : nWhite;
                 long file = BB.fileFromChar(ch);
                 int kingPos = Long.numberOfTrailingZeros(board.getBoard().getKings(color));
-                long rank = color == WHITE ? BB.rank1 : BB.rank8;
+                long rank = color == nWhite ? BB.rank1 : BB.rank8;
                 long rookBB = file & rank;
                 int rook = Long.numberOfTrailingZeros(rookBB);
 

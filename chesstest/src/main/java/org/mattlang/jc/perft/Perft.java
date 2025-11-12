@@ -218,6 +218,23 @@ public class Perft {
         assertPerft(board, WHITE, 5, 15833292, 2046173, 6512, 0, 329464);
 
         assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
+        assertPerft(board, WHITE, 6, 706045033, 210369132, 212, 10882006, 81102984);
 
     }
 

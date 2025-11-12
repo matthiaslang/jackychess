@@ -44,22 +44,22 @@ public class MoveValidator {
         // gen the moves for the respective move type to check:
         switch (MoveImpl.getFigureType(move)) {
         case FigureConstants.FT_PAWN:
-            MoveGeneration.generatePawnMoves(board, who2Move, moveList);
+            MoveGeneration.generatePawnMoves(board, who2Move.ordinal(), moveList);
             break;
         case FigureConstants.FT_ROOK:
-            MoveGeneration.generateRookMoves(board, who2Move, moveList);
+            MoveGeneration.generateRookMoves(board, who2Move.ordinal(), moveList);
             break;
         case FigureConstants.FT_BISHOP:
-            MoveGeneration.generateBishopMoves(board, who2Move, moveList);
+            MoveGeneration.generateBishopMoves(board, who2Move.ordinal(), moveList);
             break;
         case FigureConstants.FT_QUEEN:
-            MoveGeneration.generateQueenMoves(board, who2Move, moveList);
+            MoveGeneration.generateQueenMoves(board, who2Move.ordinal(), moveList);
             break;
         case FigureConstants.FT_KNIGHT:
-            MoveGeneration.generateKnightMoves(board, who2Move, moveList);
+            MoveGeneration.generateKnightMoves(board, who2Move.ordinal(), moveList);
             break;
         case FigureConstants.FT_KING:
-            MoveGeneration.generateKingMoves(board, who2Move, moveList);
+            MoveGeneration.generateKingMoves(board, who2Move.ordinal(), moveList);
             break;
         default:
             throw new IllegalStateException("Illegal Move to check!");
@@ -122,7 +122,7 @@ public class MoveValidator {
     public boolean hasLegalMoves(BoardRepresentation board) {
 
         moveList.reset(board.getSiteToMove());
-        movegen.generate(board, board.getSiteToMove(), moveList);
+        movegen.generate(board, board.getSiteToMove().ordinal(), moveList);
 
         boolean hasLegalMoves = false;
         try (MoveBoardIterator iterator = iterateMoves(board)) {
@@ -185,7 +185,7 @@ public class MoveValidator {
     public void generateLegalMoves(MoveList resultList, BoardRepresentation board, Color color) {
         resultList.reset(color);
         moveList.reset(color);
-        movegen.generate(board, color, moveList);
+        movegen.generate(board, color.ordinal(), moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(board)) {
             while (iterator.doNextValidMove()) {

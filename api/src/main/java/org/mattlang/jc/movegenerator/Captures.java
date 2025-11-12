@@ -32,7 +32,7 @@ public class Captures {
     }
 
     public static boolean canKingCaptured(BoardRepresentation bitBoard, Color side) {
-        long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side);
+        long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side.ordinal());
         int kingPos = Long.numberOfTrailingZeros(kingBB);
         return canFigureCaptured(bitBoard, kingPos, side);
     }
