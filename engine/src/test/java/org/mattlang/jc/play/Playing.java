@@ -56,7 +56,7 @@ public class Playing {
                     engine.goIterative(params, new GameState(engine.getBoard()), gameContext);
             Move move = result.getSavedMove();
 
-            if (!engine.getBoard().isvalidmove(engine.getBoard().getSiteToMove(), move.getMoveInt())) {
+            if (!engine.getBoard().isvalidmove(engine.getBoard().getSiteToMove().ordinal(), move.getMoveInt())) {
                 System.out.println("no valid Move!!!");
             }
             playedMoves.add(new MoveImpl(move.getMoveInt()));
@@ -75,7 +75,7 @@ public class Playing {
         MoveValidator moveValidator = new MoveValidator();
 
         // first check all strange states of the board:
-        if (Captures.canKingCaptured(board, board.getSiteToMove().invert())) {
+        if (Captures.canKingCaptured(board, board.getSiteToMove().invert().ordinal())) {
             System.out.println("Illegal Chess State or Move! " + board.getSiteToMove().invert()
                                + " is after his move still in check!");
             return new GameStatusResult(WEIRD_STATE);
@@ -98,7 +98,7 @@ public class Playing {
         }
 
         if (!moveValidator.hasLegalMoves(board)) {
-            if (Captures.canKingCaptured(board, board.getSiteToMove())) {
+            if (Captures.canKingCaptured(board, board.getSiteToMove().ordinal())) {
                 System.out.println(board.getSiteToMove() + " is matt!");
                 return new GameStatusResult(MATT);
             } else {

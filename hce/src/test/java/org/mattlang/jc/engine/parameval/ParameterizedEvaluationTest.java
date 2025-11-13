@@ -36,7 +36,7 @@ public class ParameterizedEvaluationTest {
 
         // start position should evaluate to one (tempo):
         board.setFenPosition("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
-        assertThat(pe.eval(board, Color.WHITE)).isEqualTo(tempoMg);
+        assertThat(pe.eval(board, Color.WHITE.ordinal())).isEqualTo(tempoMg);
 
     }
 
@@ -55,7 +55,7 @@ public class ParameterizedEvaluationTest {
 
         board.setFenPosition("position fen k7/8/2p5/3p4/3P4/8/8/K7 w - - 0 1");
         System.out.println(board.toUniCodeStr());
-        System.out.println(pe.eval(board, Color.BLACK));
+        System.out.println(pe.eval(board, Color.BLACK.ordinal()));
     }
 
     //    @Test
@@ -80,7 +80,7 @@ public class ParameterizedEvaluationTest {
         int evals = 0;
         for (int i = 0; i < 250000; i++) {
             for (BoardRepresentation board : boards) {
-                evals += pe.eval(board, Color.WHITE);
+                evals += pe.eval(board, Color.WHITE.ordinal());
             }
         }
         watch.stop();

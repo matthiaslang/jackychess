@@ -48,7 +48,7 @@ public class BenchmarkTryout {
     public int measureEvaluation(Constants constants) {
         int val = 0;
         for (BoardRepresentation board : constants.boards) {
-            val += constants.pe.eval(board, Color.WHITE);
+            val += constants.pe.eval(board, Color.WHITE.ordinal());
         }
         return val;
     }

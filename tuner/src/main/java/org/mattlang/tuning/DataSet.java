@@ -125,13 +125,13 @@ public class DataSet {
         if (optParameters.isOptimizeMode()) {
             evaluate.getTuningCache().updateFromFen(fen.getTuningCache());
 
-            int eval = evaluate.eval(fen.getBoard(), WHITE);
+            int eval = evaluate.eval(fen.getBoard(), WHITE.ordinal());
 
             fen.getTuningCache().putAll(evaluate.getTuningCache());
 
             return eval;
         } else {
-            return evaluate.eval(fen.getBoard(), WHITE);
+            return evaluate.eval(fen.getBoard(), WHITE.ordinal());
         }
     }
 

@@ -43,7 +43,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, parentMove);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE.ordinal(), 1, hashMove, parentMove);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -79,7 +79,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, whoOnMove, 1, 0, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, whoOnMove.ordinal(), 1, 0, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -110,7 +110,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE.ordinal(), 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -142,7 +142,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE.ordinal(), 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -174,7 +174,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE.ordinal(), 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -206,7 +206,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.NORMAL, board, Color.WHITE.ordinal(), 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 
@@ -237,7 +237,7 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(movesRegular);
 
         StagedMoveIterationPreparer stagedPreparer = new StagedMoveIterationPreparer();
-        stagedPreparer.prepare(stc, GenMode.QUIESCENCE, board, Color.WHITE, 1, hashMove, 0);
+        stagedPreparer.prepare(stc, GenMode.QUIESCENCE, board, Color.WHITE.ordinal(), 1, hashMove, 0);
         List<Tuple> moves = getAllMoves(stagedPreparer);
         System.out.println(moves);
 

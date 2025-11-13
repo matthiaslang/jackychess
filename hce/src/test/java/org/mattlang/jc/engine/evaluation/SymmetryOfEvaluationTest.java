@@ -50,7 +50,7 @@ public class SymmetryOfEvaluationTest {
         board.setFenPosition(testPosition.getFenPosition());
         System.out.println(board.toUniCodeStr());
 
-        int scoreWhite = evaluation.eval(board, Color.WHITE);
+        int scoreWhite = evaluation.eval(board, Color.WHITE.ordinal());
 
         String flippedFen = fenflip.mirrorHorizontalFen(testPosition.getFenPosition());
         System.out.println("flippedFen=" + flippedFen);
@@ -58,7 +58,7 @@ public class SymmetryOfEvaluationTest {
         board.setFenPosition(flippedFen);
         System.out.println(board.toUniCodeStr());
 
-        int scoreBlack = evaluation.eval(board, Color.BLACK);
+        int scoreBlack = evaluation.eval(board, Color.BLACK.ordinal());
 
         Assertions.assertThat(scoreWhite).isEqualTo(scoreBlack);
 

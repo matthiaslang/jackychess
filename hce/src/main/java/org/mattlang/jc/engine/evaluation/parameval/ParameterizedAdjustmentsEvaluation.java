@@ -1,9 +1,9 @@
 package org.mattlang.jc.engine.evaluation.parameval;
 
-import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigParam;
 import org.mattlang.jc.engine.evaluation.annotation.EvalConfigurable;
@@ -41,10 +41,10 @@ public class ParameterizedAdjustmentsEvaluation implements EvalComponent {
     public ParameterizedAdjustmentsEvaluation() {
     }
 
-    private int adjust(BitChessBoard bb, Color who2Move) {
+    private int adjust(BitChessBoard bb, int who2Move) {
         int result = 0;
         /* tempo bonus */
-        if (who2Move == WHITE)
+        if (who2Move == nWhite)
             result += tempo;
         else
             result -= tempo;

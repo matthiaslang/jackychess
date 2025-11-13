@@ -25,41 +25,41 @@ public class MoveValidator {
 
     private PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
 
-    private MoveIteratorImpl moveIterator = new MoveIteratorImpl();
+    private final MoveIteratorImpl moveIterator = new MoveIteratorImpl();
 
-    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+    private final MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     /**
      * reused movelist.
      */
     private MoveList moveList = new MoveList();
 
-    public boolean isLegalMove(BoardRepresentation board, Move move, Color who2Move) {
+    public boolean isLegalMove(BoardRepresentation board, Move move, final int who2Move) {
         return isLegalMove(board, move.getMoveInt(), who2Move);
     }
 
-    public boolean isLegalMove(BoardRepresentation board, int move, Color who2Move) {
+    public boolean isLegalMove(BoardRepresentation board, final int move, final int who2Move) {
 
         moveList.reset(who2Move);
         // gen the moves for the respective move type to check:
         switch (MoveImpl.getFigureType(move)) {
         case FigureConstants.FT_PAWN:
-            MoveGeneration.generatePawnMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generatePawnMoves(board, who2Move, moveList);
             break;
         case FigureConstants.FT_ROOK:
-            MoveGeneration.generateRookMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generateRookMoves(board, who2Move, moveList);
             break;
         case FigureConstants.FT_BISHOP:
-            MoveGeneration.generateBishopMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generateBishopMoves(board, who2Move, moveList);
             break;
         case FigureConstants.FT_QUEEN:
-            MoveGeneration.generateQueenMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generateQueenMoves(board, who2Move, moveList);
             break;
         case FigureConstants.FT_KNIGHT:
-            MoveGeneration.generateKnightMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generateKnightMoves(board, who2Move, moveList);
             break;
         case FigureConstants.FT_KING:
-            MoveGeneration.generateKingMoves(board, who2Move.ordinal(), moveList);
+            MoveGeneration.generateKingMoves(board, who2Move, moveList);
             break;
         default:
             throw new IllegalStateException("Illegal Move to check!");
@@ -89,7 +89,7 @@ public class MoveValidator {
         // play and validate all pv moves:
         BoardRepresentation board = gameState.getBoard().copy();
 
-        Color who2Move = gameState.getWho2Move();
+        int who2Move = gameState.getWho2Move().ordinal();
         MoveImpl moveWrapper = new MoveImpl("a1a1");
         for (int i = 0; i < pvs.size(); i++) {
 
@@ -107,7 +107,7 @@ public class MoveValidator {
                 pvs.cutToSize(i);
                 break;
             }
-            who2Move = who2Move.invert();
+            who2Move = Color.invert(who2Move);
         }
 
         return pvs;
@@ -121,7 +121,7 @@ public class MoveValidator {
      */
     public boolean hasLegalMoves(BoardRepresentation board) {
 
-        moveList.reset(board.getSiteToMove());
+        moveList.reset(board.getSiteToMove().ordinal());
         movegen.generate(board, board.getSiteToMove().ordinal(), moveList);
 
         boolean hasLegalMoves = false;
@@ -176,16 +176,16 @@ public class MoveValidator {
      * @param color
      * @return
      */
-    public MoveList generateLegalMoves(BoardRepresentation board, Color color) {
+    public MoveList generateLegalMoves(BoardRepresentation board, int color) {
         MoveList resultList = new MoveList();
         generateLegalMoves(resultList, board, color);
         return resultList;
     }
 
-    public void generateLegalMoves(MoveList resultList, BoardRepresentation board, Color color) {
+    public void generateLegalMoves(MoveList resultList, BoardRepresentation board, int color) {
         resultList.reset(color);
         moveList.reset(color);
-        movegen.generate(board, color.ordinal(), moveList);
+        movegen.generate(board, color, moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(board)) {
             while (iterator.doNextValidMove()) {
@@ -195,12 +195,13 @@ public class MoveValidator {
     }
 
     public MoveList createLegalMovesToSearch(GameState gameState, String[] searchMoves) {
-        MoveList legalMovesToSearch = generateLegalMoves(gameState.getBoard(), gameState.getWho2Move());
+        final int who2Move = gameState.getWho2Move().ordinal();
+        MoveList legalMovesToSearch = generateLegalMoves(gameState.getBoard(), who2Move);
         if (searchMoves != null && searchMoves.length > 0) {
             MoveList searchMovesResult = new MoveList();
             for (String searchMove : searchMoves) {
                 Move move = FenParser.parseMove(gameState.getBoard(), searchMove);
-                if (isLegalMove(gameState.getBoard(), move, gameState.getWho2Move())) {
+                if (isLegalMove(gameState.getBoard(), move, who2Move)) {
                     searchMovesResult.addMove(move.getMoveInt());
                 }
             }

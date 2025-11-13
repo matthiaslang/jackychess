@@ -21,7 +21,7 @@ public class LegalMoves {
      */
     public static MoveList generateLegalMoves(BoardRepresentation board, Color color) {
         MoveList moveList = new MoveList();
-        moveList.reset(color);
+        moveList.reset(color.ordinal());
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
 
         movegen.generate(board, color.ordinal(), moveList);
@@ -34,7 +34,7 @@ public class LegalMoves {
             wrapper.fromLongEncoded(moveInt);
 
             board.domove(wrapper);
-            if (!Captures.canKingCaptured(board, color)) {
+            if (!Captures.canKingCaptured(board, color.ordinal())) {
 
                 result.addMove(moveInt);
             }

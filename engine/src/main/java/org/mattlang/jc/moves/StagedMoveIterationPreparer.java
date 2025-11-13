@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MoveIterator;
@@ -64,7 +63,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private Stage[] stages;
 
     private int hashMove;
-    private Color color;
+    private int color;
     private int ply;
     private int parentMove;
 
@@ -72,12 +71,12 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private SearchThreadContext stc;
     private Stage currStage;
 
-    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
+    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
             int ply, int hashMove, int parentMove) {
         prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
     }
 
-    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
+    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
             int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         movelistPos = 0;
@@ -94,7 +93,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         currStage = stages[stageIndex];
     }
 
-    public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, Color color,
+    public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, int color,
             MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
         movelistPos = 0;
@@ -142,7 +141,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 nextStage();
 
                 int currSize = moveList.size();
-                MoveGeneration.generateAttacks(board, color.ordinal(), moveList);
+                MoveGeneration.generateAttacks(board, color, moveList);
                 if (currSize == moveList.size()) {
                     // not captures at all: overstep next step:
                     nextStage();
@@ -197,7 +196,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 break;
             case STAGE_COUNTER:
                 nextStage();
-                int counterMove = stc.getCounterMoveHeuristic().getCounter(color.ordinal(), parentMove);
+                int counterMove = stc.getCounterMoveHeuristic().getCounter(color, parentMove);
                 if (counterMove != 0 && board.isvalidmove(color, counterMove) && !moveList.isFiltered(counterMove)) {
                     theNextMove = counterMove;
                     theNextOrder = OrderCalculator.KILLER_SCORE;
@@ -208,7 +207,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case PREPARE_STAGE_REST:
                 nextStage();
                 int start = moveList.size();
-                MoveGeneration.generateQuiets(board, color.ordinal(), moveList);
+                MoveGeneration.generateQuiets(board, color, moveList);
                 createQuietSortOrders(start);
                 if (movelistPos < moveList.size()) {
                     theNextMove = sortToFront(movelistPos);
@@ -241,7 +240,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case PREPARE_STAGE_QUIESCENCE_REST:
                 nextStage();
                 start = moveList.size();
-                generator.generate(GenMode.QUIESCENCE, board, color.ordinal(), moveList);
+                generator.generate(GenMode.QUIESCENCE, board, color, moveList);
                 createSortOrders(start);
                 if (movelistPos < moveList.size()) {
                     theNextMove = sortToFront(movelistPos);

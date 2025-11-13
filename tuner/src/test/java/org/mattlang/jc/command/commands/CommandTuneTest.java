@@ -149,14 +149,14 @@ public class CommandTuneTest {
         ParameterizedEvaluation evaluation = ParameterizedEvaluation.createForTuning(new EvalConfig(), true);
 
         assertThat(evaluation.getTuningCache().getEvalSum()).isEqualTo(0);
-        int eval = evaluation.eval(board, Color.WHITE);
+        int eval = evaluation.eval(board, Color.WHITE.ordinal());
 
         assertThat(evaluation.getTuningCache().getEvalSum()).isNotEqualTo(0);
-        int eval2 = evaluation.eval(board, Color.WHITE);
+        int eval2 = evaluation.eval(board, Color.WHITE.ordinal());
         assertThat(eval2).isEqualTo(eval);
 
         evaluation.getTuningCache().clear(TuningCache.EvalComponentName.PAWN);
-        eval2 = evaluation.eval(board, Color.WHITE);
+        eval2 = evaluation.eval(board, Color.WHITE.ordinal());
         assertThat(eval2).isEqualTo(eval);
     }
 

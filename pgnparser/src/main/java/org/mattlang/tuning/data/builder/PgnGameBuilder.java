@@ -114,7 +114,7 @@ public class PgnGameBuilder {
             throw new IllegalStateException("game already ended!");
         }
         // validate legality of move:
-        if (!validator.isLegalMove(board, move, board.getSiteToMove())) {
+        if (!validator.isLegalMove(board, move, board.getSiteToMove().ordinal())) {
             GameState gameState = new GameState(board);
             logger.log(SEVERE, LoggerUtils.fmtSevere(gameState, "Illegal Move during pgn build! " + move.toStr()));
             throw new IllegalArgumentException("Illegal move during pgn build! " + move.toStr());
@@ -137,13 +137,13 @@ public class PgnGameBuilder {
     }
 
     private boolean isCheckMate() {
-        return Captures.canKingCaptured(board, board.getSiteToMove())
-               && validator.generateLegalMoves(board, board.getSiteToMove()).size() == 0;
+        return Captures.canKingCaptured(board, board.getSiteToMove().ordinal())
+               && validator.generateLegalMoves(board, board.getSiteToMove().ordinal()).size() == 0;
     }
 
     private boolean isStaleMate() {
-        return !Captures.canKingCaptured(board, board.getSiteToMove())
-               && validator.generateLegalMoves(board, board.getSiteToMove()).size() == 0;
+        return !Captures.canKingCaptured(board, board.getSiteToMove().ordinal())
+               && validator.generateLegalMoves(board, board.getSiteToMove().ordinal()).size() == 0;
     }
 
     public PgnGame toGame() {

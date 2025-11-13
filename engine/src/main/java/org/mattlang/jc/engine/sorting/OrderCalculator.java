@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.engine.see.SEE;
@@ -48,7 +47,7 @@ public final class OrderCalculator {
     private final CaptureHeuristic captureHeuristic;
     private final ContinuationHistoryHeuristic continuationHistoryHeuristic;
 
-    private Color color;
+    private int color;
 
     private int ply;
 
@@ -67,7 +66,7 @@ public final class OrderCalculator {
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
     }
 
-    public void prepareOrder(Color color, final int hashMove, int parentMove, final int ply,
+    public void prepareOrder(int color, final int hashMove, int parentMove, final int ply,
                              BoardRepresentation board, int captureMargin) {
 
         this.hashMove = hashMove;
@@ -221,7 +220,7 @@ public final class OrderCalculator {
      * @return
      */
     public int getCounterMove() {
-        return counterMoveHeuristic.getCounter(color.ordinal(), parentMove);
+        return counterMoveHeuristic.getCounter(color, parentMove);
     }
 
     public static boolean isGoodCapture(int order) {

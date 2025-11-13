@@ -23,7 +23,7 @@ public class PerfTests {
         StagedMoveIterationPreparer moveIterationPreparer =
                 SearchThreadContexts.CONTEXTS.getContext(0).getMoveIterationPreparer(depth);
         moveIterationPreparer.prepare(SearchThreadContexts.CONTEXTS.getContext(0), GenMode.NORMAL,
-                board, color, 0, 0, 0);
+                board, color.ordinal(), 0, 0, 0);
         return moveIterationPreparer.iterateMoves();
     };
 

@@ -103,8 +103,8 @@ public class GenEndGameTestPositions {
     }
 
     private static boolean isGood(BoardRepresentation board) {
-        return !Captures.canKingCaptured(board, Color.WHITE)
-                && !Captures.canKingCaptured(board, Color.BLACK)
+        return !Captures.canKingCaptured(board, Color.WHITE.ordinal())
+                && !Captures.canKingCaptured(board, Color.BLACK.ordinal())
                 && hasLegalMoves(board);
     }
 

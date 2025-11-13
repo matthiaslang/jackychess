@@ -31,7 +31,7 @@ public class AlgebraicNotation {
         MoveValidator moveValidator = new MoveValidator();
 
         List<MoveImpl> allMoves =
-                moveValidator.generateLegalMoves(board, color).extractList();
+                moveValidator.generateLegalMoves(board, color.ordinal()).extractList();
 
         List<MoveImpl> matching = allMoves.stream()
                 .filter(m -> m.getFigureType() == algNotMove.getFigure().figureCode
@@ -124,7 +124,7 @@ public class AlgebraicNotation {
             MoveImpl castlingMove = createCastling(color == WHITE ?
                     board.getBoardCastlings().getCastlingWhiteShort() :
                     board.getBoardCastlings().getCastlingBlackShort());
-            if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
+            if (!board.isvalidmove(color.ordinal(), castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + moveText.getText(), moveText);
             }
             return castlingMove;
@@ -132,7 +132,7 @@ public class AlgebraicNotation {
             castlingMove = createCastling(color == WHITE ?
                     board.getBoardCastlings().getCastlingWhiteLong() :
                     board.getBoardCastlings().getCastlingBlackLong());
-            if (!board.isvalidmove(color, castlingMove.getMoveInt())) {
+            if (!board.isvalidmove(color.ordinal(), castlingMove.getMoveInt())) {
                 throw new PgnParserException("Invalid Parsed Move " + moveText.getText(), moveText);
             }
             return castlingMove;

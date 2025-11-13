@@ -26,7 +26,7 @@ public class MoveListImplTest {
         moveList.addMove(500);
         assertThat(moveList.size()).isEqualTo(2);
 
-        moveList.reset(Color.WHITE);
+        moveList.reset(Color.WHITE.ordinal());
         moveList.addMove(50);
         assertThat(moveList.size()).isEqualTo(1);
 

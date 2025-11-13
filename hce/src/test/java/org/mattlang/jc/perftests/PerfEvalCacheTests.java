@@ -39,8 +39,8 @@ public class PerfEvalCacheTests {
             //            System.out.println("zobrist: " + board.getZobristHash()+ " pawn zobrist: " + board.getPawnZobristHash());
             //            System.out.println("Move:" + cursor.toStr() + " capture" + cursor.isCapture() + "; " + cursor.getCapturedFigure());
 
-            int evalUsingCache = evaluation.eval(board, color);
-            int evalUsingNoCache = evaluationCacheDisabled.eval(board, color);
+            int evalUsingCache = evaluation.eval(board, color.ordinal());
+            int evalUsingNoCache = evaluationCacheDisabled.eval(board, color.ordinal());
             if (evalUsingCache != evalUsingNoCache) {
                 System.out.println(
                         "Move:" + cursor.toStr() + "capture" + cursor.isCapture() + "; " + cursor.getCapturedFigure());

@@ -595,7 +595,7 @@ public final class BitBoard implements BoardRepresentation {
     }
 
     @Override
-    public boolean isvalidmove(Color color, int aMove) {
+    public boolean isvalidmove(int color, int aMove) {
 
         int from = MoveImpl.getFromIndex(aMove);
 
@@ -638,7 +638,7 @@ public final class BitBoard implements BoardRepresentation {
                     return false;
                 }
             } else if (figureType == FT_PAWN) {
-                if (color == WHITE) {
+                if (color == nWhite) {
                     if (from > to) {
                         return false;
                     }

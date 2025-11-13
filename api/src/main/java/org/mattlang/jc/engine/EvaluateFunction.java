@@ -1,12 +1,11 @@
 package org.mattlang.jc.engine;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.search.SearchThreadContextCache;
 
 public interface EvaluateFunction {
 
-    int eval(BoardRepresentation currBoard, Color who2Move);
+    int eval(BoardRepresentation currBoard, int who2Move);
 
     /**
      * Enables the evaluation function to keep a cache on thread level for their usage.

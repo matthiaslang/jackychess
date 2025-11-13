@@ -157,7 +157,7 @@ public final class SearchContext {
         board.doNullMove();
     }
 
-    public boolean isInCheck(Color color) {
+    public boolean isInCheck(final int color) {
         return Captures.canKingCaptured(board, color);
     }
 
@@ -181,14 +181,14 @@ public final class SearchContext {
         return ttCache.findHashMove(board);
     }
 
-    public MoveBoardIterator genQuiescenceMoves(int ply, Color color, int hashMove,
+    public MoveBoardIterator genQuiescenceMoves(int ply, int color, int hashMove,
             int parentMove, int captureMargin) {
         StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         preparer.prepare(stc, QUIESCENCE, board, color, ply, hashMove, parentMove, captureMargin);
         return preparer.iterateMoves();
     }
 
-    public MoveBoardIterator genRegularMoves(int ply, Color color, int hashMove,
+    public MoveBoardIterator genRegularMoves(int ply, int color, int hashMove,
             int parentMove, int captureMargin) {
         StagedMoveIterationPreparer preparer = stc.getMoveIterationPreparer(ply);
         if (ply == 1) {
@@ -201,7 +201,7 @@ public final class SearchContext {
         return preparer.iterateMoves();
     }
 
-    public int eval(Color color) {
+    public int eval(int color) {
         return evaluate.eval(board, color);
     }
 
@@ -222,7 +222,7 @@ public final class SearchContext {
      * @param color
      * @return
      */
-    public int evaluateRepetition(Color color) {
+    public int evaluateRepetition(int color) {
         // the issues we had with draws was caused by wrong board copy logic, so we it looks like we do
         // not have to do any special logic here...
 
@@ -236,7 +236,7 @@ public final class SearchContext {
     }
 
     // todo test that not in check because those heuristics make only for quiet pos sense...?
-    public void updateCutOffHeuristics(int ply, int depth, Color color, int grandparentMove, int parentMove,
+    public void updateCutOffHeuristics(int ply, int depth, int color, int grandparentMove, int parentMove,
             int bestMove,
             MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
@@ -248,13 +248,13 @@ public final class SearchContext {
 
             killerMoves.addKiller(bestMove, ply);
 
-            counterMoveHeuristic.addCounterMove(color.ordinal(), parentMove, bestMove);
+            counterMoveHeuristic.addCounterMove(color, parentMove, bestMove);
         } else {
             captureHeuristic.update(color, moveCursor, depth);
         }
     }
 
-    public void updateBadHeuristic(int depth, Color color, int grandparentMove, int parentMove, MoveCursor moveCursor) {
+    public void updateBadHeuristic(int depth, int color, int grandparentMove, int parentMove, MoveCursor moveCursor) {
         if (!moveCursor.isCapture()) {
 
             historyHeuristic.updateBad(color, moveCursor, depth);

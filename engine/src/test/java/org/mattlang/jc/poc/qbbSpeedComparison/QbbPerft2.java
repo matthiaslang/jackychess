@@ -56,7 +56,7 @@ class QbbPerft2 {
         long tot = 0;
         MoveList moveList = moveLists[depth];
         Color siteToMove = board.getSiteToMove();
-        moveList.reset(siteToMove);
+        moveList.reset(siteToMove.ordinal());
 
         MoveGeneration.generateAttacks(board, siteToMove.ordinal(), moveList);
         MoveGeneration.generateQuiets(board, siteToMove.ordinal(), moveList);
@@ -70,7 +70,7 @@ class QbbPerft2 {
         for (int i = 0; i < moveList.size(); i++) {
             wrapper.fromLongEncoded(moveList.get(i));
             board.domove(wrapper);
-            if (!Captures.canKingCaptured(board, siteToMove)) {
+            if (!Captures.canKingCaptured(board, siteToMove.ordinal())) {
                 if (depth > 1) {
                     tot += Perft(depth - 1);
                 } else
@@ -89,7 +89,7 @@ class QbbPerft2 {
         SearchThreadContext context = SearchThreadContexts.CONTEXTS.getContext(1);
         StagedMoveIterationPreparer mip =
                 context.getMoveIterationPreparer(depth);
-        mip.prepare(context, GenMode.NORMAL, board, board.getSiteToMove(), depth, 0, 0);
+        mip.prepare(context, GenMode.NORMAL, board, board.getSiteToMove().ordinal(), depth, 0, 0);
         MoveBoardIterator iterator = mip.iterateMoves();
         while (iterator.doNextValidMove()) {
             if (depth > 1) {

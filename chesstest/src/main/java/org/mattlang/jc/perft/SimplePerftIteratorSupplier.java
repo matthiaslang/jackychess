@@ -39,7 +39,7 @@ public class SimplePerftIteratorSupplier implements PerftIteratorSupplier {
     @Override
     public MoveBoardIterator supplyIterator(int depth, BoardRepresentation board, Color color) {
         MoveList moveList = moveLists[depth];
-        moveList.reset(color);
+        moveList.reset(color.ordinal());
 
         generator.generate(GenMode.NORMAL, board, color.ordinal(), moveList);
 

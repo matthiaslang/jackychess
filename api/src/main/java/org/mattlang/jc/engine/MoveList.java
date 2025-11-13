@@ -1,23 +1,22 @@
 package org.mattlang.jc.engine;
 
-import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.Color;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
+import static org.mattlang.jc.Constants.MAX_MOVES;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.B_PAWN;
+import static org.mattlang.jc.board.FigureConstants.W_PAWN;
+import static org.mattlang.jc.moves.MoveImpl.*;
+import static org.mattlang.util.Assertions.assertFieldNum;
+import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.mattlang.jc.Constants.MAX_MOVES;
-import static org.mattlang.jc.board.Color.WHITE;
-import static org.mattlang.jc.board.FigureConstants.B_PAWN;
-import static org.mattlang.jc.board.FigureConstants.W_PAWN;
-import static org.mattlang.jc.moves.MoveImpl.*;
-import static org.mattlang.util.Assertions.assertFieldNum;
-import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
+import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
 
 public final class MoveList {
 
@@ -35,7 +34,7 @@ public final class MoveList {
     /**
      * The side to move of the moves in this move list.
      */
-    private Color sideToMove;
+    private int sideToMove;
 
     public MoveList() {
     }
@@ -64,10 +63,10 @@ public final class MoveList {
         }
 
         if (isOnLastLine(to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == WHITE ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
@@ -83,7 +82,7 @@ public final class MoveList {
     }
 
     public void genEnPassant(int from, int to) {
-        addMove(createEnPassantMove(from, to, sideToMove == Color.WHITE ? B_PAWN : W_PAWN));
+        addMove(createEnPassantMove(from, to, sideToMove == nWhite ? B_PAWN : W_PAWN));
     }
 
     public void addCastlingMove(CastlingMove castlingMove) {
@@ -106,7 +105,7 @@ public final class MoveList {
         order[i] = orderVal;
     }
 
-    public void reset(Color sideToMove) {
+    public void reset(int sideToMove) {
         this.sideToMove = sideToMove;
         size = 0;
         Arrays.fill(filterMoves, 0);

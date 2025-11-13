@@ -83,7 +83,7 @@ public class Blind {
         board.setPos(sq_fr, Figure.EMPTY);
 
         /* Captures of undefended pieces are good by definition */
-        boolean blind = !canFigureCaptured(board, sq_to, board.getSiteToMove());
+        boolean blind = !canFigureCaptured(board, sq_to, board.getSiteToMove().ordinal());
         board.setPos(sq_fr, fig);
 
         return blind;

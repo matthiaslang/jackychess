@@ -1,6 +1,13 @@
 package org.mattlang.jc.board.cow;
 
-import lombok.Getter;
+import static org.mattlang.jc.board.CastlingType.*;
+import static org.mattlang.jc.board.Color.*;
+import static org.mattlang.jc.board.FigureConstants.*;
+import static org.mattlang.jc.board.bitboard.BitBoard.FEN_START_POSITION;
+import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
+
+import java.util.Objects;
+
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -11,13 +18,7 @@ import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.FenParser;
 import org.mattlang.jc.zobrist.Zobrist;
 
-import java.util.Objects;
-
-import static org.mattlang.jc.board.CastlingType.*;
-import static org.mattlang.jc.board.Color.*;
-import static org.mattlang.jc.board.FigureConstants.*;
-import static org.mattlang.jc.board.bitboard.BitBoard.FEN_START_POSITION;
-import static org.mattlang.jc.zobrist.Zobrist.isKingOrPawn;
+import lombok.Getter;
 
 /**
  * Example Board variant which does "copy on write" on doMoves and on undoMove it just switches
@@ -562,7 +563,7 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
     }
 
     @Override
-    public boolean isvalidmove(Color color, int aMove) {
+    public boolean isvalidmove(int color, int aMove) {
 
         int from = MoveImpl.getFromIndex(aMove);
 
@@ -605,7 +606,7 @@ public final class CopyOnWriteBitBoard implements BoardRepresentation {
                     return false;
                 }
             } else if (figureType == FT_PAWN) {
-                if (color == WHITE) {
+                if (color == nWhite) {
                     if (from > to) {
                         return false;
                     }

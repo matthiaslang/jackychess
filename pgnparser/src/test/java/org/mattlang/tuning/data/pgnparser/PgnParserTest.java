@@ -67,11 +67,11 @@ public class PgnParserTest {
         board.setStartPosition();
 
         MoveValidator moveValidator = new MoveValidator();
-        MoveList moves = moveValidator.generateLegalMoves(board, WHITE);
+        MoveList moves = moveValidator.generateLegalMoves(board, WHITE.ordinal());
         MoveImpl ply1 = new MoveImpl(moves.get(0));
         board.domove(ply1);
 
-        moves = moveValidator.generateLegalMoves(board, BLACK);
+        moves = moveValidator.generateLegalMoves(board, BLACK.ordinal());
         MoveImpl ply2 = new MoveImpl(moves.get(0));
         board.domove(ply2);
 

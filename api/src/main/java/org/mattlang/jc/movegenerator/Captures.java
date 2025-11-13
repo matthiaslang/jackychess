@@ -28,11 +28,11 @@ public class Captures {
     public static boolean canFigureCaptured(BoardRepresentation board, int i) {
         byte figure = board.getFigureCode(i);
         Color side = Figure.getColor(figure);
-        return canFigureCaptured(board, i, side);
+        return canFigureCaptured(board, i, side.ordinal());
     }
 
-    public static boolean canKingCaptured(BoardRepresentation bitBoard, Color side) {
-        long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side.ordinal());
+    public static boolean canKingCaptured(BoardRepresentation bitBoard, int side) {
+        long kingBB = bitBoard.getBoard().getPieceSet(FT_KING, side);
         int kingPos = Long.numberOfTrailingZeros(kingBB);
         return canFigureCaptured(bitBoard, kingPos, side);
     }
@@ -47,10 +47,9 @@ public class Captures {
      * @param i
      * @return
      */
-    public static boolean canFigureCaptured(BoardRepresentation board, int i, Color cside) {
+    public static boolean canFigureCaptured(BoardRepresentation board, int i, final int side) {
 
-        int side = cside.ordinal();
-        int xside = cside.invert().ordinal();
+        final int xside = Color.invert(side);
 
         BitChessBoard bb = board.getBoard();
         long ownFigsMask = bb.getColorMask(side);

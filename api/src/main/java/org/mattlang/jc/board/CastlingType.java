@@ -18,7 +18,7 @@ public enum CastlingType {
     BLACK_LONG(BLACK, LONG, CASTLING_BLACK_LONG_TYPE, cBKingTargetPos, cBRookTargetPos),
     BLACK_SHORT(BLACK, SHORT, CASTLING_BLACK_SHORT_TYPE, gBKingTargetPos, gBRookTargetPos);
 
-    private final Color color;
+    private final int color;
 
     private final RochadeType rochadeType;
 
@@ -31,7 +31,7 @@ public enum CastlingType {
     private final byte castlingBitMask;
 
     CastlingType(Color color, RochadeType rochadeType, byte castlingMoveType, int kingTargetPos, int rookTargetPos) {
-        this.color = color;
+        this.color = color.ordinal();
         this.rochadeType = rochadeType;
         this.castlingMoveType = castlingMoveType;
         this.kingTargetPos = kingTargetPos;
@@ -41,7 +41,7 @@ public enum CastlingType {
 
     public static CastlingType of(int color, RochadeType rochadeType) {
         for (CastlingType castlingType : CastlingType.values()) {
-            if (castlingType.getColor().ordinal() == color && castlingType.getRochadeType() == rochadeType) {
+            if (castlingType.getColor() == color && castlingType.getRochadeType() == rochadeType) {
                 return castlingType;
             }
         }

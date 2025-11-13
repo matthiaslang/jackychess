@@ -244,7 +244,7 @@ public class DatasetPreparer {
     private Optional<FenEntry> handleMove(MoveValidator moveValidator, String comment, MoveDescr moveDesr,
             BoardRepresentation board,
             Ending ending) {
-        MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove());
+        MoveList moveList = moveValidator.generateLegalMoves(board, board.getSiteToMove().ordinal());
 
         boolean anyLegalMoves = moveList.size() > 0;
         if (moveDesr.getEnding() == null
@@ -261,7 +261,7 @@ public class DatasetPreparer {
     }
 
     private boolean isCheck(BoardRepresentation board) {
-        return Captures.canKingCaptured(board, WHITE) || Captures.canKingCaptured(board, BLACK);
+        return Captures.canKingCaptured(board, WHITE.ordinal()) || Captures.canKingCaptured(board, BLACK.ordinal());
     }
 
     private boolean isEvalUsingEndGameFunction(BoardRepresentation board) {

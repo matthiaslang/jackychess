@@ -1,12 +1,11 @@
 package org.mattlang.jc.engine.search;
 
-import org.mattlang.jc.board.Color;
+import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
+import static org.mattlang.jc.board.FigureConstants.FT_ALL;
+
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.moves.MoveImpl;
-
-import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
-import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 
 public class ContinuationHistoryHeuristic extends AbstractHistory{
 
@@ -34,16 +33,15 @@ public class ContinuationHistoryHeuristic extends AbstractHistory{
         }
     }
 
-    public void update(Color color, int prevMove, MoveCursor move, int depth) {
+    public void update(int color, int prevMove, MoveCursor move, int depth) {
         updateHist(color, prevMove, move, calcBonus(depth));
     }
 
 
-    private void updateHist(Color color, int prevMove, MoveCursor move, int bonus) {
+    private void updateHist(int colorIdx, int prevMove, MoveCursor move, int bonus) {
         if (prevMove == 0) {
             return;
         }
-        int colorIdx = color.ordinal();
 
         int clampedBonus = clamp(bonus, -HIST_MAX, HIST_MAX);
 
@@ -53,16 +51,15 @@ public class ContinuationHistoryHeuristic extends AbstractHistory{
                 prevMove)][move.getFigureType()][move.getToIndex()] +=  clampedBonus - existingVal * Math.abs(clampedBonus) / HIST_MAX;
     }
 
-    public int calcValue(int prevMove, Move move, Color color) {
+    public int calcValue(int prevMove, Move move, int colorIdx) {
         if (prevMove == 0) {
             return 0;
         }
-        int colorIdx = color.ordinal();
         return posHistory[colorIdx][MoveImpl.getFigureType(prevMove)][MoveImpl.getToIndex(
                 prevMove)][move.getFigureType()][move.getToIndex()];
     }
 
-    public void updateBad(Color color, int prevMove, MoveCursor move, int depth) {
+    public void updateBad(int color, int prevMove, MoveCursor move, int depth) {
         updateHist(color, prevMove, move, -calcBonus(depth));
     }
 

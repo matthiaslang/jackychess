@@ -59,8 +59,8 @@ public final class CastlingDef {
 
     private boolean checkPos(BoardRepresentation board) {
         BitChessBoard bb = board.getBoard();
-        return kingFromMask == bb.getKings(castlingType.getColor().ordinal())
-                && (rookFromMask & bb.getRooks(castlingType.getColor().ordinal())) != 0
+        return kingFromMask == bb.getKings(castlingType.getColor())
+                && (rookFromMask & bb.getRooks(castlingType.getColor())) != 0
                 && (~bb.getPieces() & emptyMask) == emptyMask;
     }
 

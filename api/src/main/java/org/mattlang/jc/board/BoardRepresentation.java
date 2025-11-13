@@ -87,7 +87,7 @@ public interface BoardRepresentation {
 
     boolean isDrawByMaterial();
 
-    boolean isvalidmove(Color color, int pvMove);
+    boolean isvalidmove(int color, int pvMove);
 
     Material getMaterial();
 

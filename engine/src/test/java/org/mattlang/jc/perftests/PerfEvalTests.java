@@ -29,7 +29,7 @@ public class PerfEvalTests {
 
         @Override
         public void accept(BoardRepresentation board, Color color, int depth, MoveCursor cursor) {
-            evaluation.eval(board, color);
+            evaluation.eval(board, color.ordinal());
         }
     };
 

@@ -27,7 +27,7 @@ public class PerfIsValidTests {
             board.undo(cursor);
 
             // now we can test the validity of the move:
-            Assertions.assertThat(board.isvalidmove(color, cursor.getMoveInt()))
+            Assertions.assertThat(board.isvalidmove(color.ordinal(), cursor.getMoveInt()))
                     //                    .withFailMessage("on Board %s: Move %s is not valid!",
                     //                            board.toUniCodeStr(),
                     //                            new MoveImpl(cursor.getMoveInt()).toStr())

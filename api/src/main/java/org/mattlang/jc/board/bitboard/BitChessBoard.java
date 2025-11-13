@@ -290,9 +290,9 @@ public final class BitChessBoard {
         return ((colorBB[nWhite] & posMask) == 0 && (colorBB[nBlack] & posMask) == 0);
     }
 
-    public Color getColorOfPos(int p1) {
+    public int getColorOfPos(int p1) {
         long posMask1 = 1L << p1;
-        return (colorBB[nWhite] & posMask1) != 0 ? WHITE : BLACK;
+        return (colorBB[nWhite] & posMask1) != 0 ? nWhite : nBlack;
     }
 
     /**

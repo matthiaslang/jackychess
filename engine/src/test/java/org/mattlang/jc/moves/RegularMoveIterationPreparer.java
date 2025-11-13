@@ -28,24 +28,24 @@ public class RegularMoveIterationPreparer {
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove) {
-        moveList.reset(color);
+        moveList.reset(color.ordinal());
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
         generator.generate(mode, board, color.ordinal(), moveList);
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, 0);
+        orderCalculator.prepareOrder(color.ordinal(), hashMove, parentMove, ply, board, 0);
         orderCalculator.scoreMoves(moveList);
 
     }
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
             int ply, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset(color);
+        moveList.reset(color.ordinal());
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
         generator.generate(mode, board, color.ordinal(), moveList);
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        orderCalculator.prepareOrder(color.ordinal(), hashMove, parentMove, ply, board, captureMargin);
         orderCalculator.scoreMoves(moveList);
 
     }

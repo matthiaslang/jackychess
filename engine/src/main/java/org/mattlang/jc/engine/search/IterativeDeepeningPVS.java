@@ -384,7 +384,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         // test the best move:
         if (LOGGER.isLoggable(SEVERE)) {
             BoardRepresentation board = gameState.getBoard().copy();
-            boolean legal = moveValidator.isLegalMove(board, rslt.savedMove, gameState.getWho2Move());
+            boolean legal = moveValidator.isLegalMove(board, rslt.savedMove, gameState.getWho2Move().ordinal());
             if (!legal) {
                 LOGGER.log(SEVERE, LoggerUtils.fmtSevere(gameState, "Illegal Best Move " + rslt.savedMove.toUCIString(board)));
             }

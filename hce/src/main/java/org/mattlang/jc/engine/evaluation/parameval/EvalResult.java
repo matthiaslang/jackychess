@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import org.mattlang.jc.board.BB;
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
 import org.mattlang.jc.engine.evaluation.PhaseCalculator;
 
@@ -50,9 +49,9 @@ public final class EvalResult {
      * found pawn cache entry of the position to be evaluated.
      */
     private PawnCacheEntry pawnEntry;
-    private Color who2Move;
+    private int who2Move;
 
-    public void clear(Color who2Move) {
+    public void clear(int who2Move) {
         mgEgScore.clear();
 
         for (int i = 0; i < 2; i++) {

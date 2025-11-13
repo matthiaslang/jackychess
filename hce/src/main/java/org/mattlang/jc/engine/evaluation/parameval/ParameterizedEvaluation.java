@@ -150,7 +150,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
     }
 
     @Override
-    public int eval(BoardRepresentation currBoard, Color who2Move) {
+    public int eval(BoardRepresentation currBoard, int who2Move) {
 
         if (forTuning && optimizeMode) {
             return evalForTuningOptimizedMode(currBoard, who2Move);
@@ -199,7 +199,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
 //        score = matCorrection.correct(currBoard, score);
 
-        int who2mov = who2Move == Color.WHITE ? 1 : -1;
+        int who2mov = who2Move == nWhite ? 1 : -1;
         score = score * who2mov;
 
         if (caching) {
@@ -211,7 +211,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
         return score;
     }
 
-    public int evalForTuningOptimizedMode(BoardRepresentation currBoard, Color who2Move) {
+    public int evalForTuningOptimizedMode(BoardRepresentation currBoard, int who2Move) {
 
         result.clear(who2Move);
 
@@ -242,7 +242,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
 
 //        score = matCorrection.correct(currBoard, score);
 
-        int who2mov = who2Move == Color.WHITE ? 1 : -1;
+        int who2mov = who2Move == nWhite ? 1 : -1;
         score = score * who2mov;
 
         return score;
@@ -319,7 +319,7 @@ public class ParameterizedEvaluation implements EvaluateFunction {
      * @return
      */
     public boolean isUsingEndgameFunction(BoardRepresentation currBoard) {
-        result.clear(currBoard.getSiteToMove());
+        result.clear(currBoard.getSiteToMove().ordinal());
         matEvaluation.eval(result, currBoard);
         EndGameRules endGameRule = matchesRule(currBoard, result.getMgEgScore().getEgScore());
         return endGameRule != null;

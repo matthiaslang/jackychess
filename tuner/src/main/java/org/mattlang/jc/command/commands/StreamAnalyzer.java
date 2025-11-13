@@ -52,7 +52,7 @@ public class StreamAnalyzer {
 
     public void analyze(FenEntry entry) {
         count++;
-        int eval = evaluate.eval(entry.getBoard(), WHITE);
+        int eval = evaluate.eval(entry.getBoard(), WHITE.ordinal());
         double errorValue = pow(entry.getResult() - sigmoid(eval), 2);
         sum += errorValue;
 

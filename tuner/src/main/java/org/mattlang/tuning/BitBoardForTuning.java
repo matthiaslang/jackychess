@@ -259,7 +259,7 @@ public class BitBoardForTuning implements BoardRepresentation {
     }
 
     @Override
-    public boolean isvalidmove(Color color, int aMove) {
+    public boolean isvalidmove(int color, int aMove) {
         throw new IllegalStateException("not implemented! this is only a immutable read only Board!");
     }
 

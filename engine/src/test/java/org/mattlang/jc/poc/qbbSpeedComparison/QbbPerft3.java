@@ -55,13 +55,13 @@ class QbbPerft3 {
         Color siteToMove = board.getSiteToMove();
         SearchThreadContext context = SearchThreadContexts.CONTEXTS.getContext(1);
         StagedMoveIterationPreparer mip = context.getMoveIterationPreparer(depth);
-        mip.prepare(context, GenMode.NORMAL, board, board.getSiteToMove(), depth, 0, 0);
+        mip.prepare(context, GenMode.NORMAL, board, board.getSiteToMove().ordinal(), depth, 0, 0);
         MoveImpl wrapper = new MoveImpl("a1a1");
         while (mip.hasNext()) {
             int move = mip.next();
             wrapper.fromLongEncoded(move);
             board.domove(wrapper);
-            if (!Captures.canKingCaptured(board, siteToMove)) {
+            if (!Captures.canKingCaptured(board, siteToMove.ordinal())) {
                 if (depth > 1) {
                     tot += Perft(depth - 1);
                 } else

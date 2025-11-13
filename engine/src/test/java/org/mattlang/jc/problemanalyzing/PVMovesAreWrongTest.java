@@ -55,7 +55,7 @@ public class PVMovesAreWrongTest {
         for (Move move : itResult.getRslt().getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
-            boolean legal = moveValidator.isLegalMove(board, move, who2Move);
+            boolean legal = moveValidator.isLegalMove(board, move, who2Move.ordinal());
 
             if (legal) {
                 board.domove(move);
@@ -104,7 +104,7 @@ public class PVMovesAreWrongTest {
         for (Move move : itResult.getRslt().getPvMoves()) {
             System.out.println("Checking PV " + move.toStr());
 
-            boolean legal = moveValidator.isLegalMove(board, move, who2Move);
+            boolean legal = moveValidator.isLegalMove(board, move, who2Move.ordinal());
 
             if (legal) {
                 board.domove(move);

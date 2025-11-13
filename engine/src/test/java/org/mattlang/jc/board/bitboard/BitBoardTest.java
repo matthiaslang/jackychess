@@ -36,21 +36,21 @@ public class BitBoardTest {
 
         // positive check, that all legal moves are "valid" moves:
         MoveList moveList = new MoveList();
-        moveList.reset(Color.WHITE);
+        moveList.reset(Color.WHITE.ordinal());
         movegen.generate(board, Color.WHITE.ordinal(), moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {
-                assertThat(board.isvalidmove(Color.WHITE, iterator.getMoveInt())).isTrue();
+                assertThat(board.isvalidmove(Color.WHITE.ordinal(), iterator.getMoveInt())).isTrue();
             }
         }
 
-        moveList.reset(Color.BLACK);
+        moveList.reset(Color.BLACK.ordinal());
         movegen.generate(board, Color.BLACK.ordinal(), moveList);
 
         try (MoveBoardIterator iterator = iterateMoves(moveList, board)) {
             while (iterator.nextMove()) {
-                assertThat(board.isvalidmove(Color.BLACK, iterator.getMoveInt())).isTrue();
+                assertThat(board.isvalidmove(Color.BLACK.ordinal(), iterator.getMoveInt())).isTrue();
             }
         }
 
@@ -58,43 +58,43 @@ public class BitBoardTest {
 
         // 1. from is wrong:
         int move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("g3"), parsePos("g4"), FT_EMPTY);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 2. from is right, but different color:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("g4"), FT_EMPTY);
-        assertThat(board.isvalidmove(Color.BLACK, move)).isFalse();
+        assertThat(board.isvalidmove(Color.BLACK.ordinal(), move)).isFalse();
 
         // 3. to is our own figure:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f2"), FT_EMPTY);
-        assertThat(board.isvalidmove(Color.BLACK, move)).isFalse();
+        assertThat(board.isvalidmove(Color.BLACK.ordinal(), move)).isFalse();
 
         // 3. to is our own figure and has capture set:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f2"), Figure.B_Pawn.figureCode);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 3. to is empty but denotes a "wrong" figure:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("g4"), Figure.B_Pawn.figureCode);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 3. capture but denotes a "wrong" opponent figure:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f6"), Figure.B_Pawn.figureCode);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 3. capture but denotes a "right" opponent figure:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f6"), Figure.B_Knight.figureCode);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isTrue();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isTrue();
 
         // 4. capture of slighting figure where figures are inbetween:
         move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f7"), Figure.B_Pawn.figureCode);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 4. inbetween check double pawn push:
         move = MoveImpl.createNormalMove(FT_PAWN, parsePos("f2"), parsePos("f4"), FT_EMPTY);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
         // 4. korrekt double pawn push:
         move = MoveImpl.createNormalMove(FT_PAWN, parsePos("g2"), parsePos("g4"), FT_EMPTY);
-        assertThat(board.isvalidmove(Color.WHITE, move)).isTrue();
+        assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isTrue();
     }
 
     /**
@@ -112,43 +112,43 @@ public class BitBoardTest {
 
             // 1. from is wrong:
             int move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("g3"), parsePos("g4"), FT_EMPTY);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 2. from is right, but different color:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("g4"), FT_EMPTY);
-            assertThat(board.isvalidmove(Color.BLACK, move)).isFalse();
+            assertThat(board.isvalidmove(Color.BLACK.ordinal(), move)).isFalse();
 
             // 3. to is our own figure:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f2"), FT_EMPTY);
-            assertThat(board.isvalidmove(Color.BLACK, move)).isFalse();
+            assertThat(board.isvalidmove(Color.BLACK.ordinal(), move)).isFalse();
 
             // 3. to is our own figure and has capture set:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f2"), Figure.B_Pawn.figureCode);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 3. to is empty but denotes a "wrong" figure:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("g4"), Figure.B_Pawn.figureCode);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 3. capture but denotes a "wrong" opponent figure:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f6"), Figure.B_Pawn.figureCode);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 3. capture but denotes a "right" opponent figure:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f6"), Figure.B_Knight.figureCode);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isTrue();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isTrue();
 
             // 4. capture of slighting figure where figures are inbetween:
             move = MoveImpl.createNormalMove(FT_QUEEN, parsePos("f3"), parsePos("f7"), Figure.B_Pawn.figureCode);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 4. inbetween check double pawn push:
             move = MoveImpl.createNormalMove(FT_PAWN, parsePos("f2"), parsePos("f4"), FT_EMPTY);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isFalse();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isFalse();
 
             // 4. korrekt double pawn push:
             move = MoveImpl.createNormalMove(FT_PAWN, parsePos("g2"), parsePos("g4"), FT_EMPTY);
-            assertThat(board.isvalidmove(Color.WHITE, move)).isTrue();
+            assertThat(board.isvalidmove(Color.WHITE.ordinal(), move)).isTrue();
         }
     }
 

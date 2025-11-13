@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.mattlang.jc.board.BoardRepresentation;
-import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.TuningCache;
 import org.mattlang.jc.engine.evaluation.parameval.EvalConfig;
 import org.mattlang.jc.engine.evaluation.parameval.ParameterizedEvaluation;
@@ -35,7 +34,7 @@ public class ParamTuneableEvaluateFunction implements TuneableEvaluateFunction {
     }
 
     @Override
-    public int eval(BoardRepresentation currBoard, Color who2Move) {
+    public int eval(BoardRepresentation currBoard, int who2Move) {
         return parameterizedEvaluation.eval(currBoard, who2Move);
     }
 
