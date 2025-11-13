@@ -2,9 +2,8 @@ package org.mattlang.jc.tools;
 
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 import org.mattlang.jc.moves.MoveImpl;
 
@@ -24,7 +23,6 @@ public class LegalMoves {
         MoveList moveList = new MoveList();
         moveList.reset(color);
         PseudoLegalMoveGenerator movegen = new PseudoLegalMoveGenerator();
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
 
         movegen.generate(board, color.ordinal(), moveList);
 
@@ -36,7 +34,7 @@ public class LegalMoves {
             wrapper.fromLongEncoded(moveInt);
 
             board.domove(wrapper);
-            if (!checkChecker.isInChess(board, color)) {
+            if (!Captures.canKingCaptured(board, color)) {
 
                 result.addMove(moveInt);
             }

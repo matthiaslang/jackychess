@@ -13,8 +13,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
 import org.mattlang.tuning.data.pgnparser.*;
@@ -138,14 +137,12 @@ public class PgnGameBuilder {
     }
 
     private boolean isCheckMate() {
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
-        return checkChecker.isInChess(board, board.getSiteToMove())
+        return Captures.canKingCaptured(board, board.getSiteToMove())
                && validator.generateLegalMoves(board, board.getSiteToMove()).size() == 0;
     }
 
     private boolean isStaleMate() {
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
-        return !checkChecker.isInChess(board, board.getSiteToMove())
+        return !Captures.canKingCaptured(board, board.getSiteToMove())
                && validator.generateLegalMoves(board, board.getSiteToMove()).size() == 0;
     }
 

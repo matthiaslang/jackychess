@@ -13,8 +13,7 @@ import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.Figure;
 import org.mattlang.jc.board.FigureType;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.util.FenComposer;
 import org.mattlang.jc.util.MoveValidator;
 
@@ -24,8 +23,6 @@ import org.mattlang.jc.util.MoveValidator;
 public class GenEndGameTestPositions {
 
     private static Random random = new Random(2317);
-
-    private static CheckChecker checkChecker = new BBCheckCheckerImpl();
 
     private static MoveValidator moveValidator = new MoveValidator();
 
@@ -106,8 +103,8 @@ public class GenEndGameTestPositions {
     }
 
     private static boolean isGood(BoardRepresentation board) {
-        return !checkChecker.isInChess(board, Color.WHITE)
-                && !checkChecker.isInChess(board, Color.BLACK)
+        return !Captures.canKingCaptured(board, Color.WHITE)
+                && !Captures.canKingCaptured(board, Color.BLACK)
                 && hasLegalMoves(board);
     }
 

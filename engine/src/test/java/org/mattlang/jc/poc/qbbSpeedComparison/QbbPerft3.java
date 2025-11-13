@@ -19,7 +19,7 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
@@ -33,8 +33,6 @@ class QbbPerft3 {
             moveLists[i] = new MoveList();
         }
     }
-
-    private static BBCheckCheckerImpl checkChecker = new BBCheckCheckerImpl();
 
     static int pPosition;
 
@@ -63,7 +61,7 @@ class QbbPerft3 {
             int move = mip.next();
             wrapper.fromLongEncoded(move);
             board.domove(wrapper);
-            if (!checkChecker.isInChess(board, siteToMove)) {
+            if (!Captures.canKingCaptured(board, siteToMove)) {
                 if (depth > 1) {
                     tot += Perft(depth - 1);
                 } else

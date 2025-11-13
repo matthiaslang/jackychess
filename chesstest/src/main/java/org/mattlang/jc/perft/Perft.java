@@ -8,8 +8,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.bitboard.BitBoard;
-import org.mattlang.jc.engine.CheckChecker;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
 import org.mattlang.jc.moves.MoveBoardIterator;
 
 import lombok.Getter;
@@ -101,16 +99,6 @@ public class Perft {
             Color color,
             int depth) {
 
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
-        perft(board, checkChecker, color, depth);
-    }
-
-    public void perft(
-            BoardRepresentation board,
-            CheckChecker checkChecker,
-            Color color,
-            int depth) {
-
         allNodes++;
         if (depth == 0) {
             nodes++;
@@ -139,7 +127,7 @@ public class Perft {
                 if (visitor != null) {
                     visitor.accept(board, color, depth, iterator);
                 }
-                perft(board, checkChecker, color.invert(), depth - 1);
+                perft(board, color.invert(), depth - 1);
 
             }
         }

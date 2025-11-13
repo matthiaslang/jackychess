@@ -10,11 +10,10 @@ import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.CheckChecker;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.IterativeSearchResult;
 import org.mattlang.jc.engine.search.SearchThreadContexts;
-import org.mattlang.jc.movegenerator.BBCheckCheckerImpl;
+import org.mattlang.jc.movegenerator.Captures;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.MoveValidator;
@@ -73,11 +72,10 @@ public class Playing {
     }
 
     private GameStatusResult checkGameStatus(BoardRepresentation board) {
-        CheckChecker checkChecker = new BBCheckCheckerImpl();
         MoveValidator moveValidator = new MoveValidator();
 
         // first check all strange states of the board:
-        if (checkChecker.isInChess(board, board.getSiteToMove().invert())) {
+        if (Captures.canKingCaptured(board, board.getSiteToMove().invert())) {
             System.out.println("Illegal Chess State or Move! " + board.getSiteToMove().invert()
                                + " is after his move still in check!");
             return new GameStatusResult(WEIRD_STATE);
@@ -100,7 +98,7 @@ public class Playing {
         }
 
         if (!moveValidator.hasLegalMoves(board)) {
-            if (checkChecker.isInChess(board, board.getSiteToMove())) {
+            if (Captures.canKingCaptured(board, board.getSiteToMove())) {
                 System.out.println(board.getSiteToMove() + " is matt!");
                 return new GameStatusResult(MATT);
             } else {
