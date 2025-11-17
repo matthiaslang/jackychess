@@ -49,11 +49,11 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
 
     private static final Stage[] SINGLE_STATIC_STAGE = { STAGE_STATIC_ALL };
 
-    private MoveList moveList = new MoveList();
+    private final MoveList moveList = new MoveList();
 
-    private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
+    private final PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
 
-    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+    private final MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     private OrderCalculator orderCalculator;
     private BoardRepresentation board;
@@ -75,7 +75,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
      * Moves which should be filtered during collecting of moves (used in staged move generation).
      * 4 Places are needed: a hash move, two killers, and a counter move at most.
      */
-    private int[] filterMoves = new int[4];
+    private final int[] filterMoves = new int[4];
     private int filterCount = 0;
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
