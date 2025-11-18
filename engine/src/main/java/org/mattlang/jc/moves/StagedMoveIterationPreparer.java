@@ -157,8 +157,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
                     nextStage();
                 } else {
                     createCaptureSortOrders(movelistPos);
-                    if (movelistPos < moveList.size()) {
-                        theNextMove = sortToFront(movelistPos);
+                    if (sortToFrontSkippingFiltered()) {
                         if (OrderCalculator.isGoodCapture(moveList.getOrder(movelistPos))) {
                             theNextOrder = moveList.getOrder(movelistPos);
                             return true;
