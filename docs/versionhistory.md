@@ -1,5 +1,11 @@
 # Versions
 
+### ...
+
+- refactored code using ints as Color parameter instead of Color Enum in evaluation, code gen and negamax classes. This
+  seems to optimize better for the JIT compiler and bring a few elos over long tournaments.
+
+
 ### 25.09.2
 
 - use tt cache to save eval as part of the payload. the xorKey is therefore reduced by 16bit. This may better scale
