@@ -27,7 +27,7 @@ import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
  * Another variant using special code for one-move-stages (like hashmoves, killers) has also been evaluated, but has
  * also not brought any benefit.
  */
-public class StagedMoveIterationPreparer implements MoveIterator {
+public final class StagedMoveIterationPreparer implements MoveIterator {
 
     public static final Logger LOGGER = Logger.getLogger(StagedMoveIterationPreparer.class.getSimpleName());
 
@@ -49,11 +49,11 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
     private static final Stage[] SINGLE_STATIC_STAGE = { STAGE_STATIC_ALL };
 
-    private MoveList moveList = new MoveList();
+    private final MoveList moveList = new MoveList();
 
-    private PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
+    private final PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
 
-    private MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
+    private final MoveBoardIterator moveBoardIterator = new MoveBoardIterator();
 
     private OrderCalculator orderCalculator;
     private BoardRepresentation board;
@@ -71,6 +71,13 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private SearchThreadContext stc;
     private Stage currStage;
 
+    /**
+     * Moves which should be filtered during collecting of moves (used in staged move generation).
+     * 4 Places are needed: a hash move, two killers, and a counter move at most.
+     */
+    private final int[] filterMoves = new int[4];
+    private int filterCount = 0;
+
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
             int ply, int hashMove, int parentMove) {
         prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
@@ -79,6 +86,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
             int ply, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
+        filterCount = 0;
         movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
@@ -96,6 +104,7 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, int color,
             MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
         moveList.reset(color);
+        filterCount = 0;
         movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
@@ -119,7 +128,8 @@ public class StagedMoveIterationPreparer implements MoveIterator {
     private int theNextOrder = 0;
     private int movelistPos = 0;
 
-    private int nextMove() {
+    @Override
+    public boolean hasNext() {
 
         while (stageIndex < stages.length) {
 
@@ -133,8 +143,8 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 if (hashMove != 0 && board.isvalidmove(color, hashMove)) {
                     theNextMove = hashMove;
                     theNextOrder = OrderCalculator.HASHMOVE_SCORE;
-                    moveList.addFilter(hashMove);
-                    return theNextMove;
+                    addFilter(hashMove);
+                    return true;
                 }
                 break;
             case PREPARE_STAGE_GOOD_CAPTURES:
@@ -147,11 +157,10 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                     nextStage();
                 } else {
                     createCaptureSortOrders(movelistPos);
-                    if (movelistPos < moveList.size()) {
-                        theNextMove = sortToFront(movelistPos);
+                    if (sortToFrontSkippingFiltered()) {
                         if (OrderCalculator.isGoodCapture(moveList.getOrder(movelistPos))) {
                             theNextOrder = moveList.getOrder(movelistPos);
-                            return theNextMove;
+                            return true;
                         } else {
                             // there are only bad captures: overstep the "stage good captures":
                             nextStage();
@@ -162,11 +171,10 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 break;
             case STAGE_GOOD_CAPTURES:
                 movelistPos++;
-                if (movelistPos < moveList.size()) {
-                    theNextMove = sortToFront(movelistPos);
+                if (sortToFrontSkippingFiltered()) {
                     if (OrderCalculator.isGoodCapture(moveList.getOrder(movelistPos))) {
                         theNextOrder = moveList.getOrder(movelistPos);
-                        return theNextMove;
+                        return true;
                     }
                 }
                 nextStage();
@@ -176,32 +184,32 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 nextStage();
                 int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
 
-                if (killers[0] != 0 && board.isvalidmove(color, killers[0]) && !moveList.isFiltered(killers[0])) {
+                if (killers[0] != 0 && board.isvalidmove(color, killers[0]) && isUnfilteredMove(killers[0])) {
                     theNextMove = killers[0];
                     theNextOrder = OrderCalculator.KILLER_SCORE;
-                    moveList.addFilter(killers[0]);
-                    return theNextMove;
+                    addFilter(killers[0]);
+                    return true;
                 }
                 break;
             case STAGE_KILLERS2:
                 nextStage();
                 killers = stc.getKillerMoves().getOrCreateKillerList(ply);
 
-                if (killers[1] != 0 && board.isvalidmove(color, killers[1]) && !moveList.isFiltered(killers[1])) {
+                if (killers[1] != 0 && board.isvalidmove(color, killers[1]) && isUnfilteredMove(killers[1])) {
                     theNextMove = killers[1];
                     theNextOrder = OrderCalculator.KILLER_SCORE;
-                    moveList.addFilter(killers[1]);
-                    return theNextMove;
+                    addFilter(killers[1]);
+                    return true;
                 }
                 break;
             case STAGE_COUNTER:
                 nextStage();
                 int counterMove = stc.getCounterMoveHeuristic().getCounter(color, parentMove);
-                if (counterMove != 0 && board.isvalidmove(color, counterMove) && !moveList.isFiltered(counterMove)) {
+                if (counterMove != 0 && board.isvalidmove(color, counterMove) && isUnfilteredMove(counterMove)) {
                     theNextMove = counterMove;
                     theNextOrder = OrderCalculator.KILLER_SCORE;
-                    moveList.addFilter(counterMove);
-                    return theNextMove;
+                    addFilter(counterMove);
+                    return true;
                 }
                 break;
             case PREPARE_STAGE_REST:
@@ -209,20 +217,18 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 int start = moveList.size();
                 MoveGeneration.generateQuiets(board, color, moveList);
                 createQuietSortOrders(start);
-                if (movelistPos < moveList.size()) {
-                    theNextMove = sortToFront(movelistPos);
+                if (sortToFrontSkippingFiltered()) {
                     theNextOrder = moveList.getOrder(movelistPos);
-                    return theNextMove;
+                    return true;
                 }
 
                 break;
             case STAGE_REST:
             case STAGE_QUIESCENCE_REST:
                 movelistPos++;
-                if (movelistPos < moveList.size()) {
-                    theNextMove = sortToFront(movelistPos);
+                if (sortToFrontSkippingFiltered()) {
                     theNextOrder = moveList.getOrder(movelistPos);
-                    return theNextMove;
+                    return true;
                 }
                 nextStage();
 
@@ -230,11 +236,11 @@ public class StagedMoveIterationPreparer implements MoveIterator {
             case STAGE_QUIESCENCE_HASH:
                 nextStage();
                 if (hashMove != 0
-                        && (MoveImpl.isCapture(hashMove) || MoveImpl.isPromotion(hashMove))
-                        && board.isvalidmove(color, hashMove)) {
+                    && (MoveImpl.isCapture(hashMove) || MoveImpl.isPromotion(hashMove))
+                    && board.isvalidmove(color, hashMove)) {
                     theNextMove = hashMove;
                     theNextOrder = OrderCalculator.HASHMOVE_SCORE;
-                    return theNextMove;
+                    return true;
                 }
                 break;
             case PREPARE_STAGE_QUIESCENCE_REST:
@@ -242,18 +248,16 @@ public class StagedMoveIterationPreparer implements MoveIterator {
                 start = moveList.size();
                 generator.generate(GenMode.QUIESCENCE, board, color, moveList);
                 createSortOrders(start);
-                if (movelistPos < moveList.size()) {
-                    theNextMove = sortToFront(movelistPos);
+                if (sortToFrontSkippingFiltered()) {
                     theNextOrder = moveList.getOrder(movelistPos);
-                    return theNextMove;
+                    return true;
                 }
                 break;
             case STAGE_STATIC_ALL:
-                if (movelistPos < moveList.size()) {
-                    theNextMove = sortToFront(movelistPos);
+                if (sortToFrontSkippingFiltered()) {
                     theNextOrder = moveList.getOrder(movelistPos);
                     movelistPos++;
-                    return theNextMove;
+                    return true;
                 }
                 nextStage();
                 break;
@@ -261,7 +265,18 @@ public class StagedMoveIterationPreparer implements MoveIterator {
 
         }
 
-        return 0;
+        return false;
+    }
+
+    private boolean sortToFrontSkippingFiltered() {
+        while (movelistPos < moveList.size()) {
+            theNextMove = sortToFront(movelistPos);
+            if (isUnfilteredMove(theNextMove)) {
+                return true;
+            }
+            movelistPos++;
+        }
+        return false;
     }
 
     private int sortToFront(int start) {
@@ -310,12 +325,6 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         return theNextMove;
     }
 
-    @Override
-    public boolean hasNext() {
-        theNextMove = nextMove();
-        return theNextMove != 0;
-    }
-
     private void nextStage() {
         stageIndex++;
         if (stageIndex < stages.length) {
@@ -323,11 +332,17 @@ public class StagedMoveIterationPreparer implements MoveIterator {
         }
     }
 
-    private boolean hasNextSortedMove() {
-        if (movelistPos < moveList.size()) {
-            theNextMove = sortToFront(movelistPos);
-            return true;
+    private boolean isUnfilteredMove(int aMove) {
+        for (int i = 0; i < filterCount; i++) {
+            if (filterMoves[i] == aMove) {
+                return false;
+            }
         }
-        return false;
+        return true;
+    }
+
+    private void addFilter(int filterMove) {
+        filterMoves[filterCount] = filterMove;
+        filterCount++;
     }
 }

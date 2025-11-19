@@ -9,7 +9,6 @@ import static org.mattlang.util.Assertions.assertFieldNum;
 import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,16 +19,10 @@ import org.mattlang.jc.moves.MoveImpl;
 
 public final class MoveList {
 
-    private int[] moves = new int[MAX_MOVES];
-    private int[] order = new int[MAX_MOVES];
+    private final int[] moves = new int[MAX_MOVES];
+    private final int[] order = new int[MAX_MOVES];
 
     private int size = 0;
-
-    /**
-     * Moves which should be filtered during collecting of moves (used in staged move generation).
-     * 4 Places are needed: a hash move, two killers, and a counter move at most.
-     */
-    private int[] filterMoves = new int[4];
 
     /**
      * The side to move of the moves in this move list.
@@ -63,10 +56,14 @@ public final class MoveList {
         }
 
         if (isOnLastLine(to)) {
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
-            addMove(createPromotionMove(from, to, capturedFigure, sideToMove == nWhite ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure,
+                    sideToMove == nWhite ? PAWN_PROMOTION_W_QUEEN_TYPE : PAWN_PROMOTION_B_QUEEN_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure,
+                    sideToMove == nWhite ? PAWN_PROMOTION_W_ROOK_TYPE : PAWN_PROMOTION_B_ROOK_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure,
+                    sideToMove == nWhite ? PAWN_PROMOTION_W_BISHOP_TYPE : PAWN_PROMOTION_B_BISHOP_TYPE));
+            addMove(createPromotionMove(from, to, capturedFigure,
+                    sideToMove == nWhite ? PAWN_PROMOTION_W_KNIGHT_TYPE : PAWN_PROMOTION_B_KNIGHT_TYPE));
         } else {
             addMove(createNormalMove(FigureConstants.FT_PAWN, from, to, capturedFigure));
 
@@ -108,36 +105,17 @@ public final class MoveList {
     public void reset(int sideToMove) {
         this.sideToMove = sideToMove;
         size = 0;
-        Arrays.fill(filterMoves, 0);
     }
 
     public void addMove(int aMove) {
-        if (!isFiltered(aMove)) {
-            moves[size] = aMove;
-            size++;
-        }
+        moves[size] = aMove;
+        size++;
     }
 
     public void addMoveWithOrder(int aMove, int orderVal) {
-        if (!isFiltered(aMove)) {
-            moves[size] = aMove;
-            order[size] = orderVal;
-            size++;
-        }
-    }
-
-    public boolean isFiltered(int aMove) {
-        for (int filterMove : filterMoves) {
-            // no more filtered moves set, so we kan skip
-            if (filterMove == 0) {
-                return false;
-            }
-            if (filterMove == aMove) {
-                return true;
-            }
-
-        }
-        return false;
+        moves[size] = aMove;
+        order[size] = orderVal;
+        size++;
     }
 
     public void swap(int i, int j) {
@@ -149,16 +127,6 @@ public final class MoveList {
         int ttmp = moves[i];
         moves[i] = moves[j];
         moves[j] = ttmp;
-    }
-
-    public void addFilter(int filterMove) {
-        for (int i = 0; i < filterMoves.length; i++) {
-            if (filterMoves[i] == 0) {
-                filterMoves[i] = filterMove;
-                return;
-            }
-        }
-        throw new IllegalStateException("no free filter move!");
     }
 
     /**
@@ -181,6 +149,7 @@ public final class MoveList {
     /**
      * Copies all moves of the other movelist to this move list overriding all previously existing moves in this list.
      * Order info ist not copied.
+     *
      * @param otherList
      */
     public void initFrom(MoveList otherList) {
@@ -189,7 +158,5 @@ public final class MoveList {
         for (int i = 0; i < size; i++) {
             moves[i] = otherList.moves[i];
         }
-        Arrays.fill(filterMoves, 0);
-
     }
 }
