@@ -112,7 +112,7 @@ public class FenParser {
         case 'n':
             return createPawnPromotion(movePos, PAWN_PROMOTION_W_KNIGHT_TYPE, PAWN_PROMOTION_B_KNIGHT_TYPE, captureFig);
         case 'b':
-            return createPawnPromotion(movePos, PAWN_PROMOTION_W_BISHOP_TYPE, PAWN_PROMOTION_B_KNIGHT_TYPE, captureFig);
+            return createPawnPromotion(movePos, PAWN_PROMOTION_W_BISHOP_TYPE, PAWN_PROMOTION_B_BISHOP_TYPE, captureFig);
         }
 
         // en passant:

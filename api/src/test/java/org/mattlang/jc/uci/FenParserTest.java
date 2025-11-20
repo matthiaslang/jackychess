@@ -36,32 +36,33 @@ public class FenParserTest {
     public void testKnightPromotionWithCaptureParsing() {
         FenParser p = new FenParser();
         BoardRepresentation board = new BitBoard();
-        p.setPosition("position fen 4k2q/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1q g7h8n", board);
+        p.setPosition("position fen 4k2q/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1n g7h8n", board);
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigure(IndexConversion.parsePos("h8"))).isEqualTo(Figure.W_Knight);
-
+        assertThat(board.getFigurePos(7, 2)).isEqualTo(Figure.B_Knight);
     }
 
     @Test
     public void testRookPromotionParsing() {
         FenParser p = new FenParser();
         BoardRepresentation board = new BitBoard();
-        p.setPosition("position fen 4k3/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1q g7g8r", board);
+        p.setPosition("position fen 4k3/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1r g7g8r", board);
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigurePos(0, 6)).isEqualTo(Figure.W_Rook);
-
+        assertThat(board.getFigurePos(7, 2)).isEqualTo(Figure.B_Rook);
     }
 
     @Test
     public void testBishopPromotionParsing() {
         FenParser p = new FenParser();
         BoardRepresentation board = new BitBoard();
-        p.setPosition("position fen 4k3/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1q g7g8b", board);
+        p.setPosition("position fen 4k3/6PP/8/8/8/8/ppp3K1/8 b - - 0 1 moves c2c1b g7g8b", board);
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigurePos(0, 6)).isEqualTo(Figure.W_Bishop);
+        assertThat(board.getFigurePos(7, 2)).isEqualTo(Figure.B_Bishop);
 
     }
 
@@ -73,7 +74,7 @@ public class FenParserTest {
         System.out.println(board.toUniCodeStr());
 
         assertThat(board.getFigurePos(0, 6)).isEqualTo(Figure.W_Queen);
-
+        assertThat(board.getFigurePos(7, 2)).isEqualTo(Figure.B_Queen);
     }
 
 
