@@ -5,7 +5,7 @@
 - refactored code using ints as Color parameter instead of Color Enum in evaluation, code gen and negamax classes. This
   seems to optimize better for the JIT compiler and bring a few elos over long tournaments.
 - refactored staged move iteration, doing filtering of encountered moves now lazy. Seem to bring a few Elos...
-
+- fixed fen parsing promotion error from move enc refactoring from 25.09.1
 
 
 ### 25.09.2
