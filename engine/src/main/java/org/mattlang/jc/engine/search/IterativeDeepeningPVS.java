@@ -19,7 +19,6 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
@@ -361,7 +360,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             GameState gameState,
             NegaMaxResult rslt,
             StopWatch watch,
-            AlphaBetaSearchMethod negaMaxAlphaBeta) {
+            NegaMaxAlphaBetaPVS negaMaxAlphaBeta) {
         if (!isWorker) {
             long nodes = negaMaxAlphaBeta.getNodesVisited();
             long duration = watch.getCurrDuration();

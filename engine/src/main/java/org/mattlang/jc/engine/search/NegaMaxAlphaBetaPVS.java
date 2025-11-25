@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
-import org.mattlang.jc.engine.AlphaBetaSearchMethod;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.evaluation.Weights;
@@ -40,7 +39,7 @@ import lombok.Setter;
  * Negamax with Alpha Beta Pruning. Supports PVS Search which could be optional activated.
  * Supports TT Cache
  */
-public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
+public final class NegaMaxAlphaBetaPVS {
 
     private static final Logger LOGGER = Logger.getLogger(NegaMaxAlphaBetaPVS.class.getSimpleName());
 
@@ -113,7 +112,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         reset();
     }
 
-    @Override
     public Move search(GameState gameState, GameContext context, int depth) {
         assert depth > 0;
         reset();
@@ -817,7 +815,6 @@ public final class NegaMaxAlphaBetaPVS implements AlphaBetaSearchMethod {
         return alpha;
     }
 
-    @Override
     public NegaMaxResult searchWithScore(MoveList legalMovesToSearch,
             Move optionalLastBestMove,
             SearchThreadContext stc, GameState gameState,

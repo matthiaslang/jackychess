@@ -299,7 +299,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         // block with other figure on d7:
@@ -322,7 +322,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         //        // block with other figure:
@@ -345,7 +345,7 @@ public class EngineTest {
 
         System.out.println(board.toUniCodeStr());
 
-        SearchMethod negaMax = new NegaMaxAlphaBetaPVS();
+        NegaMaxAlphaBetaPVS negaMax = new NegaMaxAlphaBetaPVS();
         Move move = negaMax.search(gameState, new GameContext(), 2);
 
         //        // block with other figure:
