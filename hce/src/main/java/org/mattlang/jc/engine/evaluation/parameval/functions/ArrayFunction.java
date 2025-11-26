@@ -8,7 +8,7 @@ import org.mattlang.jc.engine.evaluation.parameval.MgEgScore;
 /**
  * A function which is backed by an array to lookup the values.
  */
-public final class ArrayFunction implements Function {
+public final class ArrayFunction {
 
     private final int[] funVals;
 
@@ -16,7 +16,6 @@ public final class ArrayFunction implements Function {
         this.funVals = funVals;
     }
 
-    @Override
     public int calc(int x) {
         return funVals[x];
     }
@@ -63,14 +62,6 @@ public final class ArrayFunction implements Function {
             vals[i] = MgEgScore.createMgEgScore(valMg, valEg);
         }
         return vals;
-    }
-
-    public static void updateCombined(int[] combinedMgEg, ArrayFunction funMG, ArrayFunction funEG) {
-        for (int i = 0; i < combinedMgEg.length; i++) {
-            int valMg = i < funMG.getSize() ? funMG.calc(i) : 0;
-            int valEg = i < funEG.getSize() ? funEG.calc(i) : 0;
-            combinedMgEg[i] = MgEgScore.createMgEgScore(valMg, valEg);
-        }
     }
 
     /**
