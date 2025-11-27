@@ -133,7 +133,7 @@ public final class OrderCalculator {
         return m.getFigureType() + QUIET;
     }
 
-    private static int[] MVVAUGMENT = {100, 320, 330, 500, 900, 0};
+    private static int[] MVVAUGMENT = {0, 100, 320, 330, 500, 900, 0};
 
     private int calcOrderForCaptures(MoveImpl m) {
         if (m.isQueenPromotion()) {
