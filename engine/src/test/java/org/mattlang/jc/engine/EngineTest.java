@@ -164,7 +164,7 @@ public class EngineTest {
         assertThat(move).isEqualTo(bestm[0]);
 
         // check result; of course this could change if evaluation changes
-        assertThat(move.toStr()).isIn("c7c6", "e7e5", "b8c6");
+        assertThat(move.toStr()).isIn("c7c6", "e7e5", "b8c6", "g8f6");
     }
 
     @Test

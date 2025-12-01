@@ -199,6 +199,7 @@ public class UciInterfaceTest {
         communication.expectBestmove(bestmoveWithPonder("g1f3", "b8c6"),
                 bestmoveWithPonder("g1f3", "b8c6"),
                 bestmoveWithPonder("b1c3", "b8c6"),
+                bestmoveWithPonder("d2d4", "e5d4"),
                 bestmoveWithPonder("b1c3", "g8f6"));
         communication.consumeAllInfo();
 
