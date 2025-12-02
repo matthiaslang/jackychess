@@ -1,6 +1,11 @@
 # Versions
 
-### ...
+## 25.12
+
+Official release since 25.04.
+Estimated Elo strength: ~2940, ~80 Elo stronger
+
+### 25.09.2opt004
 
 - refactored code using ints as Color parameter instead of Color Enum in evaluation, code gen and negamax classes. This
   seems to optimize better for the JIT compiler and bring a few elos over long tournaments.

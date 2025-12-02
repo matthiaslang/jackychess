@@ -108,7 +108,8 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 
 | Version | Estimated Rating | Estimated Rating 4 Threads vs. 1 Thread | CCRL Blitz | 40/15 | 40/2 FRC |
 |---------|------------------|-----------------------------------------|------------|-------|----------|
-| 25.04   | 2890             | +150 Elo                                |            |       |          |
+| 25.12   | 2940             | +150 Elo                                |            |       |          |
+| 25.04   | 2890             | +150 Elo                                | 2860       | 2848  |          |
 | 24.06   | 2840             |                                         | 2794       | 2847  |          |
 | 24.04   | 2800             |                                         | 2792       | 2781  | 2764     |
 | 23.12   | 2760             |                                         | 2695       | 2731  |          |
@@ -154,6 +155,7 @@ The chess engine uses following technics/algorithms
 - null move pruning and static null move pruning
 - razoring
 - late move reduction
+- singular extensions
 - staged move generation and separate move generation for quiescence
 - move sorting by hash moves, killer moves, history heuristic, counter moves; captures sorted by SEE
 - transposition table using zobrist hashing to cache scores
