@@ -77,8 +77,10 @@
         <module>api</module>
         <module>chesstest</module>
         <module>hce</module>
+        <module>nnue</module>
         <module>engine</module>
         <module>jcClassic</module>
+        <module>jcNNUE</module>
         <module>tuner</module>
         <module>pgnparser</module>
         <module>tools</module>
