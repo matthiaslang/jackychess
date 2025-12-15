@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.*;
 import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
-import static org.mattlang.jc.engine.evaluation.parameval.endgame.KxKEndgameFunction.VALUE_KNOWN_WIN;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
@@ -30,6 +29,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchListener {
+
+    // todo should better use 32000 == Weights.Kingweight instead??
+    private static final int VALUE_KNOWN_WIN = 10000;
 
     private static final Logger LOGGER = Logger.getLogger(IterativeDeepeningPVS.class.getSimpleName());
     public static final IterativeDeepeningListener NOOP_LISTENER = bestMove -> {

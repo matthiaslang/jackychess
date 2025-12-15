@@ -78,6 +78,7 @@
         <module>chesstest</module>
         <module>hce</module>
         <module>engine</module>
+        <module>jcClassic</module>
         <module>tuner</module>
         <module>pgnparser</module>
         <module>tools</module>

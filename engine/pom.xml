@@ -97,36 +97,6 @@
                     <target>${jc.vm.version}</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
-
-                <configuration>
-                    <finalName>jackychess-${project.version}</finalName>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <addClasspath>true</addClasspath>
-                                    <mainClass>org.mattlang.jc.Main</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -150,27 +120,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.lukegb.mojo</groupId>
-                <artifactId>gitdescribe-maven-plugin</artifactId>
-                <version>3.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>gitdescribe</goal>
-                        </goals>
-                        <id>git-describe</id>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <extraArguments>
-                                <param>--dirty</param>
-                                <param>--tags</param>
-                            </extraArguments>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -212,6 +161,7 @@
             <groupId>org.mattlang.jackychess</groupId>
             <artifactId>hce</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mattlang.jackychess</groupId>

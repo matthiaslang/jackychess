@@ -14,6 +14,8 @@ MVNVERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 JARFILE=jackychess-${MVNVERSION}.jar
 TUNERJARFILE=tuner-${MVNVERSION}-jar-with-dependencies.jar
+CLASSICMODULE=jcClassic
+
 
 LOCALARENAFOLDER=../jcversions/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
@@ -24,8 +26,8 @@ SHREDDERENGFILE=engine/target/jackychess-${MVNVERSION}.eng
 
 # copy to our folders where the test programs have access:
 echo "copy to test folders"
-cp -v engine/target/$JARFILE   $LOCALARENAFOLDER
-cp -v engine/target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
+cp -v $CLASSICMODULE/target/$JARFILE   $LOCALARENAFOLDER
+cp -v $CLASSICMODULE/target/$JARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 cp -v tuner/target/$TUNERJARFILE   ${LOCALTESTPROJFOLDER}/jackychess
 
 # copy a bash file for starting the engine within cutechess
