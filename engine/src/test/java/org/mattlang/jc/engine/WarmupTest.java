@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.TestTools;
+import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 
 public class WarmupTest {
@@ -21,10 +22,10 @@ public class WarmupTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState startPos= GameState.startPos();
+        System.out.println(startPos.getBoard().toUniCodeStr());
         SearchParameter params = params(6000000, 63);
-        Move move = engine.go(params);
+        Move move = engine.go(params, startPos);
 
         System.out.println(move.toStr());
 

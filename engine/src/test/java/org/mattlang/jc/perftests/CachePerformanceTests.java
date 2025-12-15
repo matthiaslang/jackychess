@@ -1,6 +1,10 @@
 package org.mattlang.jc.perftests;
 
-import lombok.Data;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mattlang.jc.SearchParameter.params;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
@@ -14,10 +18,7 @@ import org.mattlang.jc.engine.tt.TTCache;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.Logging;
 
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mattlang.jc.SearchParameter.params;
+import lombok.Data;
 
 /**
  * Testcode to analyze tt cache.
@@ -76,10 +77,10 @@ public class CachePerformanceTests {
         GameContext gamecontext = new GameContext();
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState=GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
         SearchParameter parameter = params(60000, 12);
-        Move move = engine.go(parameter, new GameState(engine.getBoard()), gamecontext);
+        Move move = engine.go(parameter, gameState, gamecontext);
 
         System.out.println(move.toStr());
 
@@ -91,21 +92,21 @@ public class CachePerformanceTests {
         Caching.CACHING.getTtCache().resetStatistics();
         // redo same "go":
         parameter = params(60000, 12);
-        move = engine.go(parameter, new GameState(engine.getBoard()), gamecontext);
+        move = engine.go(parameter, gameState, gamecontext);
 
         CacheInfo run2 = new CacheInfo(Caching.CACHING.getTtCache());
 
         Caching.CACHING.getTtCache().resetStatistics();
         // redo same "go":
         parameter = params(60000, 12);
-        move = engine.go(parameter, new GameState(engine.getBoard()), gamecontext);
+        move = engine.go(parameter, gameState, gamecontext);
 
         CacheInfo run3 = new CacheInfo(Caching.CACHING.getTtCache());
 
         Caching.CACHING.getTtCache().resetStatistics();
         // redo same "go":
         parameter = params(600000, 15);
-        move = engine.go(parameter, new GameState(engine.getBoard()), gamecontext);
+        move = engine.go(parameter, gameState, gamecontext);
 
         CacheInfo run4 = new CacheInfo(Caching.CACHING.getTtCache());
 

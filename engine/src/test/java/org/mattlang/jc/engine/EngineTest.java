@@ -34,10 +34,10 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
         SearchParameter parameter = params(60000, 9);
-        Move move = engine.go(parameter);
+        Move move = engine.go(parameter, gameState);
 
         System.out.println(move.toStr());
 
@@ -66,12 +66,12 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
         SearchParameter params = params(36000000, 11);
-        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
+        Move move = engine.go(params, gameState, gameContext);
 
         System.out.println(move.toStr());
 
@@ -88,10 +88,9 @@ public class EngineTest {
         UCI.instance.attachStreams();
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState = engine.getBoard()
-                .setFenPosition(
+        GameState gameState = GameState.posFrom(
                         "position startpos moves d2d4 d7d6 c2c4 e7e5 d4e5 d6e5 d1d8 e8d8 b1c3 c7c6 f2f4 b8d7 g1f3 g8e7 f4e5 e7g6 e2e4 f8c5 f1e2 d8c7 c3a4 c5b4 e1f2 d7e5 f3e5 g6e5 c4c5 c8e6 a2a3 b4a5 c1f4 f7f6 b2b4 e6b3");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(gameState.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
         try {
@@ -121,12 +120,12 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
         SearchParameter params = params(36000000, 11);
-        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
+        Move move = engine.go(params, gameState, gameContext);
 
         System.out.println(move.toStr());
 
@@ -143,9 +142,9 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
-        engine.getBoard().switchSiteToMove();
+        GameState gameState = GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
+        gameState.getBoard().switchSiteToMove();
         GameContext gameContext = new GameContext();
 
         Move[] bestm = new Move[1];
@@ -158,7 +157,7 @@ public class EngineTest {
             }
         });
         SearchParameter params = params(60000, 8);
-        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
+        Move move = engine.go(params, gameState, gameContext);
 
         System.out.println(move.toStr());
         assertThat(move).isEqualTo(bestm[0]);
@@ -174,8 +173,8 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setStartPosition();
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.startPos();
+        System.out.println(gameState.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
 
         Move[] bestm = new Move[1];
@@ -189,7 +188,6 @@ public class EngineTest {
         });
         MoveValidator moveValidator = new MoveValidator();
 
-        GameState gameState = new GameState(engine.getBoard());
         MoveList legalMovesToSearch =
                 moveValidator.createLegalMovesToSearch(gameState, new String[] { "a2a4", "b2b4", "b2b3" });
 
@@ -221,9 +219,9 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        GameState state = engine.getBoard().setFenPosition("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
+        GameState state = GameState.posFrom("position fen 8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - - 0 1");
 
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(state.getBoard().toUniCodeStr());
         SearchParameter params = params(18000000, 31);
         Move move = engine.go(params, state, new GameContext());
 
@@ -242,10 +240,9 @@ public class EngineTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        GameState state = engine.getBoard()
-                .setFenPosition("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
+        GameState state = GameState.posFrom("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
 
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(state.getBoard().toUniCodeStr());
         GameContext gameContext = new GameContext();
         SearchParameter params = params(2000, 20);
         Move move = engine.go(params, state, gameContext);
@@ -253,10 +250,9 @@ public class EngineTest {
         System.out.println(move.toStr());
 
         // now do the same when tt cache is filled from previous search:
-        state = engine.getBoard()
-                .setFenPosition("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
+        state = GameState.posFrom("position fen 8/8/8/8/8/6K1/1Q6/3k4 w - - 39 143  ");
 
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(state.getBoard().toUniCodeStr());
 
         move = engine.go(params, state, gameContext);
         System.out.println(move.toStr());
@@ -272,9 +268,9 @@ public class EngineTest {
         // now starting engine:
         Engine engine = new Engine();
 
-        GameState gameState = engine.getBoard().setFenPosition("position fen 7k/P7/8/8/8/8/K7/8 w - - 2 17 ");
+        GameState gameState = GameState.posFrom("position fen 7k/P7/8/8/8/8/K7/8 w - - 2 17 ");
 
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(gameState.getBoard().toUniCodeStr());
         SearchParameter params = params(60000, 7);
         Move move = engine.go(params, gameState, new GameContext());
 

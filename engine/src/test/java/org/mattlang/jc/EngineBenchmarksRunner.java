@@ -98,7 +98,7 @@ public class EngineBenchmarksRunner {
             int count) {
 
         Engine engine = new Engine();
-        GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
+        GameState state = GameState.posFrom(testPosition.getFenPosition());
 //        System.out.println(engine.getBoard().toUniCodeStr());
         String name = generateNameFromOptions();
 
@@ -118,7 +118,7 @@ public class EngineBenchmarksRunner {
             SearchParameter searchParameter, int count) {
 
         Engine engine = new Engine();
-        GameState state = engine.getBoard().setFenPosition(testPosition.getFenPosition());
+        GameState state = GameState.posFrom(testPosition.getFenPosition());
         //        System.out.println(engine.getBoard().toUniCodeStr());
 
         ExecResults<IterativeSearchResult> execResults = benchmark(

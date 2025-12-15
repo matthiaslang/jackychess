@@ -31,9 +31,8 @@ public class ParsingPromotionsWithCapturesFailureTest {
         UCI.instance.attachStreams();
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState =
-                engine.getBoard().setFenPosition("position fen 3qk3/2P5/1Q6/4K3/8/8/8/8 w - - 0 0 moves c7d8q ");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.posFrom("position fen 3qk3/2P5/1Q6/4K3/8/8/8/8 w - - 0 0 moves c7d8q ");
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         Move move = engine.go(SearchParameter.params(60000, maxDepth), gameState, new GameContext());
 

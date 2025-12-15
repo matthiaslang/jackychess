@@ -17,7 +17,6 @@ import org.mattlang.jc.board.bitboard.BitBoard;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.movegenerator.GenMode;
-import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
 
@@ -273,13 +272,11 @@ public class StagedMoveIterationPreparerTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
-        System.out.println(engine.getBoard().toUniCodeStr());
-
-        GameContext gameContext = new GameContext();
+        GameState gameState= GameState.posFrom("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         SearchParameter params = params(60000, 20);
-        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
+        Move move = engine.go(params, gameState);
 
         System.out.println(move.toStr());
 
@@ -295,13 +292,11 @@ public class StagedMoveIterationPreparerTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        engine.getBoard().setFenPosition("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
-        System.out.println(engine.getBoard().toUniCodeStr());
-
-        GameContext gameContext = new GameContext();
+        GameState gameState = GameState.posFrom("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         SearchParameter params = params(60000, 20);
-        Move move = engine.go(params, new GameState(engine.getBoard()), gameContext);
+        Move move = engine.go(params, gameState);
 
         System.out.println(move.toStr());
 

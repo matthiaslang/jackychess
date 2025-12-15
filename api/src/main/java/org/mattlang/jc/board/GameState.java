@@ -1,5 +1,7 @@
 package org.mattlang.jc.board;
 
+import org.mattlang.jc.engine.Configurator;
+
 import lombok.Getter;
 
 /**
@@ -38,6 +40,18 @@ public class GameState {
     }
 
     public void appendGoCmd(String cmdStr) {
-        this.goCmd=cmdStr;
+        this.goCmd = cmdStr;
+    }
+
+    public static GameState posFrom(String fenStr) {
+        BoardRepresentation aboard = Configurator.createBoard();
+        aboard.setFenPosition(fenStr);
+        return new GameState(aboard, fenStr);
+    }
+
+    public static GameState startPos() {
+        BoardRepresentation aboard = Configurator.createBoard();
+        aboard.setStartPosition();
+        return new GameState(aboard, null);
     }
 }

@@ -35,16 +35,15 @@ public class PattChosenTest {
         UCI.instance.attachStreams();
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState =
-                engine.getBoard().setFenPosition("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.posFrom("position fen 8/1P1k1p2/5P2/3KP3/2p2B2/2P5/7P/8 w - - 1 56 ");
+        System.out.println(gameState.getBoard().toUniCodeStr());
         Move move = engine.go(SearchParameter.params(15000, 3), gameState, new GameContext());
 
         System.out.println(move.toStr());
 
-        engine.getBoard().domove(move);
+        gameState.getBoard().domove(move);
         // means we should have no patt situation:
-        MoveList whiteMoves = LegalMoves.generateLegalMoves(engine.getBoard(), Color.BLACK);
+        MoveList whiteMoves = LegalMoves.generateLegalMoves(gameState.getBoard(), Color.BLACK);
         // so black should have possibilities to move:
         assertThat(whiteMoves.size()).isGreaterThan(0);
 

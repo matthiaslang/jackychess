@@ -1,5 +1,6 @@
 package org.mattlang.jc.play;
 
+import static org.mattlang.jc.board.GameState.posFrom;
 import static org.mattlang.jc.play.EndStatus.*;
 
 import java.util.ArrayList;
@@ -35,17 +36,18 @@ public class Playing {
     public GameStatusResult playGameTillEnd(SearchParameter params) {
 
         Engine engine = new Engine();
-        engine.getBoard().setFenPosition(fenPosition);
+        GameState gameState = posFrom(fenPosition);
+
         System.out.println("Begin playing game from position: ");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
-        startPosition = engine.getBoard().copy();
+        startPosition = gameState.getBoard().copy();
 
-        GameStatusResult currentState = checkGameStatus(engine.getBoard().copy());
+        GameStatusResult currentState = checkGameStatus(gameState);
 
         while (!currentState.isEnd()) {
 
-            String moveInfo = engine.getBoard().getSiteToMove() + " Ply: " + playedMoves.size();
+            String moveInfo = gameState.getBoard().getSiteToMove() + " Ply: " + playedMoves.size();
             System.out.println(moveInfo);
 
             // reset all static data
@@ -53,22 +55,26 @@ public class Playing {
             GameContext gameContext = new GameContext();
             // iterative search
             IterativeSearchResult result =
-                    engine.goIterative(params, new GameState(engine.getBoard()), gameContext);
+                    engine.goIterative(params, gameState, gameContext);
             Move move = result.getSavedMove();
 
-            if (!engine.getBoard().isvalidmove(engine.getBoard().getSiteToMove().ordinal(), move.getMoveInt())) {
+            if (!gameState.getBoard().isvalidmove(gameState.getBoard().getSiteToMove().ordinal(), move.getMoveInt())) {
                 System.out.println("no valid Move!!!");
             }
             playedMoves.add(new MoveImpl(move.getMoveInt()));
-            engine.getBoard().domove(move);
+            gameState.getBoard().domove(move);
             System.out.println(moveInfo + " Move " + move);
-            System.out.println(engine.getBoard().toUniCodeStr());
+            System.out.println(gameState.getBoard().toUniCodeStr());
 
-            currentState = checkGameStatus(engine.getBoard().copy());
+            currentState = checkGameStatus(gameState);
         }
 
         System.out.println("Played Moves: " + playedMoves);
         return currentState;
+    }
+
+    private GameStatusResult checkGameStatus(GameState gameState){
+        return checkGameStatus(gameState.getBoard().copy());
     }
 
     private GameStatusResult checkGameStatus(BoardRepresentation board) {

@@ -1,5 +1,9 @@
 package org.mattlang.jc.engine;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.ConfigValues;
 import org.mattlang.jc.SearchParameter;
@@ -8,10 +12,6 @@ import org.mattlang.jc.board.Move;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.Logging;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuiescenceTest {
 
@@ -23,8 +23,8 @@ public class QuiescenceTest {
 
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState = engine.getBoard().setFenPosition("position fen K7/8/8/2Q5/2r5/3b4/8/7k w - - 1 56 ");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.posFrom("position fen K7/8/8/2Q5/2r5/3b4/8/7k w - - 1 56 ");
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         SearchParameter params = SearchParameter.params(60000, 2);
         Move move = engine.go(params, gameState, new GameContext());

@@ -38,7 +38,8 @@ public class SearchParameter {
     @Getter
     private int nodes;
 
-    public final Impl<IterativeDeepeningSearch> searchMethod = new Impl<>(this, IterativeDeepeningPVS::new);
+    @Getter
+    private final IterativeDeepeningSearch iterativeDeepeningSearch;
 
     /**
      * an optional list with legal moves  when coming from async engine. If searchmoves is set, it contains only the
@@ -51,17 +52,21 @@ public class SearchParameter {
     public SearchParameter(int timeout, int depth) {
         this.timeout = timeout;
         this.depth = depth;
+        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
     }
 
     public SearchParameter(int timeout, int depth, MoveList legalMovesToSearch) {
         this.timeout = timeout;
         this.depth = depth;
         this.legalMovesToSearch = legalMovesToSearch;
+        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
     }
 
-    public SearchParameter(int timeout, MoveList legalMovesToSearch, GoParameter goParams) {
+    public SearchParameter(int timeout, MoveList legalMovesToSearch, GoParameter goParams,
+            IterativeDeepeningSearch iterativeDeepeningSearch) {
         this.timeout = timeout;
         this.legalMovesToSearch = legalMovesToSearch;
+        this.iterativeDeepeningSearch = iterativeDeepeningSearch;
         if (goParams.depth > 0) {
             this.depth = goParams.depth;
             // we support setting depth and timeout (normally only testcases would do that..)
@@ -80,9 +85,11 @@ public class SearchParameter {
 
     public SearchParameter(int timeout) {
         this.timeout = timeout;
+        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
     }
 
     public SearchParameter() {
+        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
     }
 
     public static SearchParameter params(int timeout) {
@@ -98,13 +105,12 @@ public class SearchParameter {
     }
 
     public static SearchParameter createMultiThread(int timeout, MoveList legalMovesToSearch, GoParameter goParams) {
-        return new SearchParameter(timeout, legalMovesToSearch, goParams)
-                .searchMethod.set(MultiThreadedIterativeDeepening::new);
+        return new SearchParameter(timeout, legalMovesToSearch, goParams, new MultiThreadedIterativeDeepening());
     }
 
     public void log() {
         if (UCILogger.uciDebugMode) {
-            UCILogger.logDebug("Search Method: " + searchMethod.instance().getClass().getSimpleName()
+            UCILogger.logDebug("Search Method: " + iterativeDeepeningSearch.getClass().getSimpleName()
                                + " Evaluation: " + Configurator.determineEvalImplName());
             for (Map.Entry<UCIGroup, List<UCIOption>> entry : ConfigValues.getConfigValues()
                     .getAllOptions()
@@ -130,7 +136,7 @@ public class SearchParameter {
 
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("Board: " + Configurator.determineBoardImplName());
-            LOGGER.info("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+            LOGGER.info("Search Method: " + iterativeDeepeningSearch.getClass().getSimpleName());
             LOGGER.info("Evaluation: " + Configurator.determineEvalImplName());
             for (UCIOption option : ConfigValues.getConfigValues().getAllOptions().getAllOptions()) {
                 LOGGER.info(option.getName() + ": " + option.getValue());
@@ -142,7 +148,7 @@ public class SearchParameter {
     public void log(StringBuilder b) {
         b.append("Board: " + Configurator.determineBoardImplName());
         b.append("\n");
-        b.append("Search Method: " + searchMethod.instance().getClass().getSimpleName());
+        b.append("Search Method: " + iterativeDeepeningSearch.getClass().getSimpleName());
         b.append("\n");
         b.append("Evaluation: " + Configurator.determineEvalImplName());
         b.append("\n");

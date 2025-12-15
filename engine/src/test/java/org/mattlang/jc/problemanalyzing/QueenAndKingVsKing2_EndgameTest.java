@@ -25,8 +25,8 @@ public class QueenAndKingVsKing2_EndgameTest {
         UCI.instance.attachStreams();
         // now starting engine:
         Engine engine = new Engine();
-        GameState gameState = engine.getBoard().setFenPosition("position fen 4k3/8/1Q6/4K3/8/8/8/8 w - - 0 0 ");
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.posFrom("position fen 4k3/8/1Q6/4K3/8/8/8/8 w - - 0 0 ");
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         IterativeDeepeningPVS itDeep = new IterativeDeepeningPVS();
         IterativeSearchResult itResult =

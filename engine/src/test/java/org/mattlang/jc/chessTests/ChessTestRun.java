@@ -20,8 +20,8 @@ public class ChessTestRun {
     public static void testPosition(Engine engine, TestPosition testPosition) {
         System.out.println(testPosition.fen + " expected moves: " + testPosition.getExpectedBestMoves());
 
-        GameState gameState = engine.getBoard().setFenPosition(testPosition.getFenPosition());
-        System.out.println(engine.getBoard().toUniCodeStr());
+        GameState gameState = GameState.posFrom(testPosition.getFenPosition());
+        System.out.println(gameState.getBoard().toUniCodeStr());
 
         GameContext gameContext = new GameContext();
         int[] counter = new int[1];
