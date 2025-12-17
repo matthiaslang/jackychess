@@ -1,8 +1,6 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
-import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
-
+import lombok.Getter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.board.GameState;
@@ -19,7 +17,8 @@ import org.mattlang.jc.moves.MoveBoardIterator;
 import org.mattlang.jc.moves.StagedMoveIterationPreparer;
 import org.mattlang.jc.uci.GameContext;
 
-import lombok.Getter;
+import static org.mattlang.jc.movegenerator.GenMode.NORMAL;
+import static org.mattlang.jc.movegenerator.GenMode.QUIESCENCE;
 
 /**
  * Holds Information during a negamax Search.
@@ -102,6 +101,7 @@ public final class SearchContext {
         weAre = gameState.getWho2Move();
 
         this.evaluate = stc.getEvaluate();
+        this.evaluate.init(board);
 
         this.gameState = gameState;
         this.context = context;

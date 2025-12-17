@@ -1,10 +1,5 @@
 package org.mattlang.jc.moves;
 
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.moves.Stage.*;
-
-import java.util.logging.Logger;
-
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
@@ -14,6 +9,11 @@ import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.MoveGeneration;
 import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
+
+import java.util.logging.Logger;
+
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.moves.Stage.*;
 
 /**
  * Encapsulates all relevant objects to prepare iteration over moves on the board.
@@ -90,6 +90,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
+        this.moveBoardIterator.setEvaluate(stc.getEvaluate());
         this.board = board;
         this.hashMove = hashMove;
         this.color = color;
@@ -108,6 +109,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
+        this.moveBoardIterator.setEvaluate(stc.getEvaluate());
         this.board = board;
         this.hashMove = hashMove;
         this.color = color;

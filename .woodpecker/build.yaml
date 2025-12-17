@@ -4,13 +4,13 @@ when:
 
 steps:
   - name: build
-    image: maven:3.9.9-eclipse-temurin-17
+    image: maven:3.9.9-eclipse-temurin-21
     commands:
       - echo "building project"
 #      - mvn clean package
       - mvn clean package install -B -DskipTests -Dmaven.repo.local=/woodpecker/.m2
   - name: unit tests
-    image: maven:3.9.9-eclipse-temurin-17
+    image: maven:3.9.9-eclipse-temurin-21
     commands:
       - echo "unit tests"
       - mvn surefire:test -B -Dmaven.repo.local=/woodpecker/.m2

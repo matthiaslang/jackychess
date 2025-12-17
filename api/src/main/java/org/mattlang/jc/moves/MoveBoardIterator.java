@@ -1,13 +1,14 @@
 package org.mattlang.jc.moves;
 
-import java.util.logging.Logger;
-
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Figure;
+import org.mattlang.jc.engine.EvaluateFunction;
 import org.mattlang.jc.engine.MoveCursor;
 import org.mattlang.jc.engine.sorting.MoveIterator;
 import org.mattlang.jc.movegenerator.Captures;
+
+import java.util.logging.Logger;
 
 /**
  * Helper to iterate over a move list and do/undo the moves in a loop.
@@ -31,6 +32,12 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
     private int lastorder = Integer.MIN_VALUE;
 
     private final MoveImpl currMoveObj = new MoveImpl("a1a2");
+
+    /**
+     * an optional evaluate function attribute. if set, the iterator keeps the doing/undoing of the evaluate function
+     * synchrone.
+     */
+    private EvaluateFunction evaluate;
 
     public MoveBoardIterator() {
     }
@@ -109,18 +116,27 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         if (!nextStepped) {
             return false;
         }
+        if (evaluate != null) {
+            evaluate.doMove(board, currMoveObj);
+        }
         board.domove(currMoveObj);
         moveDone = true;
         return !Captures.canKingCaptured(board, siteToMove);
     }
 
     private void undoMove() {
+        if (evaluate != null) {
+            evaluate.undoMove(board, currMoveObj);
+        }
         board.undo(currMoveObj);
         moveDone = false;
     }
 
     private void doMove() {
         prepareNext();
+        if (evaluate != null) {
+            evaluate.doMove(board, currMoveObj);
+        }
         board.domove(currMoveObj);
         moveDone = true;
     }
@@ -231,5 +247,9 @@ public final class MoveBoardIterator implements MoveCursor, AutoCloseable {
         if (moveDone) {
             undoMove();
         }
+    }
+
+    public void setEvaluate(EvaluateFunction evaluate) {
+        this.evaluate = evaluate;
     }
 }

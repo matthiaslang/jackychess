@@ -1,6 +1,7 @@
 package org.mattlang.jc.engine;
 
 import org.mattlang.jc.board.BoardRepresentation;
+import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.search.SearchThreadContextCache;
 
 public interface EvaluateFunction {
@@ -18,4 +19,15 @@ public interface EvaluateFunction {
     void associateThreadCache(SearchThreadContextCache cache);
 
     TuningCache getTuningCache();
+
+    default void init(BoardRepresentation currBoard) {
+
+    }
+
+
+    default void undoMove(BoardRepresentation board, Move currMoveObj) {
+    }
+
+    default void doMove(BoardRepresentation board, Move currMoveObj) {
+    }
 }
