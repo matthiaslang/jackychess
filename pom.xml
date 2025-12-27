@@ -97,6 +97,13 @@
                         <release>${jc.vm.version}</release>
                         <source>${jc.vm.version}</source>
                         <target>${jc.vm.version}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.42</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -248,7 +255,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.32</version>
+                <version>1.18.42</version>
                 <scope>provided</scope>
             </dependency>
         </dependencies>
