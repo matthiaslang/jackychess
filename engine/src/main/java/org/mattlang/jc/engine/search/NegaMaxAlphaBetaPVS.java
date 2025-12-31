@@ -1,21 +1,7 @@
 package org.mattlang.jc.engine.search;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.util.logging.Level.FINE;
-import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
-import static org.mattlang.jc.board.Color.nBlack;
-import static org.mattlang.jc.board.Color.nWhite;
-import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
-import static org.mattlang.jc.engine.evaluation.Weights.*;
-import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
-import static org.mattlang.jc.engine.tt.TTResult.NO_HASH_EVAL;
-import static org.mattlang.jc.engine.tt.TTResult.ONLY_EVAL;
-import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
-import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
-
-import java.util.logging.Logger;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.mattlang.jc.AppConfiguration;
 import org.mattlang.jc.BuildConstants;
 import org.mattlang.jc.board.*;
@@ -31,8 +17,21 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.util.IntList;
 import org.mattlang.jc.util.MoveValidator;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.logging.Logger;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+import static java.util.logging.Level.FINE;
+import static org.mattlang.jc.Constants.MAX_PLY_INDEX;
+import static org.mattlang.jc.board.Color.nBlack;
+import static org.mattlang.jc.board.Color.nWhite;
+import static org.mattlang.jc.board.FigureConstants.FT_PAWN;
+import static org.mattlang.jc.engine.evaluation.Weights.*;
+import static org.mattlang.jc.engine.sorting.OrderCalculator.*;
+import static org.mattlang.jc.engine.tt.TTResult.NO_HASH_EVAL;
+import static org.mattlang.jc.engine.tt.TTResult.ONLY_EVAL;
+import static org.mattlang.jc.moves.MoveListToStringConverter.movedescr;
+import static org.mattlang.jc.moves.MoveToStringConverter.toLongAlgebraic;
 
 
 /**
@@ -445,6 +444,11 @@ public final class NegaMaxAlphaBetaPVS {
                     extension = determineSingularExtensions(not_pv, ply, depth, hashMove, color, hashScore, cutnode);
 
                 }
+                // extend if we are in check:
+                if (ply > 1 && extension == 0 && areWeInCheck) {
+                    extension = 1;
+                }
+
                 if (moveCursor.doValidMove()) {
 
                     searchedMoves++;
