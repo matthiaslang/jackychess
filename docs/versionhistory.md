@@ -1,5 +1,10 @@
 # Versions
 
+### tbd
+
+- add check extensions. gives a few Elos
+
+
 ## 25.12
 
 Official release since 25.04.
