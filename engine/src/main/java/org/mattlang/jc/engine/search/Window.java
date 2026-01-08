@@ -17,8 +17,7 @@ public class Window {
 
     private static final Logger LOGGER = Logger.getLogger(Window.class.getSimpleName());
 
-    private static final int WINDOW_MARGIN = 25;
-    private static final int MAX_WIDENING_PHASES = 3;
+    private static final int WINDOW_MARGIN = 10;
 
     int alpha;
     int beta;
