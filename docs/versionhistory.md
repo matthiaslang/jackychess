@@ -3,7 +3,7 @@
 ### tbd
 
 - add check extensions. gives a few Elos
-
+- reduced aspiration window margin to 10. this brings ~20 Elos
 
 ## 25.12
 
