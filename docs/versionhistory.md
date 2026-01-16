@@ -1,6 +1,6 @@
 # Versions
 
-### tbd
+### 25.12.1
 
 - add check extensions. gives a few Elos
 - reduced aspiration window margin to 10. this brings ~20 Elos
