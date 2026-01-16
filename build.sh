@@ -195,13 +195,13 @@ echo "creating shredder engine file"
 [ENGINE]
 Name=jackychess${MVNVERSION}
 Author=Matthias Lang
-Filename=C:\Program Files\AdoptOpenJDK\jdk-11.0.10.9-hotspot\bin\java.exe
+Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
 Parameter=-jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILE}
 
 EOF
   cat << EOF > ${SHREDDERENGFILENNUE}
 [ENGINE]
-Name=jackychess${MVNVERSION}
+Name=jackychessnnue${MVNVERSION}
 Author=Matthias Lang
 Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
 Parameter=--add-modules jdk.incubator.vector -jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILENNUE}
