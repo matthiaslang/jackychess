@@ -43,7 +43,7 @@ I got a lot of inspiration from other resources in the web, mainly
            
 ## Usage
 
-You need a Java JRE Environment installed on your computer. At least Java 11 is required, any newer Java Environment should work.
+You need a Java JRE Environment installed on your computer. At least Java 21 is required, any newer Java Environment should work.
 
 Since this is only a UCI engine you need an UCI compatible chess gui to register the engine for usage. The chess engine should work fine with any UCI chess gui.
 It was mainly tested with [Arena](http://www.playwitharena.de/), with [Shredder 13](https://www.shredderchess.com/) and with [cutechess](https://github.com/cutechess/cutechess)
@@ -67,10 +67,10 @@ create a new *.eng file under c:\<your user>\AppData\Local\ShredderChess\GUI13\E
 Example *.eng file:
 
       [ENGINE]
-      Name=Jacky Chess 24.06
+      Name=Jacky Chess 25.12
       Author=Matthias Lang
       Filename=<path to your java installation folder>\java.exe
-      Parameter=-jar <path to where you copied the jacky chess jar file to>\jackychess-24.06.jar
+      Parameter=-jar <path to where you copied the jacky chess jar file to>\jackychess-25.12.jar
 
 
 ### Cute Chess
@@ -78,7 +78,7 @@ Example *.eng file:
 You can configure the engine under Cute Chess via the user interface. Create a new engine and in the dialog you need to enter:
 
 - Name: the descriptive name you give the engine
-- Command: java -jar jackychess-24.06.jar
+- Command: java -jar jackychess-25.12.jar
 - Working Directory: the directory where the jar file is saved
 - Protocol: UCI
 
@@ -125,7 +125,7 @@ Here is a quick overview of my estimated rating and the results from the CCRL te
 
 
                 Jacky Chess 
-    Copyright (C) 2025  Matthias Lang
+    Copyright (C) 2026  Matthias Lang
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -181,8 +181,8 @@ see [Version History](docs/versionhistory.md)
 
 ## Building and development
 
-At least Java 11 & maven to compile the engine.
-However, it should run under any newer Java version. It is mainly tested with Java 11 under Linux.
+You need Java 21 & maven to compile the engine.
+However, it should run under any newer Java version. It is mainly tested with Java 21 under Linux.
 
 Building the project
 
