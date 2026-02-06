@@ -6,6 +6,7 @@ import static org.mattlang.tuning.data.epdparser.EpdParser.parseEPDTests;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.BeforeParameterizedClassInvocation;
 import org.junit.jupiter.params.ParameterizedClass;
@@ -19,7 +20,7 @@ import org.mattlang.jc.engine.Engine;
  * Most Tests fail..
  * 39 of 111 seem to work fine...
  */
-
+@Tag("ChessTests")
 @ParameterizedClass
 @MethodSource("getEPDTests")
 public class EigenmannRapidEngineChessIT {

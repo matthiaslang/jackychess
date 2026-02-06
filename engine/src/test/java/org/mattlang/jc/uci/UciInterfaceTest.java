@@ -153,6 +153,7 @@ public class UciInterfaceTest {
         communication.write("ponderhit");
 
         communication.expectBestmove(bestmoveWithPonder("g1f3", "b8c6"),
+                bestmoveWithPonder("d2d4", "e5d4"),
                 bestmoveWithPonder("g1f3", "b8c6"),
                 bestmoveWithPonder("b1c3", "b8c6"));
         communication.consumeAllInfo();
