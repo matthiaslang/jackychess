@@ -52,11 +52,9 @@ public class Captures {
         final int xside = Color.invert(side);
 
         BitChessBoard bb = board.getBoard();
-        long ownFigsMask = bb.getColorMask(side);
-        long opponentFigsMask = bb.getColorMask(xside);
 
         // 1. test bishop and queen diagonal captures
-        long occupancy = ownFigsMask | opponentFigsMask;
+        long occupancy = bb.getPieces();
 
         long attacks = MagicBitboards.genBishopAttacs(i, occupancy);
         if ((attacks & bb.getPieceSet(FT_BISHOP, xside)) != 0) {
