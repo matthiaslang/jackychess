@@ -3,6 +3,8 @@ package org.mattlang.tuning.data.pgnparser;
 import static java.util.Optional.empty;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Matcher implements TextPosition {
@@ -96,14 +98,15 @@ public class Matcher implements TextPosition {
         return empty();
     }
 
-    public Optional<Comment> optMatchComment() throws IOException {
+    public List<Comment> optMatchComments() throws IOException {
+        List<Comment> comments = new ArrayList<>();
         if (scanner.hasNext()) {
-            if (scanner.getCurr() instanceof Comment) {
+            while (scanner.hasNext() && scanner.getCurr() instanceof Comment) {
                 Comment comment = (Comment) scanner.next();
-                return Optional.of(comment);
+                comments.add(comment);
             }
         }
-        return empty();
+        return comments;
     }
 
     public Optional<Ending> optMatchEnding() throws IOException {

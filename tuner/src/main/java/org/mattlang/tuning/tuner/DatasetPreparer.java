@@ -91,8 +91,6 @@ public class DatasetPreparer {
         }
     }
 
-
-
     public static FenEntry parseFen(String line) {
         BoardRepresentation board = new BitBoard();
 
@@ -146,12 +144,12 @@ public class DatasetPreparer {
 
         // by ccrl encoding mate is on perspective of site to move:
         // seem to be rubbish.... we do not need this...
-//        if (isCcrlPgenEncoding && ending != Ending.DRAW) {
-//            // means for black invert the ending result:
-//            if (board.getSiteToMove() == WHITE) {
-//                ending = ending == Ending.MATE_WHITE ? Ending.MATE_BLACK : Ending.MATE_WHITE;
-//            }
-//        }
+        //        if (isCcrlPgenEncoding && ending != Ending.DRAW) {
+        //            // means for black invert the ending result:
+        //            if (board.getSiteToMove() == WHITE) {
+        //                ending = ending == Ending.MATE_WHITE ? Ending.MATE_BLACK : Ending.MATE_WHITE;
+        //            }
+        //        }
 
         return new FenEntry(null, BitBoardForTuning.copy(board), ending, null);
     }
@@ -253,7 +251,7 @@ public class DatasetPreparer {
                 && !isEvalUsingEndGameFunction(board)
                 && !isCheck(board)
                 && isQuiet(moveList)
-                && !isMateScore(moveDesr.getComment())) {
+                && !isMateScore(moveDesr.getAllComments())) {
             return Optional.of(addFen(board, ending, comment));
         } else {
             return Optional.empty();
@@ -279,11 +277,11 @@ public class DatasetPreparer {
         return true;
     }
 
-    private boolean isMateScore(Comment comment) {
-
+    private boolean isMateScore(String comment) {
+        // we support here only one comment, so just concatenate if we have multiple comments...
         // comment in cutechess has the form: -319.87/13 1.1s
-        if (comment != null && comment.getText() != null && comment.getText().contains("/")) {
-            String scoreStr = comment.getText().split("/")[0];
+        if (comment.contains("/")) {
+            String scoreStr = comment.split("/")[0];
             if (scoreStr != null) {
                 if (scoreStr.startsWith("+M") || scoreStr.startsWith("-M")) {
                     // a "mate in x moves" Syntax:
@@ -304,7 +302,7 @@ public class DatasetPreparer {
     }
 
     private boolean isBookMove(MoveDescr moveDesr) {
-        return moveDesr.getComment() != null && moveDesr.getComment().getText().contains("book");
+        return moveDesr.getAllComments().contains("book");
     }
 
 }

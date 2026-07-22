@@ -28,15 +28,10 @@ public class BoardAndMoves {
     @Getter
     private Ending ending;
 
+    public BoardAndMoves() {}
+
     public BoardAndMoves(PgnGame game) {
-        String fenStr = game.getTag(PgnGame.TAG_FEN);
-        if (fenStr != null) {
-            board.setFenPosition(fenStr);
-            startFen = fenStr;
-        } else {
-            board.setStartPosition();
-        }
-        startBoard = board.copy();
+        prepareGame(game);
 
         for (PgnMove pgnMove : game.getMoves()) {
 
@@ -46,6 +41,21 @@ public class BoardAndMoves {
             }
 
         }
+    }
+
+    public void prepareGame(PgnGame game) {
+        String fenStr = game.getTag(PgnGame.TAG_FEN);
+        if (fenStr != null) {
+            board.setFenPosition(fenStr);
+            startFen = fenStr;
+        } else {
+            board.setStartPosition();
+        }
+        startBoard = board.copy();
+    }
+
+    public void doMove(MoveDescr moveDesr) {
+        doMove(moveDesr, board);
     }
 
     private void doMove(MoveDescr moveDesr, BoardRepresentation board) {

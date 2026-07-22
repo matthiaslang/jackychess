@@ -166,7 +166,7 @@ public class PgnGameBuilder {
     }
 
     private MoveDescr exchangeEnding(MoveDescr moveDescr, Ending ending) {
-        return new MoveDescr(moveDescr.getMoveText(), moveDescr.getComment(), ending);
+        return new MoveDescr(moveDescr.getMoveText(), moveDescr.getComments(), ending);
     }
 
     /**

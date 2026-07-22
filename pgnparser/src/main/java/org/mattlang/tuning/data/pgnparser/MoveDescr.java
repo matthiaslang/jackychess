@@ -1,5 +1,8 @@
 package org.mattlang.tuning.data.pgnparser;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Move;
 
@@ -9,17 +12,21 @@ import lombok.Getter;
 public class MoveDescr {
 
     private MoveText moveText;
-    private Comment comment;
+    private List<Comment> comments;
 
     private Ending ending;
 
-    public MoveDescr(MoveText moveText, Comment comment, Ending ending) {
+    public MoveDescr(MoveText moveText, List<Comment> comments, Ending ending) {
         this.moveText = moveText;
-        this.comment = comment;
+        this.comments = comments;
         this.ending = ending;
     }
 
     public Move createMove(BoardRepresentation board) {
         return AlgebraicNotation.moveFromAN(board, board.getSiteToMove(), moveText);
+    }
+
+    public String getAllComments() {
+        return comments.stream().map(Comment::getText).collect(Collectors.joining());
     }
 }

@@ -124,10 +124,10 @@ public class PgnParser {
         try {
             Move move = AlgebraicNotation.moveFromAN(board, color, moveText);
             board.domove(move);
-            Optional<Comment> optComment = matcher.optMatchComment();
+            List<Comment> comments = matcher.optMatchComments();
             Optional<Ending> optEnding = matcher.optMatchEnding();
 
-            return new MoveDescr(moveText, optComment.orElse(null), optEnding.orElse(null));
+            return new MoveDescr(moveText, comments, optEnding.orElse(null));
         } catch (RuntimeException e) {
             throw new PgnParserException(
                     "Error parsing move " + moveText.getText() + " board:\n" + board.toUniCodeStr(), e, moveText);
