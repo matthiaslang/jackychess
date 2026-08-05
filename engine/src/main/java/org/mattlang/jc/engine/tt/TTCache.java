@@ -37,7 +37,6 @@ public final class TTCache {
      */
     private static final int BUCKET_CHUNK_SIZE = BUCKET_SIZE * SLOT_SIZE;
 
-    private static final int BYTE_SIZE_SLOT = 8 * SLOT_SIZE;
     public static final long MEGABYTE = 1024 * 1024;
 
     private static final long STATIC_EVAL_MASK = 0xffff000000000000L;
@@ -72,18 +71,12 @@ public final class TTCache {
     @Getter
     private int noReplaceCacheAlreadyBetter;
 
-    private int mbSize = DEFAULT_CACHE_SIZE_MB;
+    private int currConfiguredMbSize = DEFAULT_CACHE_SIZE_MB;
 
     /**
      * no. of "places" in the index. effectively the array size div bucketChunkSize.
      */
     private int indexPlaces;
-
-    private int determineBitSizeFromConfig() {
-        int mb = getConfiguredMbSize();
-        mbSize = mb;
-        return determineCacheBitSizeFromMb(mb, BYTE_SIZE_SLOT);
-    }
 
     private int getConfiguredMbSize() {
         Integer mb = ConfigValues.getConfigValues().hash.getValue();
@@ -94,20 +87,14 @@ public final class TTCache {
         return mb.intValue();
     }
 
-    public static int determineCacheBitSizeFromMb(int mb, int sizeOfSlot) {
-        long slots = mb * MEGABYTE / sizeOfSlot;
-        int bits = (int) (Math.log(slots) / Math.log(2));
-        LOGGER.info("cache of " + mb + "MB: setting cache to " + slots + " slots, " + bits + " bits");
-        return bits;
-    }
-
     public TTCache() {
         initCache();
     }
 
     private void initCache() {
-        int bitSize = determineBitSizeFromConfig();
-        final int maxEntries = (int) (1L << bitSize) * SLOT_SIZE;
+        currConfiguredMbSize = getConfiguredMbSize();
+        final int maxEntries = (int) (currConfiguredMbSize / 8 * MEGABYTE);
+
         LOGGER.info("TT Cache: allocating " + maxEntries + " longs;");
 
         keys = new long[maxEntries];
@@ -146,8 +133,30 @@ public final class TTCache {
             }
         }
 
-        cacheMisses++;
+        if (BuildConstants.STATS_ACTIVATED) {
+            cacheMisses++;
+        }
         return -1;
+    }
+
+    private boolean findIndexIntern(final long key, TTResult result) {
+        final int index = getIndex(key);
+        final long partialKey = partialKey(key);
+        for (int i = index; i < index + BUCKET_CHUNK_SIZE; i += SLOT_SIZE) {
+            final long xorKey = keys[i];
+            final long value = keys[i + 1];
+            if (partialKey(xorKey ^ value) == partialKey) {
+                if (BuildConstants.STATS_ACTIVATED) {
+                    cacheHits++;
+                }
+                fillTTResult(xorKey, value, result);
+                return true;
+            }
+        }
+        if (BuildConstants.STATS_ACTIVATED) {
+            cacheMisses++;
+        }
+        return false;
     }
 
     /**
@@ -250,8 +259,8 @@ public final class TTCache {
     public String toString(long ttValue) {
         return "score=" + getScore(ttValue) + /*" " + new MoveWrapper(getMove(ttValue)) +*/ " depth=" + getDepth(
                 ttValue)
-               + " flag="
-               + getFlag(ttValue);
+                + " flag="
+                + getFlag(ttValue);
     }
 
     /**
@@ -335,18 +344,15 @@ public final class TTCache {
     }
 
     public boolean findEntry(TTResult result, BoardRepresentation board) {
-        int index = findIndex(board.getZobristHash());
-        if (index != -1) {
-            long xorKey = keys[index];
-            long v = keys[index + 1];
-            result.setDepth(getDepth(v));
-            result.setType((byte) getFlag(v));
-            result.setScore(getScore(v));
-            result.setMove(getMove(v));
-            result.setEval(getStaticEval(xorKey ^ v));
-            return true;
-        }
-        return false;
+        return findIndexIntern(board.getZobristHash(), result);
+    }
+
+    private void fillTTResult(final long xorKey, final long v, TTResult result) {
+        result.setDepth(getDepth(v));
+        result.setType((byte) getFlag(v));
+        result.setScore(getScore(v));
+        result.setMove(getMove(v));
+        result.setEval(getStaticEval(xorKey ^ v));
     }
 
     public int findHashMove(BoardRepresentation board) {
@@ -375,7 +381,7 @@ public final class TTCache {
     }
 
     public void checkUpdateCacheSize() {
-        if (getConfiguredMbSize() != mbSize) {
+        if (getConfiguredMbSize() != currConfiguredMbSize) {
             initCache();
         }
     }

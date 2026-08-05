@@ -21,7 +21,7 @@ CLASSICMODULE=jcClassic
 NNUEMODULE=jcNNUE
 
 
-LOCALARENAFOLDER=../jcversions/
+LOCALARENAFOLDER=../releases/
 LOCALTESTPROJFOLDER=../jackyChessDockerTesting
 ENGINESFILE=${LOCALTESTPROJFOLDER}/scripts/engines.json
 VERSIONLOGFILE=${LOCALTESTPROJFOLDER}/versionlog.md
@@ -52,26 +52,6 @@ java -Djacky.logging.activate=true -Djacky.logging.level=SEVERE -Duser.home=/log
 EOF
 chmod +x  ${LOCALTESTPROJFOLDER}/jackychess/${BASHFILENNUE}
 
-# copy a windows bat file for the arena test folder with some log settings
-BATFILE=jc-${MVNVERSION}.bat
-cat << EOF > ../jcversions/${BATFILE}
-java  -Djacky.logging.activate=true -Djacky.logging.dir=c:/logs  -Djacky.logging.level=INFO -Djacky.logging.file=jc-${MVNVERSION}  -jar ${JARFILE}
-
-EOF
-# convert windows lfs:
-unix2dos  ../jcversions/${BATFILE}
-# make it executable; sets in cygwin the window right for execution on the file:
-chmod +x  ../jcversions/${BATFILE}
-
-BATFILE=jcnnue-${MVNVERSION}.bat
-cat << EOF > ../jcversions/${BATFILE}
-java  -Djacky.logging.activate=true -Djacky.logging.dir=c:/logs  -Djacky.logging.level=INFO -Djacky.logging.file=jc-${MVNVERSION} --add-modules jdk.incubator.vector -jar ${JARFILENNUE}
-
-EOF
-# convert windows lfs:
-unix2dos  ../jcversions/${BATFILE}
-# make it executable; sets in cygwin the window right for execution on the file:
-chmod +x  ../jcversions/${BATFILE}
 
 # create a temporary tag:
 #GITDESCR=$(git describe --tags)
@@ -122,7 +102,7 @@ else
     },
 EOF
 # insert the temp file after the first match of "[" in the config file:
-sed -i.bak -e "0,/\[/r${ENGINESFILE}.insert" $ENGINESFILE
+sed -i.bak "1r ${ENGINESFILE}.insert" $ENGINESFILE
 
 
 # write some version infos into the version log file
@@ -189,26 +169,26 @@ git --work-tree $LOCALTESTPROJFOLDER/ --git-dir $LOCALTESTPROJFOLDER/.git commit
 
 
 
-echo "creating shredder engine file"
-# create shredder eng file definition for my local system
-  cat << EOF > ${SHREDDERENGFILE}
-[ENGINE]
-Name=jackychess${MVNVERSION}
-Author=Matthias Lang
-Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
-Parameter=-jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILE}
-
-EOF
-  cat << EOF > ${SHREDDERENGFILENNUE}
-[ENGINE]
-Name=jackychessnnue${MVNVERSION}
-Author=Matthias Lang
-Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
-Parameter=--add-modules jdk.incubator.vector -jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILENNUE}
-
-EOF
-
-
-echo "copying shredder engine file"
-cp ${SHREDDERENGFILE} /mnt/c/users/mlang/AppData/Local/ShredderChess/GUI13/Engines
-cp ${SHREDDERENGFILENNUE} /mnt/c/users/mlang/AppData/Local/ShredderChess/GUI13/Engines
+#echo "creating shredder engine file"
+## create shredder eng file definition for my local system
+#  cat << EOF > ${SHREDDERENGFILE}
+#[ENGINE]
+#Name=jackychess${MVNVERSION}
+#Author=Matthias Lang
+#Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
+#Parameter=-jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILE}
+#
+#EOF
+#  cat << EOF > ${SHREDDERENGFILENNUE}
+#[ENGINE]
+#Name=jackychessnnue${MVNVERSION}
+#Author=Matthias Lang
+#Filename=C:\Users\MLang\.jdks\temurin-21.0.5\bin\java.exe
+#Parameter=--add-modules jdk.incubator.vector -jar C:\projekte\cygwin_home\mla\jackyChessDockerTesting\jackychess\\${JARFILENNUE}
+#
+#EOF
+#
+#
+#echo "copying shredder engine file"
+#cp ${SHREDDERENGFILE} /mnt/c/users/mlang/AppData/Local/ShredderChess/GUI13/Engines
+#cp ${SHREDDERENGFILENNUE} /mnt/c/users/mlang/AppData/Local/ShredderChess/GUI13/Engines
