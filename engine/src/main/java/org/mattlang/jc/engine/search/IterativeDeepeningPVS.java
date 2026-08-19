@@ -4,7 +4,6 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.*;
 import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
@@ -24,9 +23,6 @@ import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchListener {
 
@@ -62,11 +58,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      */
     private boolean isWorker = false;
 
-    private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
+    private final NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
-    private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
+    private final EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
-    private MoveValidator moveValidator = new MoveValidator();
+    private final MoveValidator moveValidator = new MoveValidator();
 
     /**
      * copy of the game state when starting search.
@@ -236,26 +232,6 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         }
     }
 
-    @AllArgsConstructor
-    @Getter
-    static class IterativeRoundResult {
-
-        private final NegaMaxResult rslt;
-        private final StopWatch roundWatch;
-
-        public boolean isCheckMate() {
-            return Math.abs(Math.abs(rslt.directScore) - KING_WEIGHT) < 100;
-        }
-
-        public boolean hasResults() {
-            return rslt != null;
-        }
-
-        public Move getOptionalBestMove() {
-            return rslt != null ? rslt.savedMove : null;
-        }
-    }
-
     private IterativeRoundResult searchRound(SearchParameter searchParams,
             SearchThreadContext stc, StopWatch watch,
             IterativeRoundResult lastRoundResults,
@@ -273,7 +249,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         NegaMaxResult rslt = null;
 
         if (currdepth >= 3 && lastRoundResults.hasResults()) {
-            aspWindow.limitWindow(lastRoundResults.getRslt());
+            aspWindow.limitWindow(lastRoundResults.rslt());
             rslt = searchWithAspirationWindow(searchParams,
                     lastRoundResults.getOptionalBestMove(),
                     stc, aspWindow, gameState, gameContext, stopTime,

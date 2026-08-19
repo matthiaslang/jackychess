@@ -22,7 +22,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private static final Logger LOGGER = Logger.getLogger(MultiThreadedIterativeDeepening.class.getSimpleName());
 
-    private int maxThreads = ConfigValues.getConfigValues().maxThreads.getValue();
+    private final int maxThreads = ConfigValues.getConfigValues().maxThreads.getValue();
 
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
 
@@ -41,7 +41,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         for (int i = 1; i < maxThreads; i++) {
             futures.add(startWorker(i, searchParams, gameState, gameContext));
         }
-        // and afterwards start the "main" within this thread as worker 0:
+        // and afterward start the "main" within this thread as worker 0:
         IterativeDeepeningPVS id = new IterativeDeepeningPVS(0);
         id.registerListener(listener);
         try {
