@@ -96,9 +96,9 @@ public class TTCacheTest {
         assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(8 * 1024 * 1024);
 
         // testing int overflow problem: commented out, to not allocate 2gb during tests
-        ConfigValues.getConfigValues().hash.setValue(3000);
-        Caching.CACHING.getTtCache().checkUpdateCacheSize();
-        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(3000L * 1024 * 1024);
+//        ConfigValues.getConfigValues().hash.setValue(3000);
+//        Caching.CACHING.getTtCache().checkUpdateCacheSize();
+//        assertThat(Caching.CACHING.getTtCache().getCacheSize()).isEqualTo(3000L * 1024 * 1024);
 
         ConfigValues.resetConfigValues();
     }
