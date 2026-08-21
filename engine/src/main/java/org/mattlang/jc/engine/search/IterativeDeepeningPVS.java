@@ -177,9 +177,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     }
 
     private void callListener(NegaMaxResult negaMaxResult) {
-        if (!isWorker) {
-            listener.updateBestRoundMove(negaMaxResult);
-        }
+        listener.updateBestRoundMove(negaMaxResult);
     }
 
     @Override
@@ -249,7 +247,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         NegaMaxResult rslt = null;
 
-        if (currdepth >= 3 && lastRoundResults.hasResults()) {
+        if (currdepth >= 3) {
             aspWindow.limitWindow(lastRoundResults.rslt());
             rslt = searchWithAspirationWindow(searchParams,
                     lastRoundResults.getOptionalBestMove(),
@@ -286,10 +284,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     }
 
     private NegaMaxResult searchWithAspirationWindow(SearchParameter searchParams,
-            Move optionalLastBestMove,
-            SearchThreadContext stc,
-            Window aspWindow, GameState gameState, GameContext gameContext,
-            long stopTime, int currdepth) {
+                                                     Move optionalLastBestMove,
+                                                     SearchThreadContext stc,
+                                                     Window aspWindow, GameState gameState, GameContext gameContext,
+                                                     long stopTime, int currdepth) {
 
         int depthToUse = currdepth;
 
@@ -348,12 +346,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             long hashfull = gameContext.ttCache.calcHashFull();
             //        long hashfull = gameContext.ttc.getUsagePercentage();
             UCI.instance.putCommand("info depth " + rslt.targetDepth +
-                                    " seldepth " + rslt.selDepth +
-                                    " score cp " + rslt.max + " nodes " + nodes
-                                    + " hashfull " + hashfull
-                                    + " nps " + nps
-                                    + " time " + duration
-                                    + " pv " + rslt.toPvStr(gameState.getBoard()));
+                    " seldepth " + rslt.selDepth +
+                    " score cp " + rslt.max + " nodes " + nodes
+                    + " hashfull " + hashfull
+                    + " nps " + nps
+                    + " time " + duration
+                    + " pv " + rslt.toPvStr(gameState.getBoard()));
             UCI.instance.putCommand("info currmove " + rslt.savedMove.toUCIString(gameState.getBoard()));
         }
     }
