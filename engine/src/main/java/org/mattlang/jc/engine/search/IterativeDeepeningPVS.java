@@ -142,6 +142,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                         searchRound(searchParams, stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
                 rounds.add(irr);
+                listener.updateIIR(irr);
                 if (irr.isCheckMate()) {
                     break;
                 }

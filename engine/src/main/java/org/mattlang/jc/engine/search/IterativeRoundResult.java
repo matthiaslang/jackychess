@@ -5,7 +5,7 @@ import org.mattlang.jc.board.Move;
 
 import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 
-record IterativeRoundResult(NegaMaxResult rslt, StopWatch roundWatch) {
+public record IterativeRoundResult(NegaMaxResult rslt, StopWatch roundWatch) {
 
     public boolean isCheckMate() {
         return Math.abs(Math.abs(rslt.directScore) - KING_WEIGHT) < 100;

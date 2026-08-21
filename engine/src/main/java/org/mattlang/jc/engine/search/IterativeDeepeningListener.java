@@ -11,4 +11,6 @@ public interface IterativeDeepeningListener {
      * @param bestRoundResult
      */
     void updateBestRoundMove(NegaMaxResult bestRoundResult);
+
+    default void updateIIR(IterativeRoundResult irr){}
 }

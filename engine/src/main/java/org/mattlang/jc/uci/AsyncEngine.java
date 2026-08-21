@@ -73,7 +73,7 @@ public class AsyncEngine {
 
         // start the engine in a separate thread, delivering the result in a future
         CompletableFuture<NegaMaxResult> completableFuture = new CompletableFuture<>();
-        Future<NegaMaxResult> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
+        this.future = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 if (logger.isLoggable(INFO)) {
                     logger.info(this + " try to acquire semaphore..");
@@ -122,7 +122,6 @@ public class AsyncEngine {
             }
 
         });
-        this.future = newFuture;
         return completableFuture;
     }
 
