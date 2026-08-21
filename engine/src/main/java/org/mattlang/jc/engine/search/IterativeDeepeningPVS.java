@@ -38,9 +38,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      * Does not bring an improvement: the depth skip makes the performance/results worse... so we dont use it
      */
     // Laser based SMP skip
-    //    private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
-    //    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
-    //    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
+    private static final int[] SMP_SKIP_DEPTHS = {1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4};
+    private static final int[] SMP_SKIP_AMOUNT = {1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6};
+    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
 
     /**
      * worker number if this iterative deepening is running inside a worker thread.
@@ -74,7 +74,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
-        //        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
+        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
         isWorker = workerNumber > 0;
     }
 
@@ -89,7 +89,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     @Override
     public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState,
-            GameContext gameContext) {
+                                                 GameContext gameContext) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
         negaMaxAlphaBeta.setIsWorker(isWorker);
@@ -193,9 +193,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      * @return
      */
     private int adjustDepthForWorker(int currDepth) {
-        //        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
-        //            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
-        //        }
+        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
+            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+        }
         return currDepth;
     }
 
@@ -217,10 +217,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         long nps = duration == 0 ? nodesVisited : nodesVisited * 1000 / duration;
 
         UCI.instance.putCommand("info depth " + targetDepth +
-                                " seldepth " + selDepth +
-                                " score cp " + currMoveScore + " nodes " + nodesVisited
-                                + " nps " + nps
-                                + " time " + duration);
+                " seldepth " + selDepth +
+                " score cp " + currMoveScore + " nodes " + nodesVisited
+                + " nps " + nps
+                + " time " + duration);
         if (currMove != 0) {
             moveWrapper.fromLongEncoded(currMove);
             UCI.instance.putCommand("info currmove " + moveWrapper.toUCIString(gameState.getBoard()));
@@ -232,10 +232,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     }
 
     private IterativeRoundResult searchRound(SearchParameter searchParams,
-            SearchThreadContext stc, StopWatch watch,
-            IterativeRoundResult lastRoundResults,
-            GameState gameState, GameContext gameContext, int currdepth,
-            long stopTime) {
+                                             SearchThreadContext stc, StopWatch watch,
+                                             IterativeRoundResult lastRoundResults,
+                                             GameState gameState, GameContext gameContext, int currdepth,
+                                             long stopTime) {
 
         StopWatch roundWatch = new StopWatch();
 
