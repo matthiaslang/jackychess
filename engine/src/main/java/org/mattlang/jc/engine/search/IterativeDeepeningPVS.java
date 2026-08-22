@@ -18,6 +18,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
@@ -63,6 +64,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     private final EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
     private final MoveValidator moveValidator = new MoveValidator();
+
+    private final FirstNegaMaxResultCreator firstNegaMaxResultCreator = new FirstNegaMaxResultCreator();
 
     /**
      * copy of the game state when starting search.
@@ -123,7 +126,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
-        IterativeRoundResult lastResults = new IterativeRoundResult(null, new StopWatch());
+        IterativeRoundResult lastResults = firstNegaMaxResultCreator.createFirstIRR(gameState, searchParams);
         try {
             int currdepth = startDepth;
 

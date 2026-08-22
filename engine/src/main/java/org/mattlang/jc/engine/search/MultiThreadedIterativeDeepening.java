@@ -56,7 +56,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
                 we use the ebf report of the first thread, not perfect but this is anyway only used in tests/analysis.
              */
             synchronized (this) {
-                if (lastIRR != null) {
+                if (lastIRR != null && lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
                     return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
                 }
             }
