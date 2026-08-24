@@ -14,32 +14,33 @@ import lombok.Getter;
 @Getter
 public final class OrderCalculator {
 
-    public static final int HASHMOVE_SCORE = -1500_000_000;
-    public static final int GOOD_CAPTURES_SCORE = -100_000_000;
+    public static final int O01 = 1 << 30;
+    public static final int O02 = 1 << 29;
+    public static final int O03 = 1 << 28;
+    public static final int O04 = 1 << 27;
+    public static final int O05 = 1 << 26;
+    public static final int O06 = 1 << 25;
+    public static final int O07 = 1 << 24;
+    public static final int O08 = 1 << 23;
 
-    public static final int KILLER_SCORE = -10_000_000;
 
-    public static final int QUEEN_PROMOTION_SCORE = -80_000_000;
+    public static final int HASHMOVE_SCORE = O01;
+    public static final int GOOD_CAPTURES_SCORE = O02;
+    public static final int QUEEN_PROMOTION_SCORE = O03;
 
-    public static final int COUNTER_MOVE_SCORE = -5_000_000;
+    public static final int KILLER_SCORE = O04;
 
-    public static final int HISTORY_SCORE = -1_000_000;
+    public static final int COUNTER_MOVE_SCORE = O05;
 
-    public static final int HISTORY_DIFF = 499_000;
-    public static final int QUIET = -HISTORY_DIFF;
+    public static final int HISTORY_SCORE = O06;
 
-    public static final int BAD_CAPTURES_SCORE = -500_000;
+    public static final int RELEVANT_MOVE_MASK = HASHMOVE_SCORE | GOOD_CAPTURES_SCORE
+            | QUEEN_PROMOTION_SCORE
+            | KILLER_SCORE | COUNTER_MOVE_SCORE | HISTORY_SCORE;
 
-    private static final int MVVLVA_MAX_DIFF = 500;
-
-    private static final int GOOD_CAPT_LOWER = OrderCalculator.GOOD_CAPTURES_SCORE - 10000000;
-    private static final int GOOD_CAPT_UPPER = OrderCalculator.GOOD_CAPTURES_SCORE + 10000000;
-
-    private static final int BAD_CAPT_LOWER = OrderCalculator.BAD_CAPTURES_SCORE - MVVLVA_MAX_DIFF;
-    private static final int BAD_CAPT_UPPER = OrderCalculator.BAD_CAPTURES_SCORE + MVVLVA_MAX_DIFF;
-
-    private static final int HISTORY_LOWER = OrderCalculator.HISTORY_SCORE - HISTORY_DIFF;
-    private static final int HISTORY_UPPER = OrderCalculator.HISTORY_SCORE + HISTORY_DIFF;
+    // test: bad captures before normal quiets
+    public static final int BAD_CAPTURES_SCORE = O07;
+    public static final int QUIET = O08;
 
     final private HistoryHeuristic historyHeuristic;
     final private KillerMoves killerMoves;
@@ -103,6 +104,10 @@ public final class OrderCalculator {
             return KILLER_SCORE;
         } else if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
+        } else if (m.isPromotion()) {
+            int score = MvvLva.calcMMVLVAShort(m);
+            score += BAD_CAPTURES_SCORE;
+            return score;
         } else if (getCounterMove() == moveInt) {
             return COUNTER_MOVE_SCORE;
         } else {
@@ -113,14 +118,18 @@ public final class OrderCalculator {
     private int calcOrderForQuiets(MoveImpl m) {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
+        } else if (m.isPromotion()) {
+            int score = MvvLva.calcMMVLVAShort(m);
+            score += BAD_CAPTURES_SCORE;
+            return score;
         } else {
 
             int score = 0;
             // history heuristic
             int heuristic = historyHeuristic.calcValue(m, color);
             int contHist = continuationHistoryHeuristic.calcValue(parentMove, m, color);
-            score -= heuristic;
-            score -= contHist;
+            score += heuristic;
+            score += contHist;
 
             if (score != 0) {
                 return score + HISTORY_SCORE;
@@ -139,14 +148,14 @@ public final class OrderCalculator {
         if (m.isQueenPromotion()) {
             return QUEEN_PROMOTION_SCORE;
         } else if (m.isCapture()) {
-            int score = -MvvLva.calcMMVLVAShort(m);
+            int score = MvvLva.calcMMVLVAShort(m);
 
             int heuristic = captureHeuristic.calcValue(m, color);
 
-            score -= heuristic / 4;
+            score += heuristic / 4;
 
             int captFigType = m.getCapturedFigure() & MASK_OUT_COLOR;
-            score -= MVVAUGMENT[captFigType];
+            score += MVVAUGMENT[captFigType];
 
             boolean goodSee = SEE.see_ge(board, m, captureMargin);
             if (goodSee) {
@@ -156,24 +165,16 @@ public final class OrderCalculator {
             }
 
             return score;
+        } else if (m.isPromotion()) {
+            int score = MvvLva.calcMMVLVAShort(m);
+            score += BAD_CAPTURES_SCORE;
+            return score;
         } else {
             throw new IllegalStateException("no capture!");
         }
     }
 
-
-    private MoveImpl moveWrapper = new MoveImpl("a1a2");
-
-    /**
-     * scores all moves in the movelist  with usage of a order calculator.
-     * The ordercalculator can produce a order number for each move which is then used as search criteria.
-     * with the lowest order for the best moves.
-     *
-     * @param moveList
-     */
-    public void scoreMoves(MoveList moveList) {
-        scoreMoves(moveList, 0);
-    }
+    private final MoveImpl moveWrapper = new MoveImpl("a1a2");
 
     /**
      * scores all moves in the movelist  with usage of a order calculator.
@@ -182,11 +183,16 @@ public final class OrderCalculator {
      *
      * @param moveList
      */
-    public void scoreMoves(MoveList moveList, int start) {
-        for (int i = start; i < moveList.size(); i++) {
+    public void scoreMoves(MoveList moveList,  MovePicker goods, MovePicker bads) {
+        for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
-            moveList.setOrder(i, calcOrder(moveWrapper, moveInt));
+            int orderVal = calcOrder(moveWrapper, moveInt);
+            if (isRelevantMove(orderVal)) {
+                goods.addMoveWithOrder(moveInt, orderVal);
+            } else {
+                bads.addMoveWithOrder(moveInt, orderVal);
+            }
         }
     }
 
@@ -197,20 +203,29 @@ public final class OrderCalculator {
      * @param start
      * @return
      */
-    public void scoreCaptureMoves(MoveList moveList, int start) {
-        for (int i = start; i < moveList.size(); i++) {
+    public void scoreCaptureMoves(MoveList moveList, MovePicker goods, MovePicker bads) {
+        for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
             int orderVal = calcOrderForCaptures(moveWrapper);
-            moveList.setOrder(i, orderVal);
+            if (isRelevantMove(orderVal)) {
+                goods.addMoveWithOrder(moveInt, orderVal);
+            } else {
+                bads.addMoveWithOrder(moveInt, orderVal);
+            }
         }
     }
 
-    public void scoreQuietMoves(MoveList moveList, int start) {
-        for (int i = start; i < moveList.size(); i++) {
+    public void scoreQuietMoves(MoveList moveList, MovePicker goods, MovePicker bads) {
+        for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
-            moveList.setOrder(i, calcOrderForQuiets(moveWrapper));
+            int orderVal = calcOrderForQuiets(moveWrapper);
+            if (isRelevantMove(orderVal)) {
+                goods.addMoveWithOrder(moveInt, orderVal);
+            } else {
+                bads.addMoveWithOrder(moveInt, orderVal);
+            }
         }
     }
 
@@ -224,19 +239,19 @@ public final class OrderCalculator {
     }
 
     public static boolean isGoodCapture(int order) {
-        return order > GOOD_CAPT_LOWER && order < GOOD_CAPT_UPPER;
+        return (order & GOOD_CAPTURES_SCORE) != 0;
     }
 
     public static boolean isBadCapture(int order) {
-        return order > BAD_CAPT_LOWER && order < BAD_CAPT_UPPER;
+        return (order & BAD_CAPTURES_SCORE) != 0;
     }
 
     public static boolean isGoodPromotion(int order) {
-        return order == QUEEN_PROMOTION_SCORE;
+        return (order & QUEEN_PROMOTION_SCORE) != 0;
     }
 
     public static boolean isHistory(int order) {
-        return order > HISTORY_LOWER && order < HISTORY_UPPER;
+        return (order & HISTORY_SCORE) != 0;
     }
 
     public static boolean isHashMove(int order) {
@@ -261,6 +276,6 @@ public final class OrderCalculator {
      * @return
      */
     public static boolean isRelevantMove(int order) {
-        return order < HISTORY_UPPER;
+        return (order & RELEVANT_MOVE_MASK) != 0;
     }
 }

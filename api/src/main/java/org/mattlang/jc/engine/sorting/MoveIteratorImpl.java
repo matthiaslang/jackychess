@@ -66,7 +66,7 @@ public final class MoveIteratorImpl implements MoveIterator {
      * @return
      */
     public int getOrder() {
-        return moveList.getOrder(current);
+        return 0;
     }
 
 }

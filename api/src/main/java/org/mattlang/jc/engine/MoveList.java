@@ -1,5 +1,14 @@
 package org.mattlang.jc.engine;
 
+import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.board.FigureConstants;
+import org.mattlang.jc.moves.CastlingMove;
+import org.mattlang.jc.moves.MoveImpl;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.mattlang.jc.Constants.MAX_MOVES;
 import static org.mattlang.jc.board.Color.nWhite;
 import static org.mattlang.jc.board.FigureConstants.B_PAWN;
@@ -8,19 +17,9 @@ import static org.mattlang.jc.moves.MoveImpl.*;
 import static org.mattlang.util.Assertions.assertFieldNum;
 import static org.mattlang.util.Assertions.assertFigureCodeOrEmpty;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.mattlang.jc.BuildConstants;
-import org.mattlang.jc.board.FigureConstants;
-import org.mattlang.jc.moves.CastlingMove;
-import org.mattlang.jc.moves.MoveImpl;
-
 public final class MoveList {
 
     private final int[] moves = new int[MAX_MOVES];
-    private final int[] order = new int[MAX_MOVES];
 
     private int size = 0;
 
@@ -94,14 +93,6 @@ public final class MoveList {
         return moves[i];
     }
 
-    public int getOrder(int i) {
-        return order[i];
-    }
-
-    public void setOrder(int i, int orderVal) {
-        order[i] = orderVal;
-    }
-
     public void reset(int sideToMove) {
         this.sideToMove = sideToMove;
         size = 0;
@@ -110,23 +101,6 @@ public final class MoveList {
     public void addMove(int aMove) {
         moves[size] = aMove;
         size++;
-    }
-
-    public void addMoveWithOrder(int aMove, int orderVal) {
-        moves[size] = aMove;
-        order[size] = orderVal;
-        size++;
-    }
-
-    public void swap(int i, int j) {
-
-        int tmp = order[i];
-        order[i] = order[j];
-        order[j] = tmp;
-
-        int ttmp = moves[i];
-        moves[i] = moves[j];
-        moves[j] = ttmp;
     }
 
     /**
@@ -146,17 +120,4 @@ public final class MoveList {
         return l1;
     }
 
-    /**
-     * Copies all moves of the other movelist to this move list overriding all previously existing moves in this list.
-     * Order info ist not copied.
-     *
-     * @param otherList
-     */
-    public void initFrom(MoveList otherList) {
-        this.sideToMove = otherList.sideToMove;
-        size = otherList.size;
-        for (int i = 0; i < size; i++) {
-            moves[i] = otherList.moves[i];
-        }
-    }
 }
