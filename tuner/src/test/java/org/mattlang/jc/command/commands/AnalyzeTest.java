@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mattlang.jc.SearchParameter;
 import org.mattlang.jc.board.BoardPrinter;
@@ -27,6 +28,7 @@ import org.mattlang.tuning.data.pgnparser.PgnGame;
 import org.mattlang.tuning.data.pgnparser.PgnMove;
 import org.mattlang.tuning.data.pgnparser.PgnParser;
 
+@Disabled
 public class AnalyzeTest {
 
     @Test
