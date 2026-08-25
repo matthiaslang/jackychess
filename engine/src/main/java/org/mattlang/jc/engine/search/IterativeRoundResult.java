@@ -19,10 +19,6 @@ public record IterativeRoundResult(NegaMaxResult rslt, StopWatch roundWatch) {
         return Math.abs(Math.abs(rslt.directScore) - KING_WEIGHT) < 100;
     }
 
-    public boolean hasResults() {
-        return rslt != null;
-    }
-
     public Move getOptionalBestMove() {
         return rslt != null ? rslt.savedMove : null;
     }

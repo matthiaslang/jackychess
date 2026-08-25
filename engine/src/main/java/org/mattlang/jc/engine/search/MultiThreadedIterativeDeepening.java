@@ -1,10 +1,9 @@
 package org.mattlang.jc.engine.search;
 
-import static java.util.Collections.synchronizedList;
+
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -28,7 +27,6 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private volatile IterativeRoundResult lastIRR = null;
 
-
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
 
     @Override
@@ -48,16 +46,24 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         }
         // and afterward start the "main" within this thread as worker 0:
         IterativeDeepeningPVS id = new IterativeDeepeningPVS(0);
-        id.registerListener(this);
+        if (maxThreads > 1) {
+            // for multi threading, register our listener which collects all thread results
+            id.registerListener(this);
+        } else {
+            // otherwise register directly the listener from caller
+            id.registerListener(listener);
+        }
         try {
             IterativeSearchResult resultOfFirstThread = id.iterativeSearch(searchParams, gameState, gameContext);
             /*
                 create result of the collected results of all search threads:
                 we use the ebf report of the first thread, not perfect but this is anyway only used in tests/analysis.
              */
-            synchronized (this) {
-                if (lastIRR != null && lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
-                    return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
+            if (maxThreads > 1) {
+                synchronized (this) {
+                    if (lastIRR != null && lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
+                        return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
+                    }
                 }
             }
             return resultOfFirstThread;
@@ -107,7 +113,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public synchronized void updateBestRoundMove(NegaMaxResult bestRoundResult) {
-        if (lastIRR == null || lastIRR.hasResults() && bestRoundResult.targetDepth >= lastIRR.rslt().targetDepth) {
+        if (lastIRR == null || bestRoundResult.targetDepth >= lastIRR.rslt().targetDepth) {
             listener.updateBestRoundMove(bestRoundResult);
         }
     }
@@ -115,7 +121,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public synchronized void updateIIR(IterativeRoundResult irr) {
-        if (lastIRR == null || irr.hasResults() && irr.rslt().targetDepth > lastIRR.rslt().targetDepth) {
+        if (lastIRR == null || irr.rslt().targetDepth > lastIRR.rslt().targetDepth) {
             lastIRR = irr;
         }
     }

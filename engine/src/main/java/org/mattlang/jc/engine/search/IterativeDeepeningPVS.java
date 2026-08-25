@@ -196,8 +196,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      * @return
      */
     private int adjustDepthForWorker(int currDepth) {
-        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
-            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+        if (isWorker) {
+            if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
+                currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+            }
         }
         return currDepth;
     }
