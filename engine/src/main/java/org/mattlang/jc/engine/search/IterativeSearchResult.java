@@ -28,7 +28,7 @@ public class IterativeSearchResult {
 
     private NegaMaxResult findLastResult(List<IterativeRoundResult> rounds) {
         for (int i = rounds.size() - 1; i >= 0; i--) {
-            if (rounds.get(i).rslt() != null && rounds.get(i).rslt().savedMove != null) {
+            if (rounds.get(i).rslt().savedMove != null) {
                 return rounds.get(i).rslt();
             }
         }

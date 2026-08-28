@@ -40,9 +40,7 @@ public class SearchException extends RuntimeException {
         b.append("\n Rounds of this game state so far:\n");
 
         for (IterativeRoundResult round : rounds) {
-            if (round.rslt() != null) {
-                b.append(round.rslt().toString()).append("\n");
-            }
+            b.append(round.rslt().toString()).append("\n");
         }
         b.append("\n");
         searchParameter.log(b);

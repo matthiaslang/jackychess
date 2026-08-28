@@ -20,6 +20,6 @@ public record IterativeRoundResult(NegaMaxResult rslt, StopWatch roundWatch) {
     }
 
     public Move getOptionalBestMove() {
-        return rslt != null ? rslt.savedMove : null;
+        return rslt.savedMove;
     }
 }
