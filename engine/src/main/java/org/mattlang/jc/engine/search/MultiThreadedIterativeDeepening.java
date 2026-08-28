@@ -29,6 +29,8 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
 
+    private final FirstNegaMaxResultCreator firstNegaMaxResultCreator = new FirstNegaMaxResultCreator();
+
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
         return iterativeSearch(new SearchParameter(SearchParameter.DEFAULT_SEARCHTIME, maxDepth), gameState,
@@ -38,34 +40,36 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
     @Override
     public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState,
                                                  GameContext gameContext) {
+        IterativeDeepeningPVS id = new IterativeDeepeningPVS(0);
+        if (maxThreads == 1) {
+            id.registerListener(listener);
+            return id.iterativeSearch(searchParams, gameState, gameContext);
+        }
 
         // start max-1 workerthreads
         List<Future<IterativeSearchResult>> futures = new ArrayList<>();
         for (int i = 1; i < maxThreads; i++) {
             futures.add(startWorker(i, searchParams, gameState, gameContext));
         }
-        // and afterward start the "main" within this thread as worker 0:
-        IterativeDeepeningPVS id = new IterativeDeepeningPVS(0);
-        if (maxThreads > 1) {
-            // for multi threading, register our listener which collects all thread results
-            id.registerListener(this);
-        } else {
-            // otherwise register directly the listener from caller
-            id.registerListener(listener);
-        }
+        // for multi threading, register our listener which collects all thread results
+        id.registerListener(this);
+
         try {
+            lastIRR = firstNegaMaxResultCreator.createFirstIRR(gameState, searchParams);
+
+            // and afterward start the "main" within this thread as worker 0:
             IterativeSearchResult resultOfFirstThread = id.iterativeSearch(searchParams, gameState, gameContext);
             /*
                 create result of the collected results of all search threads:
                 we use the ebf report of the first thread, not perfect but this is anyway only used in tests/analysis.
              */
-            if (maxThreads > 1) {
-                synchronized (this) {
-                    if (lastIRR != null && lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
-                        return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
-                    }
+
+            synchronized (this) {
+                if (lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
+                    return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
                 }
             }
+
             return resultOfFirstThread;
         } finally {
             stopAllWorker(futures);
@@ -113,7 +117,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public synchronized void updateBestRoundMove(NegaMaxResult bestRoundResult) {
-        if (lastIRR == null || bestRoundResult.targetDepth >= lastIRR.rslt().targetDepth) {
+        if (bestRoundResult.targetDepth >= lastIRR.rslt().targetDepth) {
             listener.updateBestRoundMove(bestRoundResult);
         }
     }
@@ -121,7 +125,7 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public synchronized void updateIIR(IterativeRoundResult irr) {
-        if (lastIRR == null || irr.rslt().targetDepth > lastIRR.rslt().targetDepth) {
+        if (irr.rslt().targetDepth > lastIRR.rslt().targetDepth) {
             lastIRR = irr;
         }
     }
