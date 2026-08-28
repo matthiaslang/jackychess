@@ -52,14 +52,14 @@ public class SearchParameter {
     public SearchParameter(int timeout, int depth) {
         this.timeout = timeout;
         this.depth = depth;
-        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
+        this.iterativeDeepeningSearch = new MultiThreadedIterativeDeepening();
     }
 
     public SearchParameter(int timeout, int depth, MoveList legalMovesToSearch) {
         this.timeout = timeout;
         this.depth = depth;
         this.legalMovesToSearch = legalMovesToSearch;
-        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
+        this.iterativeDeepeningSearch = new MultiThreadedIterativeDeepening();
     }
 
     public SearchParameter(int timeout, MoveList legalMovesToSearch, GoParameter goParams,
@@ -85,11 +85,11 @@ public class SearchParameter {
 
     public SearchParameter(int timeout) {
         this.timeout = timeout;
-        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
+        this.iterativeDeepeningSearch = new MultiThreadedIterativeDeepening();
     }
 
     public SearchParameter() {
-        this.iterativeDeepeningSearch = new IterativeDeepeningPVS();
+        this.iterativeDeepeningSearch = new MultiThreadedIterativeDeepening();
     }
 
     public static SearchParameter params(int timeout) {

@@ -2,11 +2,13 @@ package org.mattlang.jc.engine.search;
 
 
 import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_LOSS_IN_MAX_PLY;
+import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_WIN_IN_MAX_PLY;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,11 +27,9 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     private final int maxThreads = ConfigValues.getConfigValues().maxThreads.getValue();
 
-    private volatile IterativeRoundResult lastIRR = null;
+    private AtomicReference<IterativeRoundResult>[] lastIRRs = null;
 
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
-
-    private final FirstNegaMaxResultCreator firstNegaMaxResultCreator = new FirstNegaMaxResultCreator();
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
@@ -46,6 +46,10 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
             return id.iterativeSearch(searchParams, gameState, gameContext);
         }
 
+        lastIRRs = new AtomicReference[maxThreads];
+        for (int i = 0; i < maxThreads; i++) {
+            lastIRRs[i] = new AtomicReference<>();
+        }
         // start max-1 workerthreads
         List<Future<IterativeSearchResult>> futures = new ArrayList<>();
         for (int i = 1; i < maxThreads; i++) {
@@ -55,8 +59,6 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         id.registerListener(this);
 
         try {
-            lastIRR = firstNegaMaxResultCreator.createFirstIRR(gameState, searchParams);
-
             // and afterward start the "main" within this thread as worker 0:
             IterativeSearchResult resultOfFirstThread = id.iterativeSearch(searchParams, gameState, gameContext);
             /*
@@ -65,15 +67,85 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
              */
 
             synchronized (this) {
-                if (lastIRR.rslt().targetDepth > resultOfFirstThread.getRslt().targetDepth) {
-                    return new IterativeSearchResult(List.of(lastIRR), resultOfFirstThread.getEbfReport());
-                }
+                IterativeRoundResult votedIRR = voteIrr();
+                return new IterativeSearchResult(List.of(votedIRR), resultOfFirstThread.getEbfReport());
             }
-
-            return resultOfFirstThread;
         } finally {
             stopAllWorker(futures);
         }
+    }
+
+    private static int calcVote(IterativeRoundResult irr, int minScore) {
+        return (irr.rslt().max - minScore + 14) * irr.rslt().targetDepth;
+    }
+
+    private IterativeRoundResult voteIrr() {
+        List<IterativeRoundResult> allResults = Arrays.stream(lastIRRs)
+                .map(AtomicReference::get)
+                .filter(Objects::nonNull)
+                .filter(irr -> irr.rslt().savedMove != null)
+                .toList();
+
+        Integer minScore = allResults.stream()
+                .map(irr -> irr.rslt().max)
+                .min(Comparator.comparing(Integer::intValue))
+                .orElseThrow(NoSuchElementException::new);
+
+        HashMap<Integer, Integer> votes = new HashMap<>();
+        for (IterativeRoundResult allResult : allResults) {
+            votes.compute(allResult.rslt().savedMove.getMoveInt(), (k, v) -> v == null ? calcVote(allResult, minScore) : v + calcVote(allResult, minScore));
+        }
+
+        IterativeRoundResult best = allResults.getFirst();
+
+        for (IterativeRoundResult th : allResults) {
+
+            int bestThreadScore = best.rslt().max;
+            int newThreadScore = th.rslt().max;
+
+            List<Move> bestThreadPV = best.rslt().getPvMoves();
+            List<Move> newThreadPV = th.rslt().getPvMoves();
+
+            int bestThreadMoveVote = votes.get(best.rslt().savedMove.getMoveInt());
+            int newThreadMoveVote = votes.get(th.rslt().savedMove.getMoveInt());
+
+            boolean bestThreadInProvenWin = isWin(bestThreadScore);
+            boolean newThreadInProvenWin = isWin(newThreadScore);
+
+            boolean bestThreadInProvenLoss =
+                    bestThreadScore != ALPHA_START && isLoss(bestThreadScore);
+            boolean newThreadInProvenLoss =
+                    newThreadScore != ALPHA_START && isLoss(newThreadScore);
+
+            // We make sure not to pick a thread with truncated principal variation
+            boolean betterVotingValue =
+                    calcVote(th, minScore) * (newThreadPV.size() > 2 ? 1 : 0)
+                            > calcVote(best, minScore) * (bestThreadPV.size() > 2 ? 1 : 0);
+
+            if (bestThreadInProvenWin) {
+                // Make sure we pick the shortest mate / TB conversion
+                if (newThreadScore > bestThreadScore)
+                    best = th;
+            } else if (bestThreadInProvenLoss) {
+                // Make sure we pick the shortest mated / TB conversion
+                if (newThreadInProvenLoss && newThreadScore < bestThreadScore)
+                    best = th;
+            } else if (newThreadInProvenWin || newThreadInProvenLoss
+                    || (!isLoss(newThreadScore)
+                    && (newThreadMoveVote > bestThreadMoveVote
+                    || (newThreadMoveVote == bestThreadMoveVote && betterVotingValue))))
+                best = th;
+        }
+
+        return best;
+    }
+
+    private static final boolean isWin(int value) {
+        return value >= VALUE_TB_WIN_IN_MAX_PLY;
+    }
+
+    private static final boolean isLoss(int value) {
+        return value <= VALUE_TB_LOSS_IN_MAX_PLY;
     }
 
     @Override
@@ -117,16 +189,12 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
 
     @Override
     public synchronized void updateBestRoundMove(NegaMaxResult bestRoundResult) {
-        if (bestRoundResult.targetDepth >= lastIRR.rslt().targetDepth) {
-            listener.updateBestRoundMove(bestRoundResult);
-        }
+        listener.updateBestRoundMove(bestRoundResult);
     }
 
 
     @Override
     public synchronized void updateIIR(IterativeRoundResult irr) {
-        if (irr.rslt().targetDepth > lastIRR.rslt().targetDepth) {
-            lastIRR = irr;
-        }
+        lastIRRs[irr.workerNumber()].set(irr);
     }
 }

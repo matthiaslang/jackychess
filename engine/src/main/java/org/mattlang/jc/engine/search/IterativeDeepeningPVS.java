@@ -126,7 +126,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
-        IterativeRoundResult lastResults = firstNegaMaxResultCreator.createFirstIRR(gameState, searchParams);
+        IterativeRoundResult lastResults = firstNegaMaxResultCreator.createFirstIRR(workerNumber, gameState, searchParams);
         try {
             int currdepth = startDepth;
 
@@ -285,7 +285,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         roundWatch.stop();
         ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
-        return new IterativeRoundResult(rslt, roundWatch);
+        return new IterativeRoundResult(workerNumber, rslt, roundWatch);
     }
 
     private NegaMaxResult searchWithAspirationWindow(SearchParameter searchParams,

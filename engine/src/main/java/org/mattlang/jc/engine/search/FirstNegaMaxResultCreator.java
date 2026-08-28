@@ -17,7 +17,7 @@ public class FirstNegaMaxResultCreator {
         return new NegaMaxResult(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch));
     }
 
-    public IterativeRoundResult createFirstIRR(GameState gameState, SearchParameter searchParams) {
-        return new IterativeRoundResult(createFirstNegaMaxResult(gameState, searchParams), new StopWatch());
+    public IterativeRoundResult createFirstIRR(int workerNumber, GameState gameState, SearchParameter searchParams) {
+        return new IterativeRoundResult(workerNumber, createFirstNegaMaxResult(gameState, searchParams), new StopWatch());
     }
 }
