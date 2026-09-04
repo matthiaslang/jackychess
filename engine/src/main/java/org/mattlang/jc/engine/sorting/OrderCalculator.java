@@ -1,15 +1,14 @@
 package org.mattlang.jc.engine.sorting;
 
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
-
+import lombok.Getter;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.engine.see.SEE;
 import org.mattlang.jc.moves.MoveImpl;
 
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 @Getter
 public final class OrderCalculator {
@@ -59,6 +58,11 @@ public final class OrderCalculator {
 
     private int captureMargin = 0;
 
+    private static final int heurLimit = Integer.parseInt(System.getProperty("heurLimit", "1000000"));
+    private static final int contLimit = Integer.parseInt(System.getProperty("contLimit", "1000000"));
+    private static final int quietScoreLimit = Integer.parseInt(System.getProperty("quietScoreLimit", "-1000000"));
+    private static final int heuristicAugment = Integer.parseInt(System.getProperty("heuristicAugment", "1"));
+
     public OrderCalculator(SearchThreadContext stc) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
         this.captureHeuristic = requireNonNull(stc.getCaptureHeuristic());
@@ -95,58 +99,56 @@ public final class OrderCalculator {
      * @param m
      * @return
      */
-    private int calcOrder(MoveImpl m, int moveInt) {
+    private void calcOrder(MoveImpl m, int moveInt, MovePicker goods, MovePicker bads) {
         if (hashMove == moveInt) {
-            return HASHMOVE_SCORE;
+            goods.addMoveWithOrder(moveInt, HASHMOVE_SCORE);
         } else if (m.isCapture()) {
-            return calcOrderForCaptures(m);
+            calcOrderForCaptures(m, goods, bads);
         } else if (killerMoves.isKiller(moveInt, ply)) {
-            return KILLER_SCORE;
+            goods.addMoveWithOrder(moveInt, KILLER_SCORE);
         } else if (m.isQueenPromotion()) {
-            return QUEEN_PROMOTION_SCORE;
+            goods.addMoveWithOrder(moveInt, QUEEN_PROMOTION_SCORE);
         } else if (m.isPromotion()) {
             int score = MvvLva.calcMMVLVAShort(m);
             score += BAD_CAPTURES_SCORE;
-            return score;
+            bads.addMoveWithOrder(moveInt, score);
         } else if (getCounterMove() == moveInt) {
-            return COUNTER_MOVE_SCORE;
+            goods.addMoveWithOrder(moveInt, COUNTER_MOVE_SCORE);
         } else {
-            return calcOrderForQuiets(m);
+            calcOrderForQuiets(m, goods, bads);
         }
     }
 
-    private int calcOrderForQuiets(MoveImpl m) {
+    private void calcOrderForQuiets(MoveImpl m, MovePicker goods, MovePicker bads) {
         if (m.isQueenPromotion()) {
-            return QUEEN_PROMOTION_SCORE;
+            goods.addMoveWithOrder(m.getMoveInt(), QUEEN_PROMOTION_SCORE);
         } else if (m.isPromotion()) {
             int score = MvvLva.calcMMVLVAShort(m);
             score += BAD_CAPTURES_SCORE;
-            return score;
+            bads.addMoveWithOrder(m.getMoveInt(), score);
         } else {
 
             int score = 0;
             // history heuristic
-            int heuristic = historyHeuristic.calcValue(m, color);
+            int heuristic = heuristicAugment * historyHeuristic.calcValue(m, color);
             int contHist = continuationHistoryHeuristic.calcValue(parentMove, m, color);
             score += heuristic;
             score += contHist;
 
-            if (score != 0) {
-                return score + HISTORY_SCORE;
+            if ((heuristic != 0 || contHist != 0 || score != 0) && (heuristic > heurLimit || contHist > contLimit || score > quietScoreLimit)) {
+                goods.addMoveWithOrder(m.getMoveInt(), score + HISTORY_SCORE);
+
+            } else {
+                bads.addMoveWithOrder(m.getMoveInt(), m.getFigureType() + QUIET);
             }
         }
-        /**
-         * sort at least by figuretype, ordererd from pawn... -> queen. this gives in tests a little reduced
-         * search tree.
-         */
-        return m.getFigureType() + QUIET;
     }
 
     private static int[] MVVAUGMENT = {0, 100, 320, 330, 500, 900, 0};
 
-    private int calcOrderForCaptures(MoveImpl m) {
+    private void calcOrderForCaptures(MoveImpl m, MovePicker goods, MovePicker bads) {
         if (m.isQueenPromotion()) {
-            return QUEEN_PROMOTION_SCORE;
+            goods.addMoveWithOrder(m.getMoveInt(), QUEEN_PROMOTION_SCORE);
         } else if (m.isCapture()) {
             int score = MvvLva.calcMMVLVAShort(m);
 
@@ -159,16 +161,13 @@ public final class OrderCalculator {
 
             boolean goodSee = SEE.see_ge(board, m, captureMargin);
             if (goodSee) {
-                score += GOOD_CAPTURES_SCORE;
+                goods.addMoveWithOrder(m.getMoveInt(), score + GOOD_CAPTURES_SCORE);
             } else {
-                score += BAD_CAPTURES_SCORE;
+                bads.addMoveWithOrder(m.getMoveInt(), score + BAD_CAPTURES_SCORE);
             }
-
-            return score;
         } else if (m.isPromotion()) {
             int score = MvvLva.calcMMVLVAShort(m);
-            score += BAD_CAPTURES_SCORE;
-            return score;
+            bads.addMoveWithOrder(m.getMoveInt(), score + BAD_CAPTURES_SCORE);
         } else {
             throw new IllegalStateException("no capture!");
         }
@@ -183,16 +182,11 @@ public final class OrderCalculator {
      *
      * @param moveList
      */
-    public void scoreMoves(MoveList moveList,  MovePicker goods, MovePicker bads) {
+    public void scoreMoves(MoveList moveList, MovePicker goods, MovePicker bads) {
         for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
-            int orderVal = calcOrder(moveWrapper, moveInt);
-            if (isRelevantMove(orderVal)) {
-                goods.addMoveWithOrder(moveInt, orderVal);
-            } else {
-                bads.addMoveWithOrder(moveInt, orderVal);
-            }
+            calcOrder(moveWrapper, moveInt, goods, bads);
         }
     }
 
@@ -200,19 +194,13 @@ public final class OrderCalculator {
      * Scores capture moves and returns the number of "good" captures.
      *
      * @param moveList
-     * @param start
      * @return
      */
     public void scoreCaptureMoves(MoveList moveList, MovePicker goods, MovePicker bads) {
         for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
-            int orderVal = calcOrderForCaptures(moveWrapper);
-            if (isRelevantMove(orderVal)) {
-                goods.addMoveWithOrder(moveInt, orderVal);
-            } else {
-                bads.addMoveWithOrder(moveInt, orderVal);
-            }
+            calcOrderForCaptures(moveWrapper, goods, bads);
         }
     }
 
@@ -220,12 +208,7 @@ public final class OrderCalculator {
         for (int i = 0; i < moveList.size(); i++) {
             int moveInt = moveList.get(i);
             moveWrapper.fromLongEncoded(moveInt);
-            int orderVal = calcOrderForQuiets(moveWrapper);
-            if (isRelevantMove(orderVal)) {
-                goods.addMoveWithOrder(moveInt, orderVal);
-            } else {
-                bads.addMoveWithOrder(moveInt, orderVal);
-            }
+            calcOrderForQuiets(moveWrapper, goods, bads);
         }
     }
 

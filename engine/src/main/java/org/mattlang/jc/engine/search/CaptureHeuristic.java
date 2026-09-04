@@ -32,17 +32,17 @@ public class CaptureHeuristic extends AbstractHistory {
         }
     }
 
-    public void update(int color, MoveCursor move, int depth) {
+    public void update(int color, Move move, int depth) {
         updateHist(color, move, calcBonus(depth));
     }
 
-    private void updateHist(int colorIdx, MoveCursor move, int bonus) {
+    private void updateHist(int colorIdx, Move move, int bonus) {
         byte captFigType = (byte) (move.getCapturedFigure() & MASK_OUT_COLOR);
-        int clampedBonus = clamp(bonus, -HIST_MAX, HIST_MAX);
-        int existingVal = posHistory[colorIdx][move.getFigureType()][captFigType][move.getToIndex()];
 
-        posHistory[colorIdx][move.getFigureType()][captFigType][move.getToIndex()] +=
-                clampedBonus - existingVal * Math.abs(clampedBonus) / HIST_MAX;
+        int existingVal = posHistory[colorIdx][move.getFigureType()][captFigType][move.getToIndex()];
+        posHistory[colorIdx][move.getFigureType()][captFigType][move.getToIndex()] =
+                calcNewVal(existingVal, bonus);
+
     }
 
     public int calcValue(Move move, int colorIdx) {
@@ -50,7 +50,7 @@ public class CaptureHeuristic extends AbstractHistory {
         return posHistory[colorIdx][move.getFigureType()][captFigType][move.getToIndex()];
     }
 
-    public void updateBad(int color, MoveCursor move, int depth) {
+    public void updateBad(int color, Move move, int depth) {
         updateHist(color, move, -calcBonus(depth));
     }
 

@@ -1,13 +1,12 @@
 package org.mattlang.jc.engine.search;
 
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.moves.MoveImpl;
+
 import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
 import static org.mattlang.jc.board.FigureConstants.FT_ALL;
 
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.MoveCursor;
-import org.mattlang.jc.moves.MoveImpl;
-
-public class ContinuationHistoryHeuristic extends AbstractHistory{
+public class ContinuationHistoryHeuristic extends AbstractHistory {
 
     private int[][][][][] posHistory = new int[2][FT_ALL][NUM_BOARD_FIELDS][FT_ALL][NUM_BOARD_FIELDS];
 
@@ -33,22 +32,20 @@ public class ContinuationHistoryHeuristic extends AbstractHistory{
         }
     }
 
-    public void update(int color, int prevMove, MoveCursor move, int depth) {
+    public void update(int color, int prevMove, Move move, int depth) {
         updateHist(color, prevMove, move, calcBonus(depth));
     }
 
 
-    private void updateHist(int colorIdx, int prevMove, MoveCursor move, int bonus) {
+    private void updateHist(int colorIdx, int prevMove, Move move, int bonus) {
         if (prevMove == 0) {
             return;
         }
-
-        int clampedBonus = clamp(bonus, -HIST_MAX, HIST_MAX);
-
-        int existingVal=posHistory[colorIdx][MoveImpl.getFigureType(prevMove)][MoveImpl.getToIndex(
+        int existingVal = posHistory[colorIdx][MoveImpl.getFigureType(prevMove)][MoveImpl.getToIndex(
                 prevMove)][move.getFigureType()][move.getToIndex()];
         posHistory[colorIdx][MoveImpl.getFigureType(prevMove)][MoveImpl.getToIndex(
-                prevMove)][move.getFigureType()][move.getToIndex()] +=  clampedBonus - existingVal * Math.abs(clampedBonus) / HIST_MAX;
+                prevMove)][move.getFigureType()][move.getToIndex()] =
+                calcNewVal(existingVal, bonus);
     }
 
     public int calcValue(int prevMove, Move move, int colorIdx) {
@@ -59,7 +56,7 @@ public class ContinuationHistoryHeuristic extends AbstractHistory{
                 prevMove)][move.getFigureType()][move.getToIndex()];
     }
 
-    public void updateBad(int color, int prevMove, MoveCursor move, int depth) {
+    public void updateBad(int color, int prevMove, Move move, int depth) {
         updateHist(color, prevMove, move, -calcBonus(depth));
     }
 
