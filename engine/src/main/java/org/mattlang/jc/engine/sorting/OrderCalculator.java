@@ -1,6 +1,9 @@
 package org.mattlang.jc.engine.sorting;
 
 import lombok.Getter;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.ConfigurationListener;
+import org.mattlang.jc.UciConfigParam;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.*;
@@ -11,7 +14,7 @@ import static java.util.Objects.requireNonNull;
 import static org.mattlang.jc.board.FigureConstants.MASK_OUT_COLOR;
 
 @Getter
-public final class OrderCalculator {
+public final class OrderCalculator implements ConfigurationListener {
 
     public static final int O01 = 1 << 30;
     public static final int O02 = 1 << 29;
@@ -58,10 +61,15 @@ public final class OrderCalculator {
 
     private int captureMargin = 0;
 
-    private static final int heurLimit = Integer.parseInt(System.getProperty("heurLimit", "1000000"));
-    private static final int contLimit = Integer.parseInt(System.getProperty("contLimit", "1000000"));
-    private static final int quietScoreLimit = Integer.parseInt(System.getProperty("quietScoreLimit", "-1000000"));
-    private static final int heuristicAugment = Integer.parseInt(System.getProperty("heuristicAugment", "1"));
+    @UciConfigParam
+    private int heurLimit = 1000000;
+    @UciConfigParam
+    private int contLimit = 1000000;
+    @UciConfigParam
+    private int quietScoreLimit = -1000000;
+    @UciConfigParam
+    private int heuristicAugment = 1;
+
 
     public OrderCalculator(SearchThreadContext stc) {
         this.historyHeuristic = requireNonNull(stc.getHistoryHeuristic());
@@ -69,6 +77,8 @@ public final class OrderCalculator {
         this.continuationHistoryHeuristic = requireNonNull(stc.getContinuationHistoryHeuristic());
         this.killerMoves = requireNonNull(stc.getKillerMoves());
         this.counterMoveHeuristic = requireNonNull(stc.getCounterMoveHeuristic());
+
+        ConfigValues.getConfigValues().registerConfigurableListeningObject(this);
     }
 
     public void prepareOrder(int color, final int hashMove, int parentMove, final int ply,
@@ -82,6 +92,7 @@ public final class OrderCalculator {
         this.board = board;
         this.captureMargin = captureMargin;
     }
+
 
     /**
      * Calc sort order:
@@ -135,7 +146,8 @@ public final class OrderCalculator {
             score += heuristic;
             score += contHist;
 
-            if ((heuristic != 0 || contHist != 0 || score != 0) && (heuristic > heurLimit || contHist > contLimit || score > quietScoreLimit)) {
+            if ((heuristic != 0 || contHist != 0 || score != 0)
+                    && (heuristic > heurLimit || contHist > contLimit || score > quietScoreLimit)) {
                 goods.addMoveWithOrder(m.getMoveInt(), score + HISTORY_SCORE);
 
             } else {

@@ -1,6 +1,9 @@
 package org.mattlang.jc.moves;
 
 import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.ConfigurationListener;
+import org.mattlang.jc.UciConfigParam;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
@@ -13,6 +16,7 @@ import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 import java.util.logging.Logger;
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static org.mattlang.jc.moves.Stage.*;
 
@@ -28,7 +32,7 @@ import static org.mattlang.jc.moves.Stage.*;
  * Another variant using special code for one-move-stages (like hashmoves, killers) has also been evaluated, but has
  * also not brought any benefit.
  */
-public final class StagedMoveIterationPreparer implements MoveIterator {
+public final class StagedMoveIterationPreparer implements MoveIterator, ConfigurationListener {
 
     public static final Logger LOGGER = Logger.getLogger(StagedMoveIterationPreparer.class.getSimpleName());
 
@@ -41,6 +45,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
             {STAGE_HASH, PREPARE_STAGE_GOOD_CAPTURES, STAGE_GOOD_CAPTURES, STAGE_KILLERS1, STAGE_KILLERS2,
                     STAGE_COUNTER, PREPARE_STAGE_QUIET, STAGE_GOOD_QUIET, STAGE_BAD_CAPTURES, STAGE_BAD_QUIET};
 
+    private Stage[] initializedStagesNormal = STAGES_NORMAL;
     /**
      * Stages for quiescence. Actually we only have on stage for quiescence; other experiments have not
      * given any benefit.
@@ -84,6 +89,13 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
     private final int[] filterMoves = new int[4];
     private int filterCount = 0;
 
+    @UciConfigParam
+    private String stagesNormal;
+
+    public StagedMoveIterationPreparer() {
+        ConfigValues.getConfigValues().registerConfigurableListeningObject(this);
+    }
+
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
                         int ply, int hashMove, int parentMove) {
         prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
@@ -108,8 +120,16 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        stages = mode == GenMode.NORMAL ? STAGES_NORMAL : STAGES_QUIESCENCE;
+        stages = mode == GenMode.NORMAL ? initializedStagesNormal : STAGES_QUIESCENCE;
         currStage = stages[stageIndex];
+    }
+
+    public void configChanged() {
+        if (stagesNormal == null) {
+            initializedStagesNormal = STAGES_NORMAL;
+        } else {
+            initializedStagesNormal = stream(stagesNormal.split(",")).map(Stage::valueOf).toArray(Stage[]::new);
+        }
     }
 
     public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, int color,
@@ -131,7 +151,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        stages = STAGES_NORMAL;
+        stages = initializedStagesNormal;
         if (legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
             stages = SINGLE_STATIC_STAGE;
             orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
@@ -189,33 +209,23 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
                     break;
                 case STAGE_KILLERS1:
                     nextStage();
-                    int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
-
-                    if (killers[0] != 0 && board.isvalidmove(color, killers[0]) && isUnfilteredMove(killers[0])) {
-                        theNextMove = killers[0];
+                    if (isValidSpecialMove(getKiller(0))) {
                         theNextOrder = OrderCalculator.KILLER_SCORE;
-                        addFilter(killers[0]);
                         return true;
                     }
                     break;
                 case STAGE_KILLERS2:
                     nextStage();
-                    killers = stc.getKillerMoves().getOrCreateKillerList(ply);
-
-                    if (killers[1] != 0 && board.isvalidmove(color, killers[1]) && isUnfilteredMove(killers[1])) {
-                        theNextMove = killers[1];
+                    if (isValidSpecialMove(getKiller(1))) {
                         theNextOrder = OrderCalculator.KILLER_SCORE;
-                        addFilter(killers[1]);
                         return true;
                     }
                     break;
                 case STAGE_COUNTER:
                     nextStage();
                     int counterMove = stc.getCounterMoveHeuristic().getCounter(color, parentMove);
-                    if (counterMove != 0 && board.isvalidmove(color, counterMove) && isUnfilteredMove(counterMove)) {
-                        theNextMove = counterMove;
-                        theNextOrder = OrderCalculator.KILLER_SCORE;
-                        addFilter(counterMove);
+                    if (isValidSpecialMove(counterMove)) {
+                        theNextOrder = OrderCalculator.COUNTER_MOVE_SCORE;
                         return true;
                     }
                     break;
@@ -266,6 +276,29 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         return false;
     }
 
+    private int getKiller(int killerNum) {
+        int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
+        return killers[killerNum];
+    }
+
+    private boolean isValidSpecialMove(int specialMove) {
+        if (specialMove != 0 && board.isvalidmove(color, specialMove) && isUnfilteredMove(specialMove)) {
+            theNextMove = specialMove;
+            addFilter(specialMove);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * sorts the next move to front of the list, skipping all special handled
+     * moves like hashmove, killers, etc.
+     * this is used for stages handling quiet moves since there all special moves
+     * could be part of it.
+     *
+     * @param picker
+     * @return
+     */
     private boolean sortToFrontSkippingFiltered(MovePicker picker) {
         while (picker.hasNext()) {
             theNextMove = picker.next();
