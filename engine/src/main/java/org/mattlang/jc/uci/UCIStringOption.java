@@ -8,15 +8,15 @@ package org.mattlang.jc.uci;
 public class UCIStringOption extends UCIOption<String> {
 
     public UCIStringOption(UCIOptions optionBundle, UCIGroup group, String name, String description,
-            String defaultValue, OptionType type) {
+                           String defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
         setDefaultValue(defaultValue);
         setValue(defaultValue);
     }
 
     @Override
-    public void parseAndSetParameter(String newValue) {
-        setValue(newValue);
+    public String parse(String newValue) {
+        return newValue;
     }
 
     @Override
