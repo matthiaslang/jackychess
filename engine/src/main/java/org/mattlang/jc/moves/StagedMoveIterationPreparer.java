@@ -1,10 +1,14 @@
 package org.mattlang.jc.moves;
 
 import org.mattlang.jc.BuildConstants;
+import org.mattlang.jc.ConfigValues;
+import org.mattlang.jc.ConfigurationListener;
+import org.mattlang.jc.UciConfigParam;
 import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
 import org.mattlang.jc.engine.sorting.MoveIterator;
+import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.GenMode;
 import org.mattlang.jc.movegenerator.MoveGeneration;
@@ -12,13 +16,14 @@ import org.mattlang.jc.movegenerator.PseudoLegalMoveGenerator;
 
 import java.util.logging.Logger;
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static org.mattlang.jc.moves.Stage.*;
 
 /**
  * Encapsulates all relevant objects to prepare iteration over moves on the board.
  * The move iteration can be internally staged into several stages for hashmove, captures, non-captures, etc.
- *
+ * <p>
  * A lot of experiments have been made with different stage configurations, so this is the result of the
  * "best" variant so far.
  * A code-wise much nicer variant using static Method-References instead of tumb switch cases has also been evaluated,
@@ -27,7 +32,7 @@ import static org.mattlang.jc.moves.Stage.*;
  * Another variant using special code for one-move-stages (like hashmoves, killers) has also been evaluated, but has
  * also not brought any benefit.
  */
-public final class StagedMoveIterationPreparer implements MoveIterator {
+public final class StagedMoveIterationPreparer implements MoveIterator, ConfigurationListener {
 
     public static final Logger LOGGER = Logger.getLogger(StagedMoveIterationPreparer.class.getSimpleName());
 
@@ -37,19 +42,25 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
      * have not given any benefits.
      */
     private static final Stage[] STAGES_NORMAL =
-            { STAGE_HASH, PREPARE_STAGE_GOOD_CAPTURES, STAGE_GOOD_CAPTURES, STAGE_KILLERS1, STAGE_KILLERS2,
-                    STAGE_COUNTER, PREPARE_STAGE_REST, STAGE_REST };
+            {STAGE_HASH, PREPARE_STAGE_GOOD_CAPTURES, STAGE_GOOD_CAPTURES, STAGE_KILLERS1, STAGE_KILLERS2,
+                    STAGE_COUNTER, PREPARE_STAGE_QUIET, STAGE_GOOD_QUIET, STAGE_BAD_CAPTURES, STAGE_BAD_QUIET};
 
+    private Stage[] initializedStagesNormal = STAGES_NORMAL;
     /**
      * Stages for quiescence. Actually we only have on stage for quiescence; other experiments have not
      * given any benefit.
      */
     private static final Stage[] STAGES_QUIESCENCE =
-            { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_QUIESCENCE_REST };
+            { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_GOOD_CAPTURES, STAGE_BAD_CAPTURES};
 
-    private static final Stage[] SINGLE_STATIC_STAGE = { STAGE_STATIC_ALL };
+    private static final Stage[] SINGLE_STATIC_STAGE = {STAGE_GOOD_CAPTURES};
 
-    private final MoveList moveList = new MoveList();
+    private final MoveList moveListGen = new MoveList();
+
+    private final MovePicker pickerGoodCapt = new MovePicker();
+    private final MovePicker pickerBadCapt = new MovePicker();
+    private final MovePicker pickerGoodQuiet = new MovePicker();
+    private final MovePicker pickerBadQuiet = new MovePicker();
 
     private final PseudoLegalMoveGenerator generator = new PseudoLegalMoveGenerator();
 
@@ -78,16 +89,27 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
     private final int[] filterMoves = new int[4];
     private int filterCount = 0;
 
+    @UciConfigParam
+    private String stagesNormal;
+
+    public StagedMoveIterationPreparer() {
+        ConfigValues.getConfigValues().registerConfigurableListeningObject(this);
+    }
+
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
-            int ply, int hashMove, int parentMove) {
+                        int ply, int hashMove, int parentMove) {
         prepare(stc, mode, board, color, ply, hashMove, parentMove, 0);
     }
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
-            int ply, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset(color);
+                        int ply, int hashMove, int parentMove, int captureMargin) {
+
+        pickerGoodCapt.reset();
+        pickerBadCapt.reset();
+        pickerGoodQuiet.reset();
+        pickerBadQuiet.reset();
+
         filterCount = 0;
-        movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
         this.moveBoardIterator.setEvaluate(stc.getEvaluate());
@@ -98,15 +120,27 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        stages = mode == GenMode.NORMAL ? STAGES_NORMAL : STAGES_QUIESCENCE;
+        stages = mode == GenMode.NORMAL ? initializedStagesNormal : STAGES_QUIESCENCE;
         currStage = stages[stageIndex];
     }
 
+    public void configChanged() {
+        if (stagesNormal == null) {
+            initializedStagesNormal = STAGES_NORMAL;
+        } else {
+            initializedStagesNormal = stream(stagesNormal.split(",")).map(Stage::valueOf).toArray(Stage[]::new);
+        }
+    }
+
     public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, int color,
-            MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset(color);
+                                MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
+
+        pickerGoodCapt.reset();
+        pickerBadCapt.reset();
+        pickerGoodQuiet.reset();
+        pickerBadQuiet.reset();
+
         filterCount = 0;
-        movelistPos = 0;
         this.stageIndex = 0;
         this.stc = stc;
         this.moveBoardIterator.setEvaluate(stc.getEvaluate());
@@ -117,18 +151,19 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         this.parentMove = parentMove;
         this.captureMargin = captureMargin;
         this.orderCalculator = requireNonNull(stc.getOrderCalculator()); // maybe refactor this..
-        stages = STAGES_NORMAL;
+        stages = initializedStagesNormal;
         if (legalMovesToSearch != null && legalMovesToSearch.size() > 0) {
             stages = SINGLE_STATIC_STAGE;
-            moveList.initFrom(legalMovesToSearch);
-            createSortOrders(0);
+            orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+            pickerGoodCapt.reset();
+            orderCalculator.scoreMoves(legalMovesToSearch, pickerGoodCapt, pickerGoodCapt);
+
         }
         currStage = stages[stageIndex];
     }
 
     private int theNextMove = 0;
     private int theNextOrder = 0;
-    private int movelistPos = 0;
 
     @Override
     public boolean hasNext() {
@@ -140,129 +175,100 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
             }
 
             switch (currStage) {
-            case STAGE_HASH:
-                nextStage();
-                if (hashMove != 0 && board.isvalidmove(color, hashMove)) {
-                    theNextMove = hashMove;
-                    theNextOrder = OrderCalculator.HASHMOVE_SCORE;
-                    addFilter(hashMove);
-                    return true;
-                }
-                break;
-            case PREPARE_STAGE_GOOD_CAPTURES:
-                nextStage();
-
-                int currSize = moveList.size();
-                MoveGeneration.generateAttacks(board, color, moveList);
-                if (currSize == moveList.size()) {
-                    // not captures at all: overstep next step:
+                case STAGE_HASH:
                     nextStage();
-                } else {
-                    createCaptureSortOrders(movelistPos);
-                    if (sortToFrontSkippingFiltered()) {
-                        if (OrderCalculator.isGoodCapture(moveList.getOrder(movelistPos))) {
-                            theNextOrder = moveList.getOrder(movelistPos);
-                            return true;
-                        } else {
-                            // there are only bad captures: overstep the "stage good captures":
-                            nextStage();
-                        }
-
-                    }
-                }
-                break;
-            case STAGE_GOOD_CAPTURES:
-                movelistPos++;
-                if (sortToFrontSkippingFiltered()) {
-                    if (OrderCalculator.isGoodCapture(moveList.getOrder(movelistPos))) {
-                        theNextOrder = moveList.getOrder(movelistPos);
+                    if (hashMove != 0 && board.isvalidmove(color, hashMove)) {
+                        theNextMove = hashMove;
+                        theNextOrder = OrderCalculator.HASHMOVE_SCORE;
+                        addFilter(hashMove);
                         return true;
                     }
-                }
-                nextStage();
+                    break;
+                case PREPARE_STAGE_GOOD_CAPTURES:
+                    nextStage();
 
-                break;
-            case STAGE_KILLERS1:
-                nextStage();
-                int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
+                    moveListGen.reset(color);
+                    MoveGeneration.generateAttacks(board, color, moveListGen);
+                    createCaptureSortOrders();
+                    break;
+                case STAGE_GOOD_CAPTURES:
+                    if (sortToFrontSkippingFiltered(pickerGoodCapt)) {
+                        theNextOrder = pickerGoodCapt.getOrder();
+                        return true;
+                    }
+                    nextStage();
 
-                if (killers[0] != 0 && board.isvalidmove(color, killers[0]) && isUnfilteredMove(killers[0])) {
-                    theNextMove = killers[0];
-                    theNextOrder = OrderCalculator.KILLER_SCORE;
-                    addFilter(killers[0]);
-                    return true;
-                }
-                break;
-            case STAGE_KILLERS2:
-                nextStage();
-                killers = stc.getKillerMoves().getOrCreateKillerList(ply);
+                    break;
+                case STAGE_BAD_CAPTURES:
+                    if (sortToFrontSkippingFiltered(pickerBadCapt)) {
+                        theNextOrder = pickerBadCapt.getOrder();
+                        return true;
+                    }
+                    nextStage();
 
-                if (killers[1] != 0 && board.isvalidmove(color, killers[1]) && isUnfilteredMove(killers[1])) {
-                    theNextMove = killers[1];
-                    theNextOrder = OrderCalculator.KILLER_SCORE;
-                    addFilter(killers[1]);
-                    return true;
-                }
-                break;
-            case STAGE_COUNTER:
-                nextStage();
-                int counterMove = stc.getCounterMoveHeuristic().getCounter(color, parentMove);
-                if (counterMove != 0 && board.isvalidmove(color, counterMove) && isUnfilteredMove(counterMove)) {
-                    theNextMove = counterMove;
-                    theNextOrder = OrderCalculator.KILLER_SCORE;
-                    addFilter(counterMove);
-                    return true;
-                }
-                break;
-            case PREPARE_STAGE_REST:
-                nextStage();
-                int start = moveList.size();
-                MoveGeneration.generateQuiets(board, color, moveList);
-                createQuietSortOrders(start);
-                if (sortToFrontSkippingFiltered()) {
-                    theNextOrder = moveList.getOrder(movelistPos);
-                    return true;
-                }
+                    break;
+                case STAGE_KILLERS1:
+                    nextStage();
+                    if (isValidSpecialMove(getKiller(0))) {
+                        theNextOrder = OrderCalculator.KILLER_SCORE;
+                        return true;
+                    }
+                    break;
+                case STAGE_KILLERS2:
+                    nextStage();
+                    if (isValidSpecialMove(getKiller(1))) {
+                        theNextOrder = OrderCalculator.KILLER_SCORE;
+                        return true;
+                    }
+                    break;
+                case STAGE_COUNTER:
+                    nextStage();
+                    int counterMove = stc.getCounterMoveHeuristic().getCounter(color, parentMove);
+                    if (isValidSpecialMove(counterMove)) {
+                        theNextOrder = OrderCalculator.COUNTER_MOVE_SCORE;
+                        return true;
+                    }
+                    break;
+                case PREPARE_STAGE_QUIET:
+                    nextStage();
+                    moveListGen.reset(color);
+                    MoveGeneration.generateQuiets(board, color, moveListGen);
+                    createQuietSortOrders();
 
-                break;
-            case STAGE_REST:
-            case STAGE_QUIESCENCE_REST:
-                movelistPos++;
-                if (sortToFrontSkippingFiltered()) {
-                    theNextOrder = moveList.getOrder(movelistPos);
-                    return true;
-                }
-                nextStage();
+                    break;
+                case STAGE_GOOD_QUIET:
+                    if (sortToFrontSkippingFiltered(pickerGoodQuiet)) {
+                        theNextOrder = pickerGoodQuiet.getOrder();
+                        return true;
+                    }
+                    nextStage();
 
-                break;
-            case STAGE_QUIESCENCE_HASH:
-                nextStage();
-                if (hashMove != 0
-                    && (MoveImpl.isCapture(hashMove) || MoveImpl.isPromotion(hashMove))
-                    && board.isvalidmove(color, hashMove)) {
-                    theNextMove = hashMove;
-                    theNextOrder = OrderCalculator.HASHMOVE_SCORE;
-                    return true;
-                }
-                break;
-            case PREPARE_STAGE_QUIESCENCE_REST:
-                nextStage();
-                start = moveList.size();
-                generator.generate(GenMode.QUIESCENCE, board, color, moveList);
-                createSortOrders(start);
-                if (sortToFrontSkippingFiltered()) {
-                    theNextOrder = moveList.getOrder(movelistPos);
-                    return true;
-                }
-                break;
-            case STAGE_STATIC_ALL:
-                if (sortToFrontSkippingFiltered()) {
-                    theNextOrder = moveList.getOrder(movelistPos);
-                    movelistPos++;
-                    return true;
-                }
-                nextStage();
-                break;
+                    break;
+                case STAGE_BAD_QUIET:
+                    if (sortToFrontSkippingFiltered(pickerBadQuiet)) {
+                        theNextOrder = pickerBadQuiet.getOrder();
+                        return true;
+                    }
+                    nextStage();
+
+                    break;
+                case STAGE_QUIESCENCE_HASH:
+                    nextStage();
+                    if (hashMove != 0
+                            && (MoveImpl.isCapture(hashMove) || MoveImpl.isPromotion(hashMove))
+                            && board.isvalidmove(color, hashMove)) {
+                        theNextMove = hashMove;
+                        theNextOrder = OrderCalculator.HASHMOVE_SCORE;
+                        return true;
+                    }
+                    break;
+                case PREPARE_STAGE_QUIESCENCE_REST:
+                    nextStage();
+                    moveListGen.reset(color);
+                    generator.generate(GenMode.QUIESCENCE, board, color, moveListGen);
+                    createCaptureSortOrders();
+
+                    break;
             }
 
         }
@@ -270,46 +276,51 @@ public final class StagedMoveIterationPreparer implements MoveIterator {
         return false;
     }
 
-    private boolean sortToFrontSkippingFiltered() {
-        while (movelistPos < moveList.size()) {
-            theNextMove = sortToFront(movelistPos);
+    private int getKiller(int killerNum) {
+        int[] killers = stc.getKillerMoves().getOrCreateKillerList(ply);
+        return killers[killerNum];
+    }
+
+    private boolean isValidSpecialMove(int specialMove) {
+        if (specialMove != 0 && board.isvalidmove(color, specialMove) && isUnfilteredMove(specialMove)) {
+            theNextMove = specialMove;
+            addFilter(specialMove);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * sorts the next move to front of the list, skipping all special handled
+     * moves like hashmove, killers, etc.
+     * this is used for stages handling quiet moves since there all special moves
+     * could be part of it.
+     *
+     * @param picker
+     * @return
+     */
+    private boolean sortToFrontSkippingFiltered(MovePicker picker) {
+        while (picker.hasNext()) {
+            theNextMove = picker.next();
             if (isUnfilteredMove(theNextMove)) {
                 return true;
             }
-            movelistPos++;
         }
         return false;
     }
 
-    private int sortToFront(int start) {
-        int currLowest = moveList.getOrder(start);
-        int currLowestIndex = start;
-        for (int i = start + 1; i < moveList.size(); i++) {
-            if (moveList.getOrder(i) < currLowest) {
-                currLowest = moveList.getOrder(i);
-                currLowestIndex = i;
-            }
-        }
-
-        if (currLowestIndex != start) {
-            moveList.swap(start, currLowestIndex);
-        }
-        return moveList.get(start);
+    private void createQuietSortOrders() {
+        pickerGoodQuiet.reset();
+        pickerBadQuiet.reset();
+        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+        orderCalculator.scoreQuietMoves(moveListGen, pickerGoodQuiet, pickerBadQuiet);
     }
 
-    private void createSortOrders(int currStartPos) {
+    private void createCaptureSortOrders() {
+        pickerGoodCapt.reset();
+        pickerBadCapt.reset();
         orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        orderCalculator.scoreMoves(moveList, currStartPos);
-    }
-
-    private void createQuietSortOrders(int currStartPos) {
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        orderCalculator.scoreQuietMoves(moveList, currStartPos);
-    }
-
-    private void createCaptureSortOrders(int currStartPos) {
-        orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
-        orderCalculator.scoreCaptureMoves(moveList, currStartPos);
+        orderCalculator.scoreCaptureMoves(moveListGen, pickerGoodCapt, pickerBadCapt);
     }
 
     public MoveBoardIterator iterateMoves() {

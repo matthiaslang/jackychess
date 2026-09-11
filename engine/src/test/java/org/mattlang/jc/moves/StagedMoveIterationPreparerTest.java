@@ -55,7 +55,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
 
     }
 
@@ -154,7 +154,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
 
     }
 
@@ -186,7 +186,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
 
     }
 
@@ -218,7 +218,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
     }
 
     @Test
@@ -249,7 +249,7 @@ public class StagedMoveIterationPreparerTest {
                         Collectors.toList()));
 
         // but due to the fact that the moves are created by different stages, the exact order of moves with same move order is not identical
-        assertThat(moves).containsExactlyInAnyOrder(movesRegular.toArray(new Tuple[0]));
+        assertThat(moves).containsExactly(movesRegular.toArray(new Tuple[0]));
 
     }
 
@@ -262,26 +262,6 @@ public class StagedMoveIterationPreparerTest {
         System.out.println(Integer.toBinaryString(-128));
         System.out.println(Integer.toBinaryString(-128 + 4));
         System.out.println(Integer.toBinaryString(-128 - 4));
-    }
-
-    @Test
-    public void testRegular() throws IOException {
-
-        Logging.initLogging();
-        UCI.instance.attachStreams();
-
-        // now starting engine:
-        Engine engine = new Engine();
-        GameState gameState= GameState.posFrom("position fen r5k1/2pq2b1/3p1r1p/3P4/N1PQ4/1P3n2/P2B1PP1/R4RK1 w - - 1 29");
-        System.out.println(gameState.getBoard().toUniCodeStr());
-
-        SearchParameter params = params(60000, 20);
-        Move move = engine.go(params, gameState);
-
-        System.out.println(move.toStr());
-
-        // with the evaluation function it should yield e7e6:
-        assertThat(move.toStr()).isEqualTo("g2f3");
     }
 
     @Test

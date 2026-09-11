@@ -235,7 +235,7 @@ public final class SearchContext {
         return Weights.REPETITION_WEIGHT;
     }
 
-    // todo test that not in check because those heuristics make only for quiet pos sense...?
+
     public void updateCutOffHeuristics(int ply, int depth, int color, int grandparentMove, int parentMove,
             int bestMove,
             MoveCursor moveCursor) {

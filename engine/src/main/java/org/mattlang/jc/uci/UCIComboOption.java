@@ -2,7 +2,7 @@ package org.mattlang.jc.uci;
 
 /**
  * Defines an uci combo option for this engine.
- *
+ * <p>
  * example:    "option name Style type combo default Normal var Solid var Normal var Risky\n"
  */
 public class UCIComboOption<E extends Enum> extends UCIOption<E> {
@@ -10,7 +10,7 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
     private final Class<E> eclass;
 
     public UCIComboOption(UCIOptions optionBundle, UCIGroup group, String name, String description, Class<E> eclass,
-            E defaultValue, OptionType type) {
+                          E defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
         setDefaultValue(defaultValue);
         setValue(defaultValue);
@@ -18,8 +18,8 @@ public class UCIComboOption<E extends Enum> extends UCIOption<E> {
     }
 
     @Override
-    public void parseAndSetParameter(String newValue) {
-        setValue((E) Enum.valueOf(eclass, newValue));
+    public E parse(String newValue) {
+        return (E) Enum.valueOf(eclass, newValue);
     }
 
     @Override

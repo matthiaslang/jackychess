@@ -1,14 +1,13 @@
 package org.mattlang.jc.uci;
 
-import static java.util.Objects.requireNonNull;
+import lombok.Getter;
+import org.mattlang.jc.AppConfiguration;
 
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.AppConfiguration;
-
-import lombok.Getter;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Defines an uci option for this engine.
@@ -31,6 +30,7 @@ public abstract class UCIOption<T> {
 
     private T value;
     private T defaultValue;
+    private T overrider;
 
     private UCIOptionChangeListener<T> changeListener = newValue -> {
     };
@@ -41,6 +41,7 @@ public abstract class UCIOption<T> {
         this.description = requireNonNull(description);
         this.type = requireNonNull(type);
         optionBundle.put(name, this);
+        this.overrider = getLazyOverrider();
     }
 
     public UCIOption(UCIOptions optionBundle, UCIGroup group, String name, String description) {
@@ -63,7 +64,11 @@ public abstract class UCIOption<T> {
         uciOpt.parseAndSetParameter(value);
     }
 
-    public abstract void parseAndSetParameter(String newValue);
+    public void parseAndSetParameter(String newValue) {
+        setValue(parse(newValue));
+    }
+
+    public abstract T parse(String newValue);
 
     public void writeOptionDeclaration() {
         UCI.instance.putCommand(createOptionDeclaration());
@@ -71,16 +76,20 @@ public abstract class UCIOption<T> {
 
     public abstract String createOptionDeclaration();
 
-    public final T getValue() {
 
+    private T getLazyOverrider() {
         Optional<String> optStrVal = AppConfiguration.APPCONFIG.getStringValue("opt." + getName());
         if (optStrVal.isPresent()) {
             LOGGER.log(Level.FINEST, "Overrider: opt." + getName() + "=" + optStrVal.get());
-            parseAndSetParameter(optStrVal.get());
+            return parse(optStrVal.get());
         }
-
-        return getInternalValue();
+        return null;
     }
+
+    public final T getValue() {
+        return overrider != null ? overrider : getInternalValue();
+    }
+
 
     protected T getInternalValue() {
         return value;

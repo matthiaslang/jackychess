@@ -131,6 +131,7 @@ public class UciProcessor {
         String option = result[2];
         String value = result[4];
         try {
+            ConfigValues.getConfigValues().addRawOptionVal(option, value);
             UCIOption.parseOption(ConfigValues.getConfigValues().getAllOptions(), option, value);
         } catch (IllegalArgumentException iae) {
             LOGGER.warning(iae.getMessage());

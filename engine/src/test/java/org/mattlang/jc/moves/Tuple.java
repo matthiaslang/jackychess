@@ -3,11 +3,11 @@ package org.mattlang.jc.moves;
 import lombok.Data;
 
 @Data
-public class Tuple {
+public class Tuple implements Comparable<Tuple>{
 
     final String move;
 
-    final int moveInt;
+    final String orderStr;
 
     final int order;
 
@@ -15,8 +15,13 @@ public class Tuple {
     public String toString() {
         return "(" +
                 move  +
-                ", " + moveInt +
+                ", " + orderStr +
                 ", " + order +
                 ')';
+    }
+
+    @Override
+    public int compareTo(Tuple o) {
+        return o.order - order;
     }
 }
