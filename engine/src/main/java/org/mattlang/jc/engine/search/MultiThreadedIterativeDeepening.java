@@ -1,10 +1,11 @@
 package org.mattlang.jc.engine.search;
 
 
-import static java.util.Objects.requireNonNull;
-import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_LOSS_IN_MAX_PLY;
-import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_WIN_IN_MAX_PLY;
-import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
+import org.mattlang.jc.*;
+import org.mattlang.jc.board.GameState;
+import org.mattlang.jc.board.Move;
+import org.mattlang.jc.engine.IterativeDeepeningSearch;
+import org.mattlang.jc.uci.GameContext;
 
 import java.util.*;
 import java.util.concurrent.Future;
@@ -12,14 +13,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mattlang.jc.ConfigValues;
-import org.mattlang.jc.JCExecutors;
-import org.mattlang.jc.SearchParameter;
-import org.mattlang.jc.StatisticsCollector;
-import org.mattlang.jc.board.GameState;
-import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.IterativeDeepeningSearch;
-import org.mattlang.jc.uci.GameContext;
+import static java.util.Objects.requireNonNull;
+import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_LOSS_IN_MAX_PLY;
+import static org.mattlang.jc.engine.evaluation.Weights.VALUE_TB_WIN_IN_MAX_PLY;
+import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 
 public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch, StatisticsCollector, IterativeDeepeningListener {
 
@@ -30,6 +27,9 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
     private AtomicReference<IterativeRoundResult>[] lastIRRs = null;
 
     private IterativeDeepeningListener listener = IterativeDeepeningPVS.NOOP_LISTENER;
+
+    @UciConfigParam
+    private int minScoreVotingOffset = 1;
 
     @Override
     public Move search(GameState gameState, GameContext gameContext, int maxDepth) {
@@ -75,8 +75,9 @@ public class MultiThreadedIterativeDeepening implements IterativeDeepeningSearch
         }
     }
 
-    private static int calcVote(IterativeRoundResult irr, int minScore) {
-        return (irr.rslt().max - minScore + 14) * irr.rslt().targetDepth;
+    private int calcVote(IterativeRoundResult irr, int minScore) {
+
+        return (irr.rslt().max - minScore + minScoreVotingOffset) * irr.rslt().targetDepth;
     }
 
     private IterativeRoundResult voteIrr() {
