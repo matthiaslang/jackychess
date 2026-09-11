@@ -4,7 +4,7 @@ import org.mattlang.jc.UCILogger;
 
 /**
  * Defines an uci spin option for this engine.
- *
+ * <p>
  * example: "option name " + OP_THINKTIME + " type spin default 15 min 5 max 600";
  */
 public class UCISpinOption extends UCIOption<Integer> {
@@ -13,7 +13,7 @@ public class UCISpinOption extends UCIOption<Integer> {
     private int max;
 
     public UCISpinOption(UCIOptions optionBundle, UCIGroup group, String name, String description, int min, int max,
-            int defaultValue, OptionType type) {
+                         int defaultValue, OptionType type) {
         super(optionBundle, group, name, description, type);
         this.min = min;
         this.max = max;
@@ -28,19 +28,18 @@ public class UCISpinOption extends UCIOption<Integer> {
     }
 
     @Override
-    public void parseAndSetParameter(String newValue) {
+    public Integer parse(String newValue) {
         int val = Integer.parseInt(newValue);
         if (val < min || val > max) {
             UCILogger.log(getName() + ": value not within [min,max] !");
             if (val < min) {
-                setValue(min);
+                return min;
             } else if (val > max) {
-                setValue(max);
+                return max;
             }
 
-        } else {
-            setValue(val);
         }
+        return val;
     }
 
     @Override

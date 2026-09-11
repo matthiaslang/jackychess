@@ -4,6 +4,10 @@ import lombok.Getter;
 import org.mattlang.jc.engine.tt.Caching;
 import org.mattlang.jc.uci.*;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static org.mattlang.jc.Constants.MAX_THREADS;
 
 /**
@@ -13,7 +17,20 @@ public class ConfigValues {
 
     private static ConfigValues configValues = new ConfigValues();
 
+    /**
+     * contains input of all uci options as raw string values. useful for internally used
+     * options used during development or for tuning.
+     */
+    private HashMap<String, String> rawOptions = new HashMap<>();
+
     private ConfigValues() {
+    }
+
+
+    private HashSet<ConfigurationListener> configurableListeningObjects = new HashSet<>();
+
+    public void registerConfigurableListeningObject(ConfigurationListener o) {
+        configurableListeningObjects.add(o);
     }
 
     public static final ConfigValues getConfigValues() {
@@ -21,7 +38,9 @@ public class ConfigValues {
     }
 
     public static void resetConfigValues() {
+        HashSet<ConfigurationListener> registeredObjects = configValues.configurableListeningObjects;
         configValues = new ConfigValues();
+        configValues.configurableListeningObjects = registeredObjects;
     }
 
     @Getter
@@ -32,6 +51,7 @@ public class ConfigValues {
 
     public final UCIGroup internal =
             allOptions.createInternalGroup("Internal", "Internal Test Parameter for Development");
+
 
     public final UCIGroup limits =
             allOptions.createGroup("Limits", "Parameter which limit the search or search time in some way.");
@@ -77,4 +97,41 @@ public class ConfigValues {
 
     public final UCIGroup search = allOptions.createInternalGroup("Search", "Parameter that influence search.");
 
+
+    public void addRawOptionVal(String option, String value) {
+        rawOptions.put(option, value);
+
+        for (ConfigurationListener configurableListeningObject : configurableListeningObjects) {
+            configureOptions(configurableListeningObject);
+            configurableListeningObject.configChanged();
+        }
+    }
+
+    private void configureOptions(Object eval) {
+        for (Field declaredField : eval.getClass().getDeclaredFields()) {
+            UciConfigParam uciConfigParam = declaredField.getAnnotation(UciConfigParam.class);
+            if (uciConfigParam != null) {
+                String optionsVal = rawOptions.get(declaredField.getName());
+                if (optionsVal != null) {
+                    if (declaredField.getType() == String.class) {
+                        setFieldValue(eval, declaredField, optionsVal);
+                    } else if (declaredField.getType() == Integer.class || declaredField.getType() == int.class) {
+                        int converted = Integer.parseInt(optionsVal);
+                        setFieldValue(eval, declaredField, converted);
+                    } else {
+                        throw new IllegalStateException("not supported type for conf params!" + declaredField.getType().getSimpleName());
+                    }
+                }
+            }
+        }
+    }
+
+    public static void setFieldValue(Object eval, Field declaredField, Object intVal) {
+        try {
+            declaredField.setAccessible(true);
+            declaredField.set(eval, intVal);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

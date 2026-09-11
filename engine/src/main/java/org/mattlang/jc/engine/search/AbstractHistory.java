@@ -19,4 +19,10 @@ public abstract class AbstractHistory {
             return max;
         return val;
     }
+
+    public static int calcNewVal(int existingVal, int bonus) {
+        int clampedBonus = clamp(bonus, -HIST_MAX, HIST_MAX);
+        return existingVal
+                + clampedBonus - existingVal * Math.abs(clampedBonus) / HIST_MAX;
+    }
 }

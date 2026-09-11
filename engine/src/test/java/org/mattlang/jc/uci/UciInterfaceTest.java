@@ -24,6 +24,8 @@ public class UciInterfaceTest {
 
         communication.write("ucinewgame");
         communication.write("setoption name UCI_AnalyseMode value true");
+        communication.write("setoption name quietScoreLimit value -100");
+        communication.write("setoption name stagesNormal value STAGE_HASH,PREPARE_STAGE_GOOD_CAPTURES,STAGE_GOOD_CAPTURES,STAGE_KILLERS1,STAGE_KILLERS2,STAGE_COUNTER,PREPARE_STAGE_QUIET,STAGE_GOOD_QUIET,STAGE_BAD_CAPTURES,STAGE_BAD_QUIET");
         communication.write("position startpos moves e2e4 e7e5");
         communication.write("go infinite");
 

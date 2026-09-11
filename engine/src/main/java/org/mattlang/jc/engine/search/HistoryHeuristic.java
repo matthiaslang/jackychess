@@ -1,9 +1,8 @@
 package org.mattlang.jc.engine.search;
 
-import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
-
 import org.mattlang.jc.board.Move;
-import org.mattlang.jc.engine.MoveCursor;
+
+import static org.mattlang.jc.Constants.NUM_BOARD_FIELDS;
 
 public class HistoryHeuristic extends AbstractHistory {
 
@@ -28,22 +27,21 @@ public class HistoryHeuristic extends AbstractHistory {
         }
     }
 
-    public void update(int color, MoveCursor move, int depth) {
+    public void update(int color, Move move, int depth) {
         updateHist(color, move, calcBonus(depth));
     }
 
-    private void updateHist(int colorIdx, MoveCursor move, int bonus) {
-        int clampedBonus = clamp(bonus, -HIST_MAX, HIST_MAX);
+    private void updateHist(int colorIdx, Move move, int bonus) {
         int existingVal = posHistory[colorIdx][move.getFromIndex()][move.getToIndex()];
-        posHistory[colorIdx][move.getFromIndex()][move.getToIndex()] +=
-                clampedBonus - existingVal * Math.abs(clampedBonus) / HIST_MAX;
+        posHistory[colorIdx][move.getFromIndex()][move.getToIndex()] =
+                calcNewVal(existingVal, bonus);
     }
 
     public int calcValue(Move move, int colorIdx) {
-        return 100 * posHistory[colorIdx][move.getFromIndex()][move.getToIndex()];
+        return posHistory[colorIdx][move.getFromIndex()][move.getToIndex()];
     }
 
-    public void updateBad(int color, MoveCursor move, int depth) {
+    public void updateBad(int color, Move move, int depth) {
         updateHist(color, move, -calcBonus(depth));
     }
 

@@ -4,6 +4,7 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.Color;
 import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.engine.search.SearchThreadContext;
+import org.mattlang.jc.engine.sorting.MoveIteratorImpl;
 import org.mattlang.jc.engine.sorting.MovePicker;
 import org.mattlang.jc.engine.sorting.OrderCalculator;
 import org.mattlang.jc.movegenerator.GenMode;
@@ -27,31 +28,19 @@ public class RegularMoveIterationPreparer {
     private BoardRepresentation board;
 
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
-            int ply, int hashMove, int parentMove) {
+                        int ply, int hashMove, int parentMove) {
         moveList.reset(color.ordinal());
         this.board = board;
         orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
 
         generator.generate(mode, board, color.ordinal(), moveList);
         orderCalculator.prepareOrder(color.ordinal(), hashMove, parentMove, ply, board, 0);
-        orderCalculator.scoreMoves(moveList);
-
-    }
-
-    public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, Color color,
-            int ply, int hashMove, int parentMove, int captureMargin) {
-        moveList.reset(color.ordinal());
-        this.board = board;
-        orderCalculator = stc.getOrderCalculator(); // maybe refactor this..
-
-        generator.generate(mode, board, color.ordinal(), moveList);
-        orderCalculator.prepareOrder(color.ordinal(), hashMove, parentMove, ply, board, captureMargin);
-        orderCalculator.scoreMoves(moveList);
+        movePicker.reset();
+        orderCalculator.scoreMoves(moveList, movePicker, movePicker);
 
     }
 
     public MoveBoardIterator iterateMoves() {
-        movePicker.init(moveList, 0);
         moveBoardIterator.init(movePicker, board);
         return moveBoardIterator;
     }

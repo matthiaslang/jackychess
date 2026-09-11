@@ -4,6 +4,7 @@ import static org.mattlang.jc.board.BB.least_significant_square_bb;
 import static org.mattlang.jc.board.FigureConstants.*;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genBishopAttacs;
 import static org.mattlang.jc.board.bitboard.MagicBitboards.genRookAttacs;
+import static org.mattlang.jc.moves.MoveImpl.NORMAL_MOVE;
 
 import org.mattlang.jc.board.*;
 import org.mattlang.jc.board.bitboard.BitChessBoard;
@@ -51,6 +52,7 @@ public class SEE {
 
     /**
      * see algorithm adapted from stockfish. Not fully implemented, and not well tested, yet.
+     *
      * @param bitBoard
      * @param m
      * @param threshold
@@ -61,11 +63,9 @@ public class SEE {
         //        assert(is_ok(m));
 
         // Only deal with normal moves, assume others pass a simple SEE
-        if (m.isCastling()) {
+        if (m.getBasicType() != NORMAL_MOVE) {
             return 0 >= threshold;
         }
-        //        if (type_of(m) != NORMAL)
-        //            return VALUE_ZERO >= threshold;
 
         int posfrom = m.getFromIndex();
         int posto = m.getToIndex();
