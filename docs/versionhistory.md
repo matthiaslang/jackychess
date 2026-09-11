@@ -1,5 +1,12 @@
 # Versions
 
+### 26.09
+
+- refactored sort order code and staged move generation code to be much cleaner for future changes or improvements
+- better cache memory size handling
+
+no estimated ELO gains
+
 ### 25.12.1
 
 - Java 21: at least Java 21 is now needed to compile and run the engine
