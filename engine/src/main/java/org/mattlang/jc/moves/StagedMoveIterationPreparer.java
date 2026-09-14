@@ -51,7 +51,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
      * given any benefit.
      */
     private static final Stage[] STAGES_QUIESCENCE =
-            { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_GOOD_CAPTURES, STAGE_BAD_CAPTURES};
+            { /*STAGE_QUIESCENCE_HASH,*/ PREPARE_STAGE_QUIESCENCE_REST, STAGE_GOOD_CAPTURES};
 
     private static final Stage[] SINGLE_STATIC_STAGE = {STAGE_GOOD_CAPTURES};
 
@@ -104,11 +104,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
     public void prepare(SearchThreadContext stc, GenMode mode, BoardRepresentation board, int color,
                         int ply, int hashMove, int parentMove, int captureMargin) {
 
-        pickerGoodCapt.reset();
-        pickerBadCapt.reset();
-        pickerGoodQuiet.reset();
-        pickerBadQuiet.reset();
-
         filterCount = 0;
         this.stageIndex = 0;
         this.stc = stc;
@@ -134,11 +129,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
 
     public void prepareFirstPly(SearchThreadContext stc, BoardRepresentation board, int color,
                                 MoveList legalMovesToSearch, int hashMove, int parentMove, int captureMargin) {
-
-        pickerGoodCapt.reset();
-        pickerBadCapt.reset();
-        pickerGoodQuiet.reset();
-        pickerBadQuiet.reset();
 
         filterCount = 0;
         this.stageIndex = 0;
@@ -193,7 +183,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
                     break;
                 case STAGE_GOOD_CAPTURES:
                     if (sortToFrontSkippingFiltered(pickerGoodCapt)) {
-                        theNextOrder = pickerGoodCapt.getOrder();
                         return true;
                     }
                     nextStage();
@@ -201,7 +190,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
                     break;
                 case STAGE_BAD_CAPTURES:
                     if (sortToFrontSkippingFiltered(pickerBadCapt)) {
-                        theNextOrder = pickerBadCapt.getOrder();
                         return true;
                     }
                     nextStage();
@@ -238,7 +226,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
                     break;
                 case STAGE_GOOD_QUIET:
                     if (sortToFrontSkippingFiltered(pickerGoodQuiet)) {
-                        theNextOrder = pickerGoodQuiet.getOrder();
                         return true;
                     }
                     nextStage();
@@ -246,7 +233,6 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
                     break;
                 case STAGE_BAD_QUIET:
                     if (sortToFrontSkippingFiltered(pickerBadQuiet)) {
-                        theNextOrder = pickerBadQuiet.getOrder();
                         return true;
                     }
                     nextStage();
@@ -266,7 +252,9 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
                     nextStage();
                     moveListGen.reset(color);
                     generator.generate(GenMode.QUIESCENCE, board, color, moveListGen);
-                    createCaptureSortOrders();
+                    pickerGoodCapt.reset();
+                    orderCalculator.prepareOrder(color, hashMove, parentMove, ply, board, captureMargin);
+                    orderCalculator.scoreCaptureMoves(moveListGen, pickerGoodCapt, pickerGoodCapt);
 
                     break;
             }
@@ -303,6 +291,7 @@ public final class StagedMoveIterationPreparer implements MoveIterator, Configur
         while (picker.hasNext()) {
             theNextMove = picker.next();
             if (isUnfilteredMove(theNextMove)) {
+                theNextOrder = picker.getOrder();
                 return true;
             }
         }
