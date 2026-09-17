@@ -641,7 +641,7 @@ public final class NegaMaxAlphaBetaPVS {
             if (OrderCalculator.isHistory(heuristic)) {
                 int val = heuristic - HISTORY_SCORE;
                 // reduce for a good history score
-                if (val < 0) {
+                if (val > 0) {
                     reduction--;
                 }
             }
