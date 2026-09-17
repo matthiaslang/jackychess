@@ -15,12 +15,12 @@ public class SearchException extends RuntimeException {
     private final SearchParameter searchParameter;
     private final GameState gameState;
     private final GameContext gameContext;
-    private ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds;
+    private ArrayList<IterativeRoundResult> rounds;
     private String ebfreport;
     private Throwable e;
 
     public SearchException(SearchParameter searchParameter, GameState gameState, GameContext gameContext,
-            ArrayList<IterativeDeepeningPVS.IterativeRoundResult> rounds, String ebfreport, Throwable e) {
+                           ArrayList<IterativeRoundResult> rounds, String ebfreport, Throwable e) {
         super(e);
         this.gameState = gameState;
         this.gameContext = gameContext;
@@ -39,10 +39,8 @@ public class SearchException extends RuntimeException {
 
         b.append("\n Rounds of this game state so far:\n");
 
-        for (IterativeDeepeningPVS.IterativeRoundResult round : rounds) {
-            if (round.getRslt() != null) {
-                b.append(round.getRslt().toString()).append("\n");
-            }
+        for (IterativeRoundResult round : rounds) {
+            b.append(round.rslt().toString()).append("\n");
         }
         b.append("\n");
         searchParameter.log(b);

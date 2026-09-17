@@ -4,7 +4,6 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.*;
 import static org.mattlang.jc.SearchParameter.DEFAULT_SEARCHTIME;
-import static org.mattlang.jc.engine.evaluation.Weights.KING_WEIGHT;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.ALPHA_START;
 import static org.mattlang.jc.engine.search.NegaMaxAlphaBetaPVS.BETA_START;
 import static org.mattlang.jc.util.EngineLoggerUtils.fmtSevere;
@@ -19,14 +18,12 @@ import org.mattlang.jc.board.BoardRepresentation;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.board.Move;
 import org.mattlang.jc.engine.IterativeDeepeningSearch;
+import org.mattlang.jc.engine.MoveList;
 import org.mattlang.jc.moves.MoveImpl;
 import org.mattlang.jc.uci.GameContext;
 import org.mattlang.jc.uci.UCI;
 import org.mattlang.jc.util.LoggerUtils;
 import org.mattlang.jc.util.MoveValidator;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchListener {
 
@@ -42,9 +39,9 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      * Does not bring an improvement: the depth skip makes the performance/results worse... so we dont use it
      */
     // Laser based SMP skip
-    //    private static final int[] SMP_SKIP_DEPTHS = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 };
-    //    private static final int[] SMP_SKIP_AMOUNT = { 1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6 };
-    //    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
+    private static final int[] SMP_SKIP_DEPTHS = {1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4};
+    private static final int[] SMP_SKIP_AMOUNT = {1, 2, 1, 2, 3, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6};
+    private static final int SMP_MAX_CYCLES = SMP_SKIP_AMOUNT.length;
 
     /**
      * worker number if this iterative deepening is running inside a worker thread.
@@ -62,11 +59,13 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      */
     private boolean isWorker = false;
 
-    private NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
+    private final NegaMaxAlphaBetaPVS negaMaxAlphaBeta = new NegaMaxAlphaBetaPVS();
 
-    private EffectiveBranchFactor ebf = new EffectiveBranchFactor();
+    private final EffectiveBranchFactor ebf = new EffectiveBranchFactor();
 
-    private MoveValidator moveValidator = new MoveValidator();
+    private final MoveValidator moveValidator = new MoveValidator();
+
+    private final FirstNegaMaxResultCreator firstNegaMaxResultCreator = new FirstNegaMaxResultCreator();
 
     /**
      * copy of the game state when starting search.
@@ -78,7 +77,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     public IterativeDeepeningPVS(int workerNumber) {
         this.workerNumber = workerNumber;
-        //        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
+        cycleIndex = (workerNumber - 1) % SMP_MAX_CYCLES;
         isWorker = workerNumber > 0;
     }
 
@@ -93,7 +92,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
     @Override
     public IterativeSearchResult iterativeSearch(SearchParameter searchParams, GameState gameState,
-            GameContext gameContext) {
+                                                 GameContext gameContext) {
         negaMaxAlphaBeta.reset();
         negaMaxAlphaBeta.resetStatistics();
         negaMaxAlphaBeta.setIsWorker(isWorker);
@@ -127,7 +126,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         int maxEffDepth = workerNumber > 0 ? maxDepth + 1 : maxDepth;
 
-        IterativeRoundResult lastResults = new IterativeRoundResult(null, new StopWatch());
+        IterativeRoundResult lastResults = firstNegaMaxResultCreator.createFirstIRR(workerNumber, gameState, searchParams);
         try {
             int currdepth = startDepth;
 
@@ -146,6 +145,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
                         searchRound(searchParams, stc, watch, lastResults, gameState, gameContext, currdepth, stopTime);
                 lastResults = irr;
                 rounds.add(irr);
+                listener.updateIIR(irr);
                 if (irr.isCheckMate()) {
                     break;
                 }
@@ -180,9 +180,7 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
     }
 
     private void callListener(NegaMaxResult negaMaxResult) {
-        if (!isWorker) {
-            listener.updateBestRoundMove(negaMaxResult);
-        }
+        listener.updateBestRoundMove(negaMaxResult);
     }
 
     @Override
@@ -198,9 +196,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
      * @return
      */
     private int adjustDepthForWorker(int currDepth) {
-        //        if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
-        //            currDepth += SMP_SKIP_AMOUNT[cycleIndex];
-        //        }
+        if (isWorker) {
+            if ((currDepth + cycleIndex) % SMP_SKIP_DEPTHS[cycleIndex] == 0) {
+                currDepth += SMP_SKIP_AMOUNT[cycleIndex];
+            }
+        }
         return currDepth;
     }
 
@@ -222,10 +222,10 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         long nps = duration == 0 ? nodesVisited : nodesVisited * 1000 / duration;
 
         UCI.instance.putCommand("info depth " + targetDepth +
-                                " seldepth " + selDepth +
-                                " score cp " + currMoveScore + " nodes " + nodesVisited
-                                + " nps " + nps
-                                + " time " + duration);
+                " seldepth " + selDepth +
+                " score cp " + currMoveScore + " nodes " + nodesVisited
+                + " nps " + nps
+                + " time " + duration);
         if (currMove != 0) {
             moveWrapper.fromLongEncoded(currMove);
             UCI.instance.putCommand("info currmove " + moveWrapper.toUCIString(gameState.getBoard()));
@@ -236,31 +236,11 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
         }
     }
 
-    @AllArgsConstructor
-    @Getter
-    static class IterativeRoundResult {
-
-        private final NegaMaxResult rslt;
-        private final StopWatch roundWatch;
-
-        public boolean isCheckMate() {
-            return Math.abs(Math.abs(rslt.directScore) - KING_WEIGHT) < 100;
-        }
-
-        public boolean hasResults() {
-            return rslt != null;
-        }
-
-        public Move getOptionalBestMove() {
-            return rslt != null ? rslt.savedMove : null;
-        }
-    }
-
     private IterativeRoundResult searchRound(SearchParameter searchParams,
-            SearchThreadContext stc, StopWatch watch,
-            IterativeRoundResult lastRoundResults,
-            GameState gameState, GameContext gameContext, int currdepth,
-            long stopTime) {
+                                             SearchThreadContext stc, StopWatch watch,
+                                             IterativeRoundResult lastRoundResults,
+                                             GameState gameState, GameContext gameContext, int currdepth,
+                                             long stopTime) {
 
         StopWatch roundWatch = new StopWatch();
 
@@ -272,8 +252,8 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         NegaMaxResult rslt = null;
 
-        if (currdepth >= 3 && lastRoundResults.hasResults()) {
-            aspWindow.limitWindow(lastRoundResults.getRslt());
+        if (currdepth >= 3) {
+            aspWindow.limitWindow(lastRoundResults.rslt());
             rslt = searchWithAspirationWindow(searchParams,
                     lastRoundResults.getOptionalBestMove(),
                     stc, aspWindow, gameState, gameContext, stopTime,
@@ -305,14 +285,14 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
 
         roundWatch.stop();
         ebf.update(currdepth, roundWatch.getDuration(), negaMaxAlphaBeta.getNodesVisited());
-        return new IterativeRoundResult(rslt, roundWatch);
+        return new IterativeRoundResult(workerNumber, rslt, roundWatch);
     }
 
     private NegaMaxResult searchWithAspirationWindow(SearchParameter searchParams,
-            Move optionalLastBestMove,
-            SearchThreadContext stc,
-            Window aspWindow, GameState gameState, GameContext gameContext,
-            long stopTime, int currdepth) {
+                                                     Move optionalLastBestMove,
+                                                     SearchThreadContext stc,
+                                                     Window aspWindow, GameState gameState, GameContext gameContext,
+                                                     long stopTime, int currdepth) {
 
         int depthToUse = currdepth;
 
@@ -371,12 +351,12 @@ public class IterativeDeepeningPVS implements IterativeDeepeningSearch, SearchLi
             long hashfull = gameContext.ttCache.calcHashFull();
             //        long hashfull = gameContext.ttc.getUsagePercentage();
             UCI.instance.putCommand("info depth " + rslt.targetDepth +
-                                    " seldepth " + rslt.selDepth +
-                                    " score cp " + rslt.max + " nodes " + nodes
-                                    + " hashfull " + hashfull
-                                    + " nps " + nps
-                                    + " time " + duration
-                                    + " pv " + rslt.toPvStr(gameState.getBoard()));
+                    " seldepth " + rslt.selDepth +
+                    " score cp " + rslt.max + " nodes " + nodes
+                    + " hashfull " + hashfull
+                    + " nps " + nps
+                    + " time " + duration
+                    + " pv " + rslt.toPvStr(gameState.getBoard()));
             UCI.instance.putCommand("info currmove " + rslt.savedMove.toUCIString(gameState.getBoard()));
         }
     }

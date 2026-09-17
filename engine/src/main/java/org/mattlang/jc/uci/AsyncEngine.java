@@ -17,10 +17,7 @@ import org.mattlang.jc.UCILogger;
 import org.mattlang.jc.board.GameState;
 import org.mattlang.jc.engine.Engine;
 import org.mattlang.jc.engine.MoveList;
-import org.mattlang.jc.engine.search.IterativeSearchResult;
-import org.mattlang.jc.engine.search.NegaMaxResult;
-import org.mattlang.jc.engine.search.SearchException;
-import org.mattlang.jc.engine.search.StopException;
+import org.mattlang.jc.engine.search.*;
 import org.mattlang.jc.util.MoveValidator;
 
 public class AsyncEngine {
@@ -32,7 +29,9 @@ public class AsyncEngine {
      */
     private Future<NegaMaxResult> future;
 
-    private MoveValidator moveValidator = new MoveValidator();
+    private final MoveValidator moveValidator = new MoveValidator();
+
+    private final FirstNegaMaxResultCreator firstNegaMaxResultCreator = new FirstNegaMaxResultCreator();
 
     /**
      * the collected best move so far.
@@ -51,19 +50,13 @@ public class AsyncEngine {
     private Semaphore semaphore = new Semaphore(1, true);
 
     public CompletableFuture<NegaMaxResult> start(GameState gameState, GoParameter goParams,
-            GameContext gameContext) {
+                                                  GameContext gameContext) {
 
-        // parameter/typ SearchConfig with legalmovestosearch, timeout, etc....?
-        final MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
+        final SearchParameter searchParams = createSearchParameter(gameState, goParams);
 
         // init a first simple best move by ordering via mvalva to have always a best move if
         // we get a stop command before our real search has properly started and returned something better.
-        bestMoveCollector = new BestMoveCollector(new NegaMaxResult(moveValidator.findSimpleBestMove(gameState, legalMovesToSearch)));
-
-        // init the search parameters, eval functions, etc:
-
-        final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
-        final SearchParameter searchParams = createMultiThread((int) timeToUse, legalMovesToSearch, goParams);
+        bestMoveCollector = new BestMoveCollector(firstNegaMaxResultCreator.createFirstNegaMaxResult(gameState, searchParams));
 
         // log parameters only once for a game:
         if (gameContext.getContext("startLogged") == null) {
@@ -73,7 +66,7 @@ public class AsyncEngine {
 
         // start the engine in a separate thread, delivering the result in a future
         CompletableFuture<NegaMaxResult> completableFuture = new CompletableFuture<>();
-        Future<NegaMaxResult> newFuture = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
+        this.future = JCExecutors.EXECUTOR_SERVICE.submit(() -> {
             try {
                 if (logger.isLoggable(INFO)) {
                     logger.info(this + " try to acquire semaphore..");
@@ -122,8 +115,17 @@ public class AsyncEngine {
             }
 
         });
-        this.future = newFuture;
         return completableFuture;
+    }
+
+    private SearchParameter createSearchParameter(GameState gameState, GoParameter goParams) {
+        // parameter/typ SearchConfig with legalmovestosearch, timeout, etc....
+        final MoveList legalMovesToSearch = moveValidator.createLegalMovesToSearch(gameState, goParams.searchMoves);
+
+        // init the search parameters, eval functions, etc:
+        final long timeToUse = TimeCalc.determineCalculationTime(gameState, goParams);
+        final SearchParameter searchParams = createMultiThread((int) timeToUse, legalMovesToSearch, goParams);
+        return searchParams;
     }
 
     /**
