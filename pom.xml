@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <groupId>org.mattlang.jackychess</groupId>
     <artifactId>parent</artifactId>
-    <version>26.09</version>
+    <version>26.09.1</version>
 
     <profiles>
         <profile>
