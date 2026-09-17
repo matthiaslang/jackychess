@@ -1,5 +1,12 @@
 # Versions
 
+### 26.09.1
+
+- refactored multithread code
+- fixed small refactoring bug from 26.09
+
+no estimated ELO gains
+
 ### 26.09
 
 - refactored sort order code and staged move generation code to be much cleaner for future changes or improvements
